@@ -160,4 +160,41 @@ public class Plot {
         gc.stroke();
         gc.closePath();
     }
+    
+    private void _paintNet() {
+        double kNet;
+        if (levelYlenght <= 100) kNet = 10;
+        else if (levelYlenght <= 250) kNet = 25;
+        else if (levelYlenght <= 500) kNet = 50;
+        else if (levelYlenght <= 750) kNet = 75;
+        else if (levelYlenght <= 1000) kNet = 100;
+        else if (levelYlenght <= 1500) kNet = 150;
+        else kNet = 200;
+        
+        double xSize = width - fieldWidth;
+        double ySize = height - fieldHeight;
+        int xN = 12 + 1;
+        int yN = (int)(levelYlenght / kNet) + 0;
+        double x, y, polLineWidth = netLineWidth / 2;
+        
+        gc.beginPath();
+        gc.setStroke(netLineColor);
+        gc.setLineWidth(netLineWidth);
+        // x
+        for (int i = 1; i < xN - 1; i++) {
+            x = (i * xSize / (xN -1)) + fieldWidth;
+            gc.moveTo(x, fieldHeight + polLineWidth);
+            gc.lineTo(x, fieldHeight - polLineWidth + ySize);
+        }
+        // y
+        double kp = ySize / levelYlenght;
+        for (int i = 0; i < yN; i++) {
+            y = height - (kp * i * kNet);
+            gc.moveTo(fieldWidth + polLineWidth, y);
+            gc.lineTo(width - polLineWidth, y);
+        }
+
+        gc.stroke();
+        gc.closePath();
+    }
 }
