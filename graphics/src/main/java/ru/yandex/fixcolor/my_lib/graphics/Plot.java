@@ -138,15 +138,16 @@ public class Plot {
         gc.fillRect(0, 0, fieldWidth, height);
         gc.fillRect(0, height - fieldHeight, width, height);
 
+        double polFrameLineWidth = fieldFrameLineWidth / 2;
         double[] x = {
-                fieldWidth - (fieldFrameLineWidth / 2),
-                fieldWidth - (fieldFrameLineWidth / 2),
-                width - (fieldFrameLineWidth / 2)
+                fieldWidth - polFrameLineWidth,
+                fieldWidth - polFrameLineWidth,
+                width - polFrameLineWidth
         };
         double[] y = {
                 0,
-                height - fieldHeight + (fieldFrameLineWidth / 2),
-                height - fieldHeight + (fieldFrameLineWidth / 2)
+                height - fieldHeight + polFrameLineWidth,
+                height - fieldHeight + polFrameLineWidth
         };
 
         gc.setStroke(fieldFrameLineColor);
