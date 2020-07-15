@@ -1,5 +1,6 @@
 package ru.yandex.fixcolor.my_lib.graphics;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -100,10 +101,13 @@ public class Plot {
                     datQueue = paintQueue.poll(1, TimeUnit.MILLISECONDS);
                     switch (datQueue.command) {
                         case ClearFields:
+                            Platform.runLater( ()-> _clearFields() );
                             break;
                         case ClearWindow:
+                            Platform.runLater( ()-> _clearWindow() );
                             break;
                         case PaintNet:
+                            Platform.runLater( ()-> _paintNet() );
                             break;
                         case RePaint:
                             break;
