@@ -9,6 +9,7 @@
         <module name="lib" />
         <module name="allinterface" />
         <module name="RS232" />
+        <module name="screen" />
       </profile>
     </annotationProcessing>
   </component>

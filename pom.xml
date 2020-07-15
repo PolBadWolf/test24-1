@@ -12,6 +12,7 @@
         <module>RS232</module>
         <module>lib</module>
         <module>allinterface</module>
+        <module>screen</module>
     </modules>
 
     <properties>
