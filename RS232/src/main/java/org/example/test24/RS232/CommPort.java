@@ -85,6 +85,16 @@ public class CommPort implements CommPort_Impl {
     }
 
     private void runner() {
+        // flush
+        int num = 1;
+        byte[] bytes = new byte[1000];
+        while (num > 0) {
+            num = port.readBytes(bytes, bytes.length);
+        }
 
+        onCycle = true;
+        while (onCycle) {
+            
+        }
     }
 }
