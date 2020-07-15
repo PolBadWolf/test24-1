@@ -60,6 +60,11 @@ public class CommPort implements CommPort_Impl {
 
     @Override
     public boolean ReciveStart() {
+        if (port == null)   return false;
+        if (!port.isOpen()) return false;
+
+        threadRS = new Thread( ()->runner() );
+        threadRS.start();
         return false;
     }
 
@@ -77,5 +82,9 @@ public class CommPort implements CommPort_Impl {
         catch (java.lang.Throwable th) {
             th.printStackTrace();
         }
+    }
+
+    private void runner() {
+
     }
 }
