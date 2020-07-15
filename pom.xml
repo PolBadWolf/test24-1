@@ -13,6 +13,7 @@
         <module>lib</module>
         <module>allinterface</module>
         <module>screen</module>
+        <module>graphics</module>
     </modules>
 
     <properties>
