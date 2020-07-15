@@ -11,6 +11,7 @@
     <modules>
         <module>RS232</module>
         <module>lib</module>
+        <module>allinterface</module>
     </modules>
 
     <properties>
