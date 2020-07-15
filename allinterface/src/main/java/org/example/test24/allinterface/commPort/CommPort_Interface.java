@@ -1,5 +1,7 @@
 package org.example.test24.allinterface.commPort;
 
+import org.example.test24.allinterface.runner.Runner_Interface;
+
 public interface CommPort_Interface {
     String[] getListPortsName();
     int Open(Runner_Interface runner, String portName, BAUD baud);
