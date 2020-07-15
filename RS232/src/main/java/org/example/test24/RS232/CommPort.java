@@ -16,6 +16,7 @@ public class CommPort implements CommPort_Impl {
     }
 
     private SerialPort port = null;
+    private Thread threadRS = null;
 
     @Override
     public int Open(Runner_Interface runner, String portName, BAUD baud) {
@@ -47,8 +48,15 @@ public class CommPort implements CommPort_Impl {
 
     @Override
     public void Close() {
+        if (port == null)   return;
 
+        ReciveStop();
+
+        port.closePort();
+        port = null;
     }
+
+    private boolean onCycle;
 
     @Override
     public boolean ReciveStart() {
@@ -57,6 +65,17 @@ public class CommPort implements CommPort_Impl {
 
     @Override
     public void ReciveStop() {
+        onCycle = false;
 
+        try {
+            if (threadRS != null) {
+                while (!threadRS.isAlive()) {
+                    Thread.yield();
+                }
+            }
+        }
+        catch (java.lang.Throwable th) {
+            th.printStackTrace();
+        }
     }
 }
