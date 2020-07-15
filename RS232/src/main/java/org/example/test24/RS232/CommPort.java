@@ -1,6 +1,7 @@
 package org.example.test24.RS232;
 
 import com.fazecast.jSerialComm.SerialPort;
+import org.example.lib.ControlSumma;
 import org.example.test24.allinterface.commPort.BAUD;
 import org.example.test24.allinterface.runner.Runner_Interface;
 
@@ -17,6 +18,7 @@ public class CommPort implements CommPort_Impl {
 
     private SerialPort port = null;
     private Thread threadRS = null;
+    private Runner_Interface runner_interface;
 
     @Override
     public int Open(Runner_Interface runner, String portName, BAUD baud) {
@@ -41,7 +43,10 @@ public class CommPort implements CommPort_Impl {
         port.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
         port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 1000, 1000);
 
-        if (port.openPort())    return INITCODE_OK;
+        if (port.openPort()) {
+            runner_interface = runner;
+            return INITCODE_OK;
+        }
 
         return INITCODE_ERROROPEN;
     }
@@ -56,7 +61,7 @@ public class CommPort implements CommPort_Impl {
         port = null;
     }
 
-    private boolean onCycle;
+    private int onCycle;
 
     @Override
     public boolean ReciveStart() {
@@ -70,7 +75,7 @@ public class CommPort implements CommPort_Impl {
 
     @Override
     public void ReciveStop() {
-        onCycle = false;
+        onCycle = -1;
 
         try {
             if (threadRS != null) {
@@ -84,17 +89,112 @@ public class CommPort implements CommPort_Impl {
         }
     }
 
+    // ---------------------
+    final private int headBufferLenght  = 5;
+    final private int timeOutLenght     = 5;
+    // ---------------------
+    private int timeOutSynhro = 1;
+    private boolean noSynhro = true;
+    private boolean flagHead = true;
+    private byte[]  headBuffer = new byte[headBufferLenght];
+    private int lenghtRecive;
+    private int lenghtReciveSumm;
+    private byte crc;
+
     private void runner() {
         // flush
         int num = 1;
         byte[] bytes = new byte[1000];
+
         while (num > 0) {
             num = port.readBytes(bytes, bytes.length);
         }
 
-        onCycle = true;
-        while (onCycle) {
-            
+        onCycle = 1;
+        while (onCycle >= 0) {
+            if (onCycle > 0) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (timeOutSynhro > 1)    timeOutSynhro--;
+                if (timeOutSynhro == 1) {
+                    timeOutSynhro = 0;
+                    noSynhro = true;
+                    flagHead = true;
+                }
+            }
+
+            if (flagHead) {
+                int lenght = headBufferLenght;
+
+                if (noSynhro) {
+                    lenght = 1;
+                    for (int i = 0; i < headBufferLenght - 1; i++) {
+                        headBuffer[i] = headBuffer[i + 1];
+                    }
+                }
+
+                num = port.readBytes(headBuffer, lenght, headBufferLenght - lenght);
+
+                if (num < 0) {
+                    onCycle = -1;
+                    continue;
+                }
+
+                if (num == 0) {
+                    onCycle = 1;
+                    continue;
+                }
+
+                onCycle = 0;
+
+                if (num == lenght) {
+                    if (headBuffer[0] != (byte)0xe6)    continue;
+                    if (headBuffer[1] != (byte)0x19)    continue;
+                    if (headBuffer[2] != (byte)0x55)    continue;
+                    if (headBuffer[3] != (byte)0xaa)    continue;
+
+                    noSynhro = false;
+                    flagHead = true;
+                    timeOutSynhro = timeOutLenght;
+                    lenghtRecive = headBuffer[4] & 0x000000ff;
+                    lenghtReciveSumm = 0;
+                }
+            }
+            else {
+                noSynhro = true;
+                continue;
+            }
+
+            while (lenghtReciveSumm < lenghtRecive) {
+                num = port.readBytes(bytes, lenghtRecive - lenghtReciveSumm, lenghtReciveSumm);
+
+                if (num < 0) {
+                    onCycle = -1;
+                    continue;
+                }
+
+                if (num == 0) {
+                    onCycle = 1;
+                    continue;
+                }
+
+                onCycle = 0;
+                lenghtReciveSumm += num;
+            }
+
+            crc = ControlSumma.crc8(bytes, lenghtRecive - 1);
+
+            if (crc == bytes[lenghtRecive - 1]) {
+                runner_interface.reciveRsPush(bytes, lenghtRecive - 1);
+            }
+            else {
+                noSynhro = true;
+            }
+
+            flagHead = true;
         }
     }
 }
