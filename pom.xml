@@ -15,6 +15,7 @@
         <module>screen</module>
         <module>graphics</module>
         <module>loader</module>
+        <module>runner</module>
     </modules>
 
     <properties>
