@@ -422,4 +422,32 @@ public class Plot {
     public double getZoomYmax() {
         return levelYmax;
     }
+    // ---
+    public void clearFields() {
+        myPaint.clearFields();
+    }
+
+    public void clearWindow() {
+        myPaint.clearWindow();
+    }
+
+    public void paintNet() {
+        myPaint.paintNet();
+    }
+
+    public void rePaint() {
+        if (busy)   return;
+        busy = true;
+        myPaint.rePaint(dataGraphics);
+    }
+    // ----
+    public void addTrend(Color lineColor, double lineWidth) {
+        trends.add(new Trend(lineColor, lineWidth));
+        newData = new Short[trends.size() - 1];
+    }
+
+    public void removeAllTrends() {
+        trends.clear();
+    }
+    // ----
 }
