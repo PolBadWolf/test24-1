@@ -39,7 +39,7 @@ public class Plot {
     private double netLineWidth = 1.0;
 
     private double levelXbegin = 0.0;
-    private double levelXlenhgt = 1000.0;
+    private double levelXlenght = 1000.0;
 
     private double levelYbegin = 0.0;
     private double levelYlenght = 500.0;
@@ -74,6 +74,16 @@ public class Plot {
         public DatQueue(int command, ArrayList<Short[]> datGraph) {
             this.command = command;
             this.datGraph = datGraph;
+        }
+    }
+
+    private class DatXindx {
+        public double x;
+        public int indx;
+
+        public DatXindx(double x, int indx) {
+            this.x = x;
+            this.indx = indx;
         }
     }
 
@@ -122,6 +132,37 @@ public class Plot {
                     break;
                 }
             }
+        }
+
+        private void __rePaint(ArrayList<Short[]> datGraph) {
+            // нахождение диапозона
+            int indexBegin = 0;
+            int indexEnd = datGraph.size();
+
+            for (int i = indexBegin; i < indexEnd; i++) {
+                if (datGraph.get(i)[0] >= levelXbegin) {
+                    indexBegin = i;
+                    break;
+                }
+            }
+
+            // drops & selects
+            //ArrayList<double[]>[]
+            ArrayList<DatXindx> xindxes = new ArrayList<>();
+            double curX, oldX = -100;
+            double kX = levelXlenght / (width - fieldWidth);
+
+            for (int i = indexBegin; i < indexEnd; i++) {
+                if (datGraph.get(i)[0] >= (levelXbegin + levelXlenght)) break;
+                curX = ((datGraph.get(i + indexBegin)[0].doubleValue() - levelXbegin) / kX) + fieldWidth;
+                if ((curX - oldX) < 2)  continue;
+                oldX = curX;
+                xindxes.add(new DatXindx(curX, i + indexBegin));
+            }
+
+            int nItemsMass = datGraph.get(0).length;
+            int dropLenght = xindxes.size();
+            double[][] mass
         }
     }
 

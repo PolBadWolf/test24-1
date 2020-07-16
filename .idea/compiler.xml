@@ -7,8 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="lib" />
-        <module name="allinterface" />
         <module name="graphics" />
+        <module name="allinterface" />
         <module name="RS232" />
         <module name="screen" />
       </profile>
