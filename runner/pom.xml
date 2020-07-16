@@ -18,6 +18,12 @@
             <version>1.0.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>ru.yandex.fixcolor.my_lib</groupId>
+            <artifactId>graphics</artifactId>
+            <version>1.0.5</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 

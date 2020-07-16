@@ -435,6 +435,12 @@ public class Plot {
         myPaint.paintNet();
     }
 
+    public void clearScreen() {
+        myPaint.clearFields();
+        myPaint.clearWindow();
+        myPaint.paintNet();
+    }
+
     public void rePaint() {
         if (busy)   return;
         busy = true;

@@ -58,7 +58,7 @@ public class MainFrame implements Initializable, MainFrame_imp {
     }
 
     @Override
-    public Canvas getCanvas1() {
+    public Canvas getCanvas() {
         return canvas;
     }
 
