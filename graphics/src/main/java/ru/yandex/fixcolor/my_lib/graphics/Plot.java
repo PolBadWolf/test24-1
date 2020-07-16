@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -310,4 +309,67 @@ public class Plot {
         myPaint.start();
     }
 
+    public void setFieldBackColor(Color fieldBackColor) {
+        this.fieldBackColor = fieldBackColor;
+    }
+
+    public Color getFieldBackColor() {
+        return fieldBackColor;
+    }
+
+    public void setFieldWidth(double fieldWidth) {
+        this.fieldWidth = fieldWidth;
+    }
+
+    public double getFieldWidth() {
+        return fieldWidth;
+    }
+
+    public void setFieldHeight(double fieldHeight) {
+        this.fieldHeight = fieldHeight;
+    }
+
+    public double getFieldHeight() {
+        return fieldHeight;
+    }
+
+    public void setFieldFrameLineColor(Color fieldFrameLineColor) {
+        this.fieldFrameLineColor = fieldFrameLineColor;
+    }
+
+    public Color getFieldFrameLineColor() {
+        return fieldFrameLineColor;
+    }
+
+    public void setFieldFrameLineWidth(double fieldFrameLineWidth) {
+        this.fieldFrameLineWidth = fieldFrameLineWidth;
+    }
+
+    public double getFieldFrameLineWidth() {
+        return fieldFrameLineWidth;
+    }
+
+    public void setNetLineColor(Color netLineColor) {
+        this.netLineColor = netLineColor;
+    }
+
+    public Color getNetLineColor() {
+        return netLineColor;
+    }
+
+    public void setNetLineWidth(double netLineWidth) {
+        this.netLineWidth = netLineWidth;
+    }
+
+    public double getNetLineWidth() {
+        return netLineWidth;
+    }
+
+    public void setWindowBackColor(Color windowBackColor) {
+        this.windowBackColor = windowBackColor;
+    }
+
+    public Color getWindowBackColor() {
+        return windowBackColor;
+    }
 }
