@@ -10,6 +10,8 @@ public class Running implements Runner_Impl {
     private MainFrame_interface mainFrame = null;
     private Plot plot = null;
 
+    private int debugN = 0;
+
     @Override
     public void init(CommPort_Interface commPort, MainFrame_interface mainFrame) {
         this.commPort = commPort;
@@ -47,6 +49,9 @@ public class Running implements Runner_Impl {
                 break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.label1_txt("MANUAL_FORWARD");
+
+                plot.allDataClear();
+                debugN = 0;
                 break;
             case TypePack.MANUAL_SHELF:
                 mainFrame.label1_txt("MANUAL_SHELF");
