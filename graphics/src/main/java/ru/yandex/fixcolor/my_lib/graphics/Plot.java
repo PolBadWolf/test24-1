@@ -162,7 +162,7 @@ public class Plot {
 
             int nItemsMass = datGraph.get(0).length;
             int dropLenght = xindxes.size();
-            double[][] mass
+            //double[][] mass
         }
     }
 
