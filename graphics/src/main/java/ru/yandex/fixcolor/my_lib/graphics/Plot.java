@@ -450,4 +450,21 @@ public class Plot {
         trends.clear();
     }
     // ----
+    public void newDataX(short dataX) {
+        newData[0] = dataX;
+    }
+
+    public void newDataTrend(int n, short data) {
+        newData[n + 1] = data;
+    }
+
+    public void newDataPush() {
+        dataGraphics.add(newData);
+        newData = new Short[trends.size() - 1];
+    }
+
+    public void allDataClear() {
+        dataGraphics.clear();
+        newData = new Short[trends.size() - 1];
+    }
 }
