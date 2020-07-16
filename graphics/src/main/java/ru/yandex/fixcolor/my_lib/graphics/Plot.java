@@ -467,4 +467,14 @@ public class Plot {
         dataGraphics.clear();
         newData = new Short[trends.size() - 1];
     }
+    // ----
+
+    @Override
+    protected void finalize() throws Throwable {
+        myPaint.finalize();
+        while (!myPaint.isAlive()) {
+            Thread.yield();
+        }
+        super.finalize();
+    }
 }
