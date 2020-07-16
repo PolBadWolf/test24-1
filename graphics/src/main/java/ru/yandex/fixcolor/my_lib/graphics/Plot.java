@@ -122,6 +122,7 @@ public class Plot {
                             Platform.runLater( ()-> _paintNet() );
                             break;
                         case RePaint:
+                            __rePaint(datQueue.datGraph);
                             break;
                         default:
                             System.out.println("o!@# Plot.java MyPaint swith\r what command: " + datQueue.command);
