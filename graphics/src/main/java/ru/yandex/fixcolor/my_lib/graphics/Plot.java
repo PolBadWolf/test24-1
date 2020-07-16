@@ -43,10 +43,12 @@ public class Plot {
 
     private double levelYbegin = 0.0;
     private double levelYlenght = 500.0;
+    private double levelYmax = 0;
 
     // масив графиков
     private ArrayList<Trend> trends = null;
 
+    private boolean busy = false;
 
     private class Trend {
         private Color lineColor = null;
@@ -147,22 +149,45 @@ public class Plot {
             }
 
             // drops & selects
-            //ArrayList<double[]>[]
-            ArrayList<DatXindx> xindxes = new ArrayList<>();
+            int nItemsMass = datGraph.get(0).length;
+            ArrayList<DatXindx> xIndxes = new ArrayList<>();
+            Short[] tmpShort = null;
             double curX, oldX = -100;
             double kX = levelXlenght / (width - fieldWidth);
+            double yLenght = (levelYmax > levelYlenght) ? levelYmax : levelYlenght;
+            double vys = height - fieldHeight;
+            double kY = yLenght / vys;
 
             for (int i = indexBegin; i < indexEnd; i++) {
-                if (datGraph.get(i)[0] >= (levelXbegin + levelXlenght)) break;
-                curX = ((datGraph.get(i + indexBegin)[0].doubleValue() - levelXbegin) / kX) + fieldWidth;
+                tmpShort = datGraph.get(i);
+                if (tmpShort[0] >= (levelXbegin + levelXlenght)) break;
+                curX = ((tmpShort[0].doubleValue() - levelXbegin) / kX) + fieldWidth;
                 if ((curX - oldX) < 2)  continue;
                 oldX = curX;
-                xindxes.add(new DatXindx(curX, i + indexBegin));
+                xIndxes.add(new DatXindx(curX, i));
             }
 
-            int nItemsMass = datGraph.get(0).length;
-            int dropLenght = xindxes.size();
-            //double[][] mass
+            int dropLenght = xIndxes.size();
+            double[][] massGraphcs = new double[nItemsMass][dropLenght];
+            for (int i = 0; i < dropLenght; i++) {
+                // x
+                massGraphcs[0][i] = xIndxes.get(i).x;
+
+                tmpShort = datGraph.get(xIndxes.get(i).indx);
+                for (int j = 0; j < nItemsMass; j++) {
+                    massGraphcs[j][i] = vys - ((tmpShort[j].doubleValue() - levelYbegin) / kY);
+                }
+            }
+
+            Platform.runLater(()->{
+                _clearFields();
+                _clearWindow();
+                _paintNet();
+                for (int i = 1; i < nItemsMass; i++) {
+                    trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i]);
+                }
+            });
+            busy = false;
         }
     }
 
