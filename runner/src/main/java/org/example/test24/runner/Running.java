@@ -33,7 +33,43 @@ public class Running implements Runner_Impl {
 
     @Override
     public void reciveRsPush(byte[] bytes, int lenght) {
+        int b = bytes[0];
 
+        switch (b) {
+            case TypePack.MANUAL_ALARM:
+                mainFrame.label1_txt("MANUAL_ALARM");
+                break;
+            case TypePack.MANUAL_BACK:
+                mainFrame.label1_txt("MANUAL_BACK");
+                break;
+            case TypePack.MANUAL_STOP:
+                mainFrame.label1_txt("MANUAL_STOP");
+                break;
+            case TypePack.MANUAL_FORWARD:
+                mainFrame.label1_txt("MANUAL_FORWARD");
+                break;
+            case TypePack.MANUAL_SHELF:
+                mainFrame.label1_txt("MANUAL_SHELF");
+                break;
+            case TypePack.CYCLE_ALARM:
+                mainFrame.label1_txt("CYCLE_ALARM");
+                break;
+            case TypePack.CYCLE_BACK:
+                mainFrame.label1_txt("CYCLE_BACK");
+                break;
+            case TypePack.CYCLE_DELAY:
+                mainFrame.label1_txt("CYCLE_DELAY");
+                break;
+            case TypePack.CYCLE_FORWARD:
+                mainFrame.label1_txt("CYCLE_FORWARD");
+                break;
+            case TypePack.CYCLE_SHELF:
+                mainFrame.label1_txt("CYCLE_SHELF");
+                break;
+            case TypePack.CURENT_DATA:
+                break;
+            default:
+        }
     }
 
     @Override
