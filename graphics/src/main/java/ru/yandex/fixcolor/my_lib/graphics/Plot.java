@@ -372,4 +372,54 @@ public class Plot {
     public Color getWindowBackColor() {
         return windowBackColor;
     }
+
+    public void setZoomXbegin(double levelXbegin) {
+        this.levelXbegin = levelXbegin;
+    }
+
+    public void setZoomXlenght(double levelXlenght) {
+        this.levelXlenght = levelXlenght;
+    }
+
+    public void setZoomX(double levelXbegin, double levelXlenght) {
+        this.levelXbegin = levelXbegin;
+        this.levelXlenght = levelXlenght;
+    }
+
+    public double getZoomXbegin() {
+        return levelXbegin;
+    }
+
+    public double getZoomXlenght() {
+        return levelXlenght;
+    }
+
+    public void setZoomYbegin(double levelYbegin) {
+        this.levelYbegin = levelYbegin;
+    }
+
+    public void setZoomYlenght(double levelYlenght) {
+        this.levelYlenght = levelYlenght;
+    }
+
+    public void setZoomYmax(double levelYmax) {
+        this.levelYmax = levelYmax;
+    }
+
+    public void setZoomY(double levelYbegin, double levelYlenght) {
+        this.levelYbegin = levelYbegin;
+        this.levelYlenght = levelYlenght;
+    }
+
+    public double getZoomYbegin() {
+        return levelYbegin;
+    }
+
+    public double getZoomYlenght() {
+        return levelYlenght;
+    }
+
+    public double getZoomYmax() {
+        return levelYmax;
+    }
 }
