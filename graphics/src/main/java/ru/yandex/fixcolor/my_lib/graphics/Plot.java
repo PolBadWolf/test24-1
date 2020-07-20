@@ -43,8 +43,9 @@ public class Plot {
     private double levelXlenght = 1000.0;
 
     private double levelYbegin = 0.0;
-    private double levelYlenght = 500.0;
+    private double levelYlenght = 300.0;
     private double levelYmax = 0;
+    private double levelYmaxInt = 0;
 
     // масив графиков
     private ArrayList<Trend> trends = null;
@@ -189,7 +190,13 @@ public class Plot {
             Short[] tmpShort = null;
             double curX, oldX = -100;
             double kX = levelXlenght / (width - fieldWidth);
-            double yLenght = (levelYmax > levelYlenght) ? levelYmax : levelYlenght;
+            double yLenght = 0;
+            if (levelYmax > 0) {
+                yLenght = (levelYmaxInt > levelYlenght) ? levelYmaxInt : levelYlenght;
+            }
+            else {
+                yLenght = levelYlenght;
+            }
             double vys = height - fieldHeight;
             double kY = yLenght / vys;
 
@@ -202,15 +209,19 @@ public class Plot {
                 xIndxes.add(new DatXindx(curX, i));
             }
 
+            levelYmaxInt = 0;
             int dropLenght = xIndxes.size();
             double[][] massGraphcs = new double[nItemsMass][dropLenght];
             for (int i = 0; i < dropLenght; i++) {
                 // x
                 massGraphcs[0][i] = xIndxes.get(i).x;
 
+                double y = 0;
                 tmpShort = datGraph.get(xIndxes.get(i).indx);
                 for (int j = 1; j < nItemsMass; j++) {
-                    massGraphcs[j][i] = vys - ((tmpShort[j].doubleValue() - levelYbegin) / kY);
+                    y = tmpShort[j].doubleValue() - levelYbegin;
+                    massGraphcs[j][i] = vys - y / kY;
+                    if (levelYmaxInt < y)   levelYmaxInt = y;
                 }
             }
 
