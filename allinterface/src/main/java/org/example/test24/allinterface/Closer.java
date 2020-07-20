@@ -29,5 +29,6 @@ public class Closer {
         commPort.Close();
         runner.Close();
         mainFx.exitApp();
+        System.exit(0);
     }
 }
