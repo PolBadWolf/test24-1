@@ -452,7 +452,7 @@ public class Plot {
     // ----
     public void addTrend(Color lineColor, double lineWidth) {
         trends.add(new Trend(lineColor, lineWidth));
-        newData = new Short[trends.size() - 1];
+        newData = new Short[trends.size() + 1];
     }
 
     public void removeAllTrends() {
@@ -469,12 +469,12 @@ public class Plot {
 
     public void newDataPush() {
         dataGraphics.add(newData);
-        newData = new Short[trends.size() - 1];
+        newData = new Short[trends.size() + 1];
     }
 
     public void allDataClear() {
         dataGraphics.clear();
-        newData = new Short[trends.size() - 1];
+        newData = new Short[trends.size() + 1];
     }
     // ----
 
