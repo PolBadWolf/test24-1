@@ -32,6 +32,8 @@ public class Running implements Runner_Impl {
         plot.setNetLineWidth(1.0);
 
         plot.clearScreen();
+
+        plot.setZoomYmax(1024);
     }
 
     @Override
