@@ -115,6 +115,7 @@ public class Plot {
             while (onWork) {
                 try {
                     datQueue = paintQueue.poll(1, TimeUnit.MILLISECONDS);
+                    if (datQueue == null)   continue;
                     switch (datQueue.command) {
                         case ClearFields:
                             Platform.runLater( ()-> __clearFields() );
@@ -137,6 +138,8 @@ public class Plot {
                 } catch (InterruptedException e) {
                     System.out.println("o!@# Plot.java MyPaint run() poll()\r" + e.toString());
                     break;
+                } catch (java.lang.Throwable th) {
+                    th.printStackTrace();
                 }
             }
         }
@@ -275,17 +278,17 @@ public class Plot {
             gc.setStroke(netLineColor);
             gc.setLineWidth(netLineWidth);
             // x
-            for (int i = 1; i < xN - 1; i++) {
-                x = (i * xSize / (xN -1)) + fieldWidth;
-                gc.moveTo(x, fieldHeight + polLineWidth);
-                gc.lineTo(x, fieldHeight - polLineWidth + ySize);
-            }
-            // y
             double kp = ySize / levelYlenght;
             for (int i = 0; i < yN; i++) {
-                y = height - (kp * i * kNet);
+                y = ySize - (kp * i * kNet);
                 gc.moveTo(fieldWidth + polLineWidth, y);
                 gc.lineTo(width - polLineWidth, y);
+            }
+            // y
+            for (int i = 1; i < xN - 1; i++) {
+                x = (i * xSize / (xN -1)) + fieldWidth;
+                gc.moveTo(x,  polLineWidth);
+                gc.lineTo(x, ySize - polLineWidth);
             }
 
             gc.stroke();
