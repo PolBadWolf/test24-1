@@ -11,6 +11,7 @@ public class Running implements Runner_Impl {
     private Plot plot = null;
 
     private int debugN = 0;
+    private short indexX = 0;
 
     @Override
     public void init(CommPort_Interface commPort, MainFrame_interface mainFrame) {
@@ -51,6 +52,7 @@ public class Running implements Runner_Impl {
                 mainFrame.label1_txt("MANUAL_FORWARD");
 
                 plot.allDataClear();
+                indexX = 0;
                 debugN = 0;
                 break;
             case TypePack.MANUAL_SHELF:
@@ -72,8 +74,34 @@ public class Running implements Runner_Impl {
                 mainFrame.label1_txt("CYCLE_SHELF");
                 break;
             case TypePack.CURENT_DATA:
+                paintTrends(bytes);
                 break;
             default:
+        }
+    }
+
+    private void paintTrends(byte[] bytes) {
+        int tik = ((bytes[1] & 0x000000ff) <<  0 )
+                + ((bytes[2] & 0x000000ff) <<  8 )
+                + ((bytes[3] & 0x000000ff) << 16 )
+                + ((bytes[4] & 0x000000ff) << 24 );
+        int n = bytes[5] & 0x000000ff;
+        short dist, ves;
+        for (int i = 0; i < n; i++) {
+            dist = (short) ((bytes[6 + (i * 4) + 0] & 0xff) + ((bytes[6 + (i * 4) + 1] & 0xff) << 8));
+            ves  = (short) ((bytes[6 + (i * 4) + 2] & 0xff) + ((bytes[6 + (i * 4) + 3] & 0xff) << 8));
+
+            plot.newDataX(indexX);
+            plot.newDataTrend(0, dist);
+            plot.newDataTrend(1, ves);
+            plot.newDataPush();
+            plot.rePaint();
+
+            indexX++;
+            if (indexX >= plot.getZoomXlenght()) {
+                plot.allDataClear();
+                indexX = 0;
+            }
         }
     }
 
