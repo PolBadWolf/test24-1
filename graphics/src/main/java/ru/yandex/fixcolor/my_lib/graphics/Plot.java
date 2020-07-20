@@ -286,18 +286,20 @@ public class Plot {
             double y_level = levelYlenghtMax;
             int yN = 11; //
             if (y_level <= 100) kNet = 10;
-            else if (y_level <= 200) kNet = 20;
-            else if (y_level <= 400) kNet = 40;
-            else if (y_level <= 600) kNet = 60;
-            else if (y_level <= 700) kNet = 70;
-            else if (y_level <= 800) kNet = 80;
-            else if (y_level <= 900) kNet = 90;
-            else if (y_level <= 1000) kNet = 100;
-            else if (y_level <= 1100) kNet = 110;
-            else if (y_level <= 1200) kNet = 120;
-            else if (y_level <= 1300) kNet = 130;
-            else if (y_level <= 1400) kNet = 140;
-            else if (y_level <= 1500) kNet = 150;
+            else if (y_level <= 200) kNet = 15;
+            else if (y_level <= 300) kNet = 20;
+            else if (y_level <= 400) kNet = 30;
+            else if (y_level <= 500) kNet = 40;
+            else if (y_level <= 600) kNet = 50;
+            else if (y_level <= 700) kNet = 60;
+            else if (y_level <= 800) kNet = 70;
+            else if (y_level <= 900) kNet = 80;
+            else if (y_level <= 1000) kNet = 90;
+            else if (y_level <= 1100) kNet = 100;
+            else if (y_level <= 1200) kNet = 110;
+            else if (y_level <= 1300) kNet = 120;
+            else if (y_level <= 1400) kNet = 130;
+            else if (y_level <= 1500) kNet = 140;
             else kNet = 300;
 
             yN = (int) (y_level / kNet + 1);
@@ -326,7 +328,9 @@ public class Plot {
             for (int i = 0; i < yN; i++) {
                 iK = (int) ((i + yNk) * kNet);
                 y = kp * (iK - levelYmin);
-                if (y < 0)  continue;
+                if (y < 0)  {
+                    continue;
+                }
                 if (y > ySize)  {
                     break;
                 }
