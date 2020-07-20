@@ -33,7 +33,8 @@ public class Running implements Runner_Impl {
 
         plot.clearScreen();
 
-        plot.setZoomYmax(1024);
+        plot.setZoomYbegin(138);
+        plot.setZoomYauto(true);
     }
 
     @Override
