@@ -44,8 +44,9 @@ public class Plot {
 
     private double levelYbegin = 0.0;
     private double levelYlenght = 300.0;
-    private double levelYmax = 0;
-    private double levelYmaxInt = 0;
+    private boolean levelYauto = false;
+    private double levelYmin;
+    private double levelYlenghtMax;
 
     // масив графиков
     private ArrayList<Trend> trends = null;
@@ -190,15 +191,12 @@ public class Plot {
             Short[] tmpShort = null;
             double curX, oldX = -100;
             double kX = levelXlenght / (width - fieldWidth);
-            double yLenght = 0;
-            if (levelYmax > 0) {
-                yLenght = (levelYmaxInt > levelYlenght) ? levelYmaxInt : levelYlenght;
-            }
-            else {
-                yLenght = levelYlenght;
-            }
+
+            //double yLenght;
+            //yLenght = levelYlenght;
+
             double vys = height - fieldHeight;
-            double kY = yLenght / vys;
+            double kY = levelYlenghtMax / vys;
 
             for (int i = indexBegin; i < indexEnd; i++) {
                 tmpShort = datGraph.get(i);
@@ -209,21 +207,33 @@ public class Plot {
                 xIndxes.add(new DatXindx(curX, i));
             }
 
-            levelYmaxInt = 0;
+            double y = 0;
+            double yMin = levelYbegin, yMax = 0;
+
             int dropLenght = xIndxes.size();
             double[][] massGraphcs = new double[nItemsMass][dropLenght];
             for (int i = 0; i < dropLenght; i++) {
                 // x
                 massGraphcs[0][i] = xIndxes.get(i).x;
 
-                double y = 0;
                 tmpShort = datGraph.get(xIndxes.get(i).indx);
                 for (int j = 1; j < nItemsMass; j++) {
-                    y = tmpShort[j].doubleValue() - levelYbegin;
+                    y = tmpShort[j].doubleValue() - levelYmin;
+                    if (y < 0)  y = 0;
                     massGraphcs[j][i] = vys - y / kY;
-                    if (levelYmaxInt < y)   levelYmaxInt = y;
+                    if (!levelYauto)    continue;
+                    if (yMin > tmpShort[j].doubleValue())   yMin = tmpShort[j].doubleValue();
+                    if (yMax < tmpShort[j].doubleValue())   yMax = tmpShort[j].doubleValue();
                 }
             }
+
+            levelYmin = levelYbegin;
+            levelYlenghtMax = levelYlenght;
+            if (levelYauto) {
+                if (levelYmin > yMin)   levelYmin = yMin;
+                if ((levelYlenghtMax + levelYmin) < yMax)   levelYlenghtMax = yMax - levelYmin;
+            }
+            if (levelYlenghtMax < 100)  levelYlenghtMax = 100;
 
             Platform.runLater(()->{
                 __clearFields();
@@ -273,35 +283,57 @@ public class Plot {
 
         private void __paintNet() {
             double kNet;
-            if (levelYlenght <= 100) kNet = 10;
-            else if (levelYlenght <= 250) kNet = 25;
-            else if (levelYlenght <= 500) kNet = 50;
-            else if (levelYlenght <= 750) kNet = 75;
-            else if (levelYlenght <= 1000) kNet = 100;
-            else if (levelYlenght <= 1500) kNet = 150;
-            else kNet = 200;
+            double y_level = levelYlenghtMax;
+            int yN = 11; //
+            if (y_level <= 100) kNet = 10;
+            else if (y_level <= 200) kNet = 20;
+            else if (y_level <= 400) kNet = 40;
+            else if (y_level <= 600) kNet = 60;
+            else if (y_level <= 700) kNet = 70;
+            else if (y_level <= 800) kNet = 80;
+            else if (y_level <= 900) kNet = 90;
+            else if (y_level <= 1000) kNet = 100;
+            else if (y_level <= 1100) kNet = 110;
+            else if (y_level <= 1200) kNet = 120;
+            else if (y_level <= 1300) kNet = 130;
+            else if (y_level <= 1400) kNet = 140;
+            else if (y_level <= 1500) kNet = 150;
+            else kNet = 300;
+
+            yN = (int) (y_level / kNet + 1);
+            int yNk = (int) (levelYmin / kNet);
+            if ((levelYmin % kNet) > 0) yNk++;
+
 
             double xSize = width - fieldWidth;
             double ySize = height - fieldHeight;
             int xN = 12 + 1;
-            int yN = (int)(levelYlenght / kNet) + 0;
+            //int yN = (int)(y_level / kNet) + 1;
             double x, y, polLineWidth = netLineWidth / 2;
 
             gc.beginPath();
             gc.setStroke(netLineColor);
             gc.setLineWidth(netLineWidth);
             // x
-            double kp = ySize / levelYlenght;
-            for (int i = 0; i < yN; i++) {
-                y = ySize - (kp * i * kNet);
-                gc.moveTo(fieldWidth + polLineWidth, y);
-                gc.lineTo(width - polLineWidth, y);
-            }
-            // y
-            for (int i = 1; i < xN - 1; i++) {
+            /*for (int i = 1; i < xN - 1; i++) {
                 x = (i * xSize / (xN -1)) + fieldWidth;
                 gc.moveTo(x,  polLineWidth);
                 gc.lineTo(x, ySize - polLineWidth);
+            }*/
+            // y
+            double kp = ySize / y_level;
+            int iK;
+            for (int i = 0; i < yN; i++) {
+                iK = (int) ((i + yNk) * kNet);
+                y = kp * (iK - levelYmin);
+                if (y < 0)  continue;
+                if (y > ySize)  {
+                    break;
+                }
+                y = ySize - y;
+                gc.moveTo(fieldWidth + polLineWidth, y);
+                gc.lineTo(width - polLineWidth, y);
+                gc.fillText(String.valueOf(iK), 0, y);
             }
 
             gc.closePath();
@@ -418,8 +450,8 @@ public class Plot {
         this.levelYlenght = levelYlenght;
     }
 
-    public void setZoomYmax(double levelYmax) {
-        this.levelYmax = levelYmax;
+    public void setZoomYauto(boolean levelYauto) {
+        this.levelYauto = levelYauto;
     }
 
     public void setZoomY(double levelYbegin, double levelYlenght) {
@@ -435,8 +467,8 @@ public class Plot {
         return levelYlenght;
     }
 
-    public double getZoomYmax() {
-        return levelYmax;
+    public boolean getZoomYauto() {
+        return levelYauto;
     }
     // ---
     public void clearFields() {
