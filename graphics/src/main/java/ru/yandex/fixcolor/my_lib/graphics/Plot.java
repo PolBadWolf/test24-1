@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 public class Plot {
     private Canvas canvas = null;
     private GraphicsContext gc = null;
+    private Object lockData = new Object();
+
     // размер холста
     private double width = 0;
     private double height = 0;
@@ -207,7 +209,7 @@ public class Plot {
                 massGraphcs[0][i] = xIndxes.get(i).x;
 
                 tmpShort = datGraph.get(xIndxes.get(i).indx);
-                for (int j = 0; j < nItemsMass; j++) {
+                for (int j = 1; j < nItemsMass; j++) {
                     massGraphcs[j][i] = vys - ((tmpShort[j].doubleValue() - levelYbegin) / kY);
                 }
             }
@@ -246,16 +248,16 @@ public class Plot {
             gc.setLineWidth(fieldFrameLineWidth);
             gc.strokePolyline(x, y, x.length);
 
-            gc.stroke();
             gc.closePath();
+            gc.stroke();
         }
 
         private void __clearWindow() {
             gc.beginPath();
             gc.setFill(windowBackColor);
             gc.fillRect(fieldWidth, 0, width, height - fieldHeight);
-            gc.stroke();
             gc.closePath();
+            gc.stroke();
         }
 
         private void __paintNet() {
@@ -291,8 +293,8 @@ public class Plot {
                 gc.lineTo(x, ySize - polLineWidth);
             }
 
-            gc.stroke();
             gc.closePath();
+            gc.stroke();
         }
 
     }
@@ -473,6 +475,9 @@ public class Plot {
     }
 
     public void allDataClear() {
+        while (busy) {
+            Thread.yield();
+        }
         dataGraphics.clear();
         newData = new Short[trends.size() + 1];
     }
