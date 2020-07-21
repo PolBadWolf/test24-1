@@ -211,7 +211,6 @@ public class Plot {
             double yMin = levelYbegin, yMax = 0;
 
             int dropLenght = xIndxes.size();
-            //double[][] massGraphcs = new double[nItemsMass][dropLenght];
             double[][] massGraphcs = cirkMassive.next();
             for (int i = 0; i < dropLenght; i++) {
                 // x
@@ -324,7 +323,12 @@ public class Plot {
             gc.setFill(Color.YELLOW);
             gc.setTextAlign(TextAlignment.CENTER);
             // x
-            double xK = (levelXlenght * 5) / (xN - 1);
+            //double xK = levelXlenght * 5_000 / width;
+            final double x_5second = 5_000;
+            double xExtendLenght = 1500 * x_5second / width;
+            //double
+
+            //double
             for (int i = 1; i < xN - 1; i++) {
 
                 x = (i * xSize / (xN -1)) + fieldWidth;
@@ -348,7 +352,7 @@ public class Plot {
                 y = ySize - y;
                 gc.moveTo(fieldWidth + polLineWidth, y);
                 gc.lineTo(width - polLineWidth, y);
-                gc.fillText(String.valueOf(iK), fieldWidth - 10, y);
+                gc.fillText(String.valueOf(iK), fieldWidth - 10, y + 5);
             }
 
             gc.closePath();
