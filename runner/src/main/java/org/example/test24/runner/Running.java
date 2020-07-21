@@ -12,6 +12,7 @@ public class Running implements Runner_Impl {
 
     private int debugN = 0;
     private short indexX = 0;
+    private int tik, tik0;
 
     @Override
     public void init(CommPort_Interface commPort, MainFrame_interface mainFrame) {
@@ -40,6 +41,10 @@ public class Running implements Runner_Impl {
     @Override
     public void reciveRsPush(byte[] bytes, int lenght) {
         int b = bytes[0];
+        tik = ((bytes[1] & 0x000000ff) <<  0 )
+                + ((bytes[2] & 0x000000ff) <<  8 )
+                + ((bytes[3] & 0x000000ff) << 16 )
+                + ((bytes[4] & 0x000000ff) << 24 );
 
         switch (b) {
             case TypePack.MANUAL_ALARM:
@@ -57,6 +62,7 @@ public class Running implements Runner_Impl {
                 plot.allDataClear();
                 indexX = 0;
                 debugN = 0;
+                tik0 = tik;
                 break;
             case TypePack.MANUAL_SHELF:
                 mainFrame.label1_txt("MANUAL_SHELF");
@@ -84,27 +90,23 @@ public class Running implements Runner_Impl {
     }
 
     private void paintTrends(byte[] bytes) {
-        int tik = ((bytes[1] & 0x000000ff) <<  0 )
-                + ((bytes[2] & 0x000000ff) <<  8 )
-                + ((bytes[3] & 0x000000ff) << 16 )
-                + ((bytes[4] & 0x000000ff) << 24 );
-        int n = bytes[5] & 0x000000ff;
-        short dist, ves;
-        for (int i = 0; i < n; i++) {
-            dist = (short) ((bytes[6 + (i * 4) + 0] & 0xff) + ((bytes[6 + (i * 4) + 1] & 0xff) << 8));
-            ves  = (short) ((bytes[6 + (i * 4) + 2] & 0xff) + ((bytes[6 + (i * 4) + 3] & 0xff) << 8));
+        short dist, ves, x;
+        dist = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
+        ves  = (short) ((bytes[5 + 2] & 0xff) + ((bytes[5 + 3] & 0xff) << 8));
 
-            plot.newDataX(indexX);
-            plot.newDataTrend(0, dist);
-            plot.newDataTrend(1, ves);
-            plot.newDataPush();
-            plot.rePaint();
+        //plot.newDataX(indexX);
+        x = (short)((tik - tik0) / 5);
+        plot.newDataX(x);
+        plot.newDataTrend(0, dist);
+        plot.newDataTrend(1, ves);
+        plot.newDataPush();
+        plot.rePaint();
 
-            indexX++;
-            if (indexX >= plot.getZoomXlenght()) {
-                plot.allDataClear();
-                indexX = 0;
-            }
+        indexX++;
+        if (x >= plot.getZoomXlenght()) {
+            plot.allDataClear();
+            indexX = 0;
+            tik0 = tik;
         }
     }
 
