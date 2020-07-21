@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
+
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -53,6 +55,7 @@ public class Plot {
     private ArrayList<Short[]> dataGraphics = null;
     private MyPaint myPaint = null;
     private Short[] newData = null;
+    private CirkMassive cirkMassive = null;
 
     private boolean busy = false;
 
@@ -65,11 +68,11 @@ public class Plot {
             this.lineWidth = lineWidth;
         }
 
-        public void rePaint(double[] x, double[] y) {
+        public void rePaint(double[] x, double[] y, int lenght) {
             gc.beginPath();
             gc.setStroke(lineColor);
             gc.setLineWidth(lineWidth);
-            gc.strokePolyline(x, y, x.length);
+            gc.strokePolyline(x, y, lenght);
             gc.stroke();
             gc.closePath();
         }
@@ -199,8 +202,8 @@ public class Plot {
                 tmpShort = datGraph.get(i);
                 if (tmpShort[0] >= (levelXbegin + levelXlenght)) break;
                 curX = ((tmpShort[0].doubleValue() - levelXbegin) / kX) + fieldWidth;
-                if ((curX - oldX) < 2)  continue;
-                oldX = curX;
+                if ((curX - oldX) < 0.8)  continue;
+                oldX = Math.round(curX);
                 xIndxes.add(new DatXindx(curX, i));
             }
 
@@ -208,7 +211,8 @@ public class Plot {
             double yMin = levelYbegin, yMax = 0;
 
             int dropLenght = xIndxes.size();
-            double[][] massGraphcs = new double[nItemsMass][dropLenght];
+            //double[][] massGraphcs = new double[nItemsMass][dropLenght];
+            double[][] massGraphcs = cirkMassive.next();
             for (int i = 0; i < dropLenght; i++) {
                 // x
                 massGraphcs[0][i] = xIndxes.get(i).x;
@@ -237,7 +241,7 @@ public class Plot {
                 __clearWindow();
                 __paintNet();
                 for (int i = 1; i < nItemsMass; i++) {
-                    trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i]);
+                    trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i], dropLenght);
                 }
             });
             busy = false;
@@ -317,13 +321,19 @@ public class Plot {
             gc.beginPath();
             gc.setStroke(netLineColor);
             gc.setLineWidth(netLineWidth);
+            gc.setFill(Color.YELLOW);
+            gc.setTextAlign(TextAlignment.CENTER);
             // x
+            double xK = (levelXlenght * 5) / (xN - 1);
             for (int i = 1; i < xN - 1; i++) {
+
                 x = (i * xSize / (xN -1)) + fieldWidth;
                 gc.moveTo(x,  polLineWidth);
                 gc.lineTo(x, ySize - polLineWidth);
+                gc.fillText(String.valueOf((double) (i * 5 * (xN - 1)) / 100), x, ySize + 20 );
             }
             // y
+            gc.setTextAlign(TextAlignment.RIGHT);
             double kp = ySize / y_level;
             int iK;
             for (int i = 0; i < yN; i++) {
@@ -338,7 +348,7 @@ public class Plot {
                 y = ySize - y;
                 gc.moveTo(fieldWidth + polLineWidth, y);
                 gc.lineTo(width - polLineWidth, y);
-                gc.fillText(String.valueOf(iK), 0, y);
+                gc.fillText(String.valueOf(iK), fieldWidth - 10, y);
             }
 
             gc.closePath();
@@ -357,6 +367,7 @@ public class Plot {
         trends = new ArrayList<>();
         dataGraphics = new ArrayList<>();
         newData = new Short[0];
+        cirkMassive = new CirkMassive();
 
         myPaint = new MyPaint();
         myPaint.start();
@@ -503,6 +514,7 @@ public class Plot {
     public void addTrend(Color lineColor, double lineWidth) {
         trends.add(new Trend(lineColor, lineWidth));
         newData = new Short[trends.size() + 1];
+        cirkMassive.init(trends.size() + 1, (int) (width * 1.5));
     }
 
     public void removeAllTrends() {
@@ -538,5 +550,26 @@ public class Plot {
             Thread.yield();
         }
         super.finalize();
+    }
+
+    private class CirkMassive {
+        private double[][][] massInt;
+        private int indx;
+
+        public CirkMassive() {
+            massInt = new double[2][][];
+            indx = 0;
+        }
+
+        public void init(int ch, int n) {
+            massInt[0] = new double[ch][n];
+            massInt[1] = new double[ch][n];
+        }
+
+        public double[][] next() {
+            indx++;
+            if (indx > 1)   indx = 0;
+            return massInt[indx];
+        }
     }
 }
