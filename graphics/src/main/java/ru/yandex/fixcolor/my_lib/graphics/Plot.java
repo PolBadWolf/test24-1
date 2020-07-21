@@ -192,9 +192,6 @@ public class Plot {
             double curX, oldX = -100;
             double kX = levelXlenght / (width - fieldWidth);
 
-            //double yLenght;
-            //yLenght = levelYlenght;
-
             double vys = height - fieldHeight;
             double kY = levelYlenghtMax / vys;
 
@@ -283,6 +280,10 @@ public class Plot {
 
         private void __paintNet() {
             double kNet;
+            if (levelYlenghtMax == 0) {
+                levelYmin = levelYbegin;
+                levelYlenghtMax = levelYlenght;
+            }
             double y_level = levelYlenghtMax;
             int yN = 11; //
             if (y_level <= 100) kNet = 10;
@@ -309,7 +310,7 @@ public class Plot {
 
             double xSize = width - fieldWidth;
             double ySize = height - fieldHeight;
-            int xN = 12 + 1;
+            int xN = 10 + 1;
             //int yN = (int)(y_level / kNet) + 1;
             double x, y, polLineWidth = netLineWidth / 2;
 
@@ -317,11 +318,11 @@ public class Plot {
             gc.setStroke(netLineColor);
             gc.setLineWidth(netLineWidth);
             // x
-            /*for (int i = 1; i < xN - 1; i++) {
+            for (int i = 1; i < xN - 1; i++) {
                 x = (i * xSize / (xN -1)) + fieldWidth;
                 gc.moveTo(x,  polLineWidth);
                 gc.lineTo(x, ySize - polLineWidth);
-            }*/
+            }
             // y
             double kp = ySize / y_level;
             int iK;
