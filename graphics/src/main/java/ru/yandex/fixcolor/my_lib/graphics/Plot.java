@@ -43,8 +43,9 @@ public class Plot {
 
     private double levelXbegin = 0.0;
     private double levelXlenght = 1000.0;
-    private boolean levelXauto = false; //*
-    private double levelXlenghtMax = 0; //*
+    private boolean levelXauto = false;
+    private double levelXlenghtMax = 0;
+    private int     xStep;
 
     private double levelYbegin = 0.0;
     private double levelYlenght = 300.0;
@@ -190,21 +191,28 @@ public class Plot {
                 }
             }
 
+            // zoom X
+            levelXlenghtMax = levelXlenght;
+            if (levelXauto) {
+                if (levelXlenghtMax < datGraph.get(indexEnd -1)[0]) {
+                    levelXlenghtMax = datGraph.get(indexEnd -1)[0];
+                }
+            }
             // drops & selects
             int nItemsMass = datGraph.get(0).length;
             ArrayList<DatXindx> xIndxes = new ArrayList<>();
             Short[] tmpShort = null;
             double curX, oldX = -100;
-            double kX = levelXlenght / (width - fieldWidth);
+            double kX = (Math.ceil(levelXlenghtMax / xStep) * xStep) / (width - fieldWidth);
 
             double vys = height - fieldHeight;
             double kY = levelYlenghtMax / vys;
 
             for (int i = indexBegin; i < indexEnd; i++) {
                 tmpShort = datGraph.get(i);
-                if (tmpShort[0] >= (levelXbegin + levelXlenght)) break;
+                if (tmpShort[0] >= (levelXbegin + levelXlenghtMax)) break;
                 curX = ((tmpShort[0].doubleValue() - levelXbegin) / kX) + fieldWidth;
-                if ((curX - oldX) < 0.8)  continue;
+                if ((curX - oldX) < 1.8)  continue;
                 oldX = Math.round(curX);
                 xIndxes.add(new DatXindx(curX, i));
             }
@@ -321,12 +329,14 @@ public class Plot {
 
             double  xCena;
             int xN = 1;
-            {
-                if (levelXlenghtMax == 0)   levelXlenghtMax = levelXlenght;
-                int step = (int) Math.floorDiv((int)levelXlenghtMax, 1000) * 100;
-                xN = (int) Math.ceil(levelXlenghtMax / step) + 1;
-                xCena = (double) step / 200;
+            if (levelXlenghtMax == 0)   levelXlenghtMax = levelXlenght;
+            if (levelXlenghtMax < 2000) {
+                xStep = (int) Math.floorDiv((int)levelXlenghtMax, 1000) * 100;
+            } else {
+                xStep = (int) Math.floorDiv((int)levelXlenghtMax, 2000) * 200;
             }
+            xN = (int) Math.ceil(levelXlenghtMax / xStep) + 1;
+            xCena = (double) xStep / 200;
 
             double x, y, polLineWidth = netLineWidth / 2;
 
@@ -335,7 +345,7 @@ public class Plot {
             gc.setLineWidth(netLineWidth);
             gc.setFill(Color.YELLOW);
             gc.setTextAlign(TextAlignment.CENTER);
-            
+
             // x
             for (int i = 1; i < xN - 1; i++) {
                 x = (i * xSize / (xN -1)) + fieldWidth;
@@ -468,6 +478,18 @@ public class Plot {
 
     public double getZoomXlenght() {
         return levelXlenght;
+    }
+
+    public void setZoomXauto(boolean levelXauto) {
+        this.levelXauto = levelXauto;
+    }
+
+    public boolean getZoomXauto() {
+        return levelXauto;
+    }
+
+    public double getLevelXlenghtMax() {
+        return levelXlenghtMax;
     }
 
     public void setZoomYbegin(double levelYbegin) {

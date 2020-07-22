@@ -35,9 +35,9 @@ public class Running implements Runner_Impl {
         plot.clearScreen();
 
         plot.setZoomY(0, 1020);
-        plot.setZoomYauto(true);
+        plot.setZoomYauto(false);
 
-        plot.setZoomXlenght(2000);
+        plot.setZoomXauto(true);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class Running implements Runner_Impl {
         plot.rePaint();
 
         indexX++;
-        if (x >= plot.getZoomXlenght()) {
+        if (x >= (160_000) / 5 ) {
             plot.allDataClear();
             indexX = 0;
             tik0 = tik;
