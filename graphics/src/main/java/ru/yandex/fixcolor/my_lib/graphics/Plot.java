@@ -43,12 +43,14 @@ public class Plot {
 
     private double levelXbegin = 0.0;
     private double levelXlenght = 1000.0;
+    private boolean levelXauto = false; //*
+    private double levelXlenghtMax = 0; //*
 
     private double levelYbegin = 0.0;
     private double levelYlenght = 300.0;
     private boolean levelYauto = false;
     private double levelYmin;
-    private double levelYlenghtMax;
+    private double levelYlenghtMax = 0;
 
     // масив графиков
     private ArrayList<Trend> trends = null;
@@ -282,39 +284,50 @@ public class Plot {
         }
 
         private void __paintNet() {
-            double kNet;
-            if (levelYlenghtMax == 0) {
-                levelYmin = levelYbegin;
-                levelYlenghtMax = levelYlenght;
-            }
-            double y_level = levelYlenghtMax;
-            int yN = 11; //
-            if (y_level <= 100) kNet = 10;
-            else if (y_level <= 200) kNet = 15;
-            else if (y_level <= 300) kNet = 20;
-            else if (y_level <= 400) kNet = 30;
-            else if (y_level <= 500) kNet = 40;
-            else if (y_level <= 600) kNet = 50;
-            else if (y_level <= 700) kNet = 60;
-            else if (y_level <= 800) kNet = 70;
-            else if (y_level <= 900) kNet = 80;
-            else if (y_level <= 1000) kNet = 90;
-            else if (y_level <= 1100) kNet = 100;
-            else if (y_level <= 1200) kNet = 110;
-            else if (y_level <= 1300) kNet = 120;
-            else if (y_level <= 1400) kNet = 130;
-            else if (y_level <= 1500) kNet = 140;
-            else kNet = 300;
-
-            yN = (int) (y_level / kNet + 1);
-            int yNk = (int) (levelYmin / kNet);
-            if ((levelYmin % kNet) > 0) yNk++;
-
-
             double xSize = width - fieldWidth;
             double ySize = height - fieldHeight;
-            int xN = 10 + 1;
-            //int yN = (int)(y_level / kNet) + 1;
+
+            double kNet;
+            double y_level;
+            int yN = 11; //
+            int yNk = 0;
+            {
+                if (levelYlenghtMax == 0) {
+                    levelYmin = levelYbegin;
+                    levelYlenghtMax = levelYlenght;
+                }
+                y_level = levelYlenghtMax;
+                if (y_level <= 100) kNet = 10;
+                else if (y_level <= 200) kNet = 15;
+                else if (y_level <= 300) kNet = 20;
+                else if (y_level <= 400) kNet = 30;
+                else if (y_level <= 500) kNet = 40;
+                else if (y_level <= 600) kNet = 50;
+                else if (y_level <= 700) kNet = 60;
+                else if (y_level <= 800) kNet = 70;
+                else if (y_level <= 900) kNet = 80;
+                else if (y_level <= 1000) kNet = 90;
+                else if (y_level <= 1100) kNet = 100;
+                else if (y_level <= 1200) kNet = 110;
+                else if (y_level <= 1300) kNet = 120;
+                else if (y_level <= 1400) kNet = 130;
+                else if (y_level <= 1500) kNet = 140;
+                else kNet = 300;
+
+                yN = (int) (y_level / kNet + 1);
+                yNk = (int) (levelYmin / kNet);
+                if ((levelYmin % kNet) > 0) yNk++;
+            }
+
+            double  xCena;
+            int xN = 1;
+            {
+                if (levelXlenghtMax == 0)   levelXlenghtMax = levelXlenght;
+                int step = (int) Math.floorDiv((int)levelXlenghtMax, 1000) * 100;
+                xN = (int) Math.ceil(levelXlenghtMax / step) + 1;
+                xCena = (double) step / 200;
+            }
+
             double x, y, polLineWidth = netLineWidth / 2;
 
             gc.beginPath();
@@ -322,20 +335,15 @@ public class Plot {
             gc.setLineWidth(netLineWidth);
             gc.setFill(Color.YELLOW);
             gc.setTextAlign(TextAlignment.CENTER);
+            
             // x
-            //double xK = levelXlenght * 5_000 / width;
-            final double x_5second = 5_000;
-            double xExtendLenght = 1500 * x_5second / width;
-            //double
-
-            //double
             for (int i = 1; i < xN - 1; i++) {
-
                 x = (i * xSize / (xN -1)) + fieldWidth;
                 gc.moveTo(x,  polLineWidth);
                 gc.lineTo(x, ySize - polLineWidth);
-                gc.fillText(String.valueOf((double) (i * 5 * (xN - 1)) / 100), x, ySize + 20 );
+                gc.fillText(String.valueOf((double) i * xCena), x, ySize + 20 );
             }
+
             // y
             gc.setTextAlign(TextAlignment.RIGHT);
             double kp = ySize / y_level;
