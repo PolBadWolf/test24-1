@@ -45,13 +45,14 @@ public class Plot {
     private double levelXlenght = 1000.0;
     private boolean levelXauto = false;
     private double levelXlenghtMax = 0;
-    private int     xStep;
+    private int    xStep;
 
     private double levelYbegin = 0.0;
     private double levelYlenght = 300.0;
     private boolean levelYauto = false;
     private double levelYmin;
     private double levelYlenghtMax = 0;
+    private int    yStep;
 
     // масив графиков
     private ArrayList<Trend> trends = null;
@@ -300,7 +301,6 @@ public class Plot {
             double xSize = width - fieldWidth;
             double ySize = height - fieldHeight;
 
-            double kNet;
             double y_level;
             int yN = 11; //
             int yNk = 0;
@@ -310,26 +310,12 @@ public class Plot {
                     levelYlenghtMax = levelYlenght;
                 }
                 y_level = levelYlenghtMax;
-                if (y_level <= 100) kNet = 10;
-                else if (y_level <= 200) kNet = 15;
-                else if (y_level <= 300) kNet = 20;
-                else if (y_level <= 400) kNet = 30;
-                else if (y_level <= 500) kNet = 40;
-                else if (y_level <= 600) kNet = 50;
-                else if (y_level <= 700) kNet = 60;
-                else if (y_level <= 800) kNet = 70;
-                else if (y_level <= 900) kNet = 80;
-                else if (y_level <= 1000) kNet = 90;
-                else if (y_level <= 1100) kNet = 100;
-                else if (y_level <= 1200) kNet = 110;
-                else if (y_level <= 1300) kNet = 120;
-                else if (y_level <= 1400) kNet = 130;
-                else if (y_level <= 1500) kNet = 140;
-                else kNet = 300;
+                yStep = Math.floorDiv((int) y_level, 100) * 10;
+                yN = (int) Math.ceil(y_level / yStep);
 
-                yN = (int) (y_level / kNet + 1);
-                yNk = (int) (levelYmin / kNet);
-                if ((levelYmin % kNet) > 0) yNk++;
+                //yN = (int) (y_level / kNet + 1);
+                yNk = (int) (levelYmin / yStep);
+                if ((levelYmin % yStep) > 0) yNk++;
             }
 
             double  xCena;
@@ -369,7 +355,7 @@ public class Plot {
             double kp = ySize / y_level;
             int iK;
             for (int i = 0; i < yN; i++) {
-                iK = (int) ((i + yNk) * kNet);
+                iK = (int) ((i + yNk) * yStep);
                 y = kp * (iK - levelYmin);
                 if (y < 0)  {
                     continue;
