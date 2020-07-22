@@ -181,14 +181,19 @@ public class Plot {
 
         private void __rePaint(ArrayList<Short[]> datGraph) {
             // нахождение диапозона
-            int indexBegin = 0;
+            int indexBegin = -1;
             int indexEnd = datGraph.size();
+            int tmpIndx = 0;
 
-            for (int i = indexBegin; i < indexEnd; i++) {
-                if (datGraph.get(i)[0] >= levelXbegin) {
+            for (int i = 0; i < indexEnd; i++) {
+                if (datGraph.get(i)[0] >= levelXbegin) {   // shift X
                     indexBegin = i;
                     break;
                 }
+            }
+            if (indexBegin < 0) {
+                busy = false;
+                return; // нет данных
             }
 
             // zoom X
@@ -347,8 +352,13 @@ public class Plot {
             gc.setTextAlign(TextAlignment.CENTER);
 
             // x
-            for (int i = 1; i < xN - 1; i++) {
-                x = (i * xSize / (xN -1)) + fieldWidth;
+            int d = (Math.floorMod((int) levelXbegin, xStep) > 0) ? 1 : 0;
+            for (int i = 1; i < xN - 1 + d; i++) {
+                x = (i * xSize / (xN -1)) + fieldWidth - levelXbegin;
+                if (x < fieldWidth)     continue;
+                if (x > width) {
+                    continue;
+                }
                 gc.moveTo(x,  polLineWidth);
                 gc.lineTo(x, ySize - polLineWidth);
                 gc.fillText(String.valueOf((double) i * xCena), x, ySize + 20 );

@@ -37,6 +37,7 @@ public class Running implements Runner_Impl {
         plot.setZoomY(0, 1020);
         plot.setZoomYauto(false);
 
+        plot.setZoomXbegin(70);
         plot.setZoomXauto(true);
     }
 
@@ -97,7 +98,8 @@ public class Running implements Runner_Impl {
         ves  = (short) ((bytes[5 + 2] & 0xff) + ((bytes[5 + 3] & 0xff) << 8));
 
         //plot.newDataX(indexX);
-        x = (short)((tik - tik0) / 5);
+        x = indexX;
+        //x = (short)((tik - tik0) / 5);
         plot.newDataX(x);
         plot.newDataTrend(0, dist);
         plot.newDataTrend(1, ves);
