@@ -45,6 +45,7 @@ public class Plot {
     private double levelXlenght = 1000.0;
     private boolean levelXauto = false;
     private double levelXlenghtMax = 0;
+    private double kX;
     private int    xStep;
 
     private double levelYbegin = 0.0;
@@ -209,7 +210,7 @@ public class Plot {
             ArrayList<DatXindx> xIndxes = new ArrayList<>();
             Short[] tmpShort = null;
             double curX, oldX = -100;
-            double kX = (Math.ceil(levelXlenghtMax / xStep) * xStep) / (width - fieldWidth);
+            //kX = (Math.ceil(levelXlenghtMax / xStep) * xStep) / (width - fieldWidth);
 
             double vys = height - fieldHeight;
             double kY = levelYlenghtMax / vys;
@@ -338,9 +339,10 @@ public class Plot {
             gc.setTextAlign(TextAlignment.CENTER);
 
             // x
-            int d = (Math.floorMod((int) levelXbegin, xStep) > 0) ? 1 : 0;
-            for (int i = 1; i < xN - 1 + d; i++) {
-                x = (i * xSize / (xN -1)) + fieldWidth - levelXbegin;
+            kX = (Math.ceil(levelXlenghtMax / xStep) * xStep) / (width - fieldWidth);
+            int xNd = (int) Math.ceil(levelXbegin / xStep);
+            for (int i = 1; i < xN - 1 + xNd ; i++) {
+                x = (i * xSize / (xN -1)) + fieldWidth - (levelXbegin / kX);
                 if (x < fieldWidth)     continue;
                 if (x > width) {
                     continue;
