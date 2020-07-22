@@ -42,9 +42,11 @@ public class Plot {
     private double netLineWidth = 1.0;
 
     private double levelXbegin = 0.0;
+    private double levelXbeginCurent = 0;
     private double levelXlenght = 1000.0;
-    private boolean levelXauto = false;
     private double levelXlenghtMax = 0;
+    private boolean levelXlenghtAuto = false;
+    private boolean levelXbeginAuto = false;
     private double kX;
     private int    xStep;
 
@@ -187,10 +189,31 @@ public class Plot {
             int indexEnd = datGraph.size();
             int tmpIndx = 0;
 
-            for (int i = 0; i < indexEnd; i++) {
-                if (datGraph.get(i)[0] >= levelXbegin) {   // shift X
-                    indexBegin = i;
-                    break;
+            // zoom X
+            levelXlenghtMax = levelXlenght;
+            if (levelXlenghtAuto) {
+                if (levelXlenghtMax < datGraph.get(indexEnd -1)[0]) {
+                    levelXlenghtMax = datGraph.get(indexEnd -1)[0];
+                }
+            }
+            levelXbeginCurent = levelXbegin;
+            double xMaxSample = datGraph.get(indexEnd - 1)[0];
+            double levelXlenghtMaxSpl = levelXlenghtMax / kX;
+            if (levelXbeginAuto) {
+                indexBegin = 0;
+                for (int i = indexEnd - 1; i >= 0 ; i--) {
+                    if ( (xMaxSample - datGraph.get(i)[0]) > levelXlenghtMaxSpl ) {
+                        indexBegin = i + 1;
+                        break;
+                    }
+                }
+            }
+            else {
+                for (int i = 0; i < indexEnd; i++) {
+                    if (datGraph.get(i)[0] >= levelXbegin) {   // shift X
+                        indexBegin = i;
+                        break;
+                    }
                 }
             }
             if (indexBegin < 0) {
@@ -198,13 +221,6 @@ public class Plot {
                 return; // нет данных
             }
 
-            // zoom X
-            levelXlenghtMax = levelXlenght;
-            if (levelXauto) {
-                if (levelXlenghtMax < datGraph.get(indexEnd -1)[0]) {
-                    levelXlenghtMax = datGraph.get(indexEnd -1)[0];
-                }
-            }
             // drops & selects
             int nItemsMass = datGraph.get(0).length;
             ArrayList<DatXindx> xIndxes = new ArrayList<>();
@@ -216,7 +232,11 @@ public class Plot {
             double kY = levelYlenghtMax / vys;
 
             for (int i = indexBegin; i < indexEnd; i++) {
-                tmpShort = datGraph.get(i);
+                try {
+                    tmpShort = datGraph.get(i);
+                } catch (java.lang.Throwable e) {
+                    e.printStackTrace();
+                }
                 if (tmpShort[0] >= (levelXbegin + levelXlenghtMax)) break;
                 curX = ((tmpShort[0].doubleValue() - levelXbegin) / kX) + fieldWidth;
                 if ((curX - oldX) < 1.8)  continue;
@@ -305,19 +325,17 @@ public class Plot {
             double y_level;
             int yN = 11; //
             int yNk = 0;
-            {
-                if (levelYlenghtMax == 0) {
-                    levelYmin = levelYbegin;
-                    levelYlenghtMax = levelYlenght;
-                }
-                y_level = levelYlenghtMax;
-                yStep = Math.floorDiv((int) y_level, 100) * 10;
-                yN = (int) Math.ceil(y_level / yStep);
-
-                //yN = (int) (y_level / kNet + 1);
-                yNk = (int) (levelYmin / yStep);
-                if ((levelYmin % yStep) > 0) yNk++;
+            if (levelYlenghtMax == 0) {
+                levelYmin = levelYbegin;
+                levelYlenghtMax = levelYlenght;
             }
+            y_level = levelYlenghtMax;
+            yStep = Math.floorDiv((int) y_level, 100) * 10;
+            yN = (int) Math.ceil(y_level / yStep);
+
+            //yN = (int) (y_level / kNet + 1);
+            yNk = (int) (levelYmin / yStep);
+            if ((levelYmin % yStep) > 0) yNk++;
 
             double  xCena;
             int xN = 1;
@@ -478,12 +496,20 @@ public class Plot {
         return levelXlenght;
     }
 
-    public void setZoomXauto(boolean levelXauto) {
-        this.levelXauto = levelXauto;
+    public void setZoomXlenghtAuto(boolean levelXauto) {
+        this.levelXlenghtAuto = levelXauto;
     }
 
-    public boolean getZoomXauto() {
-        return levelXauto;
+    public boolean getZoomXlenghtAuto() {
+        return levelXlenghtAuto;
+    }
+
+    public void setZoomXbeginAuto(boolean levelXbeginAuto) {
+        this.levelXbeginAuto = levelXbeginAuto;
+    }
+
+    public boolean getZoomXbeginAuto() {
+        return levelXbeginAuto;
     }
 
     public double getLevelXlenghtMax() {
