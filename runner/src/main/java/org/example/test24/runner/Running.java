@@ -11,7 +11,7 @@ public class Running implements Runner_Impl {
     private Plot plot = null;
 
     private int debugN = 0;
-    private short indexX = 0;
+    private int indexX = 0;
     private int tik, tik0;
 
     @Override
@@ -94,7 +94,8 @@ public class Running implements Runner_Impl {
     }
 
     private void paintTrends(byte[] bytes) {
-        short dist, ves, x;
+        short dist, ves;
+        int x;
         dist = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
         ves  = (short) ((bytes[5 + 2] & 0xff) + ((bytes[5 + 3] & 0xff) << 8));
 
@@ -108,7 +109,7 @@ public class Running implements Runner_Impl {
         plot.rePaint();
 
         indexX++;
-        if (x >= (160_000) / 5 ) {
+        if (x >= (3_600_000) / 5 ) {
             plot.allDataClear();
             indexX = 0;
             tik0 = tik;

@@ -60,9 +60,10 @@ public class Plot {
 
     // масив графиков
     private ArrayList<Trend> trends = null;
-    private ArrayList<Short[]> dataGraphics = null;
+    private ArrayList<NewDataClass> dataGraphics = null;
     private MyPaint myPaint = null;
-    private Short[] newData = null;
+    //private Short[] newData = null;
+    private NewDataClass newData = null;
     private CirkMassive cirkMassive = null;
 
     private boolean busy = false;
@@ -88,9 +89,9 @@ public class Plot {
 
     private class DatQueue {
         public int command;
-        ArrayList<Short[]> datGraph;
+        ArrayList<NewDataClass> datGraph;
 
-        public DatQueue(int command, ArrayList<Short[]> datGraph) {
+        public DatQueue(int command, ArrayList<NewDataClass> datGraph) {
             this.command = command;
             this.datGraph = datGraph;
         }
@@ -130,7 +131,10 @@ public class Plot {
             while (onWork) {
                 try {
                     datQueue = paintQueue.poll(1, TimeUnit.MILLISECONDS);
-                    if (datQueue == null)   continue;
+                    if (datQueue == null)   {
+                        Thread.sleep(1);
+                        continue;
+                    }
                     switch (datQueue.command) {
                         case ClearFields:
                             Platform.runLater( ()-> __clearFields() );
@@ -171,7 +175,7 @@ public class Plot {
             paintQueue.add(queuePaintNet);
         }
 
-        public void rePaint(ArrayList<Short[]> dat) {
+        public void rePaint(ArrayList<NewDataClass> dat) {
             paintQueue.add(new DatQueue(RePaint, dat));
         }
 
@@ -184,7 +188,7 @@ public class Plot {
             super.finalize();
         }
 
-        private void __rePaint(ArrayList<Short[]> datGraph) {
+        private void __rePaint(ArrayList<NewDataClass> datGraph) {
             // нахождение диапозона
             //int indexBegin = -1;
             int indexBeginInteger = -1;
@@ -194,19 +198,19 @@ public class Plot {
             // zoom X
             levelXlenghtMax = levelXlenght;
             if (levelXlenghtAuto) {
-                if (levelXlenghtMax < datGraph.get(indexEnd -1)[0]) {
-                    levelXlenghtMax = datGraph.get(indexEnd -1)[0];
+                if (levelXlenghtMax < datGraph.get(indexEnd -1).getxPos()) {
+                    levelXlenghtMax = datGraph.get(indexEnd -1).getxPos();
                 }
             }
-            double xMaxSample = datGraph.get(indexEnd - 1)[0];
-            double levelXlenghtMaxSpl = levelXlenghtMax;// / kX;
+            double xMaxSample = datGraph.get(indexEnd - 1).getxPos();
+            double levelXlenghtMaxSpl = levelXlenghtMax;
             if (levelXbeginAuto) {
                 indexBeginInteger = -1;
                 for (int i = indexBegin; i < indexEnd; i++) {
                     if (i < 0)  continue;
-                    if ( (xMaxSample - datGraph.get(i)[0]) < levelXlenghtMaxSpl ) {
+                    if ( (xMaxSample - datGraph.get(i).getxPos()) < levelXlenghtMaxSpl ) {
                         indexBeginInteger = i;
-                        levelXbegin = datGraph.get(i)[0];
+                        levelXbegin = datGraph.get(i).getxPos();
                         break;
                     }
                 }
@@ -219,7 +223,7 @@ public class Plot {
             else {
                 for (int i = indexBegin; i < indexEnd; i++) {
                     if (i < 0)  continue;
-                    if (datGraph.get(i)[0] >= levelXbegin) {   // shift X
+                    if (datGraph.get(i).getxPos() >= levelXbegin) {   // shift X
                         indexBeginInteger = i;
 //                        levelXbeginCurent = datGraph.get(i)[0];
                         break;
@@ -233,12 +237,11 @@ public class Plot {
             }
 
             // drops & selects
-            int nItemsMass = datGraph.get(0).length;
+            //int nItemsMass = datGraph.get(0).length;
+            int nItemsMass = datGraph.get(0).getZnTrends().length;
             ArrayList<DatXindx> xIndxes = new ArrayList<>();
-            Short[] tmpShort = null;
+            NewDataClass tmpShort = null;
             double curX, oldX = -100;
-            //kX = (Math.ceil(levelXlenghtMax / xStep) * xStep) / (width - fieldWidth);
-
             double vys = height - fieldHeight;
             double kY = levelYlenghtMax / vys;
 
@@ -248,10 +251,10 @@ public class Plot {
                 } catch (java.lang.Throwable e) {
                     e.printStackTrace();
                 }
-                if (tmpShort[0] >= (levelXbegin + levelXlenghtMax)) break;
-                curX = ((tmpShort[0].doubleValue() - levelXbegin) / kX) + fieldWidth;
-                if ((curX - oldX) < 1.8)  continue;
-                oldX = Math.round(curX);
+                if (tmpShort.getxPos() >= (levelXbegin + levelXlenghtMax)) break;
+                curX = Math.round(((tmpShort.getxPos().doubleValue() - levelXbegin) / kX) + fieldWidth);
+                if ((curX - oldX) < 2)  continue;
+                oldX = curX;
                 xIndxes.add(new DatXindx(curX, i));
             }
 
@@ -265,13 +268,14 @@ public class Plot {
                 massGraphcs[0][i] = xIndxes.get(i).x;
 
                 tmpShort = datGraph.get(xIndxes.get(i).indx);
-                for (int j = 1; j < nItemsMass; j++) {
-                    y = tmpShort[j].doubleValue() - levelYmin;
+                for (int j = 0; j < nItemsMass; j++) {
+                    Short[] trendsLocal = tmpShort.getZnTrends();
+                    y = trendsLocal[j].doubleValue() - levelYmin;
                     if (y < 0)  y = 0;
-                    massGraphcs[j][i] = vys - y / kY;
+                    massGraphcs[j + 1][i] = vys - y / kY;
                     if (!levelYauto)    continue;
-                    if (yMin > tmpShort[j].doubleValue())   yMin = tmpShort[j].doubleValue();
-                    if (yMax < tmpShort[j].doubleValue())   yMax = tmpShort[j].doubleValue();
+                    if (yMin > trendsLocal[j].doubleValue())   yMin = trendsLocal[j].doubleValue();
+                    if (yMax < trendsLocal[j].doubleValue())   yMax = trendsLocal[j].doubleValue();
                 }
             }
 
@@ -287,7 +291,7 @@ public class Plot {
                 __clearFields();
                 __clearWindow();
                 __paintNet();
-                for (int i = 1; i < nItemsMass; i++) {
+                for (int i = 1; i < nItemsMass + 1; i++) {
                     trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i], dropLenght);
                 }
             });
@@ -415,7 +419,7 @@ public class Plot {
         gc = canvas.getGraphicsContext2D();
         trends = new ArrayList<>();
         dataGraphics = new ArrayList<>();
-        newData = new Short[0];
+        newData = new NewDataClass(0);
         cirkMassive = new CirkMassive();
 
         myPaint = new MyPaint();
@@ -586,7 +590,8 @@ public class Plot {
     // ----
     public void addTrend(Color lineColor, double lineWidth) {
         trends.add(new Trend(lineColor, lineWidth));
-        newData = new Short[trends.size() + 1];
+        //newData = new Short[trends.size() + 1];
+        newData = new NewDataClass(trends.size());
         cirkMassive.init(trends.size() + 1, (int) (width * 1.5));
     }
 
@@ -594,17 +599,20 @@ public class Plot {
         trends.clear();
     }
     // ----
-    public void newDataX(short dataX) {
-        newData[0] = dataX;
+    public void newDataX(int dataX) {
+        //newData[0] = dataX;
+        newData.setxPos(dataX);
     }
 
     public void newDataTrend(int n, short data) {
-        newData[n + 1] = data;
+        //newData[n + 1] = data;
+        newData.setZnTrends(n, data);
     }
 
     public void newDataPush() {
         dataGraphics.add(newData);
-        newData = new Short[trends.size() + 1];
+        //newData = new Short[trends.size() + 1];
+        newData = new NewDataClass(trends.size());
     }
 
     public void allDataClear() {
@@ -614,7 +622,8 @@ public class Plot {
         dataGraphics.clear();
         indexBegin = 0;
         levelXbegin = levelXbeginSave;
-        newData = new Short[trends.size() + 1];
+        //newData = new Short[trends.size() + 1];
+        newData = new NewDataClass(trends.size());
     }
     // ----
 
@@ -646,5 +655,31 @@ public class Plot {
             if (indx > 1)   indx = 0;
             return massInt[indx];
         }
+    }
+
+}
+
+class NewDataClass {
+    private Integer     xPos;
+    private Short[]     znTrends;
+
+    public NewDataClass(int nTrends) {
+        znTrends = new Short[nTrends];
+    }
+
+    public void setxPos(int xPos) {
+        this.xPos = xPos;
+    }
+
+    public void setZnTrends(int n, Short zn) {
+        znTrends[n] = zn;
+    }
+
+    public Integer getxPos() {
+        return xPos;
+    }
+
+    public Short[] getZnTrends() {
+        return znTrends;
     }
 }
