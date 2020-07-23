@@ -41,14 +41,15 @@ public class Plot {
     // ширина линий сетки
     private double netLineWidth = 1.0;
 
-    private double levelXbegin = 0.0;
-    private double levelXbeginCurent = 0;
-    private double levelXlenght = 1000.0;
-    private double levelXlenghtMax = 0;
+    private int     indexBegin = 0;
+    private double  levelXbegin = 0.0;
+    private double  levelXbeginSave = levelXbegin;
+    private double  levelXlenght = 1000.0;
+    private double  levelXlenghtMax = 0;
     private boolean levelXlenghtAuto = false;
     private boolean levelXbeginAuto = false;
-    private double kX;
-    private int    xStep;
+    private double  kX;
+    private int     xStep;
 
     private double levelYbegin = 0.0;
     private double levelYlenght = 300.0;
@@ -185,7 +186,8 @@ public class Plot {
 
         private void __rePaint(ArrayList<Short[]> datGraph) {
             // нахождение диапозона
-            int indexBegin = -1;
+            //int indexBegin = -1;
+            int indexBeginInteger = -1;
             int indexEnd = datGraph.size();
             int tmpIndx = 0;
 
@@ -196,29 +198,38 @@ public class Plot {
                     levelXlenghtMax = datGraph.get(indexEnd -1)[0];
                 }
             }
-            levelXbeginCurent = levelXbegin;
             double xMaxSample = datGraph.get(indexEnd - 1)[0];
-            double levelXlenghtMaxSpl = levelXlenghtMax / kX;
+            double levelXlenghtMaxSpl = levelXlenghtMax;// / kX;
             if (levelXbeginAuto) {
-                indexBegin = 0;
-                for (int i = indexEnd - 1; i >= 0 ; i--) {
-                    if ( (xMaxSample - datGraph.get(i)[0]) > levelXlenghtMaxSpl ) {
-                        indexBegin = i + 1;
+                indexBeginInteger = -1;
+                for (int i = indexBegin; i < indexEnd; i++) {
+                    if (i < 0)  continue;
+                    if ( (xMaxSample - datGraph.get(i)[0]) < levelXlenghtMaxSpl ) {
+                        indexBeginInteger = i;
+                        levelXbegin = datGraph.get(i)[0];
                         break;
                     }
                 }
+                if (indexBeginInteger < 0) {
+                    busy = false;
+                    return;
+                }
+                indexBegin = indexBeginInteger;
             }
             else {
-                for (int i = 0; i < indexEnd; i++) {
+                for (int i = indexBegin; i < indexEnd; i++) {
+                    if (i < 0)  continue;
                     if (datGraph.get(i)[0] >= levelXbegin) {   // shift X
-                        indexBegin = i;
+                        indexBeginInteger = i;
+//                        levelXbeginCurent = datGraph.get(i)[0];
                         break;
                     }
                 }
-            }
-            if (indexBegin < 0) {
-                busy = false;
-                return; // нет данных
+                if (indexBeginInteger < 0) {
+                    busy = false;
+                    return;
+                }
+                indexBegin = indexBeginInteger;
             }
 
             // drops & selects
@@ -477,6 +488,8 @@ public class Plot {
 
     public void setZoomXbegin(double levelXbegin) {
         this.levelXbegin = levelXbegin;
+        levelXbeginSave = levelXbegin;
+        indexBegin = 0;
     }
 
     public void setZoomXlenght(double levelXlenght) {
@@ -485,7 +498,9 @@ public class Plot {
 
     public void setZoomX(double levelXbegin, double levelXlenght) {
         this.levelXbegin = levelXbegin;
+        levelXbeginSave = levelXbegin;
         this.levelXlenght = levelXlenght;
+        indexBegin = 0;
     }
 
     public double getZoomXbegin() {
@@ -597,6 +612,8 @@ public class Plot {
             Thread.yield();
         }
         dataGraphics.clear();
+        indexBegin = 0;
+        levelXbegin = levelXbeginSave;
         newData = new Short[trends.size() + 1];
     }
     // ----
