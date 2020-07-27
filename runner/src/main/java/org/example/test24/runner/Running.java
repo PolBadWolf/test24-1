@@ -100,8 +100,8 @@ public class Running implements Runner_Impl {
         ves  = (short) ((bytes[5 + 2] & 0xff) + ((bytes[5 + 3] & 0xff) << 8));
 
         //plot.newDataX(indexX);
-        x = indexX;
-        //x = (short)((tik - tik0) / 5);
+        //x = indexX;
+        x = (short)((tik - tik0) / 5);
         plot.newDataX(x);
         plot.newDataTrend(0, dist);
         plot.newDataTrend(1, ves);
