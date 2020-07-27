@@ -38,8 +38,8 @@ public class Running implements Runner_Impl {
         plot.setZoomYauto(false);
 
         plot.setZoomX(0, 1_000 / 5);
-        plot.setZoomXlenghtAuto(false);
-        plot.setZoomXbeginAuto(true);
+        plot.setZoomXlenghtAuto(true);
+        plot.setZoomXbeginAuto(false);
     }
 
     @Override
