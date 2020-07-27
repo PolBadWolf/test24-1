@@ -49,7 +49,7 @@ public class Plot {
     private boolean levelXlenghtAuto = false;
     private boolean levelXbeginAuto = false;
     private double  kX;
-    private int     xStep;
+    private int     xStep = 10;
 
     private double levelYbegin = 0.0;
     private double levelYlenght = 300.0;
@@ -355,10 +355,30 @@ public class Plot {
             double  xCena;
             int xN = 1;
             if (levelXlenghtMax == 0)   levelXlenghtMax = levelXlenght;
-            if (levelXlenghtMax < 2000) {
+            if (levelXlenghtMax < 200) {
+                xStep = (int) Math.floorDiv((int)levelXlenghtMax, 100) * 10;
+            } else
+            if (levelXlenghtMax < 400) {                                        // 1s
+                xStep = (int) Math.floorDiv((int)levelXlenghtMax, 200) * 20;
+            } else
+            if (levelXlenghtMax < 600) {                                        // 2s
+                xStep = (int) Math.floorDiv((int)levelXlenghtMax, 400) * 40;
+            } else
+            if (levelXlenghtMax < 800) {                                        // 3s
+                xStep = (int) Math.floorDiv((int)levelXlenghtMax, 600) * 60;
+            } else
+            if (levelXlenghtMax < 1000) {                                        // 4s
+                xStep = (int) Math.floorDiv((int)levelXlenghtMax, 800) * 80;
+            } else
+            if (levelXlenghtMax < 2000) {                                        // 5s
                 xStep = (int) Math.floorDiv((int)levelXlenghtMax, 1000) * 100;
-            } else {
-                xStep = (int) Math.floorDiv((int)levelXlenghtMax, 2000) * 200;
+            } else
+                {
+                xStep = (int) Math.floorDiv((int)levelXlenghtMax, 2000) * 200;  //
+            }
+
+            if (xStep == 0) {
+                xStep = 10;
             }
             xN = (int) Math.ceil(levelXlenghtMax / xStep) + 1;
             xCena = (double) xStep / 200;
@@ -382,7 +402,8 @@ public class Plot {
                 }
                 gc.moveTo(x,  polLineWidth);
                 gc.lineTo(x, ySize - polLineWidth);
-                gc.fillText(String.valueOf((double) i * xCena), x, ySize + 20 );
+                double tmp = (double) Math.round(i * xCena * 1000) / 1000;
+                gc.fillText(String.valueOf(tmp), x, ySize + 20 );
             }
 
             // y

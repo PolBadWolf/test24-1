@@ -19,6 +19,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
+                    <outputDirectory>${project.basedir}/../out/</outputDirectory>
                     <archive>
                         <manifest>
                             <mainClass>org.example.test24.loader.MainClass</mainClass>

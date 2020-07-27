@@ -37,7 +37,7 @@ public class Running implements Runner_Impl {
         plot.setZoomY(0, 1024);
         plot.setZoomYauto(false);
 
-        plot.setZoomX(0, 2000);
+        plot.setZoomX(0, 1_000 / 5);
         plot.setZoomXlenghtAuto(false);
         plot.setZoomXbeginAuto(true);
     }
