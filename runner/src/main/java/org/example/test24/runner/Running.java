@@ -22,7 +22,7 @@ public class Running implements Runner_Impl {
         plot = new Plot(mainFrame.getCanvas(), 50, 50);
 
         plot.addTrend(Color.WHITE, 2);
-        plot.addTrend(Color.YELLOW, 2);
+        //plot.addTrend(Color.YELLOW, 2);
 
         plot.setFieldBackColor(Color.DARKGRAY);
 
@@ -37,7 +37,7 @@ public class Running implements Runner_Impl {
         plot.setZoomY(0, 1024);
         plot.setZoomYauto(false);
 
-        plot.setZoomX(0, 1_000 / 5);
+        plot.setZoomX(0, 6_000 / 5);
         plot.setZoomXlenghtAuto(true);
         plot.setZoomXbeginAuto(false);
     }
@@ -89,22 +89,30 @@ public class Running implements Runner_Impl {
             case TypePack.CURENT_DATA:
                 paintTrends(bytes);
                 break;
+            case TypePack.VES:
+                showVes(bytes);
+                break;
             default:
         }
+    }
+
+    private void showVes(byte[] bytes) {
+        int ves  = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
+        mainFrame.label2_txt(String.valueOf(ves + "кг"));
     }
 
     private void paintTrends(byte[] bytes) {
         short dist, ves;
         int x;
         dist = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
-        ves  = (short) ((bytes[5 + 2] & 0xff) + ((bytes[5 + 3] & 0xff) << 8));
+        //ves  = (short) ((bytes[5 + 2] & 0xff) + ((bytes[5 + 3] & 0xff) << 8));
 
         //plot.newDataX(indexX);
         //x = indexX;
         x = (short)((tik - tik0) / 5);
         plot.newDataX(x);
         plot.newDataTrend(0, dist);
-        plot.newDataTrend(1, ves);
+        //plot.newDataTrend(1, ves);
         plot.newDataPush();
         plot.rePaint();
 

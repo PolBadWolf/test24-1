@@ -15,5 +15,6 @@ public interface Runner_Impl extends Runner_Interface {
         final static int CYCLE_FORWARD      = 8;
         final static int CYCLE_SHELF        = 9;
         final static int CURENT_DATA        = 11;
+        final static int VES                = 12;
     }
 }
