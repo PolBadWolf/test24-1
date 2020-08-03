@@ -46,10 +46,12 @@ public class BdWork {
         }
         PreparedStatement statement = null;
         try {
-            statement = connection.prepareStatement("BEGIN TRANSACTION\n" +
-                    "INSERT INTO Table_1 (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, dis)\n" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?)\n" +
-                    "COMMIT");
+            statement = connection.prepareStatement(
+                    //"BEGIN TRANSACTION\n"
+                    "INSERT INTO Table_1 (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, dis)\n"
+                    + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)\n"
+                    //+ "COMMIT"
+            );
             statement.setTimestamp(1, new java.sql.Timestamp(date.getTime()) );
             statement.setLong(2, id_spec);
             statement.setInt(3, n_cicle);
@@ -68,14 +70,17 @@ public class BdWork {
 
     private void connectBd() {
         parametersSql.load();
-        String connectionUrl = "jdbc:%1$s://%2$s:%3$s;databaseName=%4$s;user=%5$s;password=%6$s;";
-        String connString = String.format(connectionUrl,
-                parametersSql.typeBd,
-                parametersSql.urlServer,
-                parametersSql.portServer,
-                parametersSql.dataBase,
-                parametersSql.user,
-                parametersSql.password);
+//        String connectionUrl = "jdbc:%1$s://%2$s:%3$s;databaseName=%4$s;user=%5$s;password=%6$s;";
+        String connectionUrl = "jdbc:%1$s://%2$s:%3$s/%4$s";
+        String connString = String.format(connectionUrl
+                , parametersSql.typeBd
+                , parametersSql.urlServer
+                , parametersSql.portServer
+                , parametersSql.dataBase
+//                , parametersSql.user
+//                , parametersSql.password
+//        ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=%2B8";
+        ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         try {
             Class.forName(parametersSql.driver);
         } catch (ClassNotFoundException e) {
@@ -83,7 +88,8 @@ public class BdWork {
         }
 
         try {
-            connection = DriverManager.getConnection(connString);
+//            connection = DriverManager.getConnection(connString);
+            connection = DriverManager.getConnection(connString, parametersSql.user, parametersSql.password);
         } catch (SQLException e) {
             e.printStackTrace();
         }
