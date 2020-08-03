@@ -16,6 +16,7 @@
         <module>graphics</module>
         <module>loader</module>
         <module>runner</module>
+        <module>bd</module>
     </modules>
 
     <properties>

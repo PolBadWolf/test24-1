@@ -60,6 +60,11 @@
             <version>1.0.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.example.test24</groupId>
+            <artifactId>bd</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
 
 </project>
