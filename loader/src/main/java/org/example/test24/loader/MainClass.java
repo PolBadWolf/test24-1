@@ -1,12 +1,18 @@
 package org.example.test24.loader;
 
-import org.example.bd.ParametersSql;
+import org.example.bd.BdWork;
+import org.example.bd.MyBlob;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.Closer;
 import org.example.test24.RS232.BAUD;
+import org.example.test24.allinterface.bd.DistClass;
 import org.example.test24.runner.Running;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Date;
 
 
 public class MainClass {
@@ -15,8 +21,20 @@ public class MainClass {
     private CommPort commPort = null;
 
     public static void main(String[] args) {
-        ParametersSql parametersSql = new ParametersSql("z2.txt");
-        parametersSql.load();
+        ArrayList<DistClass> tMass = new ArrayList<>();
+        tMass.add(new DistClass(12, 13));
+        tMass.add(new DistClass(65535, 16384));
+/*        MyBlob myBlob = new MyBlob(tMass);
+        byte[] bytes;
+        try {
+            bytes = new byte[(int) myBlob.length()];
+            bytes = myBlob.getBytes(1, bytes.length);
+        } catch (java.lang.Throwable e) {
+            e.printStackTrace();
+        }*/
+        BdWork bdWork = new BdWork();
+        bdWork.pushDataDist(new Date(), 0, 0, 0, 0, 0, 0, new MyBlob(tMass));
+
         new MainClass().start(args);
     }
 
@@ -43,7 +61,6 @@ public class MainClass {
         }
 
         runner.init(commPort, MainFrame.mainFrame);
-        //runner.start();
 
         commPort.ReciveStart();
     }

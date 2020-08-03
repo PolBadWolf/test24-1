@@ -1,0 +1,9 @@
+#parameters sql
+#Mon Aug 03 14:45:08 YEKT 2020
+Password=MTEyMg\=\=
+Port_Server=1433
+Driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
+DataBase=spc1
+Url_Server=127.0.0.1
+Type_Sql=sqlserver
+User=max

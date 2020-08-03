@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Base64;
 import java.util.Properties;
 
-public class ParametersSql {
+class ParametersSql {
     private String fileNameParameters;
     private Properties properties;
     public String typeBd;
