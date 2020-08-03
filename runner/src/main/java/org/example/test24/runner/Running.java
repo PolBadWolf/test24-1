@@ -1,11 +1,11 @@
 package org.example.test24.runner;
 
 import javafx.scene.paint.Color;
-import org.example.test24.allinterface.commPort.CommPort_Interface;
+import org.example.test24.RS232.CommPort_Interface;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 import ru.yandex.fixcolor.my_lib.graphics.Plot;
 
-public class Running implements Runner_Impl {
+public class Running implements Runner_Interface {
     private CommPort_Interface commPort = null;
     private MainFrame_interface mainFrame = null;
     private Plot plot = null;

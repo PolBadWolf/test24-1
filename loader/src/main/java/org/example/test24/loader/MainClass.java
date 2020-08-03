@@ -2,7 +2,7 @@ package org.example.test24.loader;
 
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.Closer;
-import org.example.test24.allinterface.commPort.BAUD;
+import org.example.test24.RS232.BAUD;
 import org.example.test24.runner.Running;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
@@ -26,9 +26,9 @@ public class MainClass {
         runner = new Running();
         commPort = new CommPort();
 
-        Closer.getCloser().init(commPort, runner, mainFx);
+        Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
-        int checkComm = commPort.Open(runner, namePort, BAUD.baud115200);
+        int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud115200);
         if (checkComm != CommPort.INITCODE_OK) {
             errorCommMessage(checkComm, commPort);
             System.exit(0);

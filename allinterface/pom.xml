@@ -11,6 +11,14 @@
 
     <groupId>org.example.test24</groupId>
     <artifactId>allinterface</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>lib</artifactId>
+            <version>1.0.1</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 
 </project>

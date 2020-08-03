@@ -13,8 +13,7 @@ public enum BAUD {
     baud38400       (38400),
     baud56000       (56000),
     baud57600       (57600),
-    baud115200      (115200),
-    baud250000      (250000);
+    baud115200      (115200);
 
     private int baud;
 

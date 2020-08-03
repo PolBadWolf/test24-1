@@ -2,10 +2,10 @@ package org.example.test24.RS232;
 
 import com.fazecast.jSerialComm.SerialPort;
 import org.example.lib.ControlSumma;
-import org.example.test24.allinterface.commPort.BAUD;
-import org.example.test24.allinterface.runner.Runner_Interface;
+import org.example.lib.interfaces.RsCallBack;
 
-public class CommPort implements CommPort_Impl {
+public class CommPort implements CommPort_Interface {
+
     @Override
     public String[] getListPortsName() {
         SerialPort[] ports = SerialPort.getCommPorts();
@@ -18,10 +18,10 @@ public class CommPort implements CommPort_Impl {
 
     private SerialPort port = null;
     private Thread threadRS = null;
-    private Runner_Interface runner_interface;
+    private RsCallBack rsCallBack = null;
 
     @Override
-    public int Open(Runner_Interface runner, String portName, BAUD baud) {
+    public int Open(RsCallBack rsCallBack, String portName, BAUD baud) {
         if (port != null) {
             Close();
         }
@@ -44,7 +44,7 @@ public class CommPort implements CommPort_Impl {
         port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 1000, 1000);
 
         if (port.openPort()) {
-            runner_interface = runner;
+            this.rsCallBack = rsCallBack;
             return INITCODE_OK;
         }
 
@@ -188,7 +188,7 @@ public class CommPort implements CommPort_Impl {
             crc = ControlSumma.crc8(bytes, lenghtRecive - 1);
 
             if (crc == bytes[lenghtRecive - 1]) {
-                runner_interface.reciveRsPush(bytes, lenghtRecive - 1);
+                rsCallBack.reciveRsPush(bytes, lenghtRecive - 1);
             }
             else {
                 noSynhro = true;
