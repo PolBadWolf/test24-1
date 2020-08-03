@@ -1,7 +1,5 @@
 package org.example.test24.runner;
 
-import org.example.test24.allinterface.runner.Runner_Interface;
-
 public interface Runner_Impl extends Runner_Interface {
     class TypePack {
         final static int MANUAL_ALARM       = 0;
