@@ -10,7 +10,6 @@ import org.example.test24.runner.Running;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +34,7 @@ public class MainClass {
         }*/
         BdWork bdWork = null;
         try {
-            bdWork = new BdWork();
+            bdWork = new BdWork("MS_SQL");
         } catch (SQLException e) {
             e.printStackTrace();
         }
