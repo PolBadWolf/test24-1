@@ -11,6 +11,7 @@ import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -32,7 +33,12 @@ public class MainClass {
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
         }*/
-        BdWork bdWork = new BdWork();
+        BdWork bdWork = null;
+        try {
+            bdWork = new BdWork();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         bdWork.pushDataDist(new Date(), 0, 0, 0, 0, 0, 0, new MyBlob(tMass));
 
         new MainClass().start(args);

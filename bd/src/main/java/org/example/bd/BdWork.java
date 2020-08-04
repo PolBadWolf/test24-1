@@ -11,11 +11,22 @@ import java.util.Properties;
 
 public class BdWork {
     ParametersSql parametersSql = null;
-    private final String fileNameProperties = "sql.txt";
+    private final String fileNameProperties = "sql1.txt";
     private Connection connection = null;
+    private Sql_interface sql_interface = null;
 
-    public BdWork() {
+    public BdWork() throws SQLException {
         parametersSql = new ParametersSql(fileNameProperties);
+        parametersSql.load();
+        switch (parametersSql.typeBd) {
+            case "MS_SQL":
+                sql_interface = new Ms_msql(parametersSql);
+                break;
+            case  "MY_SQL":
+                break;
+            default:
+                throw new SQLException("неизвестный тип BD");
+        }
     }
 
     public Connection getConnect() {
@@ -40,7 +51,8 @@ public class BdWork {
     }
 
     public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) {
-        if (getConnect() == null) {
+        sql_interface.pushDataDist(date, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, distance);
+        /*if (getConnect() == null) {
             // нет связи
             return;
         }
@@ -65,13 +77,14 @@ public class BdWork {
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private void connectBd() {
         parametersSql.load();
 //        String connectionUrl = "jdbc:%1$s://%2$s:%3$s;databaseName=%4$s;user=%5$s;password=%6$s;";
-        String connectionUrl = "jdbc:%1$s://%2$s:%3$s/%4$s";
+        String connectionUrl = "jdbc:%1$s://%2$s:%3$s;databaseName=%4$s";
+//        String connectionUrl = "jdbc:%1$s://%2$s:%3$s/%4$s";
         String connString = String.format(connectionUrl
                 , parametersSql.typeBd
                 , parametersSql.urlServer
@@ -80,7 +93,7 @@ public class BdWork {
 //                , parametersSql.user
 //                , parametersSql.password
 //        ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=%2B8";
-        ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        );// + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         try {
             Class.forName(parametersSql.driver);
         } catch (ClassNotFoundException e) {
