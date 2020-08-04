@@ -20,9 +20,17 @@ class My_sql implements Sql_interface {
             return;
         }
         PreparedStatement statement = null;
+        Statement statementReadSpec = null;
         try {
             connection.setAutoCommit(false);
             connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            statementReadSpec = connection.createStatement();
+            ResultSet resultSpec = statementReadSpec.executeQuery("SELECT table_spec.id FROM table_spec ORDER BY\n" +
+                    "table_spec.id DESC LIMIT 1");
+            if (!resultSpec.next()) {
+                throw new SQLException("таблица table_spec пуста");
+            }
+
             statement = connection.prepareStatement(
                     "INSERT INTO Table_Data (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, dis)\n"
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
