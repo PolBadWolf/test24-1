@@ -34,9 +34,10 @@ public class MainClass {
         }*/
         BdWork bdWork = null;
         try {
-            bdWork = new BdWork("MS_SQL");
+            bdWork = new BdWork("MY_SQL");
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(1);
         }
         bdWork.pushDataDist(new Date(), 0, 0, 0, 0, 0, 0, new MyBlob(tMass));
 

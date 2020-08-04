@@ -10,13 +10,13 @@ public class BdWork {
     private Sql_interface sql_interface = null;
 
     public BdWork(String typeDb) throws SQLException {
-        parametersSql = new ParametersSql(fileNameProperties);
-        parametersSql.load();
+//        parametersSql = new ParametersSql(fileNameProperties);
         switch (typeDb) {
             case "MS_SQL":
                 sql_interface = new Ms_sql();
                 break;
             case  "MY_SQL":
+                sql_interface = new My_sql();
                 break;
             default:
                 throw new SQLException("неизвестный тип BD");

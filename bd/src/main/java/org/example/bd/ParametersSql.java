@@ -7,18 +7,20 @@ import java.util.Properties;
 class ParametersSql {
     private String fileNameParameters;
     private Properties properties;
+    private String type_DB;
     public String urlServer;
     public String portServer;
     public String dataBase;
     public String user;
     public String password;
 
-    public ParametersSql(String fileNameParameters) {
+    public ParametersSql(String fileNameParameters, String type_DB) {
         this.fileNameParameters = fileNameParameters;
+        this.type_DB = type_DB;
         properties = new Properties();
     }
 
-    public void load() {
+    public void load() throws Exception {
         try {
             properties.load(new BufferedReader(new FileReader(fileNameParameters)));
             urlServer = properties.getProperty("Url_Server");
@@ -50,12 +52,25 @@ class ParametersSql {
         }
     }
 
-    private void setDefault() {
-        urlServer = "127.0.0.1";
-        portServer = "1433";
-        dataBase = "spc1";
-        user = "max";
-        password = "1122";
+    private void setDefault() throws Exception {
+        switch (type_DB) {
+            case "MS_SQL":
+                urlServer = "127.0.0.1";
+                portServer = "1433";
+                dataBase = "spc1";
+                user = "max";
+                password = "1122";
+                break;
+            case "MY_SQL":
+                urlServer = "127.0.0.1";
+                portServer = "3306";
+                dataBase = "spc1";
+                user = "root";
+                password = "My*22360";
+                break;
+            default:
+                throw new Exception("ошибка выбора загрузки по умолчанию");
+        }
         save();
     }
 }

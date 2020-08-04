@@ -9,7 +9,7 @@ class Ms_sql implements Sql_interface {
     private Connection connection = null;
 
     public Ms_sql() {
-        parametersSql = new ParametersSql(fileNameProperties);
+        parametersSql = new ParametersSql(fileNameProperties, "MS_SQL");
     }
 
     @Override
@@ -65,7 +65,12 @@ class Ms_sql implements Sql_interface {
     }
 
     private void connectBd() {
-        parametersSql.load();
+        try {
+            parametersSql.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
         String connectionUrl = "jdbc:sqlserver://%1$s:%2$s;databaseName=%3$s";
         String connString = String.format(connectionUrl
                 , parametersSql.urlServer
