@@ -1,9 +1,0 @@
-#parameters sql
-#Mon Aug 03 19:42:46 YEKT 2020
-Password=TXleMjIzNjA\=
-Port_Server=3306
-Driver=com.mysql.cj.jdbc.Driver
-DataBase=test1
-Url_Server=127.0.0.1
-Type_Sql=mysql
-User=root
