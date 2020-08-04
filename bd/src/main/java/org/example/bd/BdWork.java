@@ -1,13 +1,7 @@
 package org.example.bd;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Properties;
 
 public class BdWork {
     ParametersSql parametersSql = null;
@@ -15,12 +9,12 @@ public class BdWork {
     private Connection connection = null;
     private Sql_interface sql_interface = null;
 
-    public BdWork() throws SQLException {
+    public BdWork(String typeDb) throws SQLException {
         parametersSql = new ParametersSql(fileNameProperties);
         parametersSql.load();
-        switch (parametersSql.typeBd) {
+        switch (typeDb) {
             case "MS_SQL":
-                sql_interface = new Ms_msql(parametersSql);
+                sql_interface = new Ms_sql();
                 break;
             case  "MY_SQL":
                 break;
@@ -30,7 +24,7 @@ public class BdWork {
     }
 
     public Connection getConnect() {
-        if (connection == null) connectBd();
+        /*if (connection == null) connectBd();
         else {
             try {
                 if (connection.isClosed())  connectBd();
@@ -46,7 +40,7 @@ public class BdWork {
             e.printStackTrace();
             connection = null;
         }
-        if (flag)   connection = null;
+        if (flag)   connection = null;*/
         return connection;
     }
 
@@ -81,7 +75,7 @@ public class BdWork {
     }
 
     private void connectBd() {
-        parametersSql.load();
+/*        parametersSql.load();
 //        String connectionUrl = "jdbc:%1$s://%2$s:%3$s;databaseName=%4$s;user=%5$s;password=%6$s;";
         String connectionUrl = "jdbc:%1$s://%2$s:%3$s;databaseName=%4$s";
 //        String connectionUrl = "jdbc:%1$s://%2$s:%3$s/%4$s";
@@ -105,7 +99,7 @@ public class BdWork {
             connection = DriverManager.getConnection(connString, parametersSql.user, parametersSql.password);
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 }
