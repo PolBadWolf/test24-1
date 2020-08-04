@@ -7,8 +7,6 @@ import java.util.Properties;
 class ParametersSql {
     private String fileNameParameters;
     private Properties properties;
-    public String typeBd;
-    public String driver;
     public String urlServer;
     public String portServer;
     public String dataBase;
@@ -23,14 +21,12 @@ class ParametersSql {
     public void load() {
         try {
             properties.load(new BufferedReader(new FileReader(fileNameParameters)));
-            typeBd = properties.getProperty("Type_Sql");
-            driver = properties.getProperty("Driver");
             urlServer = properties.getProperty("Url_Server");
             portServer = properties.getProperty("Port_Server");
             dataBase = properties.getProperty("DataBase");
             user = properties.getProperty("User");
             password = new String(Base64.getDecoder().decode(properties.getProperty("Password")));
-            if (typeBd == null || urlServer == null || portServer == null || dataBase == null || user == null || password == null) {
+            if (urlServer == null || portServer == null || dataBase == null || user == null || password == null) {
                 System.out.println("один или несколько параметров в файле конфигурации отсутствуют");
                 setDefault();
             }
@@ -42,8 +38,6 @@ class ParametersSql {
 
     public void save() {
         properties.clear();
-        properties.setProperty("Type_Sql", typeBd);
-        properties.setProperty("Driver", driver);
         properties.setProperty("Url_Server", urlServer);
         properties.setProperty("Port_Server", portServer);
         properties.setProperty("DataBase", dataBase);
@@ -57,8 +51,6 @@ class ParametersSql {
     }
 
     private void setDefault() {
-        typeBd = "sqlserver";
-        driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
         urlServer = "127.0.0.1";
         portServer = "1433";
         dataBase = "spc1";
