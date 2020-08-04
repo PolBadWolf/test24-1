@@ -1,12 +1,7 @@
 package org.example.bd;
 
-import com.mysql.cj.exceptions.ExceptionInterceptor;
-import com.mysql.cj.log.Log;
-import com.mysql.cj.util.TimeUtil;
-
 import java.sql.*;
 import java.util.Date;
-import java.util.Properties;
 import java.util.TimeZone;
 
 class My_sql implements Sql_interface {
@@ -26,11 +21,11 @@ class My_sql implements Sql_interface {
         }
         PreparedStatement statement = null;
         try {
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             statement = connection.prepareStatement(
-                    "START TRANSACTION\n"
-                    + "INSERT INTO Table_Data (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, dis)\n"
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)\n"
-                    + "COMMIT;"
+                    "INSERT INTO Table_Data (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, dis)\n"
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
             );
             statement.setTimestamp(1, new java.sql.Timestamp(date.getTime()) );
             statement.setLong(2, id_spec);
@@ -42,6 +37,7 @@ class My_sql implements Sql_interface {
             statement.setBlob(8, distance);
 
             statement.executeUpdate();
+            connection.commit();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
