@@ -10,9 +10,11 @@ import org.example.test24.runner.Running;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
 
+import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Properties;
 
 
 public class MainClass {
@@ -21,7 +23,7 @@ public class MainClass {
     private CommPort commPort = null;
 
     public static void main(String[] args) {
-        ArrayList<DistClass> tMass = new ArrayList<>();
+/*        ArrayList<DistClass> tMass = new ArrayList<>();
         tMass.add(new DistClass(12, 13));
         tMass.add(new DistClass(65535, 16384));
         BdWork bdWork = null;
@@ -32,14 +34,13 @@ public class MainClass {
             System.exit(1);
         }
         bdWork.pushDataDist(new Date(), 0, 0, 0, 0, 0, 0, new MyBlob(tMass));
-
+*/
         new MainClass().start(args);
     }
 
     private void start(String[] args) {
-        String namePort = "";
-
-        if (args.length > 0)    namePort = args[0];
+        String[] param = getConfig();
+        String namePort = param[1];
 
         mainFx= new ScreenClass();
         runner = new Running();
@@ -58,7 +59,7 @@ public class MainClass {
             Thread.yield();
         }
 
-        runner.init(commPort, MainFrame.mainFrame);
+        runner.init(param[0], commPort, MainFrame.mainFrame);
 
         commPort.ReciveStart();
     }
@@ -76,5 +77,38 @@ public class MainClass {
                 }
                 break;
         }
+    }
+
+    private String[] getConfig() {
+        Properties properties = new Properties();
+        boolean flagReload = false;
+        String[] strings = new String[2];
+
+        try {
+            properties.load(new FileReader("config.txt"));
+            strings[0] = properties.getProperty("DataBase");
+            strings[1] = properties.getProperty("CommPort");
+
+            if (strings[0] == null || strings[1] == null)   flagReload = true;
+
+        } catch (IOException e) {
+            //e.printStackTrace();
+            System.out.println("файл config.txt не найден");
+            flagReload = true;
+        }
+
+        if (flagReload) {
+            strings[0] = "MY_SQL";
+            strings[1] = "com2";
+            try {
+                properties.setProperty("DataBase", strings[0]);
+                properties.setProperty("CommPort", strings[1]);
+                properties.store(new FileWriter("config.txt"), "config.txt");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return strings;
     }
 }

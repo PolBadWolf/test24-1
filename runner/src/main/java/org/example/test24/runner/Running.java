@@ -1,13 +1,17 @@
 package org.example.test24.runner;
 
 import javafx.scene.paint.Color;
+import org.example.bd.BdWork;
 import org.example.test24.RS232.CommPort_Interface;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 import ru.yandex.fixcolor.my_lib.graphics.Plot;
 
+import java.sql.SQLException;
+
 public class Running implements Runner_Interface {
     private CommPort_Interface commPort = null;
     private MainFrame_interface mainFrame = null;
+    private BdWork bdWork = null;
     private Plot plot = null;
 
     private int debugN = 0;
@@ -15,9 +19,16 @@ public class Running implements Runner_Interface {
     private int tik, tik0;
 
     @Override
-    public void init(CommPort_Interface commPort, MainFrame_interface mainFrame) {
+    public void init(String selDataBase, CommPort_Interface commPort, MainFrame_interface mainFrame) {
         this.commPort = commPort;
         this.mainFrame = mainFrame;
+
+        try {
+            bdWork = new BdWork(selDataBase);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
         plot = new Plot(mainFrame.getCanvas(), 50, 50);
 
