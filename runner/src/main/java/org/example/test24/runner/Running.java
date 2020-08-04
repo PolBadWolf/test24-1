@@ -2,17 +2,24 @@ package org.example.test24.runner;
 
 import javafx.scene.paint.Color;
 import org.example.bd.BdWork;
+import org.example.bd.MyBlob;
 import org.example.test24.RS232.CommPort_Interface;
+import org.example.test24.allinterface.bd.DistClass;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 import ru.yandex.fixcolor.my_lib.graphics.Plot;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class Running implements Runner_Interface {
     private CommPort_Interface commPort = null;
     private MainFrame_interface mainFrame = null;
-    private BdWork bdWork = null;
     private Plot plot = null;
+
+    private BdWork bdWork = null;
+    private ArrayList<DistClass>  distanceOut = null;
+    private int ves;
 
     private int debugN = 0;
     private int indexX = 0;
@@ -30,6 +37,8 @@ public class Running implements Runner_Interface {
             e.printStackTrace();
             System.exit(1);
         }
+
+        distanceOut = new ArrayList<>();
 
         plot = new Plot(mainFrame.getCanvas(), 50, 50);
 
@@ -71,9 +80,11 @@ public class Running implements Runner_Interface {
                 break;
             case TypePack.MANUAL_STOP:
                 mainFrame.label1_txt("MANUAL_STOP");
+                bdWork.pushDataDist(new Date(), 0, 0, ves, 0, 0, 0, new MyBlob(distanceOut));
                 break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.label1_txt("MANUAL_FORWARD");
+                distanceOut.clear();
 
                 plot.allDataClear();
                 indexX = 0;
@@ -100,6 +111,7 @@ public class Running implements Runner_Interface {
                 break;
             case TypePack.CURENT_DATA:
                 paintTrends(bytes);
+                distanceOut.add(new DistClass(tik, (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8)));
                 break;
             case TypePack.VES:
                 showVes(bytes);
@@ -109,7 +121,7 @@ public class Running implements Runner_Interface {
     }
 
     private void showVes(byte[] bytes) {
-        int ves  = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
+        ves  = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
         mainFrame.label2_txt(String.valueOf(ves + "кг"));
     }
 
