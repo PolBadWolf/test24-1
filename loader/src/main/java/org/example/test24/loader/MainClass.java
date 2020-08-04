@@ -24,14 +24,6 @@ public class MainClass {
         ArrayList<DistClass> tMass = new ArrayList<>();
         tMass.add(new DistClass(12, 13));
         tMass.add(new DistClass(65535, 16384));
-/*        MyBlob myBlob = new MyBlob(tMass);
-        byte[] bytes;
-        try {
-            bytes = new byte[(int) myBlob.length()];
-            bytes = myBlob.getBytes(1, bytes.length);
-        } catch (java.lang.Throwable e) {
-            e.printStackTrace();
-        }*/
         BdWork bdWork = null;
         try {
             bdWork = new BdWork("MY_SQL");
