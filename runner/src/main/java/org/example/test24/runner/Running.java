@@ -25,6 +25,7 @@ public class Running implements Runner_Interface {
 
         try {
             bdWork = new BdWork(selDataBase);
+            bdWork.getConnect();
         } catch (SQLException e) {
             e.printStackTrace();
             System.exit(1);
