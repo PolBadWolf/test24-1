@@ -20,11 +20,12 @@ class Ms_sql implements Sql_interface {
         }
         PreparedStatement statement = null;
         try {
+            boolean saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             statement = connection.prepareStatement(
-                    //"BEGIN TRANSACTION\n"
                     "INSERT INTO Table_Data (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, dis)\n"
-                            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)\n"
-                    //+ "COMMIT"
+                            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
             );
             statement.setTimestamp(1, new java.sql.Timestamp(date.getTime()) );
             statement.setLong(2, id_spec);
@@ -36,6 +37,8 @@ class Ms_sql implements Sql_interface {
             statement.setBlob(8, distance);
 
             statement.executeUpdate();
+            connection.commit();
+            connection.setAutoCommit(saveAutoCommit);
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -84,7 +87,6 @@ class Ms_sql implements Sql_interface {
         }
 
         try {
-//            connection = DriverManager.getConnection(connString);
             connection = DriverManager.getConnection(connString, parametersSql.user, parametersSql.password);
         } catch (SQLException e) {
             e.printStackTrace();
