@@ -1,4 +1,4 @@
 #config.txt
 #Tue Aug 04 20:19:21 YEKT 2020
-DataBase=MS_SQL
-CommPort=com3
+DataBase=MY_SQL
+CommPort=com5
