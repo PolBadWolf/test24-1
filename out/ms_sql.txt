@@ -1,0 +1,7 @@
+#parameters sql
+#Tue Aug 04 09:32:53 YEKT 2020
+Password=MTEyMg\=\=
+Port_Server=1433
+DataBase=spc1
+Url_Server=127.0.0.1
+User=max

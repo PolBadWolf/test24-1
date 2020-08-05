@@ -20,6 +20,9 @@ public class Running implements Runner_Interface {
     private BdWork bdWork = null;
     private ArrayList<DistClass>  distanceOut = null;
     private int ves;
+    private int tik_shelf;
+    private int tik_back;
+    private int tik_stop;
 
     private int debugN = 0;
     private int indexX = 0;
@@ -58,7 +61,7 @@ public class Running implements Runner_Interface {
         plot.setZoomY(0, 1024);
         plot.setZoomYauto(false);
 
-        plot.setZoomX(0, 6_000 / 5);
+        plot.setZoomX(0, 5_000 / 5);
         plot.setZoomXlenghtAuto(true);
         plot.setZoomXbeginAuto(false);
     }
@@ -77,10 +80,23 @@ public class Running implements Runner_Interface {
                 break;
             case TypePack.MANUAL_BACK:
                 mainFrame.label1_txt("MANUAL_BACK");
+                tik_back = tik;
                 break;
             case TypePack.MANUAL_STOP:
                 mainFrame.label1_txt("MANUAL_STOP");
-                bdWork.pushDataDist(new Date(), 0, 0, ves, 0, 0, 0, new MyBlob(distanceOut));
+                tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
+            {
+                int tikSampl = distanceOut.get(0).tik;
+                int tikCurr = 0;
+                for (int i = 1; i < distanceOut.size(); i++) {
+                    tikCurr = distanceOut.get(i).tik;
+                    if ( (tikCurr - tikSampl) != 5) {
+                        tikSampl = -1;
+                    }
+                    tikSampl = tikCurr;
+                }
+            }
+                bdWork.pushDataDist(new Date(), 0, 0, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
                 break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.label1_txt("MANUAL_FORWARD");
@@ -93,6 +109,7 @@ public class Running implements Runner_Interface {
                 break;
             case TypePack.MANUAL_SHELF:
                 mainFrame.label1_txt("MANUAL_SHELF");
+                tik_shelf = tik;
                 break;
             case TypePack.CYCLE_ALARM:
                 mainFrame.label1_txt("CYCLE_ALARM");
