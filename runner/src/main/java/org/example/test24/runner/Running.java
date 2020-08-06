@@ -8,7 +8,6 @@ import org.example.test24.allinterface.bd.DistClass;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 import ru.yandex.fixcolor.my_lib.graphics.Plot;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -25,12 +24,7 @@ public class Running implements Runner_Interface {
     private int tik_stop;
     private boolean reciveOn = false;
 
-    private int debugN = 0;
-    private int indexX = 0;
     private int tik, tik0;
-
-    private int tikCurr = 0;
-    private int tikOldd = 0;
 
 
     @Override
@@ -97,10 +91,7 @@ public class Running implements Runner_Interface {
                 distanceOut.clear();
 
                 plot.allDataClear();
-                indexX = 0;
-                debugN = 0;
                 tik0 = tik;
-                tikOldd = 0;
                 reciveOn = true;
                 break;
             case TypePack.MANUAL_SHELF:
@@ -126,11 +117,6 @@ public class Running implements Runner_Interface {
                 if (reciveOn) {
                     paintTrends(bytes);
                     int dist = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
-                    System.out.println(tik + "\t\t" + dist);
-                    if ( (tik - tikOldd) != 5 ) {
-                        tikOldd = -1;
-                    }
-                    tikOldd = tik;
                     distanceOut.add(new DistClass(tik, dist));
                 }
                 break;
@@ -152,8 +138,6 @@ public class Running implements Runner_Interface {
         dist = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
         //ves  = (short) ((bytes[5 + 2] & 0xff) + ((bytes[5 + 3] & 0xff) << 8));
 
-        //plot.newDataX(indexX);
-        //x = indexX;
         x = (short)((tik - tik0) / 5);
         plot.newDataX(x);
         plot.newDataTrend(0, dist);
@@ -161,10 +145,8 @@ public class Running implements Runner_Interface {
         plot.newDataPush();
         plot.rePaint();
 
-        indexX++;
         if (x >= (3_600_000) / 5 ) {
             plot.allDataClear();
-            indexX = 0;
             tik0 = tik;
         }
     }
