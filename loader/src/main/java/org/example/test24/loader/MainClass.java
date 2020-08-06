@@ -32,7 +32,7 @@ public class MainClass {
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
-        int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud115200);
+        int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
             errorCommMessage(checkComm, commPort);
             System.exit(0);

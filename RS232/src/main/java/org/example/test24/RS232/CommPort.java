@@ -41,7 +41,7 @@ public class CommPort implements CommPort_Interface {
         port = SerialPort.getCommPort(portNameCase);
         port.setComPortParameters(baud.getBaud(), 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         port.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 0, 0);
+        port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 1000, 0);
 
         if (port.openPort()) {
             this.rsCallBack = rsCallBack;
@@ -129,6 +129,8 @@ public class CommPort implements CommPort_Interface {
             if (flagHead) {
                 int lenght = headBufferLenght;
 
+                noSynhro = true;
+
                 if (noSynhro) {
                     lenght = 1;
                     for (int i = 0; i < headBufferLenght - 1; i++) {
@@ -145,6 +147,11 @@ public class CommPort implements CommPort_Interface {
 
                 if (num == 0) {
                     onCycle = 1;
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     continue;
                 }
 

@@ -23,10 +23,15 @@ public class Running implements Runner_Interface {
     private int tik_shelf;
     private int tik_back;
     private int tik_stop;
+    private boolean reciveOn = false;
 
     private int debugN = 0;
     private int indexX = 0;
     private int tik, tik0;
+
+    private int tikCurr = 0;
+    private int tikOldd = 0;
+
 
     @Override
     public void init(BdWork bdWork, CommPort_Interface commPort, MainFrame_interface mainFrame) {
@@ -70,30 +75,22 @@ public class Running implements Runner_Interface {
         switch (b) {
             case TypePack.MANUAL_ALARM:
                 mainFrame.label1_txt("MANUAL_ALARM");
+                reciveOn = false;
                 break;
             case TypePack.MANUAL_BACK:
                 mainFrame.label1_txt("MANUAL_BACK");
                 tik_back = tik;
                 break;
             case TypePack.MANUAL_STOP:
-                mainFrame.label1_txt("MANUAL_STOP");
-                tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
-            {
-                int tikSampl = distanceOut.get(0).tik;
-                int tikCurr = 0;
-                for (int i = 1; i < distanceOut.size(); i++) {
-                    tikCurr = distanceOut.get(i).tik;
-                    if ( (tikCurr - tikSampl) != 5) {
-                        tikSampl = -1;
-                    }
-                    tikSampl = tikCurr;
+                reciveOn = false;
+                try {
+                    tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
+                    mainFrame.label1_txt("MANUAL_STOP");
+                    System.out.println("count = " + distanceOut.size());
+                    bdWork.pushDataDist(new Date(), 0, 0, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                } catch (java.lang.Throwable e) {
+                    e = null;
                 }
-            }
-            try {
-                bdWork.pushDataDist(new Date(), 0, 0, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.label1_txt("MANUAL_FORWARD");
@@ -103,6 +100,8 @@ public class Running implements Runner_Interface {
                 indexX = 0;
                 debugN = 0;
                 tik0 = tik;
+                tikOldd = 0;
+                reciveOn = true;
                 break;
             case TypePack.MANUAL_SHELF:
                 mainFrame.label1_txt("MANUAL_SHELF");
@@ -124,8 +123,16 @@ public class Running implements Runner_Interface {
                 mainFrame.label1_txt("CYCLE_SHELF");
                 break;
             case TypePack.CURENT_DATA:
-                paintTrends(bytes);
-                distanceOut.add(new DistClass(tik, (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8)));
+                if (reciveOn) {
+                    paintTrends(bytes);
+                    int dist = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+                    System.out.println(tik + "\t\t" + dist);
+                    if ( (tik - tikOldd) != 5 ) {
+                        tikOldd = -1;
+                    }
+                    tikOldd = tik;
+                    distanceOut.add(new DistClass(tik, dist));
+                }
                 break;
             case TypePack.VES:
                 showVes(bytes);
