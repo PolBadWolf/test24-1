@@ -29,17 +29,10 @@ public class Running implements Runner_Interface {
     private int tik, tik0;
 
     @Override
-    public void init(String selDataBase, CommPort_Interface commPort, MainFrame_interface mainFrame) {
+    public void init(BdWork bdWork, CommPort_Interface commPort, MainFrame_interface mainFrame) {
         this.commPort = commPort;
         this.mainFrame = mainFrame;
-
-        try {
-            bdWork = new BdWork(selDataBase);
-            bdWork.getConnect();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+        this.bdWork = bdWork;
 
         distanceOut = new ArrayList<>();
 
@@ -96,8 +89,12 @@ public class Running implements Runner_Interface {
                     tikSampl = tikCurr;
                 }
             }
+            try {
                 bdWork.pushDataDist(new Date(), 0, 0, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
-                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.label1_txt("MANUAL_FORWARD");
                 distanceOut.clear();
