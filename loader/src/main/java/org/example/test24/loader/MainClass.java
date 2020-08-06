@@ -8,7 +8,14 @@ import org.example.test24.runner.Running;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.*;
+import java.util.Arrays;
 import java.util.Properties;
 
 
@@ -31,6 +38,8 @@ public class MainClass {
         commPort = new CommPort();
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
+
+        frameConfig(param);
 
         int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
@@ -55,6 +64,85 @@ public class MainClass {
         runner.init(bdWork, commPort, MainFrame.mainFrame);
 
         commPort.ReciveStart();
+    }
+
+    private void frameConfig(String[] parametrs) {
+        JFrame frameStart = new JFrame("настройка");
+        frameStart.setPreferredSize(new Dimension(640, 480));
+        frameStart.setLayout(null);
+        //
+        JLabel labelPort = new JLabel(parametrs[1]);
+        labelPort.setBounds(100,5,100, 30);
+        //
+        String[] stringListPorts = commPort.getListPortsName();
+        Arrays.sort(stringListPorts);
+        JComboBox<String> portList = new JComboBox<>(stringListPorts);
+        portList.setBounds(70, 40, 100, 20);
+        portList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String portName = (String) ((JComboBox) e.getSource()).getSelectedItem();
+                int ch =  commPort.Open(null, portName, BAUD.baud57600);
+                if (ch == CommPort.INITCODE_OK) {
+                    labelPort.setText(portName);
+                    commPort.Close();
+                }
+            }
+        });
+        //
+        //
+        Container container = frameStart.getContentPane();
+        container.add(labelPort);
+        container.add(portList);
+        //
+        frameStart.pack();
+        frameStart.setVisible(true);
+        frameStart.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().removeAll();
+                System.exit(2);
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
+        try {
+            while (true) {
+                Thread.sleep(1_000);
+            }
+        } catch (java.lang.Throwable e) {
+            e.printStackTrace();
+        }
+        frameStart.dispose();
+        System.exit(1);
     }
 
     private void errorCommMessage(int checkComm, CommPort commPort) {
