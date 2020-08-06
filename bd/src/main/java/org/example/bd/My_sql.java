@@ -14,7 +14,7 @@ class My_sql implements Sql_interface {
     }
 
     @Override
-    public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) {
+    public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception {
         if (getConnect() == null) {
             // нет связи
             return;
@@ -54,7 +54,7 @@ class My_sql implements Sql_interface {
     }
 
     @Override
-    public Connection getConnect() {
+    public Connection getConnect() throws Exception {
         if (connection == null) connectBd();
         else {
             try {
@@ -75,12 +75,11 @@ class My_sql implements Sql_interface {
         return connection;
     }
 
-    private void connectBd() {
+    private void connectBd() throws Exception {
         try {
             parametersSql.load();
         } catch (Exception e) {
-            e.printStackTrace();
-            return;
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
         }
         String connectionUrl = "jdbc:mysql://%1$s:%2$s/%3$s";
         String connString = String.format(connectionUrl
@@ -92,15 +91,13 @@ class My_sql implements Sql_interface {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.exit(1);
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
         }
 
         try {
             connection = DriverManager.getConnection(connString, parametersSql.user, parametersSql.password);
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.exit(1);
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
         }
     }
 

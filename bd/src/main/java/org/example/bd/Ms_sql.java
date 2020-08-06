@@ -13,7 +13,7 @@ class Ms_sql implements Sql_interface {
     }
 
     @Override
-    public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) {
+    public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception {
         if (getConnect() == null) {
             // нет связи
             return;
@@ -46,7 +46,7 @@ class Ms_sql implements Sql_interface {
     }
 
     @Override
-    public Connection getConnect() {
+    public Connection getConnect() throws Exception {
         if (connection == null) connectBd();
         else {
             try {
@@ -67,12 +67,11 @@ class Ms_sql implements Sql_interface {
         return connection;
     }
 
-    private void connectBd() {
+    private void connectBd() throws Exception {
         try {
             parametersSql.load();
         } catch (Exception e) {
-            e.printStackTrace();
-            return;
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
         }
         String connectionUrl = "jdbc:sqlserver://%1$s:%2$s;databaseName=%3$s";
         String connString = String.format(connectionUrl
@@ -83,13 +82,13 @@ class Ms_sql implements Sql_interface {
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
         }
 
         try {
             connection = DriverManager.getConnection(connString, parametersSql.user, parametersSql.password);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
         }
     }
 

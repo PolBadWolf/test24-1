@@ -19,11 +19,11 @@ public class BdWork {
         }
     }
 
-    public Connection getConnect() {
+    public Connection getConnect() throws Exception {
         return sql_interface.getConnect();
     }
 
-    public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) {
+    public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception {
         sql_interface.pushDataDist(date, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, distance);
     }
 
