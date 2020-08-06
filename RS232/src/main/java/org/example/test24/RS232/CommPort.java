@@ -94,7 +94,6 @@ public class CommPort implements CommPort_Interface {
     final private int timeOutLenght     = 5;
     // ---------------------
     private int timeOutSynhro = 1;
-    private boolean noSynhro = true;
     private boolean flagHead = true;
     private byte[]  headBuffer = new byte[headBufferLenght];
     private int lenghtRecive;
@@ -121,24 +120,16 @@ public class CommPort implements CommPort_Interface {
                 if (timeOutSynhro > 1)    timeOutSynhro--;
                 if (timeOutSynhro == 1) {
                     timeOutSynhro = 0;
-                    noSynhro = true;
                     flagHead = true;
                 }
             }
 
             if (flagHead) {
-                int lenght = headBufferLenght;
-
-                noSynhro = true;
-
-                if (noSynhro) {
-                    lenght = 1;
-                    for (int i = 0; i < headBufferLenght - 1; i++) {
-                        headBuffer[i] = headBuffer[i + 1];
-                    }
+                for (int i = 0; i < headBufferLenght - 1; i++) {
+                    headBuffer[i] = headBuffer[i + 1];
                 }
 
-                num = port.readBytes(headBuffer, lenght, headBufferLenght - lenght);
+                num = port.readBytes(headBuffer, 1, headBufferLenght - 1);
 
                 if (num < 0) {
                     onCycle = -1;
@@ -157,21 +148,17 @@ public class CommPort implements CommPort_Interface {
 
                 onCycle = 0;
 
-                if (num == lenght) {
-                    if (headBuffer[0] != (byte)0xe6)    continue;
-                    if (headBuffer[1] != (byte)0x19)    continue;
-                    if (headBuffer[2] != (byte)0x55)    continue;
-                    if (headBuffer[3] != (byte)0xaa)    continue;
+                if (headBuffer[0] != (byte)0xe6)    continue;
+                if (headBuffer[1] != (byte)0x19)    continue;
+                if (headBuffer[2] != (byte)0x55)    continue;
+                if (headBuffer[3] != (byte)0xaa)    continue;
 
-                    noSynhro = false;
-                    flagHead = true;
-                    timeOutSynhro = timeOutLenght;
-                    lenghtRecive = headBuffer[4] & 0x000000ff;
-                    lenghtReciveSumm = 0;
-                }
+                flagHead = true;
+                timeOutSynhro = timeOutLenght;
+                lenghtRecive = headBuffer[4] & 0x000000ff;
+                lenghtReciveSumm = 0;
             }
             else {
-                noSynhro = true;
                 continue;
             }
 
@@ -196,9 +183,6 @@ public class CommPort implements CommPort_Interface {
 
             if (crc == bytes[lenghtRecive - 1]) {
                 rsCallBack.reciveRsPush(bytes, lenghtRecive - 1);
-            }
-            else {
-                noSynhro = true;
             }
 
             flagHead = true;
