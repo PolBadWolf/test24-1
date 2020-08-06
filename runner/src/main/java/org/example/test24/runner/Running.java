@@ -8,7 +8,6 @@ import org.example.test24.allinterface.bd.DistClass;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 import ru.yandex.fixcolor.my_lib.graphics.Plot;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -23,23 +22,16 @@ public class Running implements Runner_Interface {
     private int tik_shelf;
     private int tik_back;
     private int tik_stop;
+    private boolean reciveOn = false;
 
-    private int debugN = 0;
-    private int indexX = 0;
     private int tik, tik0;
 
+
     @Override
-    public void init(String selDataBase, CommPort_Interface commPort, MainFrame_interface mainFrame) {
+    public void init(BdWork bdWork, CommPort_Interface commPort, MainFrame_interface mainFrame) {
         this.commPort = commPort;
         this.mainFrame = mainFrame;
-
-        try {
-            bdWork = new BdWork(selDataBase);
-            bdWork.getConnect();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+        this.bdWork = bdWork;
 
         distanceOut = new ArrayList<>();
 
@@ -77,35 +69,30 @@ public class Running implements Runner_Interface {
         switch (b) {
             case TypePack.MANUAL_ALARM:
                 mainFrame.label1_txt("MANUAL_ALARM");
+                reciveOn = false;
                 break;
             case TypePack.MANUAL_BACK:
                 mainFrame.label1_txt("MANUAL_BACK");
                 tik_back = tik;
                 break;
             case TypePack.MANUAL_STOP:
-                mainFrame.label1_txt("MANUAL_STOP");
-                tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
-            {
-                int tikSampl = distanceOut.get(0).tik;
-                int tikCurr = 0;
-                for (int i = 1; i < distanceOut.size(); i++) {
-                    tikCurr = distanceOut.get(i).tik;
-                    if ( (tikCurr - tikSampl) != 5) {
-                        tikSampl = -1;
-                    }
-                    tikSampl = tikCurr;
+                reciveOn = false;
+                try {
+                    tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
+                    mainFrame.label1_txt("MANUAL_STOP");
+                    System.out.println("count = " + distanceOut.size());
+                    bdWork.pushDataDist(new Date(), 0, 0, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                } catch (java.lang.Throwable e) {
+                    e = null;
                 }
-            }
-                bdWork.pushDataDist(new Date(), 0, 0, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
-                break;
+            break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.label1_txt("MANUAL_FORWARD");
                 distanceOut.clear();
 
                 plot.allDataClear();
-                indexX = 0;
-                debugN = 0;
                 tik0 = tik;
+                reciveOn = true;
                 break;
             case TypePack.MANUAL_SHELF:
                 mainFrame.label1_txt("MANUAL_SHELF");
@@ -127,8 +114,11 @@ public class Running implements Runner_Interface {
                 mainFrame.label1_txt("CYCLE_SHELF");
                 break;
             case TypePack.CURENT_DATA:
-                paintTrends(bytes);
-                distanceOut.add(new DistClass(tik, (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8)));
+                if (reciveOn) {
+                    paintTrends(bytes);
+                    int dist = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+                    distanceOut.add(new DistClass(tik, dist));
+                }
                 break;
             case TypePack.VES:
                 showVes(bytes);
@@ -148,8 +138,6 @@ public class Running implements Runner_Interface {
         dist = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
         //ves  = (short) ((bytes[5 + 2] & 0xff) + ((bytes[5 + 3] & 0xff) << 8));
 
-        //plot.newDataX(indexX);
-        //x = indexX;
         x = (short)((tik - tik0) / 5);
         plot.newDataX(x);
         plot.newDataTrend(0, dist);
@@ -157,10 +145,8 @@ public class Running implements Runner_Interface {
         plot.newDataPush();
         plot.rePaint();
 
-        indexX++;
         if (x >= (3_600_000) / 5 ) {
             plot.allDataClear();
-            indexX = 0;
             tik0 = tik;
         }
     }
