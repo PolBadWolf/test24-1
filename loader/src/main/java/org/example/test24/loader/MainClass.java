@@ -71,8 +71,26 @@ public class MainClass {
         frameStart.setPreferredSize(new Dimension(640, 480));
         frameStart.setLayout(null);
         //
+        JPanel panel1 = new JPanel();
+        panel1.setBounds(10,10,200,200);
+        panel1.setBorder(BorderFactory.createTitledBorder("выбор Comm порта"));
+        panel1.setLayout(null);
+        //
+        Container container = frameStart.getContentPane();
+        container.add(panel1);
+        //
+        JLabel labelPortLabel = new JLabel("текщий порт: ");
+        labelPortLabel.setBounds(5,5,100,30);
+        panel1.add(labelPortLabel);
+
         JLabel labelPort = new JLabel(parametrs[1]);
-        labelPort.setBounds(100,5,100, 30);
+        int x= labelPortLabel.getGraphics().getFontMetrics().stringWidth(labelPortLabel.getText());
+        labelPort.setBounds(x,5,100, 30);
+        panel1.add(labelPort);
+        //
+        JTextField textField = new JTextField("textField");
+        textField.setBounds(100,100,100,50);
+        //textArea.setBounds(250, 100, 100, 50);
         //
         String[] stringListPorts = commPort.getListPortsName();
         Arrays.sort(stringListPorts);
@@ -87,13 +105,18 @@ public class MainClass {
                     labelPort.setText(portName);
                     commPort.Close();
                 }
+                System.out.println(labelPortLabel.getGraphics().getFontMetrics().stringWidth(labelPortLabel.getText()));
             }
         });
+        panel1.add(portList);
         //
         //
-        Container container = frameStart.getContentPane();
-        container.add(labelPort);
-        container.add(portList);
+        //container.add(labelPort);
+        //container.add(portList);
+        //container.add(textField);
+        //
+//        panel1.add(labelPortLabel);
+//        panel1.add(labelPort);
         //
         frameStart.pack();
         frameStart.setVisible(true);
