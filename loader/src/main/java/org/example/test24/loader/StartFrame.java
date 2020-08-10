@@ -21,6 +21,7 @@ import java.util.Arrays;
 class StartFrame {
     private MainClass parentSuper = null;
     private String[] parametrs = null;
+    private ParametersSql parametersSql;
 
     private JFrame frameStart = null;
 
@@ -39,6 +40,9 @@ class StartFrame {
     private JTextField fieldParamServerPassword = null;
     private JComboBox<String> comboBoxListBd = null;
 
+    private JButton buttonOk = null;
+    private JButton buttonTest = null;
+
     public StartFrame(MainClass parentSuper) {
         this.parentSuper = parentSuper;
     }
@@ -47,14 +51,13 @@ class StartFrame {
         this.parametrs = parametrs;
         frameConstructor();
         try {
-            while (true) {
+            while (frameStart != null) {
                 Thread.sleep(1_000);
             }
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
+            System.exit(3);
         }
-        frameStart.dispose();
-        System.exit(1);
     }
 
     private void frameConstructor() {
@@ -107,6 +110,12 @@ class StartFrame {
             panelParamSQL.add(getLabel("база данных: ", new Rectangle(6, 110, 140, 30)));
             comboBoxListBd = getComboBoxListBd(new Rectangle(160, 116, 140, 20));
             panelParamSQL.add(comboBoxListBd);
+
+            buttonOk = getButtonOk("Ok", new Rectangle(16, 140, 80, 30));
+            panelParamSQL.add(buttonOk);
+
+            buttonTest = getButtonTestBd("Тест", new Rectangle(160, 140, 80, 30));
+            panelParamSQL.add(buttonTest);
         }
         frameStart.pack();
 
@@ -296,26 +305,58 @@ class StartFrame {
         comboBox.setBounds(positionSize);
         return comboBox;
     }
+    private JButton getButtonOk(String text, Rectangle positionSize) {
+        JButton button = new JButton(text);
+        button.setBounds(positionSize);
+        button.setEnabled(false);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parametersSql.save();
+                frameStart.getContentPane().removeAll();
+                frameStart.removeAll();
+                frameStart.setVisible(false);
+                frameStart.dispose();
+                frameStart = null;
+            }
+        });
+        return button;
+    }
+    private JButton getButtonTestBd(String text, Rectangle positionSize) {
+        JButton button = new JButton(text);
+        button.setBounds(positionSize);
+        button.setEnabled(false);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buttonOk.setEnabled(true);
+            }
+        });
+        return button;
+    }
 
     private void getParamSql() {
-        ParametersSql parameters = new ParametersSql(
+        buttonOk.setEnabled(false);
+        parametersSql = new ParametersSql(
                 BdWork.BdSelectFileParam ((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql),
                 (String) comboBoxTypeBd.getSelectedItem()
         );
         try {
-            parameters.load();
-            fieldParamServerIP.setText(parameters.urlServer);
-            fieldParamServerPort.setText(parameters.portServer);
-            fieldParamServerLogin.setText(parameters.user);
-            fieldParamServerPassword.setText(parameters.password);
+            parametersSql.load();
+            fieldParamServerIP.setText(parametersSql.urlServer);
+            fieldParamServerPort.setText(parametersSql.portServer);
+            fieldParamServerLogin.setText(parametersSql.user);
+            fieldParamServerPassword.setText(parametersSql.password);
             getListBd();
-            comboBoxListBd.setSelectedItem(parameters.dataBase);
+            comboBoxListBd.setSelectedItem(parametersSql.dataBase);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
     private void getListBd() throws Exception {
+        buttonOk.setEnabled(false);
+        buttonTest.setEnabled(false);
         try {
             comboBoxListBd.removeAllItems();
             BdWork bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql);
@@ -328,6 +369,7 @@ class StartFrame {
             for (int i = 0; i < listBd.length; i++) {
                 comboBoxListBd.addItem(listBd[i]);
             }
+            buttonTest.setEnabled(true);
         } catch (SQLException e) {
             throw new Exception("ошибка инициация подключения к BD");
         } catch (Exception e) {
