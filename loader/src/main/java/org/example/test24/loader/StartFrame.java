@@ -92,11 +92,11 @@ class StartFrame {
             panelParamSQL.add(fieldParamServerIP);
 
             panelParamSQL.add(getLabel("логин: ", new Rectangle(6, 30, 140, 30)));
-            fieldParamServerLogin = getTextField("max", new Rectangle(160, 36, 140, 18));
+            fieldParamServerLogin = getFieldParamServerLogin("max", new Rectangle(160, 36, 140, 18));
             panelParamSQL.add(fieldParamServerLogin);
 
             panelParamSQL.add(getLabel("пароль: ", new Rectangle(6, 50, 140, 30)));
-            fieldParamServerPassword = getTextFieldPassword("1122", new Rectangle(160, 56, 140, 18));
+            fieldParamServerPassword = getFieldParamServerPassword("1122", new Rectangle(160, 56, 140, 18));
             panelParamSQL.add(fieldParamServerPassword);
 
             panelParamSQL.add(getLabel("база данных: ", new Rectangle(6, 80, 140, 30)));
@@ -245,17 +245,47 @@ class StartFrame {
                 }
             }
         });
+        field.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    getListBd();
+                } catch (Exception ex) {
+                    System.out.println(ex.getLocalizedMessage());
+                }
+            }
+        });
         return field;
     }
-    private JTextField getTextField(String text, Rectangle positionSize) {
-        JTextField textField = new JTextField(text);
-        textField.setBounds(positionSize);
-        return textField;
+    private JTextField getFieldParamServerLogin(String text, Rectangle positionSize) {
+        JTextField field = new JTextField(text);
+        field.setBounds(positionSize);
+        field.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    getListBd();
+                } catch (Exception ex) {
+                    System.out.println(ex.getLocalizedMessage());
+                }
+            }
+        });
+        return field;
     }
-    private JTextField getTextFieldPassword(String text, Rectangle positionSize) {
-        JTextField textField = new JPasswordField(text);
-        textField.setBounds(positionSize);
-        return textField;
+    private JTextField getFieldParamServerPassword(String text, Rectangle positionSize) {
+        JTextField field = new JPasswordField(text);
+        field.setBounds(positionSize);
+        field.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    getListBd();
+                } catch (Exception ex) {
+                    System.out.println(ex.getLocalizedMessage());
+                }
+            }
+        });
+        return field;
     }
     private JComboBox getComboBoxListBd(Rectangle positionSize) {
         JComboBox<String> comboBox = new JComboBox<>();
@@ -264,7 +294,6 @@ class StartFrame {
     }
 
     private void getParamSql() {
-        comboBoxListBd.removeAllItems();
         ParametersSql parameters = new ParametersSql(
                 BdWork.BdSelectFileParam ((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql),
                 (String) comboBoxTypeBd.getSelectedItem()
@@ -282,6 +311,7 @@ class StartFrame {
 
     }
     private void getListBd() throws Exception {
+        comboBoxListBd.removeAllItems();
         try {
             BdWork bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql);
             String[] listBd = bdWork.getConnectListBd(
