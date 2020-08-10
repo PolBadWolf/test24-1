@@ -129,4 +129,15 @@ class Ms_sql implements Sql_interface {
         }
     }
 
+    @Override
+    public boolean testStuctBase() {
+
+        try {
+            connectBd();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
 }

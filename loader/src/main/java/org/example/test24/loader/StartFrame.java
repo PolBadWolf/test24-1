@@ -21,7 +21,8 @@ import java.util.Arrays;
 class StartFrame {
     private MainClass parentSuper = null;
     private String[] parametrs = null;
-    private ParametersSql parametersSql;
+    private ParametersSql parametersSql = null;
+    private BdWork bdWork = null;
 
     private JFrame frameStart = null;
 
@@ -329,7 +330,7 @@ class StartFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                buttonOk.setEnabled(true);
+                buttonOk.setEnabled(bdWork.testStuctBase());
             }
         });
         return button;
@@ -359,7 +360,7 @@ class StartFrame {
         buttonTest.setEnabled(false);
         try {
             comboBoxListBd.removeAllItems();
-            BdWork bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql);
+            bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql);
             String[] listBd = bdWork.getConnectListBd(
                     fieldParamServerIP.getText(),
                     fieldParamServerPort.getText(),

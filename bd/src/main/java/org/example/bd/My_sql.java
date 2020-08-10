@@ -137,4 +137,8 @@ class My_sql implements Sql_interface {
         }
     }
 
+    @Override
+    public boolean testStuctBase() {
+        return false;
+    }
 }
