@@ -34,6 +34,7 @@ class StartFrame {
 
     private JPanel panelParamSQL = null;
     private JTextField fieldParamServerIP = null;
+    private JTextField fieldParamServerPort = null;
     private JTextField fieldParamServerLogin = null;
     private JTextField fieldParamServerPassword = null;
     private JComboBox<String> comboBoxListBd = null;
@@ -91,22 +92,25 @@ class StartFrame {
             fieldParamServerIP = getFieldParamServerIP(new Rectangle(160, 15, 140, 18));
             panelParamSQL.add(fieldParamServerIP);
 
-            panelParamSQL.add(getLabel("логин: ", new Rectangle(6, 30, 140, 30)));
-            fieldParamServerLogin = getFieldParamServerLogin("max", new Rectangle(160, 36, 140, 18));
+            panelParamSQL.add(getLabel("порт: ", new Rectangle(6, 30, 140, 30)));
+            fieldParamServerPort = getFieldParamServerLogin("123", new Rectangle(160, 36, 140, 18));
+            panelParamSQL.add(fieldParamServerPort);
+
+            panelParamSQL.add(getLabel("логин: ", new Rectangle(6, 50, 140, 30)));
+            fieldParamServerLogin = getFieldParamServerLogin("login", new Rectangle(160, 56, 140, 18));
             panelParamSQL.add(fieldParamServerLogin);
 
-            panelParamSQL.add(getLabel("пароль: ", new Rectangle(6, 50, 140, 30)));
-            fieldParamServerPassword = getFieldParamServerPassword("1122", new Rectangle(160, 56, 140, 18));
+            panelParamSQL.add(getLabel("пароль: ", new Rectangle(6, 80, 140, 30)));
+            fieldParamServerPassword = getFieldParamServerPassword("password", new Rectangle(160, 86, 140, 18));
             panelParamSQL.add(fieldParamServerPassword);
 
-            panelParamSQL.add(getLabel("база данных: ", new Rectangle(6, 80, 140, 30)));
-            comboBoxListBd = getComboBoxListBd(new Rectangle(160, 86, 140, 20));
+            panelParamSQL.add(getLabel("база данных: ", new Rectangle(6, 110, 140, 30)));
+            comboBoxListBd = getComboBoxListBd(new Rectangle(160, 116, 140, 20));
             panelParamSQL.add(comboBoxListBd);
         }
         frameStart.pack();
 
         getParamSql();
-        //getListBd();
 
         frameStart.setVisible(true);
     }
@@ -301,6 +305,7 @@ class StartFrame {
         try {
             parameters.load();
             fieldParamServerIP.setText(parameters.urlServer);
+            fieldParamServerPort.setText(parameters.portServer);
             fieldParamServerLogin.setText(parameters.user);
             fieldParamServerPassword.setText(parameters.password);
             getListBd();
@@ -311,16 +316,15 @@ class StartFrame {
 
     }
     private void getListBd() throws Exception {
-        comboBoxListBd.removeAllItems();
         try {
+            comboBoxListBd.removeAllItems();
             BdWork bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql);
             String[] listBd = bdWork.getConnectListBd(
                     fieldParamServerIP.getText(),
-                    "1433",
+                    fieldParamServerPort.getText(),
                     fieldParamServerLogin.getText(),
                     fieldParamServerPassword.getText()
             );
-            comboBoxListBd.removeAllItems();
             for (int i = 0; i < listBd.length; i++) {
                 comboBoxListBd.addItem(listBd[i]);
             }
