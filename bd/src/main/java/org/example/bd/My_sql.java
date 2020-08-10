@@ -75,6 +75,11 @@ class My_sql implements Sql_interface {
         return connection;
     }
 
+    @Override
+    public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
+        return new String[0];
+    }
+
     private void connectBd() throws Exception {
         try {
             parametersSql.load();

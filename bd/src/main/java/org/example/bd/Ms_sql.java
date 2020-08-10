@@ -1,14 +1,16 @@
 package org.example.bd;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
 
 class Ms_sql implements Sql_interface {
-    private final String fileNameProperties = "ms_sql.txt";
+    private String fileNameProperties = null;
     private ParametersSql parametersSql = null;
     private Connection connection = null;
 
-    public Ms_sql() {
+    public Ms_sql(String fileNameProperties) {
+        this.fileNameProperties = fileNameProperties;
         parametersSql = new ParametersSql(fileNameProperties, "MS_SQL");
     }
 
@@ -65,6 +67,33 @@ class Ms_sql implements Sql_interface {
         }
         if (flag)   connection = null;
         return connection;
+    }
+    public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
+        Connection connection = null;
+        ResultSet rs = null;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        } catch (ClassNotFoundException e) {
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
+        }
+        String connectionUrl = "jdbc:sqlserver://%1$s:%2$s";
+        String connString = String.format(connectionUrl
+                , ip
+                , portServer
+        );
+        try {
+            connection = DriverManager.getConnection(connString, login, password);
+            rs = connection.createStatement().executeQuery("SELECT name FROM sys.databases");
+        } catch (SQLException e) {
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
+        }
+        ArrayList<String> listBd = new ArrayList<>();
+        while (rs.next()) {
+            listBd.add(rs.getString(1));
+        }
+        rs.close();
+        connection.close();
+        return listBd.toArray(new String[listBd.size()]);
     }
 
     private void connectBd() throws Exception {
