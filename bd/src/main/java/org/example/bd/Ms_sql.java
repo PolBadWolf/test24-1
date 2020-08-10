@@ -68,6 +68,8 @@ class Ms_sql implements Sql_interface {
         if (flag)   connection = null;
         return connection;
     }
+
+    @Override
     public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
         Connection connection = null;
         ResultSet rs = null;
@@ -88,8 +90,14 @@ class Ms_sql implements Sql_interface {
             throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
         }
         ArrayList<String> listBd = new ArrayList<>();
+        String s;
         while (rs.next()) {
-            listBd.add(rs.getString(1));
+            s = rs.getString(1);
+            if (s.toLowerCase().equals("master"))   continue;
+            if (s.toLowerCase().equals("tempdb"))   continue;
+            if (s.toLowerCase().equals("model"))   continue;
+            if (s.toLowerCase().equals("msdb"))   continue;
+            listBd.add(s);
         }
         rs.close();
         connection.close();
