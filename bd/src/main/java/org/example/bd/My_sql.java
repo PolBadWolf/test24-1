@@ -1,6 +1,7 @@
 package org.example.bd;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -75,6 +76,41 @@ class My_sql implements Sql_interface {
         return connection;
     }
 
+    @Override
+    public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
+        Connection connection = null;
+        ResultSet rs = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
+        }
+        String connectionUrl = "jdbc:mysql://%1$s:%2$s";
+        String connString = String.format(connectionUrl
+                , ip
+                , portServer
+        ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
+        try {
+            connection = DriverManager.getConnection(connString, login, password);
+            rs = connection.createStatement().executeQuery("SHOW DATABASES");
+        } catch (SQLException e) {
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
+        }
+        ArrayList<String> listBd = new ArrayList<>();
+        String s;
+        while (rs.next()) {
+            s = rs.getString(1);
+            if (s.toLowerCase().equals("information_schema"))   continue;
+            if (s.toLowerCase().equals("mysql"))   continue;
+            if (s.toLowerCase().equals("performance_schema"))   continue;
+            if (s.toLowerCase().equals("sys"))   continue;
+            listBd.add(s);
+        }
+        rs.close();
+        connection.close();
+        return listBd.toArray(new String[listBd.size()]);
+    }
+
     private void connectBd() throws Exception {
         try {
             parametersSql.load();
@@ -101,4 +137,8 @@ class My_sql implements Sql_interface {
         }
     }
 
+    @Override
+    public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
+        return false;
+    }
 }

@@ -1,14 +1,16 @@
 package org.example.bd;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
 
 class Ms_sql implements Sql_interface {
-    private final String fileNameProperties = "ms_sql.txt";
+    private String fileNameProperties = null;
     private ParametersSql parametersSql = null;
     private Connection connection = null;
 
-    public Ms_sql() {
+    public Ms_sql(String fileNameProperties) {
+        this.fileNameProperties = fileNameProperties;
         parametersSql = new ParametersSql(fileNameProperties, "MS_SQL");
     }
 
@@ -67,6 +69,41 @@ class Ms_sql implements Sql_interface {
         return connection;
     }
 
+    @Override
+    public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
+        Connection connection = null;
+        ResultSet rs = null;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        } catch (ClassNotFoundException e) {
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
+        }
+        String connectionUrl = "jdbc:sqlserver://%1$s:%2$s";
+        String connString = String.format(connectionUrl
+                , ip
+                , portServer
+        );
+        try {
+            connection = DriverManager.getConnection(connString, login, password);
+            rs = connection.createStatement().executeQuery("SELECT name FROM sys.databases");
+        } catch (SQLException e) {
+            throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
+        }
+        ArrayList<String> listBd = new ArrayList<>();
+        String s;
+        while (rs.next()) {
+            s = rs.getString(1);
+            if (s.toLowerCase().equals("master"))   continue;
+            if (s.toLowerCase().equals("tempdb"))   continue;
+            if (s.toLowerCase().equals("model"))   continue;
+            if (s.toLowerCase().equals("msdb"))   continue;
+            listBd.add(s);
+        }
+        rs.close();
+        connection.close();
+        return listBd.toArray(new String[listBd.size()]);
+    }
+
     private void connectBd() throws Exception {
         try {
             parametersSql.load();
@@ -92,4 +129,50 @@ class Ms_sql implements Sql_interface {
         }
     }
 
+    @Override
+    public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
+        ArrayList<String> listColmn = new ArrayList<>();
+        {
+            listColmn.add("id");
+            listColmn.add("dateTime");
+            listColmn.add("id_spec");
+            listColmn.add("n_cicle");
+            listColmn.add("ves");
+            listColmn.add("tik_shelf");
+            listColmn.add("tik_back");
+            listColmn.add("tik_stop");
+            listColmn.add("dis");
+        }
+        Connection connection = null;
+        ResultSet resultSet = null;
+        Statement statement = null;
+        int len, countList = listColmn.size(), countSql = 0;
+        String sample;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            String connectionUrl = "jdbc:sqlserver://%1$s:%2$s;databaseName=%3$s";
+            String connString = String.format(connectionUrl
+                    , ip
+                    , portServer
+                    , base
+            );
+            connection = DriverManager.getConnection(connString, login, password);
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'Table_Data'");
+            while (resultSet.next()) {
+                sample = resultSet.getString(1);
+                countSql++;
+                if ((len = listColmn.size()) == 0)  break;
+                for(int i=0; i<len; i++) {
+                    if (!sample.equals(listColmn.get(i)))  continue;
+                    listColmn.remove(i);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return countList == countSql;
+    }
 }

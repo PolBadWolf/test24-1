@@ -8,12 +8,16 @@ import org.example.test24.runner.Running;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.Properties;
 
 
 public class MainClass {
+    final public String fileNameConfig = "config.txt";
+    final public String fileNameMsSql = "ms_sql.txt";
+    final public String fileNameMySql = "my_sql.txt";
+    final public String[] fileNameSql = {fileNameMsSql, fileNameMySql};
+
     private ScreenClass mainFx = null;
     private Running runner = null;
     public CommPort commPort = null;
@@ -44,7 +48,7 @@ public class MainClass {
         }
 
         try {
-            bdWork = new BdWork(param[0]);
+            bdWork = new BdWork(param[0], fileNameSql);
             bdWork.getConnect();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
@@ -62,8 +66,6 @@ public class MainClass {
         commPort.ReciveStart();
     }
 
-
-
     private void errorCommMessage(int checkComm, CommPort commPort) {
         switch (checkComm) {
             case CommPort.INITCODE_ERROROPEN:
@@ -79,20 +81,19 @@ public class MainClass {
         }
     }
 
-    private String[] getConfig() {
+    public String[] getConfig() {
         Properties properties = new Properties();
         boolean flagReload = false;
         String[] strings = new String[2];
 
         try {
-            properties.load(new FileReader("config.txt"));
-            strings[0] = properties.getProperty("DataBase");
-            strings[1] = properties.getProperty("CommPort");
+            properties.load(new FileReader(fileNameConfig));
+            strings[0] = properties.getProperty("DataBase").toUpperCase();
+            strings[1] = properties.getProperty("CommPort").toUpperCase();
 
             if (strings[0] == null || strings[1] == null)   flagReload = true;
 
         } catch (IOException e) {
-            //e.printStackTrace();
             System.out.println("файл config.txt не найден");
             flagReload = true;
         }
@@ -100,15 +101,20 @@ public class MainClass {
         if (flagReload) {
             strings[0] = "MY_SQL";
             strings[1] = "com2";
-            try {
-                properties.setProperty("DataBase", strings[0]);
-                properties.setProperty("CommPort", strings[1]);
-                properties.store(new FileWriter("config.txt"), "config.txt");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            saveConfig(strings);
         }
 
         return strings;
     }
+    public void saveConfig(String[] parameters) {
+        Properties properties = new Properties();
+        try {
+            properties.setProperty("DataBase", parameters[0].toUpperCase());
+            properties.setProperty("CommPort", parameters[1].toUpperCase());
+            properties.store(new FileWriter(fileNameConfig), "config");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
