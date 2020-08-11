@@ -134,9 +134,14 @@ class StartFrame {
         }
         boolean flOkCommPort = checkCommPort();
         boolean flOkParamSql = getParamSql();
-`        frameStart.pack();
+        boolean flOkTestBd = false;
+        if (flOkParamSql) {
+            flOkTestBd = bdWork.testStuctBase(fieldParamServerIP.getText(), fieldParamServerPort.getText(),
+                    fieldParamServerLogin.getText(), fieldParamServerPassword.getText(), (String) comboBoxListBd.getSelectedItem());
+        }
+        frameStart.pack();
         frameStart.setVisible(true);
-        if (flOkCommPort && flOkParamSql) {
+        if (flOkCommPort && flOkParamSql && flOkTestBd) {
             threadSkeep = new Thread(new Runnable() {
                 @Override
                 public void run() {
