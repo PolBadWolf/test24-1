@@ -123,6 +123,7 @@ class StartFrame {
             buttonTest = getButtonTestBd("Тест", new Rectangle(210, 140, 80, 30));
             panelParamSQL.add(buttonTest);
         }
+        checkCommPort();
         getParamSql();
         frameStart.pack();
         frameStart.setVisible(true);
@@ -194,31 +195,10 @@ class StartFrame {
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String portName = (String) ((JComboBox) e.getSource()).getSelectedItem();
-                int ch =  parentSuper.commPort.Open(null, portName, BAUD.baud57600);
-                switch (ch) {
-                    case CommPort.INITCODE_OK:
-                        labelPortCurrent.setText(portName);
-                        parentSuper.commPort.Close();
-                        textPortStatus.setText("ok");
-                        break;
-                    case CommPort.INITCODE_NOTEXIST:
-                        labelPortCurrent.setText(parametrs[1]);
-                        parentSuper.commPort.Close();
-                        textPortStatus.setText("порт не найден");
-                        break;
-                    case CommPort.INITCODE_ERROROPEN:
-                        labelPortCurrent.setText(parametrs[1]);
-                        parentSuper.commPort.Close();
-                        textPortStatus.setText("ошибка открытия");
-                        break;
-                    default:
+                if (checkCommPort()) {
+                    parametrs[1] = (String) comboBoxCommPort.getSelectedItem();
+                    parentSuper.saveConfig(parametrs);
                 }
-                if (ch == CommPort.INITCODE_OK) {
-                } else {
-
-                }
-
             }
         });
         return comboBox;
@@ -239,7 +219,10 @@ class StartFrame {
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                getParamSql();
+                if (getParamSql()) {
+                    parametrs[0] = (String) comboBox.getSelectedItem();
+                    parentSuper.saveConfig(parametrs);
+                }
             }
         });
         return comboBox;
@@ -359,7 +342,8 @@ class StartFrame {
         return button;
     }
 
-    private void getParamSql() {
+    private boolean getParamSql() {
+        boolean stat = true;
         buttonOk.setEnabled(false);
         buttonSave.setEnabled(false);
         parametersSql = new ParametersSql(
@@ -375,9 +359,10 @@ class StartFrame {
             getListBd();
             comboBoxListBd.setSelectedItem(parametersSql.dataBase);
         } catch (Exception e) {
-            e.printStackTrace();
+            stat = false;
+            System.out.println(e.getLocalizedMessage());
         }
-
+        return stat;
     }
     private void getListBd() throws Exception {
         buttonOk.setEnabled(false);
@@ -403,4 +388,27 @@ class StartFrame {
         }
     }
 
+    private boolean checkCommPort() {
+        String portName = (String) comboBoxCommPort.getSelectedItem();
+        int ch =  parentSuper.commPort.Open(null, portName, BAUD.baud57600);
+        switch (ch) {
+            case CommPort.INITCODE_OK:
+                labelPortCurrent.setText(portName);
+                parentSuper.commPort.Close();
+                textPortStatus.setText("ok");
+                break;
+            case CommPort.INITCODE_NOTEXIST:
+                labelPortCurrent.setText(parametrs[1]);
+                parentSuper.commPort.Close();
+                textPortStatus.setText("порт не найден");
+                break;
+            case CommPort.INITCODE_ERROROPEN:
+                labelPortCurrent.setText(parametrs[1]);
+                parentSuper.commPort.Close();
+                textPortStatus.setText("ошибка открытия");
+                break;
+            default:
+        }
+        return ch == CommPort.INITCODE_OK;
+    }
 }
