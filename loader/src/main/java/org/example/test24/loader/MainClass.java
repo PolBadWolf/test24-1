@@ -81,7 +81,7 @@ public class MainClass {
         }
     }
 
-    private String[] getConfig() {
+    public String[] getConfig() {
         Properties properties = new Properties();
         boolean flagReload = false;
         String[] strings = new String[2];
@@ -94,7 +94,6 @@ public class MainClass {
             if (strings[0] == null || strings[1] == null)   flagReload = true;
 
         } catch (IOException e) {
-            //e.printStackTrace();
             System.out.println("файл config.txt не найден");
             flagReload = true;
         }
@@ -102,15 +101,20 @@ public class MainClass {
         if (flagReload) {
             strings[0] = "MY_SQL";
             strings[1] = "com2";
-            try {
-                properties.setProperty("DataBase", strings[0].toUpperCase());
-                properties.setProperty("CommPort", strings[1].toUpperCase());
-                properties.store(new FileWriter(fileNameConfig), "config");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            saveConfig(strings);
         }
 
         return strings;
     }
+    public void saveConfig(String[] parameters) {
+        Properties properties = new Properties();
+        try {
+            properties.setProperty("DataBase", parameters[0].toUpperCase());
+            properties.setProperty("CommPort", parameters[1].toUpperCase());
+            properties.store(new FileWriter(fileNameConfig), "config");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

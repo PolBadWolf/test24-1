@@ -130,14 +130,49 @@ class Ms_sql implements Sql_interface {
     }
 
     @Override
-    public boolean testStuctBase() {
-
+    public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
+        ArrayList<String> listColmn = new ArrayList<>();
+        {
+            listColmn.add("id");
+            listColmn.add("dateTime");
+            listColmn.add("id_spec");
+            listColmn.add("n_cicle");
+            listColmn.add("ves");
+            listColmn.add("tik_shelf");
+            listColmn.add("tik_back");
+            listColmn.add("tik_stop");
+            listColmn.add("dis");
+        }
+        Connection connection = null;
+        ResultSet resultSet = null;
+        Statement statement = null;
+        int len, countList = listColmn.size(), countSql = 0;
+        String sample;
         try {
-            connectBd();
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            String connectionUrl = "jdbc:sqlserver://%1$s:%2$s;databaseName=%3$s";
+            String connString = String.format(connectionUrl
+                    , ip
+                    , portServer
+                    , base
+            );
+            connection = DriverManager.getConnection(connString, login, password);
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'Table_Data'");
+            while (resultSet.next()) {
+                sample = resultSet.getString(1);
+                countSql++;
+                if ((len = listColmn.size()) == 0)  break;
+                for(int i=0; i<len; i++) {
+                    if (!sample.equals(listColmn.get(i)))  continue;
+                    listColmn.remove(i);
+                    break;
+                }
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
-        return true;
+        return countList == countSql;
     }
 }
