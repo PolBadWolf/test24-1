@@ -33,6 +33,7 @@ class StartFrame {
     private JComboBox<String> comboBoxCommPort = null;
 
     private JPanel panelTypeBd = null;
+    private JTextField textTypeBdStatus = null;
     private JComboBox<String> comboBoxTypeBd = null;
 
     private JPanel panelParamSQL = null;
@@ -89,6 +90,9 @@ class StartFrame {
 
             comboBoxTypeBd = getComboBoxTypeBd(parametrs[0], new Rectangle(6, 50, 110, 20));
             panelTypeBd.add(comboBoxTypeBd);
+
+            textTypeBdStatus = getTextTypeBdStatus("unknow", new Rectangle(6, 80, 110, 20));
+            panelTypeBd.add(textTypeBdStatus);
         }
         {
             panelParamSQL = getPanelTitle("параметры подключения", new Rectangle(10, 130, 360, 200));
@@ -226,6 +230,12 @@ class StartFrame {
             }
         });
         return comboBox;
+    }
+    private JTextField getTextTypeBdStatus(String text, Rectangle positionSize) {
+        JTextField textField = new JTextField(text);
+        textField.setBounds(positionSize);
+        textField.setEditable(false);
+        return textField;
     }
     private JTextField getFieldParamServerIP(Rectangle positionSize) {
         JTextField field = new JTextField("127.0.0.1");
