@@ -43,7 +43,7 @@ public class BdWork {
         sql_interface.pushDataDist(date, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, distance);
     }
 
-    public boolean testStuctBase() {
-        return sql_interface.testStuctBase();
+    public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
+        return sql_interface.testStuctBase(ip, portServer, login, password, base);
     }
 }

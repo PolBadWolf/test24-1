@@ -138,7 +138,7 @@ class My_sql implements Sql_interface {
     }
 
     @Override
-    public boolean testStuctBase() {
+    public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
         return false;
     }
 }
