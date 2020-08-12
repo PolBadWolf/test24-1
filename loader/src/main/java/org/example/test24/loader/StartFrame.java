@@ -15,7 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -24,6 +23,8 @@ class StartFrame {
     private String[] parametrs = null;
     private ParametersSql parametersSql = null;
     private BdWork bdWork = null;
+    private Thread threadSkeep = null;
+    private boolean threadSkeepOn;
 
     private JFrame frameStart = null;
 
@@ -44,6 +45,7 @@ class StartFrame {
     private JComboBox<String> comboBoxListBd = null;
 
     private JButton buttonOk = null;
+    private JLabel  labelOkCount = null;
     private JButton buttonSave = null;
     private JButton buttonTest = null;
 
@@ -103,7 +105,7 @@ class StartFrame {
             panelParamSQL.add(fieldParamServerIP);
 
             panelParamSQL.add(getLabel("порт: ", new Rectangle(6, 30, 140, 30)));
-            fieldParamServerPort = getFieldParamServerLogin("123", new Rectangle(160, 36, 140, 18));
+            fieldParamServerPort = getFieldParamServerPort("123", new Rectangle(160, 36, 140, 18));
             panelParamSQL.add(fieldParamServerPort);
 
             panelParamSQL.add(getLabel("логин: ", new Rectangle(6, 50, 140, 30)));
@@ -118,6 +120,9 @@ class StartFrame {
             comboBoxListBd = getComboBoxListBd(new Rectangle(160, 116, 140, 20));
             panelParamSQL.add(comboBoxListBd);
 
+            labelOkCount = getLabel("123", new Rectangle(50, 140, 40, 30));
+            labelOkCount.setVisible(false);
+            panelParamSQL.add(labelOkCount);
             buttonOk = getButtonOk("Ok", new Rectangle(16, 140, 80, 30));
             panelParamSQL.add(buttonOk);
 
@@ -127,10 +132,42 @@ class StartFrame {
             buttonTest = getButtonTestBd("Тест", new Rectangle(210, 140, 80, 30));
             panelParamSQL.add(buttonTest);
         }
-        checkCommPort();
-        getParamSql();
+        boolean flOkCommPort = checkCommPort();
+        boolean flOkParamSql = getParamSql();
+        boolean flOkTestBd = false;
+        if (flOkParamSql) {
+            flOkTestBd = bdWork.testStuctBase(fieldParamServerIP.getText(), fieldParamServerPort.getText(),
+                    fieldParamServerLogin.getText(), fieldParamServerPassword.getText(), (String) comboBoxListBd.getSelectedItem());
+        }
         frameStart.pack();
         frameStart.setVisible(true);
+        if (flOkCommPort && flOkParamSql && flOkTestBd) {
+            threadSkeep = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    int count = 31 * 10;
+                    labelOkCount.setVisible(true);
+                    threadSkeepOn = true;
+                    try {
+                        while (threadSkeepOn) {
+                            count--;
+                            labelOkCount.setText(String.valueOf(count / 10));
+                            Thread.sleep(100);
+                            if (count == 0) break;
+                        }
+                        if (count == 0) {
+                            System.out.println("skeep");
+                            closeFrame();
+                        } else {
+                            labelOkCount.setVisible(false);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            threadSkeep.start();
+        }
     }
     private JFrame getFrameStart(String title, Dimension size) {
         JFrame frame = new JFrame(title);
@@ -199,6 +236,7 @@ class StartFrame {
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                threadSkeepOn = false;
                 if (checkCommPort()) {
                     parametrs[1] = (String) comboBoxCommPort.getSelectedItem();
                     parentSuper.saveConfig(parametrs);
@@ -223,6 +261,7 @@ class StartFrame {
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                threadSkeepOn = false;
                 if (getParamSql()) {
                     parametrs[0] = (String) comboBox.getSelectedItem();
                     parentSuper.saveConfig(parametrs);
@@ -250,14 +289,32 @@ class StartFrame {
 
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                if (text.equals(".") || text.matches("\\d") || text.length() > 1) {
-                    super.replace(fb, offset, length, text, attrs);
+                if (text.length() == 1) {
+                    threadSkeepOn = false;
+                    if (!text.equals(".") && !text.matches("\\d")) return;
                 }
+                super.replace(fb, offset, length, text, attrs);
             }
         });
         field.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    getListBd();
+                } catch (Exception ex) {
+                    System.out.println(ex.getLocalizedMessage());
+                }
+            }
+        });
+        return field;
+    }
+    private JTextField getFieldParamServerPort(String text, Rectangle positionSize) {
+        JTextField field = new JTextField(text);
+        field.setBounds(positionSize);
+        field.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                threadSkeepOn = false;
                 try {
                     getListBd();
                 } catch (Exception ex) {
@@ -273,6 +330,7 @@ class StartFrame {
         field.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                threadSkeepOn = false;
                 try {
                     getListBd();
                 } catch (Exception ex) {
@@ -288,6 +346,7 @@ class StartFrame {
         field.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                threadSkeepOn = false;
                 try {
                     getListBd();
                 } catch (Exception ex) {
@@ -300,6 +359,12 @@ class StartFrame {
     private JComboBox getComboBoxListBd(Rectangle positionSize) {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBounds(positionSize);
+        comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                threadSkeepOn = false;
+            }
+        });
         return comboBox;
     }
     private JButton getButtonOk(String text, Rectangle positionSize) {
@@ -309,11 +374,7 @@ class StartFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frameStart.getContentPane().removeAll();
-                frameStart.removeAll();
-                frameStart.setVisible(false);
-                frameStart.dispose();
-                frameStart = null;
+                closeFrame();
             }
         });
         return button;
@@ -344,6 +405,7 @@ class StartFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                threadSkeepOn = false;
                 buttonOk.setEnabled(false);
                 buttonSave.setEnabled(bdWork.testStuctBase(fieldParamServerIP.getText(), fieldParamServerPort.getText(),
                         fieldParamServerLogin.getText(), fieldParamServerPassword.getText(), (String) comboBoxListBd.getSelectedItem()));
@@ -368,9 +430,17 @@ class StartFrame {
             fieldParamServerPassword.setText(parametersSql.password);
             getListBd();
             comboBoxListBd.setSelectedItem(parametersSql.dataBase);
+            if (!parametersSql.dataBase.equals((String) comboBoxListBd.getSelectedItem())) {
+                stat = false;
+                System.out.println("нет указанной BD");
+                textTypeBdStatus.setText("not exist BD");
+            } else {
+                textTypeBdStatus.setText("ok");
+            }
         } catch (Exception e) {
             stat = false;
             System.out.println(e.getLocalizedMessage());
+            textTypeBdStatus.setText("bad");
         }
         return stat;
     }
@@ -420,5 +490,13 @@ class StartFrame {
             default:
         }
         return ch == CommPort.INITCODE_OK;
+    }
+
+    private void closeFrame() {
+        frameStart.getContentPane().removeAll();
+        frameStart.removeAll();
+        frameStart.setVisible(false);
+        frameStart.dispose();
+        frameStart = null;
     }
 }
