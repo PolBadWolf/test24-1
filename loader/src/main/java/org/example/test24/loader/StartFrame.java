@@ -141,7 +141,7 @@ class StartFrame {
             threadSkeep = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    int count = 31 * 10;
+                    int count = 5 * 10;
                     buttonOk.setEnabled(true);
                     threadSkeepOn = true;
                     try {
@@ -493,10 +493,14 @@ class StartFrame {
     }
 
     private void closeFrame() {
-        frameStart.getContentPane().removeAll();
-        frameStart.removeAll();
-        frameStart.setVisible(false);
-        frameStart.dispose();
-        frameStart = null;
+        try {
+            frameStart.getContentPane().removeAll();
+            frameStart.removeAll();
+            frameStart.setVisible(false);
+            frameStart.dispose();
+            frameStart = null;
+        } catch (java.lang.Throwable e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
