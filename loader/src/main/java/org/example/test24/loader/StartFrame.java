@@ -393,6 +393,10 @@ class StartFrame {
                 parametersSql.password = fieldParamServerPassword.getText();
                 parametersSql.dataBase = (String) comboBoxListBd.getSelectedItem();
                 parametersSql.save();
+                if (getParamSql()) {
+                    parametrs[0] = (String) comboBoxTypeBd.getSelectedItem();
+                    parentSuper.saveConfig(parametrs);
+                }
                 buttonOk.setEnabled(true);
             }
         });
