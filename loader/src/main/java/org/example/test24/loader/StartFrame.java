@@ -45,7 +45,6 @@ class StartFrame {
     private JComboBox<String> comboBoxListBd = null;
 
     private JButton buttonOk = null;
-    private JLabel  labelOkCount = null;
     private JButton buttonSave = null;
     private JButton buttonTest = null;
 
@@ -120,16 +119,13 @@ class StartFrame {
             comboBoxListBd = getComboBoxListBd(new Rectangle(160, 116, 140, 20));
             panelParamSQL.add(comboBoxListBd);
 
-            labelOkCount = getLabel("123", new Rectangle(50, 140, 40, 30));
-            labelOkCount.setVisible(false);
-            panelParamSQL.add(labelOkCount);
             buttonOk = getButtonOk("Ok", new Rectangle(16, 140, 80, 30));
             panelParamSQL.add(buttonOk);
 
-            buttonSave = getButtonSave("Сохранить", new Rectangle(110, 140, 80, 30));
+            buttonSave = getButtonSave("Сохранить", new Rectangle(108, 140, 100, 30));
             panelParamSQL.add(buttonSave);
 
-            buttonTest = getButtonTestBd("Тест", new Rectangle(210, 140, 80, 30));
+            buttonTest = getButtonTestBd("Тест", new Rectangle(220, 140, 80, 30));
             panelParamSQL.add(buttonTest);
         }
         boolean flOkCommPort = checkCommPort();
@@ -146,12 +142,12 @@ class StartFrame {
                 @Override
                 public void run() {
                     int count = 31 * 10;
-                    labelOkCount.setVisible(true);
+                    buttonOk.setEnabled(true);
                     threadSkeepOn = true;
                     try {
                         while (threadSkeepOn) {
                             count--;
-                            labelOkCount.setText(String.valueOf(count / 10));
+                            buttonOk.setText(String.valueOf(count / 10));
                             Thread.sleep(100);
                             if (count == 0) break;
                         }
@@ -159,7 +155,7 @@ class StartFrame {
                             System.out.println("skeep");
                             closeFrame();
                         } else {
-                            labelOkCount.setVisible(false);
+                            buttonOk.setText("Ok");
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
