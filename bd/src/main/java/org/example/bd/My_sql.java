@@ -139,6 +139,53 @@ class My_sql implements Sql_interface {
 
     @Override
     public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
-        return false;
+        ArrayList<String> listColmn = new ArrayList<>();
+        {
+            listColmn.add("id");
+            listColmn.add("dateTime");
+            listColmn.add("id_spec");
+            listColmn.add("n_cicle");
+            listColmn.add("ves");
+            listColmn.add("tik_shelf");
+            listColmn.add("tik_back");
+            listColmn.add("tik_stop");
+            listColmn.add("dis");
+        }
+        Connection connection = null;
+        ResultSet resultSet = null;
+        Statement statement = null;
+        int len, countList = listColmn.size(), countSql = 0;
+        String sample;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            String connectionUrl = "jdbc:mysql://%1$s:%2$s/%3$s";
+            String connString = String.format(connectionUrl
+                    , ip
+                    , portServer
+                    , base
+            )  + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
+            connection = DriverManager.getConnection(connString, login, password);
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT\n" +
+                    "COLUMN_NAME\n" +
+                    "FROM information_schema.COLUMNS\n" +
+                    "WHERE\tinformation_schema.COLUMNS.TABLE_SCHEMA = \"spc1\"\n" +
+                    "AND information_schema.COLUMNS.TABLE_NAME = \"table_data\"\n" +
+                    "ORDER BY information_schema.COLUMNS.ORDINAL_POSITION ASC");
+            while (resultSet.next()) {
+                sample = resultSet.getString(1);
+                countSql++;
+                if ((len = listColmn.size()) == 0)  break;
+                for(int i=0; i<len; i++) {
+                    if (!sample.equals(listColmn.get(i)))  continue;
+                    listColmn.remove(i);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return countList == countSql;
     }
 }
