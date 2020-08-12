@@ -23,6 +23,7 @@ public class Running implements Runner_Interface {
     private int tik_back;
     private int tik_stop;
     private boolean reciveOn = false;
+    private int n_cicle = 0;
 
     private int tik, tik0;
 
@@ -85,6 +86,7 @@ public class Running implements Runner_Interface {
                 } catch (java.lang.Throwable e) {
                     e = null;
                 }
+                n_cicle = 0;
             break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.label1_txt("MANUAL_FORWARD");
@@ -103,15 +105,31 @@ public class Running implements Runner_Interface {
                 break;
             case TypePack.CYCLE_BACK:
                 mainFrame.label1_txt("CYCLE_BACK");
+                tik_back = tik;
                 break;
             case TypePack.CYCLE_DELAY:
                 mainFrame.label1_txt("CYCLE_DELAY");
+                reciveOn = false;
+                n_cicle++;
+                try {
+                    tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
+                    System.out.println("count = " + distanceOut.size());
+                    bdWork.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                } catch (java.lang.Throwable e) {
+                    e = null;
+                }
                 break;
             case TypePack.CYCLE_FORWARD:
                 mainFrame.label1_txt("CYCLE_FORWARD");
+                distanceOut.clear();
+
+                plot.allDataClear();
+                tik0 = tik;
+                reciveOn = true;
                 break;
             case TypePack.CYCLE_SHELF:
                 mainFrame.label1_txt("CYCLE_SHELF");
+                tik_shelf = tik;
                 break;
             case TypePack.CURENT_DATA:
                 if (reciveOn) {
