@@ -78,11 +78,12 @@ public class Running implements Runner_Interface {
                 break;
             case TypePack.MANUAL_STOP:
                 reciveOn = false;
+                if (n_cicle > 0) n_cicle++;
                 try {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     mainFrame.label1_txt("MANUAL_STOP");
                     System.out.println("count = " + distanceOut.size());
-                    bdWork.pushDataDist(new Date(), 0, 0, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                    bdWork.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
                 } catch (java.lang.Throwable e) {
                     e = null;
                 }
