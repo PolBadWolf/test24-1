@@ -22,7 +22,7 @@ public class MainClass {
     private Running runner = null;
     public CommPort commPort = null;
     private BdWork bdWork = null;
-    private StartFrame startFrame = null;
+    private TiningFrame tiningFrame = null;
 
     public static void main(String[] args) {
         new MainClass().start(args);
@@ -38,8 +38,8 @@ public class MainClass {
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
-        startFrame = new StartFrame(this);
-        startFrame.frameConfig(param);
+        tiningFrame = new TiningFrame(this);
+        tiningFrame.frameConfig(param);
 
         int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
