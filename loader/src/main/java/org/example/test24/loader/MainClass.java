@@ -38,8 +38,9 @@ public class MainClass {
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
-        tiningFrame = new TiningFrame(this);
-        tiningFrame.frameConfig(param);
+        StartFrameImpl startFrame = StartFrameImpl.init();
+        //tiningFrame = new TiningFrame(this);
+        //tiningFrame.frameConfig(param);
 
         int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
