@@ -1,6 +1,9 @@
 package org.example.test24.loader;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class StartFrame extends JFrame {
     private MainClassCallBack callBack = null;
@@ -23,18 +26,42 @@ public class StartFrame extends JFrame {
         final StartFrame[] frame = new StartFrame[1];
         frame[0] = null;
         try {
-//            SwingUtilities.invokeAndWait(new Runnable() {
-//                @Override
-//                public void run() {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
                     frame[0] = new StartFrame(callBack);
-                    frame[0].setVisible(true);
-//                }
-//            });
-            frame[0].start();
+                }
+            });
+            new Thread( ()->frame[0].start()).start();
+            Thread.sleep(10_000);
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
         }
         return frame[0];
+    }
+
+    private void start() {
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    initComponents();
+                    onTitleComponents();
+                    setVisible(true);
+                }
+            });
+            Thread.sleep(10_000);
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    offTitleComponents();
+                    onInputComponents();
+                }
+            });
+        } catch (java.lang.Throwable e) {
+            e.printStackTrace();
+        }
+
     }
 
     private StartFrame(MainClassCallBack callBack) {
@@ -43,6 +70,8 @@ public class StartFrame extends JFrame {
     }
 
     private void initComponents() {
+        setPreferredSize(new Dimension(640, 480));
+
         label1 = new JLabel();
         label2 = new JLabel();
         label3 = new JLabel();
@@ -117,14 +146,9 @@ public class StartFrame extends JFrame {
         add(buttonWork);
         buttonWork.setVisible(false);
 
-/*
-        buttonTuning.setFont(new java.awt.Font("Times New Roman", 0, 14));
-        buttonTuning.setText("настройка");
-        buttonTuning.setBounds(320, 320, 100, 23);
-        buttonTuning.setEnabled(false);
+        buttonTuning = getButtonTuning();
         add(buttonTuning);
         buttonTuning.setVisible(false);
-*/
         pack();
     }
 
@@ -151,6 +175,7 @@ public class StartFrame extends JFrame {
         fieldPassword.setVisible(true);
         buttonEnter.setVisible(true);
         buttonWork.setVisible(true);
+        buttonTuning.setVisible(true);
     }
 
     private void offInputComponents() {
@@ -160,37 +185,7 @@ public class StartFrame extends JFrame {
         fieldPassword.setVisible(false);
         buttonEnter.setVisible(false);
         buttonWork.setVisible(false);
-    }
-
-    private void start() {
-        try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    setPreferredSize(new java.awt.Dimension(640, 480));
-                    initComponents();
-                    onTitleComponents();
-                }
-            });
-            Thread.sleep(10_000);
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    offTitleComponents();
-                    onInputComponents();
-                }
-            });
-            Thread.sleep(10_000);
-        } catch (java.lang.Throwable e) {
-            e.printStackTrace();
-        }
-        //titlePanel.setVisible(false);
-
-        /*boolean flCommPort = false;
-        boolean flSqlServ = false;
-        boolean flSqlStruct = false;
-        flCommPort = callBack.checkCommPort();
-        //flSqlServ;*/
+        buttonTuning.setVisible(false);
     }
 
     private JButton getButtonEnter() {
@@ -198,6 +193,12 @@ public class StartFrame extends JFrame {
         button.setFont(new java.awt.Font("Times New Roman", 0, 14));
         button.setText("Ввод");
         button.setBounds(340, 240, 80, 23);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
         return button;
     }
 
@@ -207,6 +208,12 @@ public class StartFrame extends JFrame {
         button.setText("работа");
         button.setBounds(340, 280, 80, 23);
         button.setEnabled(false);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
         return button;
     }
 
@@ -216,6 +223,12 @@ public class StartFrame extends JFrame {
         button.setText("настройка");
         button.setBounds(320, 320, 100, 23);
         button.setEnabled(false);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
         return button;
     }
 }
