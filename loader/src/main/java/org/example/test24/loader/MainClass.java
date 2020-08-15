@@ -38,7 +38,7 @@ public class MainClass {
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
-        StartFrameImpl startFrame = StartFrameImpl.init();
+        StartFrame startFrame = StartFrame.main(getMainClassCallBack());
         //tiningFrame = new TiningFrame(this);
         //tiningFrame.frameConfig(param);
 
@@ -118,4 +118,8 @@ public class MainClass {
         }
     }
 
+    private MainClassCallBack getMainClassCallBack() {
+        return new MainClassCallBack() {
+        };
+    }
 }
