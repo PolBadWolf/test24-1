@@ -22,6 +22,7 @@ public class MainClass {
     private Running runner = null;
     public CommPort commPort = null;
     private BdWork bdWork = null;
+    private String[] parameters = null;
     private TiningFrame tiningFrame = null;
 
     public static void main(String[] args) {
@@ -29,8 +30,8 @@ public class MainClass {
     }
 
     private void start(String[] args) {
-        String[] param = getConfig();
-        String namePort = param[1];
+        parameters = getConfig();
+        String namePort = parameters[1];
 
         mainFx= new ScreenClass();
         runner = new Running();
@@ -39,6 +40,9 @@ public class MainClass {
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
         StartFrame startFrame = StartFrame.main(getMainClassCallBack());
+        while (startFrame != null) {
+            Thread.yield();
+        }
         //tiningFrame = new TiningFrame(this);
         //tiningFrame.frameConfig(param);
 
@@ -49,7 +53,7 @@ public class MainClass {
         }
 
         try {
-            bdWork = new BdWork(param[0], fileNameSql);
+            bdWork = new BdWork(parameters[0], fileNameSql);
             bdWork.getConnect();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
@@ -118,8 +122,24 @@ public class MainClass {
         }
     }
 
+    private boolean  checkCommPort(String portName) {
+        int ch =  commPort.Open(null, portName, BAUD.baud57600);
+        commPort.Close();
+        return ch == CommPort.INITCODE_OK;
+    }
+
     private MainClassCallBack getMainClassCallBack() {
         return new MainClassCallBack() {
+
+            @Override
+            public boolean checkCommPort() {
+                return MainClass.this.checkCommPort(parameters[1]);
+            }
+
+            @Override
+            public boolean checkSql() {
+                return false;
+            }
         };
     }
 }
