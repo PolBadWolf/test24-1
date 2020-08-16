@@ -170,6 +170,30 @@ public class MainClass {
             public void closeFrame() {
                 MainClass.this.startFrame = null;
             }
+
+            @Override
+            public TuningFrame getTuningFrame() {
+                return new TuningFrame(getMainClassCallBackTuningFrame());
+            }
+        };
+    }
+
+    private MainClassCallBackTuningFrame getMainClassCallBackTuningFrame() {
+        return new MainClassCallBackTuningFrame() {
+            @Override
+            public CommPort getCommPort() {
+                return commPort;
+            }
+
+            @Override
+            public void saveConfig(String[] parametrs) {
+                saveConfig(parametrs);
+            }
+
+            @Override
+            public String[] getFileNameSql() {
+                return fileNameSql;
+            }
         };
     }
 }

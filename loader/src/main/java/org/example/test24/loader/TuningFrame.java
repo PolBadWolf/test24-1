@@ -19,7 +19,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 class TuningFrame {
-    private MainClass parentSuper = null;
+    private MainClassCallBackTuningFrame callBack = null;
+
     private String[] parametrs = null;
     private ParametersSql parametersSql = null;
     private BdWork bdWork = null;
@@ -48,8 +49,8 @@ class TuningFrame {
     private JButton buttonSave = null;
     private JButton buttonTest = null;
 
-    public TuningFrame(MainClass parentSuper) {
-        this.parentSuper = parentSuper;
+    public TuningFrame(MainClassCallBackTuningFrame callBack) {
+        this.callBack = callBack;
     }
 
     void frameConfig(String[] parametrs) {
@@ -223,7 +224,7 @@ class TuningFrame {
         return label;
     }
     private JComboBox getComboBoxCommPort(String itemDefault, Rectangle positionSize) {
-        String[] listCommPortName = parentSuper.commPort.getListPortsName();
+        String[] listCommPortName = callBack.getCommPort().getListPortsName();
         // sort
         Arrays.sort(listCommPortName);
         JComboBox<String> comboBox = new JComboBox<>(listCommPortName);
@@ -235,7 +236,7 @@ class TuningFrame {
                 threadSkeepOn = false;
                 if (checkCommPort()) {
                     parametrs[1] = (String) comboBoxCommPort.getSelectedItem();
-                    parentSuper.saveConfig(parametrs);
+                    callBack.saveConfig(parametrs);
                 }
             }
         });
@@ -260,7 +261,7 @@ class TuningFrame {
                 threadSkeepOn = false;
                 if (getParamSql()) {
                     parametrs[0] = (String) comboBox.getSelectedItem();
-                    parentSuper.saveConfig(parametrs);
+                    callBack.saveConfig(parametrs);
                 }
             }
         });
@@ -391,7 +392,7 @@ class TuningFrame {
                 parametersSql.save();
                 if (getParamSql()) {
                     parametrs[0] = (String) comboBoxTypeBd.getSelectedItem();
-                    parentSuper.saveConfig(parametrs);
+                    callBack.saveConfig(parametrs);
                 }
                 buttonOk.setEnabled(true);
             }
@@ -419,7 +420,7 @@ class TuningFrame {
         buttonOk.setEnabled(false);
         buttonSave.setEnabled(false);
         parametersSql = new ParametersSql(
-                BdWork.BdSelectFileParam ((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql),
+                BdWork.BdSelectFileParam ((String) comboBoxTypeBd.getSelectedItem(),  callBack.getFileNameSql()),
                 (String) comboBoxTypeBd.getSelectedItem()
         );
         try {
@@ -450,7 +451,7 @@ class TuningFrame {
         buttonSave.setEnabled(false);
         try {
             comboBoxListBd.removeAllItems();
-            bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql);
+            bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), callBack.getFileNameSql());
             String[] listBd = bdWork.getConnectListBd(
                     fieldParamServerIP.getText(),
                     fieldParamServerPort.getText(),
@@ -470,21 +471,22 @@ class TuningFrame {
 
     private boolean checkCommPort() {
         String portName = (String) comboBoxCommPort.getSelectedItem();
-        int ch =  parentSuper.commPort.Open(null, portName, BAUD.baud57600);
+        CommPort commPort = callBack.getCommPort();
+        int ch =  commPort.Open(null, portName, BAUD.baud57600);
         switch (ch) {
             case CommPort.INITCODE_OK:
                 labelPortCurrent.setText(portName);
-                parentSuper.commPort.Close();
+                commPort.Close();
                 textPortStatus.setText("ok");
                 break;
             case CommPort.INITCODE_NOTEXIST:
                 labelPortCurrent.setText(parametrs[1]);
-                parentSuper.commPort.Close();
+                commPort.Close();
                 textPortStatus.setText("порт не найден");
                 break;
             case CommPort.INITCODE_ERROROPEN:
                 labelPortCurrent.setText(parametrs[1]);
-                parentSuper.commPort.Close();
+                commPort.Close();
                 textPortStatus.setText("ошибка открытия");
                 break;
             default:

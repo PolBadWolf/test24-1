@@ -297,7 +297,7 @@ public class StartFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TuningFrame tuningFrame;
-                //tuningFrame = new TuningFrame(this);
+                tuningFrame = callBack.getTuningFrame();
                 //tuningFrame.frameConfig(parameters);
             }
         });
