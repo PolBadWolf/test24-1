@@ -8,7 +8,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class StartFrame extends JFrame {
-    private MainClassCallBack callBack = null;
+    private MainClassCallBackStartFrame callBack = null;
     private JLabel label1;
     private JLabel label2;
     private JLabel label3;
@@ -18,7 +18,7 @@ public class StartFrame extends JFrame {
     private JButton buttonEnter;
     private JButton buttonTuning;
     private JButton buttonWork;
-    private JPasswordField fieldPassword;
+    private JTextField fieldPassword;
     private JTextField fieldUser;
     private JLabel jLabel1;
     private JLabel jLabel2;
@@ -26,7 +26,7 @@ public class StartFrame extends JFrame {
     private boolean flCheckCommPort = false;
     private boolean flCheckSql = false;
 
-    public static StartFrame main(MainClassCallBack callBack) {
+    public static StartFrame main(MainClassCallBackStartFrame callBack) {
         final StartFrame[] frame = new StartFrame[1];
         frame[0] = null;
         try {
@@ -56,12 +56,18 @@ public class StartFrame extends JFrame {
             });
             flCheckCommPort = callBack.checkCommPort();
             flCheckSql = callBack.checkSql();
-            Thread.sleep(10_000);
+            Thread.sleep(1_000);
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
                     offTitleComponents();
                     onInputComponents();
+                    if (!flCheckCommPort) {
+                        System.out.println("ошибка открытия comm port");
+                    }
+                    if (!flCheckSql) {
+                        System.out.println("ошибка подключения к BD");
+                    }
                 }
             });
         } catch (java.lang.Throwable e) {
@@ -70,7 +76,7 @@ public class StartFrame extends JFrame {
 
     }
 
-    private StartFrame(MainClassCallBack callBack) {
+    private StartFrame(MainClassCallBackStartFrame callBack) {
         this.callBack = callBack;
         setLayout(null);
         addWindowListener(new WindowListener() {
@@ -241,9 +247,25 @@ public class StartFrame extends JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                buttonWork.setEnabled(false);
+                buttonTuning.setEnabled(false);
                 // "aUxPMjIzNjA\="
-                if (flCheckCommPort && flCheckSql) {
-                    buttonWork.setEnabled(true);
+                boolean fl = false;
+                if (flCheckSql) {
+
+                }
+                if (fl) {
+                    if (flCheckCommPort && flCheckSql) {
+                        buttonWork.setEnabled(true);
+                    }
+                }
+
+                String pswd = new String(java.util.Base64.getEncoder().encode(fieldPassword.getText().getBytes()));
+                boolean flUser = "Doc".equals(fieldUser.getText());
+                boolean flPass = "aUxPMjIzNjA=".equals(pswd);
+                if (flUser && flPass) {
+                    buttonWork.setEnabled(false);
+                    buttonTuning.setEnabled(true);
                 }
             }
         });
@@ -274,7 +296,9 @@ public class StartFrame extends JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                TuningFrame tuningFrame;
+                //tuningFrame = new TuningFrame(this);
+                //tuningFrame.frameConfig(parameters);
             }
         });
         return button;
