@@ -25,6 +25,7 @@ public class MainClass {
     public CommPort commPort = null;
     private BdWork bdWork = null;
     private String[] parameters = null;
+    private StartFrame startFrame = null;
     private TiningFrame tiningFrame = null;
 
     public static void main(String[] args) {
@@ -41,12 +42,17 @@ public class MainClass {
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
-        StartFrame startFrame = StartFrame.main(getMainClassCallBack());
-        while (startFrame != null) {
-            Thread.yield();
+        startFrame = StartFrame.main(getMainClassCallBack());
+        try {
+            while (startFrame != null) {
+                Thread.yield();
+                Thread.sleep(500);
+            }
+        } catch (java.lang.Throwable e) {
+            e.printStackTrace();
         }
-        //tiningFrame = new TiningFrame(this);
-        //tiningFrame.frameConfig(param);
+        tiningFrame = new TiningFrame(this);
+        tiningFrame.frameConfig(parameters);
 
         int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
@@ -158,6 +164,11 @@ public class MainClass {
                     stat = false;
                 }
                 return stat;
+            }
+
+            @Override
+            public void closeFrame() {
+                MainClass.this.startFrame = null;
             }
         };
     }
