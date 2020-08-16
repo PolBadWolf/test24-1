@@ -46,4 +46,8 @@ public class BdWork {
     public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
         return sql_interface.testStuctBase(ip, portServer, login, password, base);
     }
+
+    public ParametersSql getParametrsSql() {
+        return sql_interface.getParametrsSql();
+    }
 }

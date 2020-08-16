@@ -9,4 +9,5 @@ interface Sql_interface {
     Connection getConnect() throws Exception;
     String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception;
     boolean testStuctBase(String ip, String portServer, String login, String password, String base);
+    ParametersSql getParametrsSql();
 }
