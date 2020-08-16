@@ -18,7 +18,7 @@ import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-class TiningFrame {
+class TuningFrame {
     private MainClass parentSuper = null;
     private String[] parametrs = null;
     private ParametersSql parametersSql = null;
@@ -48,7 +48,7 @@ class TiningFrame {
     private JButton buttonSave = null;
     private JButton buttonTest = null;
 
-    public TiningFrame(MainClass parentSuper) {
+    public TuningFrame(MainClass parentSuper) {
         this.parentSuper = parentSuper;
     }
 
