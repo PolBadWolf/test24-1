@@ -10,7 +10,6 @@ import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.util.Properties;
 
 
@@ -26,7 +25,7 @@ public class MainClass {
     private BdWork bdWork = null;
     private String[] parameters = null;
     private StartFrame startFrame = null;
-    private TiningFrame tiningFrame = null;
+    private TuningFrame tuningFrame = null;
 
     public static void main(String[] args) {
         new MainClass().start(args);
@@ -51,8 +50,9 @@ public class MainClass {
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
         }
-        tiningFrame = new TiningFrame(this);
-        tiningFrame.frameConfig(parameters);
+
+//        tiningFrame = new TiningFrame(this);
+//        tiningFrame.frameConfig(parameters);
 
         int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
@@ -136,8 +136,8 @@ public class MainClass {
         return ch == CommPort.INITCODE_OK;
     }
 
-    private MainClassCallBack getMainClassCallBack() {
-        return new MainClassCallBack() {
+    private MainClassCallBackStartFrame getMainClassCallBack() {
+        return new MainClassCallBackStartFrame() {
 
             @Override
             public boolean checkCommPort() {
