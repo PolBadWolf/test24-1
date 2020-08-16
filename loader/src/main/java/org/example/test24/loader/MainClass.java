@@ -192,7 +192,7 @@ public class MainClass {
 
             @Override
             public void saveConfig(String[] parametrs) {
-                saveConfig(parametrs);
+                MainClass.this.saveConfig(parametrs);
             }
 
             @Override

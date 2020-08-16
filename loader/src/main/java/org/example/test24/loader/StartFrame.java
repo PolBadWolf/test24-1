@@ -296,20 +296,26 @@ public class StartFrame extends JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    Thread thread = new Thread(()->{
-                        TuningFrame tuningFrame;
-                        tuningFrame = callBack.getTuningFrame();
-                        tuningFrame.frameConfig(callBack.getParameters());
-                    });
-                    thread.start();
-                    while (thread.isAlive()) Thread.yield();
-                    thread = null;
-                } catch (java.lang.Throwable throwable) {
-                    throwable.printStackTrace();
-                }
+                buttonEnter.setEnabled(false);
+                buttonWork.setEnabled(false);
+                buttonTuning.setEnabled(false);
+                TuningFrame tuningFrame;
+                tuningFrame = callBack.getTuningFrame();
+                tuningFrame.frameConfig(callBack.getParameters(), getStartFrameCallBackTunungFrame());
             }
         });
         return button;
+    }
+
+    private StartFrameCallBackTunungFrame getStartFrameCallBackTunungFrame() {
+        return new StartFrameCallBackTunungFrame() {
+            @Override
+            public void pusk() {
+                StartFrame startFrame = StartFrame.this;
+                startFrame.fieldUser.setText("");
+                startFrame.fieldPassword.setText("");
+                startFrame.buttonEnter.setEnabled(true);
+            }
+        };
     }
 }
