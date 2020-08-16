@@ -296,9 +296,18 @@ public class StartFrame extends JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TuningFrame tuningFrame;
-                tuningFrame = callBack.getTuningFrame();
-                //tuningFrame.frameConfig(parameters);
+                try {
+                    Thread thread = new Thread(()->{
+                        TuningFrame tuningFrame;
+                        tuningFrame = callBack.getTuningFrame();
+                        tuningFrame.frameConfig(callBack.getParameters());
+                    });
+                    thread.start();
+                    while (thread.isAlive()) Thread.yield();
+                    thread = null;
+                } catch (java.lang.Throwable throwable) {
+                    throwable.printStackTrace();
+                }
             }
         });
         return button;
