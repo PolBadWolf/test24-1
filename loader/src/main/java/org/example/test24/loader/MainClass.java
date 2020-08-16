@@ -1,6 +1,7 @@
 package org.example.test24.loader;
 
 import org.example.bd.BdWork;
+import org.example.bd.ParametersSql;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.Closer;
 import org.example.test24.RS232.BAUD;
@@ -9,6 +10,7 @@ import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.Properties;
 
 
@@ -18,7 +20,7 @@ public class MainClass {
     final public String fileNameMySql = "my_sql.txt";
     final public String[] fileNameSql = {fileNameMsSql, fileNameMySql};
 
-    private ScreenClass mainFx = null;
+    private ScreenClass mainFx;
     private Running runner = null;
     public CommPort commPort = null;
     private BdWork bdWork = null;
@@ -138,7 +140,24 @@ public class MainClass {
 
             @Override
             public boolean checkSql() {
-                return false;
+                boolean stat;
+                ParametersSql parametersSql;
+                try {
+                    bdWork = new BdWork(parameters[0], fileNameSql);
+                    parametersSql = bdWork.getParametrsSql();
+                    parametersSql.load();
+                    stat = bdWork.testStuctBase(
+                            parametersSql.urlServer,
+                            parametersSql.portServer,
+                            parametersSql.user,
+                            parametersSql.password,
+                            parametersSql.dataBase
+                    );
+                } catch (java.lang.Throwable e) {
+                    e.printStackTrace();
+                    stat = false;
+                }
+                return stat;
             }
         };
     }
