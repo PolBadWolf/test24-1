@@ -175,6 +175,11 @@ public class MainClass {
             public TuningFrame getTuningFrame() {
                 return new TuningFrame(getMainClassCallBackTuningFrame());
             }
+
+            @Override
+            public String[] getParameters() {
+                return parameters;
+            }
         };
     }
 

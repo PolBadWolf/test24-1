@@ -6,4 +6,5 @@ public interface MainClassCallBackStartFrame {
     void closeFrame();
     // ---------------
     TuningFrame getTuningFrame();
+    String[] getParameters();
 }
