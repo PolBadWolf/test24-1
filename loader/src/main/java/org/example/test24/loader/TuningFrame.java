@@ -28,6 +28,10 @@ class TuningFrame {
     private Thread threadSkeep = null;
     private boolean threadSkeepOn;
 
+    private boolean flCheckCommPort = false;
+    private boolean flCheckParamSql = false;
+    private boolean flCheckSql = false;
+
     private JFrame frameStart = null;
 
     private JPanel panelCommPort = null;
@@ -123,17 +127,23 @@ class TuningFrame {
             buttonTest = getButtonTestBd("Тест", new Rectangle(220, 140, 80, 30));
             panelParamSQL.add(buttonTest);
         }
-        boolean flOkCommPort = checkCommPort();
-        boolean flOkParamSql = getParamSql();
-        boolean flOkTestBd = false;
-        if (flOkParamSql) {
-            flOkTestBd = bdWork.testStuctBase(fieldParamServerIP.getText(), fieldParamServerPort.getText(),
-                    fieldParamServerLogin.getText(), fieldParamServerPassword.getText(), (String) comboBoxListBd.getSelectedItem());
+        flCheckCommPort = checkCommPort();
+        flCheckParamSql = getParamSql();
+        if (flCheckParamSql) {
+            flCheckSql = bdWork.testStuctBase(
+                    fieldParamServerIP.getText(),
+                    fieldParamServerPort.getText(),
+                    fieldParamServerLogin.getText(),
+                    fieldParamServerPassword.getText(),
+                    (String) comboBoxListBd.getSelectedItem()
+            );
+        } else {
+            flCheckSql = false;
         }
         frameStart.pack();
         frameStart.setVisible(true);
 
-        if (flOkCommPort && flOkParamSql && flOkTestBd) {
+        if (flCheckCommPort && flCheckParamSql && flCheckSql) {
             buttonOk.setEnabled(true);
             /*
             threadSkeep = new Thread(new Runnable() {
@@ -178,7 +188,7 @@ class TuningFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 e.getWindow().removeAll();
-                System.exit(2);
+                closeFrame();
             }
 
             @Override
@@ -235,6 +245,12 @@ class TuningFrame {
                 if (checkCommPort()) {
                     parametrs[1] = (String) comboBoxCommPort.getSelectedItem();
                     callBackMC.saveConfig(parametrs);
+                    if (flCheckSql) {
+                        buttonOk.setEnabled(true);
+                    }
+
+                } else {
+                    buttonOk.setEnabled(false);
                 }
             }
         });
@@ -257,9 +273,12 @@ class TuningFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 threadSkeepOn = false;
-                if (getParamSql()) {
+                flCheckParamSql = getParamSql();
+                if (flCheckParamSql) {
                     parametrs[0] = (String) comboBox.getSelectedItem();
                     callBackMC.saveConfig(parametrs);
+                } else {
+                    flCheckSql = false;
                 }
             }
         });
@@ -369,7 +388,6 @@ class TuningFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                callBackTF.pusk();
                 closeFrame();
             }
         });
@@ -389,9 +407,12 @@ class TuningFrame {
                 parametersSql.password = fieldParamServerPassword.getText();
                 parametersSql.dataBase = (String) comboBoxListBd.getSelectedItem();
                 parametersSql.save();
-                if (getParamSql()) {
+                flCheckParamSql = getParamSql();
+                if (flCheckParamSql) {
                     parametrs[0] = (String) comboBoxTypeBd.getSelectedItem();
                     callBackMC.saveConfig(parametrs);
+                } else {
+                    flCheckSql = false;
                 }
                 buttonOk.setEnabled(true);
             }
@@ -407,8 +428,14 @@ class TuningFrame {
             public void actionPerformed(ActionEvent e) {
                 threadSkeepOn = false;
                 buttonOk.setEnabled(false);
-                buttonSave.setEnabled(bdWork.testStuctBase(fieldParamServerIP.getText(), fieldParamServerPort.getText(),
-                        fieldParamServerLogin.getText(), fieldParamServerPassword.getText(), (String) comboBoxListBd.getSelectedItem()));
+                flCheckSql = bdWork.testStuctBase(
+                        fieldParamServerIP.getText(),
+                        fieldParamServerPort.getText(),
+                        fieldParamServerLogin.getText(),
+                        fieldParamServerPassword.getText(),
+                        (String) comboBoxListBd.getSelectedItem()
+                );
+                buttonSave.setEnabled(flCheckSql);
             }
         });
         return button;
@@ -506,7 +533,7 @@ class TuningFrame {
             } catch (java.lang.Throwable e) {
                 System.out.println(e.getMessage());
             }
-
+            callBackTF.pusk();
         }
     }
 }
