@@ -19,7 +19,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 class TuningFrame {
-    private MainClassCallBackTuningFrame callBack = null;
+    private MainClassCallBackTuningFrame callBackMC = null;
+    private StartFrameCallBackTunungFrame callBackTF = null;
 
     private String[] parametrs = null;
     private ParametersSql parametersSql = null;
@@ -49,21 +50,14 @@ class TuningFrame {
     private JButton buttonSave = null;
     private JButton buttonTest = null;
 
-    public TuningFrame(MainClassCallBackTuningFrame callBack) {
-        this.callBack = callBack;
+    public TuningFrame(MainClassCallBackTuningFrame callBackMC) {
+        this.callBackMC = callBackMC;
     }
 
-    void frameConfig(String[] parametrs) {
+    void frameConfig(String[] parametrs, StartFrameCallBackTunungFrame callBackTF) {
         this.parametrs = parametrs;
+        this.callBackTF = callBackTF;
         frameConstructor();
-        try {
-            while (frameStart != null) {
-                Thread.sleep(1_000);
-            }
-        } catch (java.lang.Throwable e) {
-            e.printStackTrace();
-            System.exit(3);
-        }
     }
 
     private void frameConstructor() {
@@ -138,12 +132,14 @@ class TuningFrame {
         }
         frameStart.pack();
         frameStart.setVisible(true);
+
         if (flOkCommPort && flOkParamSql && flOkTestBd) {
+            buttonOk.setEnabled(true);
+            /*
             threadSkeep = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     int count = 15 * 10;
-                    buttonOk.setEnabled(true);
                     threadSkeepOn = true;
                     try {
                         while (threadSkeepOn) {
@@ -164,7 +160,9 @@ class TuningFrame {
                 }
             });
             threadSkeep.start();
+            */
         }
+
     }
     private JFrame getFrameStart(String title, Dimension size) {
         JFrame frame = new JFrame(title);
@@ -224,7 +222,7 @@ class TuningFrame {
         return label;
     }
     private JComboBox getComboBoxCommPort(String itemDefault, Rectangle positionSize) {
-        String[] listCommPortName = callBack.getCommPort().getListPortsName();
+        String[] listCommPortName = callBackMC.getCommPort().getListPortsName();
         // sort
         Arrays.sort(listCommPortName);
         JComboBox<String> comboBox = new JComboBox<>(listCommPortName);
@@ -236,7 +234,7 @@ class TuningFrame {
                 threadSkeepOn = false;
                 if (checkCommPort()) {
                     parametrs[1] = (String) comboBoxCommPort.getSelectedItem();
-                    callBack.saveConfig(parametrs);
+                    callBackMC.saveConfig(parametrs);
                 }
             }
         });
@@ -261,7 +259,7 @@ class TuningFrame {
                 threadSkeepOn = false;
                 if (getParamSql()) {
                     parametrs[0] = (String) comboBox.getSelectedItem();
-                    callBack.saveConfig(parametrs);
+                    callBackMC.saveConfig(parametrs);
                 }
             }
         });
@@ -371,6 +369,7 @@ class TuningFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                callBackTF.pusk();
                 closeFrame();
             }
         });
@@ -392,7 +391,7 @@ class TuningFrame {
                 parametersSql.save();
                 if (getParamSql()) {
                     parametrs[0] = (String) comboBoxTypeBd.getSelectedItem();
-                    callBack.saveConfig(parametrs);
+                    callBackMC.saveConfig(parametrs);
                 }
                 buttonOk.setEnabled(true);
             }
@@ -420,7 +419,7 @@ class TuningFrame {
         buttonOk.setEnabled(false);
         buttonSave.setEnabled(false);
         parametersSql = new ParametersSql(
-                BdWork.BdSelectFileParam ((String) comboBoxTypeBd.getSelectedItem(),  callBack.getFileNameSql()),
+                BdWork.BdSelectFileParam ((String) comboBoxTypeBd.getSelectedItem(),  callBackMC.getFileNameSql()),
                 (String) comboBoxTypeBd.getSelectedItem()
         );
         try {
@@ -451,7 +450,7 @@ class TuningFrame {
         buttonSave.setEnabled(false);
         try {
             comboBoxListBd.removeAllItems();
-            bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), callBack.getFileNameSql());
+            bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), callBackMC.getFileNameSql());
             String[] listBd = bdWork.getConnectListBd(
                     fieldParamServerIP.getText(),
                     fieldParamServerPort.getText(),
@@ -471,7 +470,7 @@ class TuningFrame {
 
     private boolean checkCommPort() {
         String portName = (String) comboBoxCommPort.getSelectedItem();
-        CommPort commPort = callBack.getCommPort();
+        CommPort commPort = callBackMC.getCommPort();
         int ch =  commPort.Open(null, portName, BAUD.baud57600);
         switch (ch) {
             case CommPort.INITCODE_OK:
