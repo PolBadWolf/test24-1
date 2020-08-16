@@ -1,6 +1,6 @@
 package org.example.test24.loader;
 
-public interface MainClassCallBack {
+public interface MainClassCallBackStartFrame {
     boolean checkCommPort();
     boolean checkSql();
     void closeFrame();
