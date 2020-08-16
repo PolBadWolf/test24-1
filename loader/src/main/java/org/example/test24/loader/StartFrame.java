@@ -241,6 +241,7 @@ public class StartFrame extends JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // "aUxPMjIzNjA\="
                 if (flCheckCommPort && flCheckSql) {
                     buttonWork.setEnabled(true);
                 }
@@ -257,7 +258,9 @@ public class StartFrame extends JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                removeAll();
+                dispose();
+                callBack.closeFrame();
             }
         });
         return button;
