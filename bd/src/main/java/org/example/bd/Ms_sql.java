@@ -175,4 +175,9 @@ class Ms_sql implements Sql_interface {
         }
         return countList == countSql;
     }
+
+    @Override
+    public ParametersSql getParametrsSql() {
+        return parametersSql;
+    }
 }

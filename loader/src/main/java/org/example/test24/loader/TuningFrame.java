@@ -18,8 +18,10 @@ import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-class TiningFrame {
-    private MainClass parentSuper = null;
+class TuningFrame {
+    private MainClassCallBackTuningFrame callBackMC = null;
+    private StartFrameCallBackTunungFrame callBackTF = null;
+
     private String[] parametrs = null;
     private ParametersSql parametersSql = null;
     private BdWork bdWork = null;
@@ -48,21 +50,14 @@ class TiningFrame {
     private JButton buttonSave = null;
     private JButton buttonTest = null;
 
-    public TiningFrame(MainClass parentSuper) {
-        this.parentSuper = parentSuper;
+    public TuningFrame(MainClassCallBackTuningFrame callBackMC) {
+        this.callBackMC = callBackMC;
     }
 
-    void frameConfig(String[] parametrs) {
+    void frameConfig(String[] parametrs, StartFrameCallBackTunungFrame callBackTF) {
         this.parametrs = parametrs;
+        this.callBackTF = callBackTF;
         frameConstructor();
-        try {
-            while (frameStart != null) {
-                Thread.sleep(1_000);
-            }
-        } catch (java.lang.Throwable e) {
-            e.printStackTrace();
-            System.exit(3);
-        }
     }
 
     private void frameConstructor() {
@@ -137,12 +132,14 @@ class TiningFrame {
         }
         frameStart.pack();
         frameStart.setVisible(true);
+
         if (flOkCommPort && flOkParamSql && flOkTestBd) {
+            buttonOk.setEnabled(true);
+            /*
             threadSkeep = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     int count = 15 * 10;
-                    buttonOk.setEnabled(true);
                     threadSkeepOn = true;
                     try {
                         while (threadSkeepOn) {
@@ -163,7 +160,9 @@ class TiningFrame {
                 }
             });
             threadSkeep.start();
+            */
         }
+
     }
     private JFrame getFrameStart(String title, Dimension size) {
         JFrame frame = new JFrame(title);
@@ -223,7 +222,7 @@ class TiningFrame {
         return label;
     }
     private JComboBox getComboBoxCommPort(String itemDefault, Rectangle positionSize) {
-        String[] listCommPortName = parentSuper.commPort.getListPortsName();
+        String[] listCommPortName = callBackMC.getCommPort().getListPortsName();
         // sort
         Arrays.sort(listCommPortName);
         JComboBox<String> comboBox = new JComboBox<>(listCommPortName);
@@ -235,7 +234,7 @@ class TiningFrame {
                 threadSkeepOn = false;
                 if (checkCommPort()) {
                     parametrs[1] = (String) comboBoxCommPort.getSelectedItem();
-                    parentSuper.saveConfig(parametrs);
+                    callBackMC.saveConfig(parametrs);
                 }
             }
         });
@@ -260,7 +259,7 @@ class TiningFrame {
                 threadSkeepOn = false;
                 if (getParamSql()) {
                     parametrs[0] = (String) comboBox.getSelectedItem();
-                    parentSuper.saveConfig(parametrs);
+                    callBackMC.saveConfig(parametrs);
                 }
             }
         });
@@ -370,6 +369,7 @@ class TiningFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                callBackTF.pusk();
                 closeFrame();
             }
         });
@@ -391,7 +391,7 @@ class TiningFrame {
                 parametersSql.save();
                 if (getParamSql()) {
                     parametrs[0] = (String) comboBoxTypeBd.getSelectedItem();
-                    parentSuper.saveConfig(parametrs);
+                    callBackMC.saveConfig(parametrs);
                 }
                 buttonOk.setEnabled(true);
             }
@@ -419,7 +419,7 @@ class TiningFrame {
         buttonOk.setEnabled(false);
         buttonSave.setEnabled(false);
         parametersSql = new ParametersSql(
-                BdWork.BdSelectFileParam ((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql),
+                BdWork.BdSelectFileParam ((String) comboBoxTypeBd.getSelectedItem(),  callBackMC.getFileNameSql()),
                 (String) comboBoxTypeBd.getSelectedItem()
         );
         try {
@@ -450,7 +450,7 @@ class TiningFrame {
         buttonSave.setEnabled(false);
         try {
             comboBoxListBd.removeAllItems();
-            bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), parentSuper.fileNameSql);
+            bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), callBackMC.getFileNameSql());
             String[] listBd = bdWork.getConnectListBd(
                     fieldParamServerIP.getText(),
                     fieldParamServerPort.getText(),
@@ -470,21 +470,22 @@ class TiningFrame {
 
     private boolean checkCommPort() {
         String portName = (String) comboBoxCommPort.getSelectedItem();
-        int ch =  parentSuper.commPort.Open(null, portName, BAUD.baud57600);
+        CommPort commPort = callBackMC.getCommPort();
+        int ch =  commPort.Open(null, portName, BAUD.baud57600);
         switch (ch) {
             case CommPort.INITCODE_OK:
                 labelPortCurrent.setText(portName);
-                parentSuper.commPort.Close();
+                commPort.Close();
                 textPortStatus.setText("ok");
                 break;
             case CommPort.INITCODE_NOTEXIST:
                 labelPortCurrent.setText(parametrs[1]);
-                parentSuper.commPort.Close();
+                commPort.Close();
                 textPortStatus.setText("порт не найден");
                 break;
             case CommPort.INITCODE_ERROROPEN:
                 labelPortCurrent.setText(parametrs[1]);
-                parentSuper.commPort.Close();
+                commPort.Close();
                 textPortStatus.setText("ошибка открытия");
                 break;
             default:

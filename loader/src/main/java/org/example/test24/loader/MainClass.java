@@ -1,6 +1,7 @@
 package org.example.test24.loader;
 
 import org.example.bd.BdWork;
+import org.example.bd.ParametersSql;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.Closer;
 import org.example.test24.RS232.BAUD;
@@ -18,19 +19,21 @@ public class MainClass {
     final public String fileNameMySql = "my_sql.txt";
     final public String[] fileNameSql = {fileNameMsSql, fileNameMySql};
 
-    private ScreenClass mainFx = null;
+    private ScreenClass mainFx;
     private Running runner = null;
     public CommPort commPort = null;
     private BdWork bdWork = null;
-    private TiningFrame tiningFrame = null;
+    private String[] parameters = null;
+    private StartFrame startFrame = null;
+    private TuningFrame tuningFrame = null;
 
     public static void main(String[] args) {
         new MainClass().start(args);
     }
 
     private void start(String[] args) {
-        String[] param = getConfig();
-        String namePort = param[1];
+        parameters = getConfig();
+        String namePort = parameters[1];
 
         mainFx= new ScreenClass();
         runner = new Running();
@@ -38,9 +41,18 @@ public class MainClass {
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
-        StartFrameImpl startFrame = StartFrameImpl.init();
-        //tiningFrame = new TiningFrame(this);
-        //tiningFrame.frameConfig(param);
+        startFrame = StartFrame.main(getMainClassCallBack());
+        try {
+            while (startFrame != null) {
+                Thread.yield();
+                Thread.sleep(500);
+            }
+        } catch (java.lang.Throwable e) {
+            e.printStackTrace();
+        }
+
+//        tiningFrame = new TiningFrame(this);
+//        tiningFrame.frameConfig(parameters);
 
         int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
@@ -49,7 +61,7 @@ public class MainClass {
         }
 
         try {
-            bdWork = new BdWork(param[0], fileNameSql);
+            bdWork = new BdWork(parameters[0], fileNameSql);
             bdWork.getConnect();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
@@ -118,4 +130,75 @@ public class MainClass {
         }
     }
 
+    private boolean  checkCommPort(String portName) {
+        int ch =  commPort.Open(null, portName, BAUD.baud57600);
+        commPort.Close();
+        return ch == CommPort.INITCODE_OK;
+    }
+
+    private MainClassCallBackStartFrame getMainClassCallBack() {
+        return new MainClassCallBackStartFrame() {
+
+            @Override
+            public boolean checkCommPort() {
+                return MainClass.this.checkCommPort(parameters[1]);
+            }
+
+            @Override
+            public boolean checkSql() {
+                boolean stat;
+                ParametersSql parametersSql;
+                try {
+                    bdWork = new BdWork(parameters[0], fileNameSql);
+                    parametersSql = bdWork.getParametrsSql();
+                    parametersSql.load();
+                    stat = bdWork.testStuctBase(
+                            parametersSql.urlServer,
+                            parametersSql.portServer,
+                            parametersSql.user,
+                            parametersSql.password,
+                            parametersSql.dataBase
+                    );
+                } catch (java.lang.Throwable e) {
+                    e.printStackTrace();
+                    stat = false;
+                }
+                return stat;
+            }
+
+            @Override
+            public void closeFrame() {
+                MainClass.this.startFrame = null;
+            }
+
+            @Override
+            public TuningFrame getTuningFrame() {
+                return new TuningFrame(getMainClassCallBackTuningFrame());
+            }
+
+            @Override
+            public String[] getParameters() {
+                return parameters;
+            }
+        };
+    }
+
+    private MainClassCallBackTuningFrame getMainClassCallBackTuningFrame() {
+        return new MainClassCallBackTuningFrame() {
+            @Override
+            public CommPort getCommPort() {
+                return commPort;
+            }
+
+            @Override
+            public void saveConfig(String[] parametrs) {
+                MainClass.this.saveConfig(parametrs);
+            }
+
+            @Override
+            public String[] getFileNameSql() {
+                return fileNameSql;
+            }
+        };
+    }
 }
