@@ -21,8 +21,7 @@ public class MainClass {
     private ScreenClass mainFx;
     private Running runner = null;
     public CommPort commPort = null;
-    private BdWork bdWork = null;               //***
-    private SqlWork_interface bdSql = null;     //***
+    private SqlWork_interface bdSql = null;
     private String[] parameters = null;
     private StartFrame startFrame = null;
     private TuningFrame tuningFrame = null;

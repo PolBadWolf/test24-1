@@ -1,7 +1,6 @@
 package org.example.test24.runner;
 
 import javafx.scene.paint.Color;
-import org.example.bd.BdWork;
 import org.example.bd.MyBlob;
 import org.example.bd.SqlWork_interface;
 import org.example.test24.RS232.CommPort_Interface;
