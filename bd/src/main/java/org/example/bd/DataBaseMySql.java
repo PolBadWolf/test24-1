@@ -219,6 +219,31 @@ public class DataBaseMySql extends DataBase {
 
     @Override
     public void updateUserPassword(UserClass userClass, String newPassword) throws Exception {
-
+        // проверка связи
+        if (getConnect() == null) {
+            throw new Exception("нет связи");
+        }
+        String pass = new String(java.util.Base64.getEncoder().encode(newPassword.getBytes()));
+        PreparedStatement statement = null;
+        boolean saveAutoCommit = false;
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(true);
+            // запись
+            statement = connection.prepareStatement(
+                    "UPDATE Table_users SET  password = ? WHERE id = ?"
+            );
+            statement.setString(1, pass);
+            statement.setInt(2, userClass.id);
+            statement.executeUpdate();
+        } catch (java.lang.Throwable ex) {
+            ex.printStackTrace();
+        }
+        try {
+            connection.setAutoCommit(saveAutoCommit);
+        } catch (java.lang.Throwable ex) {
+            ex.printStackTrace();
+        }
+        statement.close();
     }
 }
