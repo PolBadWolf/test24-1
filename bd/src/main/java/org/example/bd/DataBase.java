@@ -5,12 +5,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 
-public abstract class DataBase implements Sql_interface {
+public abstract class DataBase implements SqlWork_interface, SqlCheck_interface {
     protected Connection connection = null;
     protected static DataBase dataBase = null;
     protected ParametersSql parametersSql = null;
 
-    public static Sql_interface init(String typeBase, String[] fileNameSql) {
+    public static SqlWork_interface init(String typeBase, String[] fileNameSql) {
         dataBase = null;
         switch (typeBase) {
             case "MS_SQL" :
@@ -24,10 +24,14 @@ public abstract class DataBase implements Sql_interface {
                 break;
         }
         if (dataBase != null)   dataBase.setParametersSql(fileNameSql);
-        return (Sql_interface) dataBase;
+        return (SqlWork_interface) dataBase;
     }
+
     protected abstract void setParametersSql(String[] fileNameSql);
 
+    protected abstract void connectBd() throws Exception;
+
+    @Override
     public Connection getConnect() throws Exception {
         if (connection == null) connectBd();
         else {
@@ -49,17 +53,15 @@ public abstract class DataBase implements Sql_interface {
         return connection;
     }
 
-    protected abstract void connectBd() throws Exception;
-
     @Override
     public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception {
 
     }
 
-    @Override
+    /*@Override
     public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
         return new String[0];
-    }
+    }*/
 
     @Override
     public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
