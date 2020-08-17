@@ -11,7 +11,7 @@
  Target Server Version : 80021
  File Encoding         : 65001
 
- Date: 05/08/2020 20:31:19
+ Date: 17/08/2020 20:31:47
 */
 
 SET NAMES utf8mb4;
@@ -32,7 +32,7 @@ CREATE TABLE `table_data`  (
   `tik_stop` int NULL DEFAULT NULL,
   `dis` longblob NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of table_data
@@ -67,12 +67,33 @@ CREATE TABLE `table_spec`  (
   `id` int NOT NULL AUTO_INCREMENT,
   `n` int NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of table_spec
 -- ----------------------------
 INSERT INTO `table_spec` VALUES (1, 1);
 INSERT INTO `table_spec` VALUES (2, 8);
+
+-- ----------------------------
+-- Table structure for table_users
+-- ----------------------------
+DROP TABLE IF EXISTS `table_users`;
+CREATE TABLE `table_users`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `date_reg` datetime(0) NOT NULL,
+  `date_unreg` datetime(0) NULL DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
+  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of table_users
+-- ----------------------------
+INSERT INTO `table_users` VALUES (1, '2020-08-17 18:01:53', NULL, 'Ivanov', '');
+INSERT INTO `table_users` VALUES (2, '2020-08-17 18:02:24', NULL, 'Petrov', '');
+INSERT INTO `table_users` VALUES (3, '2020-08-17 18:02:54', NULL, 'Sidorov', 'MTIz');
+INSERT INTO `table_users` VALUES (4, '2020-08-17 18:03:22', '2020-08-17 18:03:37', 'Gluv', '000');
 
 SET FOREIGN_KEY_CHECKS = 1;
