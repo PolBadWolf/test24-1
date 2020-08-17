@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
-class My_sql implements Sql_interface {
+class My_sql implements SqlWork_interface {
     private final String fileNameProperties = "my_sql.txt";
     private ParametersSql parametersSql = null;
     private Connection connection = null;
@@ -76,7 +76,7 @@ class My_sql implements Sql_interface {
         return connection;
     }
 
-    @Override
+    //@Override
     public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
         Connection connection = null;
         ResultSet rs = null;

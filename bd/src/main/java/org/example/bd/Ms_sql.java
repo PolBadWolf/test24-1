@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 
-class Ms_sql implements Sql_interface {
+class Ms_sql implements SqlWork_interface {
     private String fileNameProperties = null;
     private ParametersSql parametersSql = null;
     private Connection connection = null;
@@ -69,7 +69,7 @@ class Ms_sql implements Sql_interface {
         return connection;
     }
 
-    @Override
+    //@Override
     public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
         Connection connection = null;
         ResultSet rs = null;
