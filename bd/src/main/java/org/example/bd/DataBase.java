@@ -163,7 +163,8 @@ public abstract class DataBase implements SqlWork_interface {
                 connection.setAutoCommit(saveAutoCommit);
             }
         } catch (SQLException e) {
-            throw new Exception("ошибка чтения списка пользователей");
+            //throw new Exception("ошибка чтения списка пользователей");
+            System.out.println("ошибка чтения списка пользователей");
         }
         return listUsers.toArray(new UserClass[listUsers.size()]);
     }
