@@ -140,22 +140,15 @@ class My_sql implements Sql_interface {
     @Override
     public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
         ArrayList<String> listColmn = new ArrayList<>();
-        {
-            listColmn.add("id");
-            listColmn.add("dateTime");
-            listColmn.add("id_spec");
-            listColmn.add("n_cicle");
-            listColmn.add("ves");
-            listColmn.add("tik_shelf");
-            listColmn.add("tik_back");
-            listColmn.add("tik_stop");
-            listColmn.add("dis");
-        }
         Connection connection = null;
         ResultSet resultSet = null;
         Statement statement = null;
-        int len, countList = listColmn.size(), countSql = 0;
+        int len, countList, countSql;
+        boolean table1 = true;
+        boolean table2 = true;
+        boolean table3 = true;
         String sample;
+        // check connect
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             String connectionUrl = "jdbc:mysql://%1$s:%2$s/%3$s";
@@ -166,6 +159,26 @@ class My_sql implements Sql_interface {
             )  + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
             connection = DriverManager.getConnection(connString, login, password);
             statement = connection.createStatement();
+        } catch (java.lang.Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
+        // check table data
+        try {
+            {
+                listColmn.clear();
+                listColmn.add("id");
+                listColmn.add("dateTime");
+                listColmn.add("id_spec");
+                listColmn.add("n_cicle");
+                listColmn.add("ves");
+                listColmn.add("tik_shelf");
+                listColmn.add("tik_back");
+                listColmn.add("tik_stop");
+                listColmn.add("dis");
+            }
+            countSql = 0;
+            countList = listColmn.size();
             resultSet = statement.executeQuery("SELECT\n" +
                     "COLUMN_NAME\n" +
                     "FROM information_schema.COLUMNS\n" +
@@ -182,10 +195,37 @@ class My_sql implements Sql_interface {
                     break;
                 }
             }
+            table1 = countList == countSql;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return false;
+            table1 = false;
         }
-        return countList == countSql;
+        // check table users
+        try {
+            {
+                listColmn.clear();
+                listColmn.add("id");
+                listColmn.add("dateTime");
+                listColmn.add("id_spec");
+                listColmn.add("n_cicle");
+                listColmn.add("ves");
+                listColmn.add("tik_shelf");
+                listColmn.add("tik_back");
+                listColmn.add("tik_stop");
+                listColmn.add("dis");
+            }
+            countSql = 0;
+            countList = listColmn.size();
+        } catch (java.lang.Throwable e) {
+            e.printStackTrace();
+            table2 = false;
+        }
+
+        return table1 && table2 && table3;
+    }
+
+    @Override
+    public ParametersSql getParametrsSql() {
+        return parametersSql;
     }
 }

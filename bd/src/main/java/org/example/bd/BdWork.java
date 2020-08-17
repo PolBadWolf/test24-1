@@ -3,7 +3,7 @@ package org.example.bd;
 import java.sql.*;
 import java.util.Date;
 
-public class BdWork {
+public class BdWork implements Sql_interface {
     private Sql_interface sql_interface = null;
 
     public static String BdSelectFileParam(String typeDb, String[] fileNameSql) {
@@ -31,19 +31,28 @@ public class BdWork {
         }
     }
 
+    @Override
     public Connection getConnect() throws Exception {
         return sql_interface.getConnect();
     }
 
+    @Override
     public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
         return sql_interface.getConnectListBd(ip, portServer, login, password);
     }
 
+    @Override
     public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception {
         sql_interface.pushDataDist(date, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, distance);
     }
 
+    @Override
     public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
         return sql_interface.testStuctBase(ip, portServer, login, password, base);
+    }
+
+    @Override
+    public ParametersSql getParametrsSql() {
+        return sql_interface.getParametrsSql();
     }
 }
