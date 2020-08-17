@@ -285,6 +285,7 @@ public class StartFrame extends JFrame {
             }
             if (!fl) {
                 fieldPassword.setText("");
+                buttonSetPassword.setVisible(false);
                 JDialog dialog = new JDialog();
                 dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 dialog.setTitle("title");
