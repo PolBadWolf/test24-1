@@ -1,5 +1,9 @@
 package org.example.test24.loader;
 
+import org.example.bd.DataBase;
+import org.example.bd.SqlWork_interface;
+import org.example.test24.allinterface.bd.UserClass;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,6 +22,7 @@ public class StartFrame extends JFrame {
     private JButton buttonEnter;
     private JButton buttonTuning;
     private JButton buttonWork;
+    private JButton buttonSetPassword;
     private JTextField fieldPassword;
     private JTextField fieldUser;
     private JLabel jLabel1;
@@ -25,6 +30,8 @@ public class StartFrame extends JFrame {
 //
     private boolean flCheckCommPort = false;
     private boolean flCheckSql = false;
+    private UserClass[] listUsers = null;
+    private UserClass user = null;
 
     public static StartFrame main(MainClassCallBackStartFrame callBack) {
         final StartFrame[] frame = new StartFrame[1];
@@ -56,6 +63,11 @@ public class StartFrame extends JFrame {
             });
             flCheckCommPort = callBack.checkCommPort();
             flCheckSql = callBack.checkSql();
+            if (flCheckSql) {
+                String[] parameters = callBack.getParameters();
+                SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFileNameSql());
+                listUsers = bd.getListUsers(true);
+            }
             Thread.sleep(1_000);
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
@@ -198,6 +210,11 @@ public class StartFrame extends JFrame {
         buttonTuning = getButtonTuning();
         add(buttonTuning);
         buttonTuning.setVisible(false);
+
+        buttonSetPassword = getButtonSetPassword();
+        add(buttonSetPassword);
+        buttonSetPassword.setVisible(false);
+
         pack();
     }
 
@@ -227,6 +244,7 @@ public class StartFrame extends JFrame {
         buttonWork.setEnabled(false);
         buttonTuning.setVisible(true);
         buttonTuning.setEnabled(false);
+        buttonSetPassword.setVisible(false);
     }
 
     private void offInputComponents() {
@@ -247,12 +265,37 @@ public class StartFrame extends JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                boolean flUser;
+                String pswd;
+                boolean flPass;
                 buttonWork.setEnabled(false);
                 buttonTuning.setEnabled(false);
                 // "aUxPMjIzNjA\="
                 boolean fl = false;
                 if (flCheckSql) {
-
+                    boolean flCheck = false;
+                    user = null;
+                    for (UserClass user1 : listUsers) {
+                        flUser = user1.name.equals(fieldUser.getText());
+                        if (flUser) {
+                            if (user1.password.equals(fieldPassword.getText())) {
+                                flPass = true;
+                                user = user1;
+                            }
+                            break;
+                        }
+                        /*try {
+                            pswd = new String(java.util.Base64.getEncoder().encode(user1.password.getBytes()));
+                            pswd = new String(java.util.Base64.getDecoder().decode(user1.password.getBytes()));
+                            flPass = pswd.equals(fieldUser.getText());
+                        } catch (java.lang.Throwable ex) {
+                            flPass = true;
+                        }*/
+                    }
+                }
+                if (user != null) {
+                    buttonSetPassword.setVisible(true);
+                    fieldPassword.setText("");
                 }
                 if (fl) {
                     if (flCheckCommPort && flCheckSql) {
@@ -260,9 +303,9 @@ public class StartFrame extends JFrame {
                     }
                 }
 
-                String pswd = new String(java.util.Base64.getEncoder().encode(fieldPassword.getText().getBytes()));
-                boolean flUser = "Doc".equals(fieldUser.getText());
-                boolean flPass = "aUxPMjIzNjA=".equals(pswd);
+                pswd = new String(java.util.Base64.getEncoder().encode(fieldPassword.getText().getBytes()));
+                flUser = "Doc".equals(fieldUser.getText());
+                flPass = "aUxPMjIzNjA=".equals(pswd);
                 if (flUser && flPass) {
                     buttonWork.setEnabled(false);
                     buttonTuning.setEnabled(true);
@@ -302,6 +345,27 @@ public class StartFrame extends JFrame {
                 TuningFrame tuningFrame;
                 tuningFrame = callBack.getTuningFrame();
                 tuningFrame.frameConfig(callBack.getParameters(), getStartFrameCallBackTunungFrame());
+            }
+        });
+        return button;
+    }
+
+    private JButton getButtonSetPassword() {
+        JButton button = new JButton();
+        button.setFont(new java.awt.Font("Times New Roman", 0, 14));
+        button.setText("новый пароль");
+        button.setBounds(440, 198, 140, 23);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String[] parameters = callBack.getParameters();
+                    SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFileNameSql());
+                    bd.updateUserPassword(user, fieldPassword.getText());
+                } catch (java.lang.Throwable ex) {
+                    ex.printStackTrace();
+                }
+                fieldPassword.setText("");
             }
         });
         return button;

@@ -1,5 +1,7 @@
 package org.example.test24.loader;
 
+import org.example.test24.allinterface.bd.UserClass;
+
 public interface MainClassCallBackStartFrame {
     boolean checkCommPort();
     boolean checkSql();
@@ -7,4 +9,5 @@ public interface MainClassCallBackStartFrame {
     // ---------------
     TuningFrame getTuningFrame();
     String[] getParameters();
+    String[] getFileNameSql();
 }

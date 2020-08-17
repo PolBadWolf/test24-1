@@ -1,7 +1,8 @@
 package org.example.test24.loader;
 
-import org.example.bd.BdWork;
+import org.example.bd.DataBase;
 import org.example.bd.ParametersSql;
+import org.example.bd.SqlWork_interface;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 
@@ -24,7 +25,7 @@ class TuningFrame {
 
     private String[] parametrs = null;
     private ParametersSql parametersSql = null;
-    private BdWork bdWork = null;
+    private SqlWork_interface bdSql = null;
     private Thread threadSkeep = null;
     private boolean threadSkeepOn;
 
@@ -130,12 +131,14 @@ class TuningFrame {
         flCheckCommPort = checkCommPort();
         flCheckParamSql = getParamSql();
         if (flCheckParamSql) {
-            flCheckSql = bdWork.testStuctBase(
+            flCheckSql = DataBase.testStuctBase(
+                    (String) comboBoxTypeBd.getSelectedItem(),
                     fieldParamServerIP.getText(),
                     fieldParamServerPort.getText(),
                     fieldParamServerLogin.getText(),
                     fieldParamServerPassword.getText(),
                     (String) comboBoxListBd.getSelectedItem()
+
             );
         } else {
             flCheckSql = false;
@@ -428,7 +431,7 @@ class TuningFrame {
             public void actionPerformed(ActionEvent e) {
                 threadSkeepOn = false;
                 buttonOk.setEnabled(false);
-                flCheckSql = bdWork.testStuctBase(
+                flCheckSql = bdSql.testStuctBase(
                         fieldParamServerIP.getText(),
                         fieldParamServerPort.getText(),
                         fieldParamServerLogin.getText(),
@@ -445,9 +448,13 @@ class TuningFrame {
         boolean stat = true;
         buttonOk.setEnabled(false);
         buttonSave.setEnabled(false);
+        String typeBd = (String) comboBoxTypeBd.getSelectedItem();
         parametersSql = new ParametersSql(
-                BdWork.BdSelectFileParam ((String) comboBoxTypeBd.getSelectedItem(),  callBackMC.getFileNameSql()),
-                (String) comboBoxTypeBd.getSelectedItem()
+                DataBase.getNameFileParametrsSql(
+                        typeBd,
+                        callBackMC.getFileNameSql()
+                ),
+                typeBd
         );
         try {
             parametersSql.load();
@@ -477,8 +484,9 @@ class TuningFrame {
         buttonSave.setEnabled(false);
         try {
             comboBoxListBd.removeAllItems();
-            bdWork = new BdWork((String) comboBoxTypeBd.getSelectedItem(), callBackMC.getFileNameSql());
-            String[] listBd = bdWork.getConnectListBd(
+            String typeBD = (String)  comboBoxTypeBd.getSelectedItem();
+            bdSql = DataBase.init(typeBD, callBackMC.getFileNameSql());
+            String[] listBd = bdSql.getConnectListBd(
                     fieldParamServerIP.getText(),
                     fieldParamServerPort.getText(),
                     fieldParamServerLogin.getText(),
