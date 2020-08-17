@@ -36,10 +36,10 @@ public class BdWork implements SqlWork_interface {
         return sql_Work_interface.getConnect();
     }
 
-    /*@Override
+    @Override
     public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
         return sql_Work_interface.getConnectListBd(ip, portServer, login, password);
-    }*/
+    }
 
     @Override
     public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception {
@@ -54,5 +54,10 @@ public class BdWork implements SqlWork_interface {
     @Override
     public ParametersSql getParametrsSql() {
         return sql_Work_interface.getParametrsSql();
+    }
+
+    @Override
+    public String getTypeBD() {
+        return null;
     }
 }

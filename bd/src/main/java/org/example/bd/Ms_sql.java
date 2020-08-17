@@ -214,4 +214,9 @@ class Ms_sql implements SqlWork_interface {
     public ParametersSql getParametrsSql() {
         return parametersSql;
     }
+
+    @Override
+    public String getTypeBD() {
+        return null;
+    }
 }
