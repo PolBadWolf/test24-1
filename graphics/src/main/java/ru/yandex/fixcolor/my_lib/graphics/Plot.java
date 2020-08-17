@@ -12,9 +12,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class Plot {
-    private Canvas canvas = null;
-    private GraphicsContext gc = null;
-    private Object lockData = new Object();
+    private Canvas canvas;
+    private GraphicsContext gc;
 
     // размер холста
     private double width = 0;
@@ -59,17 +58,16 @@ public class Plot {
     private int    yStep;
 
     // масив графиков
-    private ArrayList<Trend> trends = null;
-    private ArrayList<NewDataClass> dataGraphics = null;
-    private MyPaint myPaint = null;
-    //private Short[] newData = null;
-    private NewDataClass newData = null;
-    private CirkMassive cirkMassive = null;
+    private ArrayList<Trend> trends;
+    private ArrayList<NewDataClass> dataGraphics;
+    private MyPaint myPaint;
+    private NewDataClass newData;
+    private CirkMassive cirkMassive;
 
     private boolean busy = false;
 
     private class Trend {
-        private Color lineColor = null;
+        private Color lineColor;
         private double lineWidth = 2.0;
 
         public Trend(Color lineColor, double lineWidth) {
@@ -114,7 +112,6 @@ public class Plot {
         public static final int RePaint = 3;
 
         private final BlockingQueue<DatQueue> paintQueue = new ArrayBlockingQueue<>(25);
-        private Object lock = new Object();
         private boolean onWork;
         private MyPaint thisThread = null;
 
@@ -126,7 +123,7 @@ public class Plot {
         public void run() {
             thisThread = this;
             onWork = true;
-            DatQueue datQueue = null;
+            DatQueue datQueue;
 
             while (onWork) {
                 try {
@@ -137,13 +134,13 @@ public class Plot {
                     }
                     switch (datQueue.command) {
                         case ClearFields:
-                            Platform.runLater( ()-> __clearFields() );
+                            Platform.runLater(this::__clearFields);
                             break;
                         case ClearWindow:
-                            Platform.runLater( ()-> __clearWindow() );
+                            Platform.runLater(this::__clearWindow);
                             break;
                         case PaintNet:
-                            Platform.runLater( ()-> __paintNet() );
+                            Platform.runLater(this::__paintNet);
                             break;
                         case RePaint:
                             __rePaint(datQueue.datGraph);
@@ -190,10 +187,8 @@ public class Plot {
 
         private void __rePaint(ArrayList<NewDataClass> datGraph) {
             // нахождение диапозона
-            //int indexBegin = -1;
             int indexBeginInteger = -1;
             int indexEnd = datGraph.size();
-            int tmpIndx = 0;
 
             // zoom X
             levelXlenghtMax = levelXlenght;
@@ -258,7 +253,7 @@ public class Plot {
                 xIndxes.add(new DatXindx(curX, i));
             }
 
-            double y = 0;
+            double y;
             double yMin = levelYbegin, yMax = 0;
 
             int dropLenght = xIndxes.size();
@@ -338,8 +333,8 @@ public class Plot {
             double ySize = height - fieldHeight;
 
             double y_level;
-            int yN = 11; //
-            int yNk = 0;
+            int yN;
+            int yNk;
             if (levelYlenghtMax == 0) {
                 levelYmin = levelYbegin;
                 levelYlenghtMax = levelYlenght;
@@ -353,10 +348,10 @@ public class Plot {
             if ((levelYmin % yStep) > 0) yNk++;
 
             double  xCena;
-            int xN = 1;
+            int xN;
             if (levelXlenghtMax == 0)   levelXlenghtMax = levelXlenght;
             if (levelXlenghtMax < 200) {
-                xStep = (int) Math.floorDiv((int)levelXlenghtMax, 100) * 10;
+                xStep = Math.floorDiv((int)levelXlenghtMax, 100) * 10;
             }
             else {
                 int div = Math.floorDiv((int) levelXlenghtMax, 200) * 20;
@@ -394,7 +389,7 @@ public class Plot {
             double kp = ySize / y_level;
             int iK;
             for (int i = 0; i < yN; i++) {
-                iK = (int) ((i + yNk) * yStep);
+                iK = (i + yNk) * yStep;
                 y = kp * (iK - levelYmin);
                 if (y < 0)  {
                     continue;
