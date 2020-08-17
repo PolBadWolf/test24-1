@@ -26,7 +26,7 @@ public abstract class DataBase implements SqlWork_interface {
                 break;
         }
         if (dataBase != null)   dataBase.setParametersSql(fileNameSql);
-        return (SqlWork_interface) dataBase;
+        return dataBase;
     }
 
     protected abstract void setParametersSql(String[] fileNameSql);
@@ -90,7 +90,7 @@ public abstract class DataBase implements SqlWork_interface {
     }
 
     public static boolean testStuctBase(String typeBD, String ip, String portServer, String login, String password, String base) {
-        boolean res = false;
+        boolean res;
         switch (typeBD) {
             case "MS_SQL" :
                 res = DataBaseMsSql.testStuctBase1(ip, portServer, login, password, base);
@@ -122,10 +122,9 @@ public abstract class DataBase implements SqlWork_interface {
     @Override
     public UserClass[] getListUsers(boolean actual) throws Exception {
         ArrayList<UserClass> listUsers = new ArrayList<>();
-        PreparedStatement statement = null;
-        Statement statementReadSpec = null;
-        ResultSet result = null;
-        boolean saveAutoCommit = false;
+        Statement statementReadSpec;
+        ResultSet result;
+        boolean saveAutoCommit;
         try {
             getConnect();
             saveAutoCommit = connection.getAutoCommit();
@@ -166,7 +165,7 @@ public abstract class DataBase implements SqlWork_interface {
             //throw new Exception("ошибка чтения списка пользователей");
             System.out.println("ошибка чтения списка пользователей");
         }
-        return listUsers.toArray(new UserClass[listUsers.size()]);
+        return listUsers.toArray(new UserClass[0]);
     }
 
     @Override

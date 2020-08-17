@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 class TuningFrame {
     private MainClassCallBackTuningFrame callBackMC = null;
-    private StartFrameCallBackTunungFrame callBackTF = null;
+    private StartFrameCallBackTuningFrame callBackTF = null;
 
     private String[] parametrs = null;
     private ParametersSql parametersSql = null;
@@ -59,7 +59,7 @@ class TuningFrame {
         this.callBackMC = callBackMC;
     }
 
-    void frameConfig(String[] parametrs, StartFrameCallBackTunungFrame callBackTF) {
+    void frameConfig(String[] parametrs, StartFrameCallBackTuningFrame callBackTF) {
         this.parametrs = parametrs;
         this.callBackTF = callBackTF;
         frameConstructor();

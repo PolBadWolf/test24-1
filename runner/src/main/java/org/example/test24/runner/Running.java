@@ -62,7 +62,7 @@ public class Running implements Runner_Interface {
     @Override
     public void reciveRsPush(byte[] bytes, int lenght) {
         int b = bytes[0];
-        tik = ((bytes[1] & 0x000000ff) <<  0 )
+        tik = ((bytes[1] & 0x000000ff))
                 + ((bytes[2] & 0x000000ff) <<  8 )
                 + ((bytes[3] & 0x000000ff) << 16 )
                 + ((bytes[4] & 0x000000ff) << 24 );
@@ -148,7 +148,7 @@ public class Running implements Runner_Interface {
 
     private void showVes(byte[] bytes) {
         ves  = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
-        mainFrame.label2_txt(String.valueOf(ves + "кг"));
+        mainFrame.label2_txt(ves + "кг");
     }
 
     private void paintTrends(byte[] bytes) {
