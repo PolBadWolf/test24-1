@@ -3,6 +3,7 @@ package org.example.test24.runner;
 import javafx.scene.paint.Color;
 import org.example.bd.BdWork;
 import org.example.bd.MyBlob;
+import org.example.bd.SqlWork_interface;
 import org.example.test24.RS232.CommPort_Interface;
 import org.example.test24.allinterface.bd.DistClass;
 import org.example.test24.allinterface.screen.MainFrame_interface;
@@ -16,7 +17,7 @@ public class Running implements Runner_Interface {
     private MainFrame_interface mainFrame = null;
     private Plot plot = null;
 
-    private BdWork bdWork = null;
+    private SqlWork_interface bdSql = null;
     private ArrayList<DistClass>  distanceOut = null;
     private int ves;
     private int tik_shelf;
@@ -29,10 +30,10 @@ public class Running implements Runner_Interface {
 
 
     @Override
-    public void init(BdWork bdWork, CommPort_Interface commPort, MainFrame_interface mainFrame) {
+    public void init(SqlWork_interface bdSql, CommPort_Interface commPort, MainFrame_interface mainFrame) {
         this.commPort = commPort;
         this.mainFrame = mainFrame;
-        this.bdWork = bdWork;
+        this.bdSql = bdSql;
 
         distanceOut = new ArrayList<>();
 
@@ -83,7 +84,7 @@ public class Running implements Runner_Interface {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     mainFrame.label1_txt("MANUAL_STOP");
                     System.out.println("count = " + distanceOut.size());
-                    bdWork.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                    bdSql.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
                 } catch (java.lang.Throwable e) {
                     e = null;
                 }
@@ -115,7 +116,7 @@ public class Running implements Runner_Interface {
                 try {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     System.out.println("count = " + distanceOut.size());
-                    bdWork.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                    bdSql.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
                 } catch (java.lang.Throwable e) {
                     e = null;
                 }

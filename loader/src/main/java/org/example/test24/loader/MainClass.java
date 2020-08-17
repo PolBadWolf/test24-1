@@ -1,8 +1,6 @@
 package org.example.test24.loader;
 
-import org.example.bd.BdWork;
-import org.example.bd.ParametersSql;
-import org.example.bd.SqlCheck_interface;
+import org.example.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.Closer;
 import org.example.test24.RS232.BAUD;
@@ -23,7 +21,8 @@ public class MainClass {
     private ScreenClass mainFx;
     private Running runner = null;
     public CommPort commPort = null;
-    private BdWork bdWork = null;
+    private BdWork bdWork = null;               //***
+    private SqlWork_interface bdSql = null;     //***
     private String[] parameters = null;
     private StartFrame startFrame = null;
     private TuningFrame tuningFrame = null;
@@ -42,7 +41,7 @@ public class MainClass {
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
-        startFrame = StartFrame.main(getMainClassCallBack());
+//        startFrame = StartFrame.main(getMainClassCallBack());
         try {
             while (startFrame != null) {
                 Thread.yield();
@@ -52,9 +51,6 @@ public class MainClass {
             e.printStackTrace();
         }
 
-//        tiningFrame = new TiningFrame(this);
-//        tiningFrame.frameConfig(parameters);
-
         int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
             errorCommMessage(checkComm, commPort);
@@ -62,8 +58,8 @@ public class MainClass {
         }
 
         try {
-            bdWork = new BdWork(parameters[0], fileNameSql);
-            bdWork.getConnect();
+            bdSql = DataBase.init(parameters[0], fileNameSql);
+            bdSql.getConnect();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
             System.exit(1);
@@ -75,7 +71,7 @@ public class MainClass {
             Thread.yield();
         }
 
-        runner.init(bdWork, commPort, MainFrame.mainFrame);
+        runner.init(bdSql, commPort, MainFrame.mainFrame);
 
         commPort.ReciveStart();
     }
@@ -150,10 +146,10 @@ public class MainClass {
                 boolean stat;
                 ParametersSql parametersSql;
                 try {
-                    bdWork = new BdWork(parameters[0], fileNameSql);
-                    parametersSql = bdWork.getParametrsSql();
+                    bdSql = DataBase.init(parameters[0], fileNameSql);
+                    parametersSql = bdSql.getParametrsSql();
                     parametersSql.load();
-                    stat = bdWork.testStuctBase(
+                    stat = bdSql.testStuctBase(
                             parametersSql.urlServer,
                             parametersSql.portServer,
                             parametersSql.user,

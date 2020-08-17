@@ -1,11 +1,12 @@
 package org.example.test24.runner;
 
 import org.example.bd.BdWork;
+import org.example.bd.SqlWork_interface;
 import org.example.test24.RS232.CommPort_Interface;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 
 public interface Runner_Interface {
-    void init(BdWork bdWork, CommPort_Interface commPort, MainFrame_interface mainFrame);
+    void init(SqlWork_interface bdSql, CommPort_Interface commPort, MainFrame_interface mainFrame);
     void reciveRsPush(byte[] bytes, int lenght);
 
     void Suspended();
