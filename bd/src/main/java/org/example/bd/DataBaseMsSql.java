@@ -11,7 +11,12 @@ public class DataBaseMsSql extends DataBase {
         parametersSql = new ParametersSql(fileNameSql[0], "MS_SQL");
     }
 
-    static String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
+    @Override
+    public String getTypeBD() {
+        return "MS_SQL";
+    }
+
+    static String[] getConnectListBd1(String ip, String portServer, String login, String password) throws Exception {
         Connection connection = null;
         ResultSet rs = null;
         // подключение драйвера

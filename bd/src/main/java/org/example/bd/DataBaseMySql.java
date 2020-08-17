@@ -12,7 +12,12 @@ public class DataBaseMySql extends DataBase {
         parametersSql = new ParametersSql(fileNameSql[1], "MY_SQL");
     }
 
-    static String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
+    @Override
+    public String getTypeBD() {
+        return "MY_SQL";
+    }
+
+    static String[] getConnectListBd1(String ip, String portServer, String login, String password) throws Exception {
         Connection connection = null;
         ResultSet rs = null;
         // подключение драйвера

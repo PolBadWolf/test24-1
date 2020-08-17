@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 
-public abstract class DataBase implements SqlWork_interface, SqlCheck_interface {
+public abstract class DataBase implements SqlWork_interface {
     protected Connection connection = null;
     protected static DataBase dataBase = null;
     protected ParametersSql parametersSql = null;
@@ -56,18 +56,65 @@ public abstract class DataBase implements SqlWork_interface, SqlCheck_interface 
     @Override
     public abstract void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception;
 
-    /*@Override
-    public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
-        return new String[0];
-    }*/
-
     @Override
     public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
-        return false;
+        return DataBase.testStuctBase(getTypeBD(), ip, portServer, login, password, base);
+    }
+
+    @Override
+    public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
+        return DataBase.getConnectListBd(getTypeBD(), ip, portServer, login, password);
     }
 
     @Override
     public ParametersSql getParametrsSql() {
         return parametersSql;
     }
+
+    @Override
+    public abstract String getTypeBD();
+
+    public static String getNameFileParametrsSql(String typeDb, String[] fileNameSql) {
+        String s = "";
+        switch (typeDb) {
+            case "MS_SQL":
+                s = fileNameSql[0];
+                break;
+            case "MY_SQL":
+                s = fileNameSql[1];
+                break;
+        }
+        return s;
+    }
+
+    public static boolean testStuctBase(String typeBD, String ip, String portServer, String login, String password, String base) {
+        boolean res = false;
+        switch (typeBD) {
+            case "MS_SQL" :
+                res = DataBaseMsSql.testStuctBase1(ip, portServer, login, password, base);
+                break;
+            case "MY_SQL" :
+                res = DataBaseMySql.testStuctBase1(ip, portServer, login, password, base);
+                break;
+            default:
+                res = false;
+        }
+        return res;
+    }
+
+    public static String[] getConnectListBd(String typeBD, String ip, String portServer, String login, String password) throws Exception {
+        String[] list;
+        switch (typeBD) {
+            case "MS_SQL" :
+                list = DataBaseMsSql.getConnectListBd1(ip, portServer, login, password);
+                break;
+            case "MY_SQL" :
+                list = DataBaseMySql.getConnectListBd1(ip, portServer, login, password);
+                break;
+            default:
+                throw new Exception("неизвестный тип BD");
+        }
+        return list;
+    }
+
 }
