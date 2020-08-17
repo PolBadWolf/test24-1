@@ -2,6 +2,7 @@ package org.example.test24.loader;
 
 import org.example.bd.BdWork;
 import org.example.bd.ParametersSql;
+import org.example.bd.SqlCheck_interface;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.Closer;
 import org.example.test24.RS232.BAUD;
