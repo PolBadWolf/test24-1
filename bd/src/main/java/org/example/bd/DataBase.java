@@ -54,9 +54,7 @@ public abstract class DataBase implements SqlWork_interface, SqlCheck_interface 
     }
 
     @Override
-    public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception {
-
-    }
+    public abstract void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception;
 
     /*@Override
     public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
@@ -70,6 +68,6 @@ public abstract class DataBase implements SqlWork_interface, SqlCheck_interface 
 
     @Override
     public ParametersSql getParametrsSql() {
-        return null;
+        return parametersSql;
     }
 }

@@ -2,6 +2,7 @@ package org.example.bd;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DataBaseMsSql extends DataBase {
 
@@ -155,6 +156,50 @@ public class DataBaseMsSql extends DataBase {
             connection = DriverManager.getConnection(connString, parametersSql.user, parametersSql.password);
         } catch (SQLException e) {
             throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
+        }
+    }
+
+    @Override
+    public void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception {
+        // проверка связи
+        if (getConnect() == null) {
+            throw new Exception("нет связи");
+        }
+        PreparedStatement statement = null;
+        Statement statementReadSpec = null;
+        boolean saveAutoCommit = false;
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            // чтение id спец
+            ResultSet resultSpec = statementReadSpec.executeQuery("SELECT TOP 1 table_spec.id FROM table_spec ORDER BY table_spec.id DESC");
+            if (!resultSpec.next()) {
+                throw new SQLException("таблица table_spec пуста");
+            }
+            id_spec = resultSpec.getLong(1);
+            // запись
+            statement = connection.prepareStatement(
+                    "INSERT INTO Table_Data (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, dis)\n"
+                            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            );
+            statement.setTimestamp(1, new java.sql.Timestamp(date.getTime()) );
+            statement.setLong(2, id_spec);
+            statement.setInt(3, n_cicle);
+            statement.setInt(4, ves);
+            statement.setInt(5, tik_shelf);
+            statement.setInt(6, tik_back);
+            statement.setInt(7, tik_stop);
+            statement.setBlob(8, distance);
+
+            statement.executeUpdate();
+            connection.commit();
+            connection.setAutoCommit(saveAutoCommit);
+            statement.close();
+        } catch (SQLException e) {
+            connection.rollback();
+            connection.setAutoCommit(saveAutoCommit);
+            throw new Exception(e.getMessage());
         }
     }
 }
