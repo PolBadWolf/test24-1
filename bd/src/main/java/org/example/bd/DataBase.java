@@ -1,8 +1,10 @@
 package org.example.bd;
 
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.SQLException;
+import org.example.test24.allinterface.bd.UserClass;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 
 public abstract class DataBase implements SqlWork_interface {
@@ -117,4 +119,55 @@ public abstract class DataBase implements SqlWork_interface {
         return list;
     }
 
+    @Override
+    public UserClass[] getListUsers(boolean actual) throws Exception {
+        ArrayList<UserClass> listUsers = new ArrayList<>();
+        PreparedStatement statement = null;
+        Statement statementReadSpec = null;
+        ResultSet result = null;
+        boolean saveAutoCommit = false;
+        try {
+            getConnect();
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            statementReadSpec = connection.createStatement();
+            //
+            if (actual) {
+                result = statementReadSpec.executeQuery("SELECT        id, date_reg, date_unreg, name, password\n" +
+                        "FROM            Table_users\n" +
+                        "WHERE        (date_unreg IS NULL)\n" +
+                        "ORDER BY id");
+            } else {
+                result = statementReadSpec.executeQuery("SELECT        id, date_reg, date_unreg, name, password\n" +
+                        "FROM            Table_users\n" +
+                        "ORDER BY id");
+            }
+            while (result.next()) {
+                String pass = "";
+                try {
+                    pass = new String(Base64.getDecoder().decode(result.getString("password")));
+                } catch (java.lang.Throwable throwable) {
+                    System.out.println("ошибка расшифровки пароля для : " + result.getString("name"));
+                }
+                try {
+                    listUsers.add(new UserClass(
+                            result.getInt("id"),
+                            result.getTimestamp("date_reg"),
+                            result.getTimestamp("date_unreg"),
+                            result.getString("name"),
+                            pass
+                    ));
+                } catch (java.lang.Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+                connection.setAutoCommit(saveAutoCommit);
+            }
+        } catch (SQLException e) {
+            throw new Exception("ошибка чтения списка пользователей");
+        }
+        return listUsers.toArray(new UserClass[listUsers.size()]);
+    }
+
+    @Override
+    public abstract void updateUserPassword(UserClass userClass, String newPassword) throws Exception;
 }

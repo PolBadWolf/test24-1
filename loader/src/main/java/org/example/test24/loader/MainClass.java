@@ -4,6 +4,7 @@ import org.example.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.Closer;
 import org.example.test24.RS232.BAUD;
+import org.example.test24.allinterface.bd.UserClass;
 import org.example.test24.runner.Running;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
@@ -40,7 +41,7 @@ public class MainClass {
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
-//        startFrame = StartFrame.main(getMainClassCallBack());
+        startFrame = StartFrame.main(getMainClassCallBack());
         try {
             while (startFrame != null) {
                 Thread.yield();
@@ -175,6 +176,11 @@ public class MainClass {
             @Override
             public String[] getParameters() {
                 return parameters;
+            }
+
+            @Override
+            public String[] getFileNameSql() {
+                return fileNameSql;
             }
         };
     }

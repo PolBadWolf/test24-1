@@ -1,5 +1,7 @@
 package org.example.bd;
 
+import org.example.test24.allinterface.bd.UserClass;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -213,5 +215,10 @@ public class DataBaseMySql extends DataBase {
             connection.setAutoCommit(saveAutoCommit);
             throw new Exception(e.getMessage());
         }
+    }
+
+    @Override
+    public void updateUserPassword(UserClass userClass, String newPassword) throws Exception {
+
     }
 }
