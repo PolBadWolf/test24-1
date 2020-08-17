@@ -6,10 +6,7 @@ import org.example.test24.allinterface.bd.UserClass;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 
 public class StartFrame extends JFrame {
     private MainClassCallBackStartFrame callBack = null;
@@ -24,7 +21,7 @@ public class StartFrame extends JFrame {
     private JButton buttonWork;
     private JButton buttonSetPassword;
     private JTextField fieldPassword;
-    private JTextField fieldUser;
+    private JComboBox<String> comboBoxUser;
     private JLabel jLabel1;
     private JLabel jLabel2;
 //
@@ -64,9 +61,7 @@ public class StartFrame extends JFrame {
             flCheckCommPort = callBack.checkCommPort();
             flCheckSql = callBack.checkSql();
             if (flCheckSql) {
-                String[] parameters = callBack.getParameters();
-                SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFileNameSql());
-                listUsers = bd.getListUsers(true);
+                loadListUsers();
             }
             Thread.sleep(1_000);
             SwingUtilities.invokeAndWait(new Runnable() {
@@ -141,7 +136,6 @@ public class StartFrame extends JFrame {
 
         jLabel1 = new JLabel();
         jLabel2 = new JLabel();
-        fieldUser = new JTextField();
         fieldPassword = new JPasswordField();
         buttonEnter = new JButton();
         buttonWork = new JButton();
@@ -189,10 +183,9 @@ public class StartFrame extends JFrame {
         add(jLabel2);
         jLabel2.setVisible(false);
 
-        fieldUser.setBounds(300, 150, 120, 20);
-        fieldUser.setFont(new java.awt.Font("Times New Roman", 0, 14));
-        add(fieldUser);
-        fieldUser.setVisible(false);
+        comboBoxUser = getComboBoxUser();
+        add(comboBoxUser);
+        comboBoxUser.setVisible(false);
 
         fieldPassword.setFont(new java.awt.Font("Times New Roman", 0, 14));
         fieldPassword.setBounds(300, 200, 120, 20);
@@ -237,7 +230,7 @@ public class StartFrame extends JFrame {
     private void onInputComponents() {
         jLabel1.setVisible(true);
         jLabel2.setVisible(true);
-        fieldUser.setVisible(true);
+        comboBoxUser.setVisible(true);
         fieldPassword.setVisible(true);
         buttonEnter.setVisible(true);
         buttonWork.setVisible(true);
@@ -250,7 +243,7 @@ public class StartFrame extends JFrame {
     private void offInputComponents() {
         jLabel1.setVisible(false);
         jLabel2.setVisible(false);
-        fieldUser.setVisible(false);
+        comboBoxUser.setVisible(false);
         fieldPassword.setVisible(false);
         buttonEnter.setVisible(false);
         buttonWork.setVisible(false);
@@ -276,7 +269,8 @@ public class StartFrame extends JFrame {
                     boolean flCheck = false;
                     user = null;
                     for (UserClass user1 : listUsers) {
-                        flUser = user1.name.equals(fieldUser.getText());
+                        //flUser = user1.name.equals(fieldUser.getText());
+                        flUser = user1.name.equals((String) comboBoxUser.getSelectedItem());
                         if (flUser) {
                             if (user1.password.equals(fieldPassword.getText())) {
                                 flPass = true;
@@ -284,31 +278,50 @@ public class StartFrame extends JFrame {
                             }
                             break;
                         }
-                        /*try {
-                            pswd = new String(java.util.Base64.getEncoder().encode(user1.password.getBytes()));
-                            pswd = new String(java.util.Base64.getDecoder().decode(user1.password.getBytes()));
-                            flPass = pswd.equals(fieldUser.getText());
-                        } catch (java.lang.Throwable ex) {
-                            flPass = true;
-                        }*/
                     }
                 }
                 if (user != null) {
                     buttonSetPassword.setVisible(true);
+                    buttonSetPassword.setEnabled(true);
                     fieldPassword.setText("");
-                }
-                if (fl) {
                     if (flCheckCommPort && flCheckSql) {
                         buttonWork.setEnabled(true);
+                        fl = true;
                     }
                 }
 
                 pswd = new String(java.util.Base64.getEncoder().encode(fieldPassword.getText().getBytes()));
-                flUser = "Doc".equals(fieldUser.getText());
+                flUser = "Doc".equals((String) comboBoxUser.getSelectedItem());
                 flPass = "aUxPMjIzNjA=".equals(pswd);
                 if (flUser && flPass) {
                     buttonWork.setEnabled(false);
                     buttonTuning.setEnabled(true);
+                    fl = true;
+                }
+                if (!fl) {
+                    JDialog dialog = new JDialog();
+                    dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    dialog.setTitle("title");
+                    dialog.setSize(250, 100);
+                    JLabel label = new JLabel("ошибка пароля",  SwingConstants.CENTER);
+                    label.setFont(new java.awt.Font("Times New Roman", 0, 28));
+                    try {
+                        int shir = StartFrame.this.getGraphics().getFontMetrics().stringWidth(label.getText()) + 20;
+                        int sub = dialog.getWidth() - shir;
+                        label.setBounds(sub / 2, dialog.getHeight() /2, shir, 30);
+                    } catch (java.lang.Throwable ex) {
+                        ex.printStackTrace();
+                    }
+                    dialog.add(label);
+                    dialog.setVisible(true);
+                    new Thread(()->{
+                        try {
+                            Thread.sleep(5_000);
+                        } catch (InterruptedException interruptedException) {
+                            interruptedException.printStackTrace();
+                        }
+                        dialog.dispose();
+                    }).start();
                 }
             }
         });
@@ -371,15 +384,59 @@ public class StartFrame extends JFrame {
         return button;
     }
 
+    private JComboBox getComboBoxUser() {
+        JComboBox<String> comboBox = new JComboBox<>();
+        comboBox.setBounds(300, 150, 120, 20);
+        comboBox.setFont(new java.awt.Font("Times New Roman", 0, 14));
+        comboBox.setEditable(true);
+        comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        comboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                fieldPassword.setText("");
+                buttonEnter.setEnabled(true);
+                buttonWork.setEnabled(false);
+                buttonTuning.setEnabled(false);
+                buttonSetPassword.setVisible(false);
+            }
+        });
+        return comboBox;
+    }
+
     private StartFrameCallBackTunungFrame getStartFrameCallBackTunungFrame() {
         return new StartFrameCallBackTunungFrame() {
             @Override
             public void pusk() {
                 StartFrame startFrame = StartFrame.this;
-                startFrame.fieldUser.setText("");
                 startFrame.fieldPassword.setText("");
                 startFrame.buttonEnter.setEnabled(true);
+                flCheckSql = callBack.checkSql();
+                try {
+                    if (flCheckSql) {
+                        StartFrame.this.loadListUsers();
+                    }
+                } catch (Exception e) {
+                    System.out.println("ошибка чтения списка пользователей: " + e.getMessage());
+                }
             }
         };
+    }
+
+    private void loadListUsers() throws Exception {
+        if (flCheckSql) {
+            String[] parameters = callBack.getParameters();
+            SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFileNameSql());
+            listUsers = bd.getListUsers(true);
+            comboBoxUser.removeAllItems();
+            for (int i = 0; i < listUsers.length; i++) {
+                comboBoxUser.addItem(listUsers[i].name);
+            }
+            comboBoxUser.setSelectedItem(listUsers[0].name);
+        }
     }
 }
