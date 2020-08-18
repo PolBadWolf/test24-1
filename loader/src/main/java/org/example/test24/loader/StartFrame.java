@@ -407,7 +407,11 @@ public class StartFrame extends JFrame {
             for (UserClass listUser : listUsers) {
                 comboBoxUser.addItem(listUser.name);
             }
-            comboBoxUser.setSelectedItem(listUsers[0].name);
+            try {
+                comboBoxUser.setSelectedItem(listUsers[0].name);
+            } catch (java.lang.Throwable e) {
+                System.out.println("ошибка установки текущего пользователя: " + e.getMessage());
+            }
         }
     }
 }
