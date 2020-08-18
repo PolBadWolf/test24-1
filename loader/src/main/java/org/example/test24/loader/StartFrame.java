@@ -289,16 +289,17 @@ public class StartFrame extends JFrame {
                 JDialog dialog = new JDialog();
                 dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 dialog.setTitle("title");
-                dialog.setSize(250, 100);
-                JLabel label = new JLabel("ошибка пароля",  SwingConstants.CENTER);
+                JLabel label = new JLabel("ошибка ввода пароля",  SwingConstants.CENTER);
                 label.setFont(new Font("Times New Roman", Font.PLAIN, 28));
+                int shir = 250;
                 try {
-                    int shir = StartFrame.this.getGraphics().getFontMetrics().stringWidth(label.getText()) + 20;
-                    int sub = dialog.getWidth() - shir;
+                    shir = StartFrame.this.getGraphics().getFontMetrics().stringWidth(label.getText());
+                    int sub = dialog.getWidth() - shir + 20;
                     label.setBounds(sub / 2, dialog.getHeight() /2, shir, 30);
                 } catch (Throwable ex) {
                     ex.printStackTrace();
                 }
+                dialog.setSize(shir * 3, 100);
                 dialog.add(label);
                 dialog.setVisible(true);
                 new Thread(()->{
@@ -353,6 +354,8 @@ public class StartFrame extends JFrame {
                 String[] parameters = callBack.getParameters();
                 SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFileNameSql());
                 bd.updateUserPassword(user, fieldPassword.getText());
+                loadListUsers();
+                comboBoxUser.setSelectedItem(user.name);
             } catch (Throwable ex) {
                 ex.printStackTrace();
             }
@@ -404,7 +407,11 @@ public class StartFrame extends JFrame {
             for (UserClass listUser : listUsers) {
                 comboBoxUser.addItem(listUser.name);
             }
-            comboBoxUser.setSelectedItem(listUsers[0].name);
+            try {
+                comboBoxUser.setSelectedItem(listUsers[0].name);
+            } catch (java.lang.Throwable e) {
+                System.out.println("ошибка установки текущего пользователя: " + e.getMessage());
+            }
         }
     }
 }
