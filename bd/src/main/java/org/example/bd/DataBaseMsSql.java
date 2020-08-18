@@ -19,8 +19,8 @@ public class DataBaseMsSql extends DataBase {
     }
 
     static String[] getConnectListBd1(String ip, String portServer, String login, String password) throws Exception {
-        Connection connection = null;
-        ResultSet rs = null;
+        Connection connection;
+        ResultSet rs;
         // подключение драйвера
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -53,15 +53,15 @@ public class DataBaseMsSql extends DataBase {
         }
         rs.close();
         connection.close();
-        return listBd.toArray(new String[listBd.size()]);
+        return listBd.toArray(new String[0]);
     }
 
     static boolean testStuctBase1(String ip, String portServer, String login, String password, String base) {
         // init vars
         ArrayList<String> listColmn = new ArrayList<>();
-        Connection connection = null;
-        ResultSet resultSet = null;
-        Statement statement = null;
+        Connection connection;
+        ResultSet resultSet;
+        Statement statement;
         int len, countList, countSql;
         boolean table1 = true;
         boolean table2 = true;
@@ -79,7 +79,7 @@ public class DataBaseMsSql extends DataBase {
             connection = DriverManager.getConnection(connString, login, password);
             statement = connection.createStatement();
         } catch (java.lang.Throwable e) {
-            e.printStackTrace();
+            System.out.println("test structure base: " + e.getLocalizedMessage());
             return false;
         }
         // check table data
@@ -172,8 +172,8 @@ public class DataBaseMsSql extends DataBase {
         if (getConnect() == null) {
             throw new Exception("нет связи");
         }
-        PreparedStatement statement = null;
-        Statement statementReadSpec = null;
+        PreparedStatement statement;
+        Statement statementReadSpec;
         boolean saveAutoCommit = false;
         try {
             saveAutoCommit = connection.getAutoCommit();
@@ -218,8 +218,8 @@ public class DataBaseMsSql extends DataBase {
             throw new Exception("нет связи");
         }
         String pass = new String(java.util.Base64.getEncoder().encode(newPassword.getBytes()));
-        PreparedStatement statement = null;
-        boolean saveAutoCommit = false;
+        PreparedStatement statement;
+        boolean saveAutoCommit = true;
         try {
             saveAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(true);
@@ -230,9 +230,14 @@ public class DataBaseMsSql extends DataBase {
             statement.setString(1, pass);
             statement.setInt(2, userClass.id);
             statement.executeUpdate();
+            statement.close();
         } catch (java.lang.Throwable ex) {
             ex.printStackTrace();
         }
-        statement.close();
+        try {
+            connection.setAutoCommit(saveAutoCommit);
+        } catch (java.lang.Throwable ex) {
+            ex.printStackTrace();
+        }
     }
 }

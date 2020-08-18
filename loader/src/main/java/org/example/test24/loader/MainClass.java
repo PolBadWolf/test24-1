@@ -4,7 +4,6 @@ import org.example.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.Closer;
 import org.example.test24.RS232.BAUD;
-import org.example.test24.allinterface.bd.UserClass;
 import org.example.test24.runner.Running;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
@@ -25,7 +24,6 @@ public class MainClass {
     private SqlWork_interface bdSql = null;
     private String[] parameters = null;
     private StartFrame startFrame = null;
-    private TuningFrame tuningFrame = null;
 
     public static void main(String[] args) {
         new MainClass().start(args);

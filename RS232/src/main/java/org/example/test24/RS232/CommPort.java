@@ -29,8 +29,8 @@ public class CommPort implements CommPort_Interface {
         boolean flagTmp = false;
         String[] portsName = getListPortsName();
         String portNameCase = portName.toUpperCase();
-        for (int i = 0; i < portsName.length; i++) {
-            if (portsName[i].equals(portNameCase))  {
+        for (String s : portsName) {
+            if (s.equals(portNameCase)) {
                 flagTmp = true;
                 break;
             }
@@ -68,7 +68,7 @@ public class CommPort implements CommPort_Interface {
         if (port == null)   return false;
         if (!port.isOpen()) return false;
 
-        threadRS = new Thread( ()->runner() );
+        threadRS = new Thread(this::runner);
         threadRS.start();
         return false;
     }
