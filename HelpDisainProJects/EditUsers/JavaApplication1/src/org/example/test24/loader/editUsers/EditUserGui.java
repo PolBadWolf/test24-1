@@ -39,41 +39,63 @@ public class EditUserGui extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
+        label_title = new javax.swing.JLabel();
+        label_surName = new javax.swing.JLabel();
+        label_password = new javax.swing.JLabel();
+        scroll_table = new javax.swing.JScrollPane();
+        table = new javax.swing.JTable();
+        buttonDeactive = new javax.swing.JButton();
+        buttonNewUser = new javax.swing.JButton();
+        fieldSurName = new javax.swing.JTextField();
+        fieldPassword = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Редактор пользователей");
         setPreferredSize(new java.awt.Dimension(640, 480));
         getContentPane().setLayout(null);
 
-        jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 28)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Редактор пользователей");
-        getContentPane().add(jLabel1);
-        jLabel1.setBounds(160, 10, 310, 33);
+        label_title.setFont(new java.awt.Font("Times New Roman", 1, 28)); // NOI18N
+        label_title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        label_title.setText("Редактор пользователей");
+        getContentPane().add(label_title);
+        label_title.setBounds(160, 10, 310, 33);
 
-        jTable1.setModel(new SimpleModel());
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jTable1);
+        label_surName.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
+        label_surName.setText("ФИО");
+        getContentPane().add(label_surName);
+        label_surName.setBounds(80, 330, 60, 30);
 
-        getContentPane().add(jScrollPane1);
-        jScrollPane1.setBounds(20, 50, 580, 190);
+        label_password.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
+        label_password.setText("Пароль");
+        getContentPane().add(label_password);
+        label_password.setBounds(80, 390, 60, 30);
 
-        jButton1.setText("jButton1");
-        getContentPane().add(jButton1);
-        jButton1.setBounds(503, 260, 90, 40);
+        table.setModel(new SimpleModel());
+        table.getTableHeader().setReorderingAllowed(false);
+        scroll_table.setViewportView(table);
 
-        jTextField1.setText("jTextField1");
-        getContentPane().add(jTextField1);
-        jTextField1.setBounds(170, 330, 420, 20);
+        getContentPane().add(scroll_table);
+        scroll_table.setBounds(20, 50, 580, 190);
 
-        jLabel2.setText("ФИО");
-        getContentPane().add(jLabel2);
-        jLabel2.setBounds(70, 330, 60, 30);
+        buttonDeactive.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        buttonDeactive.setText("деактивация");
+        getContentPane().add(buttonDeactive);
+        buttonDeactive.setBounds(493, 260, 100, 40);
+
+        buttonNewUser.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        buttonNewUser.setText("Новый пользователь");
+        getContentPane().add(buttonNewUser);
+        buttonNewUser.setBounds(450, 380, 140, 40);
+
+        fieldSurName.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        fieldSurName.setText("jTextField1");
+        getContentPane().add(fieldSurName);
+        fieldSurName.setBounds(140, 330, 450, 30);
+
+        fieldPassword.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        fieldPassword.setText("jTextField1");
+        getContentPane().add(fieldPassword);
+        fieldPassword.setBounds(140, 390, 250, 30);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -114,12 +136,15 @@ public class EditUserGui extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JButton buttonDeactive;
+    private javax.swing.JButton buttonNewUser;
+    private javax.swing.JTextField fieldPassword;
+    private javax.swing.JTextField fieldSurName;
+    private javax.swing.JLabel label_password;
+    private javax.swing.JLabel label_surName;
+    private javax.swing.JLabel label_title;
+    private javax.swing.JScrollPane scroll_table;
+    private javax.swing.JTable table;
     // End of variables declaration//GEN-END:variables
 
     class SimpleModel extends AbstractTableModel {
