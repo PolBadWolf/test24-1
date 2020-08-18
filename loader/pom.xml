@@ -19,6 +19,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
+                    <finalName>Stend_spc</finalName>
                     <outputDirectory>${project.basedir}/../out/</outputDirectory>
                     <archive>
                         <manifest>
