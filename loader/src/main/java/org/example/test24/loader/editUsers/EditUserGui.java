@@ -10,27 +10,25 @@ import java.util.EventListener;
 
 class EditUserGui extends JFrame {
 
-    static EditUserGui init(EditUserInt callBackLogic) {
+    static EditUserGui init(EditUserInterface callBackLogic) {
         EditUserGui[] frame = new EditUserGui[1];
         try {
-            SwingUtilities.invokeAndWait(()->{
-                frame[0] = new EditUserGui(callBackLogic);
-                frame[0].initComponents();
-            });
+            frame[0] = new EditUserGui(callBackLogic);
+            frame[0].initComponents();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return frame[0];
     }
 
-    private EditUserInt callBackLogic;
+    private EditUserInterface callBackLogic;
 
-    private EditUserGui(EditUserInt callBackLogic) throws HeadlessException {
+    private EditUserGui(EditUserInterface callBackLogic) throws HeadlessException {
         this.callBackLogic = callBackLogic;
     }
 
     private void initComponents() {
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+        /*for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
             if ("Nimbus".equals(info.getName())) {
                 try {
                     UIManager.setLookAndFeel(info.getClassName());
@@ -45,7 +43,7 @@ class EditUserGui extends JFrame {
                 }
                 break;
             }
-        }
+        }*/
         setPreferredSize(new Dimension(640, 480));
         setLayout(null);
 
@@ -75,6 +73,7 @@ class EditUserGui extends JFrame {
         add(fieldPassword);
 
         pack();
+        setVisible(true);
     }
     // ===================
     private JLabel getLabel_title(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
@@ -98,10 +97,14 @@ class EditUserGui extends JFrame {
     }
     private JTable getTable(TableModel tableModel, int auto_resize, int columnIndex, int width) {
         JTable table = new JTable();
-        table.setModel(tableModel);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.setAutoResizeMode(auto_resize);
-        table.getColumnModel().getColumn(columnIndex).setPreferredWidth(width);
+        try {
+            table.setModel(tableModel);
+            table.getTableHeader().setReorderingAllowed(false);
+            table.setAutoResizeMode(auto_resize);
+            table.getColumnModel().getColumn(columnIndex).setPreferredWidth(width);
+        } catch (ArrayIndexOutOfBoundsException ae) {
+            ae.printStackTrace();
+        }
         return table;
     }
     private JScrollPane getScroll_table(JTable table, int x, int y, int width, int height) {
@@ -154,7 +157,7 @@ class EditUserGui extends JFrame {
 
         @Override
         public int getColumnCount() {
-            return 0;
+            return 3;
         }
 
         @Override

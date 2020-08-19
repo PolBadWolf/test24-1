@@ -5,6 +5,8 @@ import org.example.bd.ParametersSql;
 import org.example.bd.SqlWork_interface;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
+import org.example.test24.loader.editUsers.EditUserCallBackParent;
+import org.example.test24.loader.editUsers.EditUserLogic;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -18,6 +20,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 class TuningFrame {
     private MainClassCallBackTuningFrame callBackMC = null;
@@ -33,7 +36,8 @@ class TuningFrame {
     private boolean flCheckParamSql = false;
     private boolean flCheckSql = false;
 
-    private JFrame frameStart = null;
+    private JFrame frameTuning = null;
+    private EditUserLogic editUserLogic = null;
 
     private JPanel panelCommPort = null;
     private JLabel labelPortCurrent = null;
@@ -50,10 +54,13 @@ class TuningFrame {
     private JTextField fieldParamServerLogin = null;
     private JTextField fieldParamServerPassword = null;
     private JComboBox<String> comboBoxListBd = null;
-
     private JButton buttonOk = null;
     private JButton buttonSave = null;
     private JButton buttonTest = null;
+
+    private JPanel panelSelectEdit = null;
+    private JButton buttonEditUsers = null;
+    private JButton buttonEditPushers = null;
 
     public TuningFrame(MainClassCallBackTuningFrame callBackMC) {
         this.callBackMC = callBackMC;
@@ -66,8 +73,8 @@ class TuningFrame {
     }
 
     private void frameConstructor() {
-        frameStart = getFrameStart("настройка", new Dimension(640, 480));
-        Container container = frameStart.getContentPane();
+        frameTuning = getFrameTuning("настройка", new Dimension(640, 480));
+        Container container = frameTuning.getContentPane();
         {
             panelCommPort = getPanelTitle("выбор Comm порта", new Rectangle(10, 10, 130, 110));
             container.add(panelCommPort);
@@ -82,7 +89,7 @@ class TuningFrame {
             //
             textPortStatus = getTextFieldStatus("sel", new Rectangle(6, 80, 110, 20));
             panelCommPort.add(textPortStatus);
-        }
+        } // Comm Port
         {
             panelTypeBd = getPanelTitle("выбор Базы данных ", new Rectangle(140, 10, 230, 110));
             container.add(panelTypeBd);
@@ -94,7 +101,7 @@ class TuningFrame {
 
             textTypeBdStatus = getTextTypeBdStatus("unknow", new Rectangle(6, 80, 110, 20));
             panelTypeBd.add(textTypeBdStatus);
-        }
+        } // Type Base
         {
             panelParamSQL = getPanelTitle("параметры подключения", new Rectangle(10, 130, 360, 200));
             container.add(panelParamSQL);
@@ -127,7 +134,17 @@ class TuningFrame {
 
             buttonTest = getButtonTestBd("Тест", new Rectangle(220, 140, 80, 30));
             panelParamSQL.add(buttonTest);
-        }
+        } // Parameters Base
+        {
+            panelSelectEdit = getPanelSelectEdit("редактирование", new Rectangle(10, 340, 360, 80));
+            container.add(panelSelectEdit);
+
+            buttonEditUsers = getButtonEditUsers("Пользователи", new Rectangle(16, 30, 140, 30));
+            panelSelectEdit.add(buttonEditUsers);
+
+            buttonEditPushers = getButtonEditPushers("Толкатели", new Rectangle(200, 30, 140, 30));
+            panelSelectEdit.add(buttonEditPushers);
+        } // Select Edit
         flCheckCommPort = checkCommPort();
         flCheckParamSql = getParamSql();
         if (flCheckParamSql) {
@@ -143,8 +160,8 @@ class TuningFrame {
         } else {
             flCheckSql = false;
         }
-        frameStart.pack();
-        frameStart.setVisible(true);
+        frameTuning.pack();
+        frameTuning.setVisible(true);
 
         if (flCheckCommPort && flCheckParamSql && flCheckSql) {
             buttonOk.setEnabled(true);
@@ -177,7 +194,7 @@ class TuningFrame {
         }
 
     }
-    private JFrame getFrameStart(String title, Dimension size) {
+    private JFrame getFrameTuning(String title, Dimension size) {
         JFrame frame = new JFrame(title);
         frame.setSize(size);
         frame.setPreferredSize(size);
@@ -444,6 +461,39 @@ class TuningFrame {
         return button;
     }
 
+    private JPanel getPanelSelectEdit(String title, Rectangle positionSize) {
+        JPanel panel = new JPanel();
+        panel.setBounds(positionSize);
+        panel.setBorder(BorderFactory.createTitledBorder(title));
+        panel.setLayout(null);
+        return panel;
+    }
+    private JButton getButtonEditUsers(String text, Rectangle positionSize) {
+        JButton button = new JButton(text);
+        button.setBounds(positionSize);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (editUserLogic == null) {
+                    editUserLogic = new EditUserLogic(getEditUserCallBackParent());
+                }
+            }
+        });
+        return button;
+    }
+    private JButton getButtonEditPushers(String text, Rectangle positionSize) {
+        JButton button = new JButton(text);
+        button.setBounds(positionSize);
+        button.setEnabled(false);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //closeFrame();
+            }
+        });
+        return button;
+    }
+
     private boolean getParamSql() {
         boolean stat = true;
         buttonOk.setEnabled(false);
@@ -530,18 +580,29 @@ class TuningFrame {
 
     private void closeFrame() {
         threadSkeepOn = false;
-        if (frameStart != null)
-        {
+        if (frameTuning != null) {
             try {
-                frameStart.getContentPane().removeAll();
-                frameStart.removeAll();
-                frameStart.setVisible(false);
-                frameStart.dispose();
-                frameStart = null;
+                frameTuning.getContentPane().removeAll();
+                frameTuning.removeAll();
+                frameTuning.setVisible(false);
+                frameTuning.dispose();
+                frameTuning = null;
             } catch (java.lang.Throwable e) {
                 System.out.println(e.getMessage());
             }
             callBackTF.pusk();
         }
+        if (editUserLogic != null) {
+
+        }
+    }
+    // ======
+    private EditUserCallBackParent getEditUserCallBackParent() {
+        return new EditUserCallBackParent() {
+            @Override
+            public void messageCloseEditUsers() {
+                editUserLogic = null;
+            }
+        };
     }
 }
