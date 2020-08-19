@@ -67,6 +67,11 @@ public class StartFrame extends JFrame {
                     System.out.println("ошибка подключения к BD");
                 }
             });
+            // --------
+            TuningFrame tuningFrame;
+            tuningFrame = callBack.getTuningFrame();
+            tuningFrame.frameConfig(callBack.getParameters(), getStartFrameCallBackTuningFrame());
+            // -------
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
         }
