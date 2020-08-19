@@ -6,6 +6,7 @@ import org.example.bd.SqlWork_interface;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.loader.editUsers.EditUserCallBackParent;
+import org.example.test24.loader.editUsers.EditUserLogicInterface;
 import org.example.test24.loader.editUsers.EditUserLogic;
 
 import javax.swing.*;
@@ -20,7 +21,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.function.Consumer;
 
 class TuningFrame {
     private MainClassCallBackTuningFrame callBackMC = null;
@@ -37,7 +37,7 @@ class TuningFrame {
     private boolean flCheckSql = false;
 
     private JFrame frameTuning = null;
-    private EditUserLogic editUserLogic = null;
+    private EditUserLogicInterface editUserLogic = null;
 
     private JPanel panelCommPort = null;
     private JLabel labelPortCurrent = null;
@@ -161,6 +161,7 @@ class TuningFrame {
             flCheckSql = false;
         }
         frameTuning.pack();
+        frameTuning.setResizable(false);
         frameTuning.setVisible(true);
 
         if (flCheckCommPort && flCheckParamSql && flCheckSql) {
@@ -207,6 +208,9 @@ class TuningFrame {
 
             @Override
             public void windowClosing(WindowEvent e) {
+                if (editUserLogic != null) {
+                    editUserLogic.closeFromParent();
+                }
                 e.getWindow().removeAll();
                 closeFrame();
             }

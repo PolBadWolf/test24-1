@@ -48,6 +48,7 @@ public class StartFrame extends JFrame {
             SwingUtilities.invokeLater(() -> {
                 initComponents();
                 onTitleComponents();
+                setResizable(false);
                 setVisible(true);
             });
             flCheckCommPort = callBack.checkCommPort();
