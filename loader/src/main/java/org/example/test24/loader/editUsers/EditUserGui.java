@@ -6,6 +6,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.EventListener;
 
 class EditUserGui extends JFrame {
@@ -44,36 +46,74 @@ class EditUserGui extends JFrame {
                 break;
             }
         }*/
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setPreferredSize(new Dimension(640, 480));
         setLayout(null);
 
         label_title = getLabel_title("Редактор пользователей", Font.BOLD, 28, 160, 10, 310, 33);
         add(label_title);
 
-        label_surName = getLabel_surName("ФИО", Font.PLAIN, 16, 80, 330, 60, 30);
+        label_surName = getLabel_surName("ФИО", Font.PLAIN, 16, 20, 268, 60, 30);
         add(label_surName);
 
-        label_password = getLabel_password("Пароль", Font.PLAIN, 16, 80, 390, 60, 30);
+        label_password = getLabel_password("Пароль", Font.PLAIN, 16, 20, 318, 60, 30);
         add(label_password);
 
         table = getTable(new SimpleTableModel(), JTable.AUTO_RESIZE_LAST_COLUMN, 0, 360);
         scroll_table = getScroll_table(table, 20,50, 580, 190);
         add(scroll_table);
 
-        buttonDeactive = getButtonDeactive("деактивация", Font.PLAIN, 12, 493, 260, 100, 40);
+        buttonDeactive = getButtonDeactive("деактивация", Font.PLAIN, 14, 440, 268, 160, 30);
         add(buttonDeactive);
 
-        buttonNewUser = getButtonNewUser("Новый пользователь", Font.PLAIN, 12, 450, 380, 140, 40);
+        buttonNewUser = getButtonNewUser("Новый пользователь", Font.PLAIN, 14, 440, 317, 160, 30);
         add(buttonNewUser);
 
-        fieldSurName = getFieldSurName("", Font.PLAIN, 14, 140, 330, 450, 30);
+        fieldSurName = getFieldSurName("", Font.PLAIN, 14, 80, 270, 340, 25);
         add(fieldSurName);
 
-        fieldPassword = getFieldPassword("", Font.PLAIN, 14, 140, 390, 250, 30);
+        fieldPassword = getFieldPassword("", Font.PLAIN, 14, 80, 320, 340, 25);
         add(fieldPassword);
 
         pack();
         setVisible(true);
+
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                callBackLogic.closeFromGui();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
     }
     // ===================
     private JLabel getLabel_title(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
