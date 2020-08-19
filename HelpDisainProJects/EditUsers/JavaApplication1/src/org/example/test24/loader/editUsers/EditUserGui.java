@@ -25,8 +25,8 @@ public class EditUserGui extends javax.swing.JFrame {
      */
     public EditUserGui() {
         initComponents();
-        jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        TableColumnModel columnModel = jTable1.getColumnModel();
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        TableColumnModel columnModel = table.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(360);
     }
 
@@ -63,12 +63,12 @@ public class EditUserGui extends javax.swing.JFrame {
         label_surName.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         label_surName.setText("ФИО");
         getContentPane().add(label_surName);
-        label_surName.setBounds(80, 330, 60, 30);
+        label_surName.setBounds(20, 268, 60, 30);
 
         label_password.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
         label_password.setText("Пароль");
         getContentPane().add(label_password);
-        label_password.setBounds(80, 390, 60, 30);
+        label_password.setBounds(20, 318, 60, 30);
 
         table.setModel(new SimpleModel());
         table.getTableHeader().setReorderingAllowed(false);
@@ -77,25 +77,25 @@ public class EditUserGui extends javax.swing.JFrame {
         getContentPane().add(scroll_table);
         scroll_table.setBounds(20, 50, 580, 190);
 
-        buttonDeactive.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        buttonDeactive.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         buttonDeactive.setText("деактивация");
         getContentPane().add(buttonDeactive);
-        buttonDeactive.setBounds(493, 260, 100, 40);
+        buttonDeactive.setBounds(440, 268, 160, 30);
 
-        buttonNewUser.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        buttonNewUser.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         buttonNewUser.setText("Новый пользователь");
         getContentPane().add(buttonNewUser);
-        buttonNewUser.setBounds(450, 380, 140, 40);
+        buttonNewUser.setBounds(440, 317, 160, 30);
 
         fieldSurName.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         fieldSurName.setText("jTextField1");
         getContentPane().add(fieldSurName);
-        fieldSurName.setBounds(140, 330, 450, 30);
+        fieldSurName.setBounds(80, 270, 340, 25);
 
         fieldPassword.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         fieldPassword.setText("jTextField1");
         getContentPane().add(fieldPassword);
-        fieldPassword.setBounds(140, 390, 250, 30);
+        fieldPassword.setBounds(80, 320, 340, 25);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -111,7 +111,7 @@ public class EditUserGui extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Metal".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
