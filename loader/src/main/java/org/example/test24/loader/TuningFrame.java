@@ -5,9 +5,9 @@ import org.example.bd.ParametersSql;
 import org.example.bd.SqlWork_interface;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
-import org.example.test24.loader.editUsers.EditUserCallBackParent;
-import org.example.test24.loader.editUsers.EditUserLogicInterface;
-import org.example.test24.loader.editUsers.EditUserLogic;
+import org.example.test24.loader.editUsers.EditUsers;
+import org.example.test24.loader.editUsers.EditUsersCallBack;
+import org.example.test24.loader.editUsers.EditUsersInterface;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -38,7 +38,7 @@ class TuningFrame {
     private boolean flCheckSql = false;
 
     private JFrame frameTuning = null;
-    private EditUserLogicInterface editUserLogic = null;
+    private EditUsersInterface editUsers = null;
 
     private JPanel panelCommPort = null;
     private JLabel labelPortCurrent = null;
@@ -195,8 +195,8 @@ class TuningFrame {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                if (editUserLogic != null) {
-                    editUserLogic.closeFromParent();
+                if (editUsers != null) {
+                    editUsers.closeFromParent();
                 }
                 e.getWindow().removeAll();
                 closeFrame();
@@ -379,7 +379,7 @@ class TuningFrame {
             }
         });
         return button;
-    }
+    }                  // ok
     private JButton getButtonTestBd(String text, Rectangle positionSize) {
         JButton button = new JButton(text);
         button.setBounds(positionSize);
@@ -391,7 +391,7 @@ class TuningFrame {
             }
         });
         return button;
-    }
+    }                // ok
 
     private JPanel getPanelSelectEdit(String title, Rectangle positionSize) {
         JPanel panel = new JPanel();
@@ -406,9 +406,7 @@ class TuningFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (editUserLogic == null) {
-                    editUserLogic = new EditUserLogic(getEditUserCallBackParent());
-                }
+                pushButtonEditUsers();
             }
         });
         return button;
@@ -506,16 +504,16 @@ class TuningFrame {
             }
             callBackTF.pusk();
         }
-        if (editUserLogic != null) {
+        if (editUsers != null) {
 
         }
     } // ****************
     // ======
-    private EditUserCallBackParent getEditUserCallBackParent() {
-        return new EditUserCallBackParent() {
+    private EditUsersCallBack getEditUserCallBackParent() {
+        return new EditUsersCallBack() {
             @Override
             public void messageCloseEditUsers() {
-                editUserLogic = null;
+                editUsers = null;
             }
         };
     }
@@ -547,7 +545,10 @@ class TuningFrame {
         boolean stat = loadParametersSql(parameters[0]);
         // загрузка списка БД
         comboBoxListBd.removeAllItems();
-        if (!stat) return;
+        if (!stat) {
+            lockBegin = false;
+            return;
+        }
         // установка параметров
         fieldParamServerIP.setText(parametersSql.urlServer);
         fieldParamServerPort.setText(parametersSql.portServer);
@@ -629,7 +630,7 @@ class TuningFrame {
                 flCheckSql = false;
             }
             // доступ к БД
-            if (flCheckParamSql) {
+            //if (flCheckParamSql) {
                 String typeBD, ip, port, user, pass, listBd;
                 try {
                     flCheckSql = DataBase.testStuctBase(
@@ -644,9 +645,9 @@ class TuningFrame {
                     System.out.println("ошибка параметров SQL: " + e.getMessage());
                     flCheckSql = false;
                 }
-            } else {
-                flCheckSql = false;
-            }
+            //} else {
+            //    flCheckSql = false;
+            //}
         }   // структура БД
     }
     private boolean checkStatusFile() {
@@ -840,6 +841,12 @@ class TuningFrame {
         if (lockBegin)  return;
         offButtonSave();
         saveParametersSql();
+        // статус основных параметров
+        checkStatusComp();
+        // выдача статуса основных параметров
+        outStatus();
+        // разрешение кнопки ок
+        onOffButtonOk();
     }
     // нажатие кнопки test
     private void pushButtonTest() {
@@ -849,16 +856,13 @@ class TuningFrame {
         checkStatusComp();
         // выдача статуса основных параметров
         outStatus();
-
-        /*buttonOk.setEnabled(false);
-        flCheckSql = bdSql.testStuctBase(
-                fieldParamServerIP.getText(),
-                fieldParamServerPort.getText(),
-                fieldParamServerLogin.getText(),
-                fieldParamServerPassword.getText(),
-                (String) comboBoxListBd.getSelectedItem()
-        );*/
         onOffButtonSave();
         offButtonTest();
+    }
+    // нажатие кнопки редактирование пользователей
+    private void pushButtonEditUsers() {
+        if (editUsers == null) {
+            editUsers = new EditUsers(getEditUserCallBackParent());
+        }
     }
 }
