@@ -5,9 +5,9 @@ import org.example.bd.ParametersSql;
 import org.example.bd.SqlWork_interface;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
-import org.example.test24.loader.editUsers.EditUserCallBackParent;
-import org.example.test24.loader.editUsers.EditUserLogicInterface;
-import org.example.test24.loader.editUsers.EditUserLogic;
+import org.example.test24.loader.editUsers.EditUsers;
+import org.example.test24.loader.editUsers.EditUsersCallBackParent;
+import org.example.test24.loader.editUsers.EditUsersInterface;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -38,7 +38,7 @@ class TuningFrame {
     private boolean flCheckSql = false;
 
     private JFrame frameTuning = null;
-    private EditUserLogicInterface editUserLogic = null;
+    private EditUsersInterface editUsers = null;
 
     private JPanel panelCommPort = null;
     private JLabel labelPortCurrent = null;
@@ -195,8 +195,8 @@ class TuningFrame {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                if (editUserLogic != null) {
-                    editUserLogic.closeFromParent();
+                if (editUsers != null) {
+                    editUsers.closeFromParent();
                 }
                 e.getWindow().removeAll();
                 closeFrame();
@@ -406,9 +406,7 @@ class TuningFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (editUserLogic == null) {
-                    editUserLogic = new EditUserLogic(getEditUserCallBackParent());
-                }
+                pushButtonEditUsers();
             }
         });
         return button;
@@ -506,16 +504,16 @@ class TuningFrame {
             }
             callBackTF.pusk();
         }
-        if (editUserLogic != null) {
+        if (editUsers != null) {
 
         }
     } // ****************
     // ======
-    private EditUserCallBackParent getEditUserCallBackParent() {
-        return new EditUserCallBackParent() {
+    private EditUsersCallBackParent getEditUserCallBackParent() {
+        return new EditUsersCallBackParent() {
             @Override
             public void messageCloseEditUsers() {
-                editUserLogic = null;
+                editUsers = null;
             }
         };
     }
@@ -860,5 +858,11 @@ class TuningFrame {
         outStatus();
         onOffButtonSave();
         offButtonTest();
+    }
+    // нажатие кнопки редактирование пользователей
+    private void pushButtonEditUsers() {
+        if (editUsers == null) {
+            editUsers = new EditUsers(getEditUserCallBackParent());
+        }
     }
 }

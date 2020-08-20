@@ -1,44 +1,25 @@
 package org.example.test24.loader.editUsers;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.EventListener;
 
-class EditUserGui extends JFrame {
+public class EditUsers extends JFrame implements EditUsersInterface {
+    private EditUsersCallBackParent callBack;
+    private boolean lockStart = true;
 
-    static EditUserGui init(EditUserInterface callBackLogic) {
-        EditUserGui[] frame = new EditUserGui[1];
-        new Thread(()->{
-            try {
-                SwingUtilities.invokeAndWait(()->{
-                    frame[0] = new EditUserGui(callBackLogic);
-                    frame[0].setVisible(true);
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-        try {
-            while (frame[0] == null) {
-                Thread.sleep(10);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return frame[0];
-    }
-
-    private EditUserInterface callBackLogic;
-
-    private EditUserGui(EditUserInterface callBackLogic) throws HeadlessException {
-        this.callBackLogic = callBackLogic;
+    public EditUsers(EditUsersCallBackParent callBack) {
+        this.callBack = callBack;
+        lockStart = true;
+        // загрузка параметров
+        // инитциализация компонентов
         initComponents();
+        lockStart = false;
+        setVisible(true);
+        // ловушка закрытия окна
         addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -47,7 +28,7 @@ class EditUserGui extends JFrame {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                callBackLogic.closeFromGui();
+
             }
 
             @Override
@@ -78,22 +59,6 @@ class EditUserGui extends JFrame {
     }
 
     private void initComponents() {
-        /*for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                try {
-                    UIManager.setLookAndFeel(info.getClassName());
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (UnsupportedLookAndFeelException e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
-        }*/
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setPreferredSize(new Dimension(640, 480));
         setLayout(null);
@@ -125,7 +90,50 @@ class EditUserGui extends JFrame {
 
         pack();
     }
-    // ===================
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //          нажание органов управления
+    // <<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>
+    //        действия от органов управления
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    //      воздействие на органы управления
+    // ==========================================
+    //  ---
+    // ==========================================
+    // интерфейсные методы
+    @Override
+    public void closeFromParent() {
+
+    }
+    // ==========================================
+    // компоненты
+    JButton buttonDeactive;
+    JButton buttonNewUser;
+    JTextField fieldPassword;
+    JTextField fieldSurName;
+    JLabel label_password;
+    JLabel label_surName;
+    JLabel label_title;
+    JScrollPane scroll_table;
+    JTable table;
+    // ------------------------------------------
+    class SimpleTableModel extends AbstractTableModel {
+
+        @Override
+        public int getRowCount() {
+            return 0;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 3;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return null;
+        }
+    }
+    // ------------------------------------------
     private JLabel getLabel_title(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Times New Roman", fontStyle, fontSize));
@@ -186,113 +194,5 @@ class EditUserGui extends JFrame {
         textField.setFont(new Font("Times New Roman", fontStyle, fontSize));
         textField.setBounds(x, y, width, height);
         return textField;
-    }
-    // ===================
-    JButton buttonDeactive;
-    JButton buttonNewUser;
-    JTextField fieldPassword;
-    JTextField fieldSurName;
-    JLabel label_password;
-    JLabel label_surName;
-    JLabel label_title;
-    JScrollPane scroll_table;
-    JTable table;
-    // ===================
-    class SimpleTableModel extends AbstractTableModel {
-        @Override
-        public int getRowCount() {
-            JTable table;
-            return 0;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 3;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            return null;
-        }
-
-        @Override
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return super.isCellEditable(rowIndex, columnIndex);
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            return super.getColumnName(column);
-        }
-
-        @Override
-        public int findColumn(String columnName) {
-            return super.findColumn(columnName);
-        }
-
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            return super.getColumnClass(columnIndex);
-        }
-
-        @Override
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            super.setValueAt(aValue, rowIndex, columnIndex);
-        }
-
-        @Override
-        public void addTableModelListener(TableModelListener l) {
-            super.addTableModelListener(l);
-        }
-
-        @Override
-        public void removeTableModelListener(TableModelListener l) {
-            super.removeTableModelListener(l);
-        }
-
-        @Override
-        public TableModelListener[] getTableModelListeners() {
-            return super.getTableModelListeners();
-        }
-
-        @Override
-        public void fireTableDataChanged() {
-            super.fireTableDataChanged();
-        }
-
-        @Override
-        public void fireTableStructureChanged() {
-            super.fireTableStructureChanged();
-        }
-
-        @Override
-        public void fireTableRowsInserted(int firstRow, int lastRow) {
-            super.fireTableRowsInserted(firstRow, lastRow);
-        }
-
-        @Override
-        public void fireTableRowsUpdated(int firstRow, int lastRow) {
-            super.fireTableRowsUpdated(firstRow, lastRow);
-        }
-
-        @Override
-        public void fireTableRowsDeleted(int firstRow, int lastRow) {
-            super.fireTableRowsDeleted(firstRow, lastRow);
-        }
-
-        @Override
-        public void fireTableCellUpdated(int row, int column) {
-            super.fireTableCellUpdated(row, column);
-        }
-
-        @Override
-        public void fireTableChanged(TableModelEvent e) {
-            super.fireTableChanged(e);
-        }
-
-        @Override
-        public <T extends EventListener> T[] getListeners(Class<T> listenerType) {
-            return super.getListeners(listenerType);
-        }
     }
 }
