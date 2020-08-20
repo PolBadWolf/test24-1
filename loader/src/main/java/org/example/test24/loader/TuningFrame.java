@@ -757,6 +757,8 @@ class TuningFrame {
         onOffButtonTest();
         // разрешение кнопки ок
         onOffButtonOk();
+        // запрет кнопки save
+        offButtonSave();
     }
     // >>>>>>>>>>>>>>>>>>>>>>
     // разрешение кнопки ок
@@ -774,6 +776,20 @@ class TuningFrame {
         } else {
             buttonTest.setEnabled(false);
         }
+    }
+    private void offButtonTest() {
+        buttonTest.setEnabled(false);
+    }
+    // разрешение кнопки save
+    private void onOffButtonSave() {
+        if (flCheckSql) {
+            buttonSave.setEnabled(true);
+        } else {
+            buttonSave.setEnabled(false);
+        }
+    }
+    private void offButtonSave() {
+        buttonSave.setEnabled(false);
     }
     // <<<<<<<<<<<<<<<<<<<<<<
     // выбран comm port
@@ -840,6 +856,7 @@ class TuningFrame {
                 fieldParamServerPassword.getText(),
                 (String) comboBoxListBd.getSelectedItem()
         );
-        buttonSave.setEnabled(flCheckSql);
+        onOffButtonSave();
+        offButtonTest();
     }
 }
