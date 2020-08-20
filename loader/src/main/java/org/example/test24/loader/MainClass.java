@@ -177,8 +177,24 @@ public class MainClass {
             }
 
             @Override
-            public String[] getFileNameSql() {
+            public String[] getFilesNameSql() {
                 return fileNameSql;
+            }
+
+            @Override
+            public String getFileNameSql(String typeBd) throws Exception {
+                String fileName;
+                switch (typeBd) {
+                    case "MS_SQL" :
+                        fileName = fileNameMsSql;
+                        break;
+                    case "MY_SQL" :
+                        fileName = fileNameMySql;
+                        break;
+                    default:
+                        throw new Exception("неизвестный тип BD");
+                }
+                return fileName;
             }
         };
     }
@@ -196,8 +212,24 @@ public class MainClass {
             }
 
             @Override
-            public String[] getFileNameSql() {
+            public String[] getFilesNameSql() {
                 return fileNameSql;
+            }
+
+            @Override
+            public String getFileNameSql(String typeBd) throws Exception {
+                String fileName;
+                switch (typeBd) {
+                    case "MS_SQL" :
+                        fileName = fileNameMsSql;
+                        break;
+                    case "MY_SQL" :
+                        fileName = fileNameMySql;
+                        break;
+                    default:
+                        throw new Exception("неизвестный тип BD");
+                }
+                return fileName;
             }
         };
     }

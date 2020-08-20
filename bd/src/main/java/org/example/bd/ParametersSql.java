@@ -29,12 +29,10 @@ public class ParametersSql {
             user = properties.getProperty("User");
             password = new String(Base64.getDecoder().decode(properties.getProperty("Password")));
             if (urlServer == null || portServer == null || dataBase == null || user == null || password == null) {
-                System.out.println("один или несколько параметров в файле конфигурации отсутствуют");
-                setDefault();
+                throw new Exception(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
             }
         } catch (IOException e) {
-            System.out.println("файл конфигурации sql не найден");
-            setDefault();
+            throw new Exception("отсутствует файл конфигурации sql : " + fileNameParameters);
         }
     }
 

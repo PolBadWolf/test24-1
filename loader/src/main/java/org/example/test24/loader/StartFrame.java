@@ -358,7 +358,7 @@ public class StartFrame extends JFrame {
         button.addActionListener(e -> {
             try {
                 String[] parameters = callBack.getParameters();
-                SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFileNameSql());
+                SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
                 bd.updateUserPassword(user, fieldPassword.getText());
                 loadListUsers();
                 comboBoxUser.setSelectedItem(user.name);
@@ -407,7 +407,7 @@ public class StartFrame extends JFrame {
     private void loadListUsers() throws Exception {
         if (flCheckSql) {
             String[] parameters = callBack.getParameters();
-            SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFileNameSql());
+            SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
             listUsers = bd.getListUsers(true);
             comboBoxUser.removeAllItems();
             for (UserClass listUser : listUsers) {

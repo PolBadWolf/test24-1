@@ -6,5 +6,6 @@ import org.example.test24.allinterface.bd.UserClass;
 public interface MainClassCallBackTuningFrame {
     CommPort getCommPort();
     void saveConfig(String[] parametrs);
-    String[] getFileNameSql();
+    String[] getFilesNameSql();
+    String getFileNameSql(String typeBd) throws Exception;
 }
