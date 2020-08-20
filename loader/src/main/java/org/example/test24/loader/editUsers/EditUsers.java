@@ -8,10 +8,10 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class EditUsers extends JFrame implements EditUsersInterface {
-    private EditUsersCallBackParent callBack;
+    private EditUsersCallBack callBack;
     private boolean lockStart = true;
 
-    public EditUsers(EditUsersCallBackParent callBack) {
+    public EditUsers(EditUsersCallBack callBack) {
         this.callBack = callBack;
         lockStart = true;
         // загрузка параметров

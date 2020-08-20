@@ -1,5 +1,5 @@
 package org.example.test24.loader.editUsers;
 
-public interface EditUsersCallBackParent {
+public interface EditUsersCallBack {
     void messageCloseEditUsers();
 }
