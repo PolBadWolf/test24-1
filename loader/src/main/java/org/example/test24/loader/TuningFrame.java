@@ -547,7 +547,10 @@ class TuningFrame {
         boolean stat = loadParametersSql(parameters[0]);
         // загрузка списка БД
         comboBoxListBd.removeAllItems();
-        if (!stat) return;
+        if (!stat) {
+            lockBegin = false;
+            return;
+        }
         // установка параметров
         fieldParamServerIP.setText(parametersSql.urlServer);
         fieldParamServerPort.setText(parametersSql.portServer);
@@ -629,7 +632,7 @@ class TuningFrame {
                 flCheckSql = false;
             }
             // доступ к БД
-            if (flCheckParamSql) {
+            //if (flCheckParamSql) {
                 String typeBD, ip, port, user, pass, listBd;
                 try {
                     flCheckSql = DataBase.testStuctBase(
@@ -644,9 +647,9 @@ class TuningFrame {
                     System.out.println("ошибка параметров SQL: " + e.getMessage());
                     flCheckSql = false;
                 }
-            } else {
-                flCheckSql = false;
-            }
+            //} else {
+            //    flCheckSql = false;
+            //}
         }   // структура БД
     }
     private boolean checkStatusFile() {
@@ -840,6 +843,12 @@ class TuningFrame {
         if (lockBegin)  return;
         offButtonSave();
         saveParametersSql();
+        // статус основных параметров
+        checkStatusComp();
+        // выдача статуса основных параметров
+        outStatus();
+        // разрешение кнопки ок
+        onOffButtonOk();
     }
     // нажатие кнопки test
     private void pushButtonTest() {
@@ -849,15 +858,6 @@ class TuningFrame {
         checkStatusComp();
         // выдача статуса основных параметров
         outStatus();
-
-        /*buttonOk.setEnabled(false);
-        flCheckSql = bdSql.testStuctBase(
-                fieldParamServerIP.getText(),
-                fieldParamServerPort.getText(),
-                fieldParamServerLogin.getText(),
-                fieldParamServerPassword.getText(),
-                (String) comboBoxListBd.getSelectedItem()
-        );*/
         onOffButtonSave();
         offButtonTest();
     }

@@ -14,10 +14,21 @@ class EditUserGui extends JFrame {
 
     static EditUserGui init(EditUserInterface callBackLogic) {
         EditUserGui[] frame = new EditUserGui[1];
+        new Thread(()->{
+            try {
+                SwingUtilities.invokeAndWait(()->{
+                    frame[0] = new EditUserGui(callBackLogic);
+                    frame[0].setVisible(true);
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
         try {
-            frame[0] = new EditUserGui(callBackLogic);
-            frame[0].initComponents();
-        } catch (Exception e) {
+            while (frame[0] == null) {
+                Thread.sleep(10);
+            }
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return frame[0];
@@ -27,6 +38,43 @@ class EditUserGui extends JFrame {
 
     private EditUserGui(EditUserInterface callBackLogic) throws HeadlessException {
         this.callBackLogic = callBackLogic;
+        initComponents();
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                callBackLogic.closeFromGui();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
     }
 
     private void initComponents() {
@@ -76,44 +124,6 @@ class EditUserGui extends JFrame {
         add(fieldPassword);
 
         pack();
-        setVisible(true);
-
-        addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                callBackLogic.closeFromGui();
-            }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowIconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-
-            }
-        });
     }
     // ===================
     private JLabel getLabel_title(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {

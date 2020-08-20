@@ -54,26 +54,4 @@ public class ParametersSql {
             e.printStackTrace();
         }
     }
-
-    private void setDefault() throws Exception {
-        switch (type_DB) {
-            case "MS_SQL":
-                urlServer = "127.0.0.1";
-                portServer = "1433";
-                dataBase = "spc1";
-                user = "max";
-                password = "1122";
-                break;
-            case "MY_SQL":
-                urlServer = "127.0.0.1";
-                portServer = "3306";
-                dataBase = "spc1";
-                user = "root";
-                password = "My*22360";
-                break;
-            default:
-                throw new Exception("ошибка выбора загрузки по умолчанию");
-        }
-        save();
-    }
 }
