@@ -23,18 +23,21 @@ public class ParametersSql {
     public void load() throws Exception {
         try {
             properties.load(new BufferedReader(new FileReader(fileNameParameters)));
+        } catch (IOException e) {
+            throw new Exception("отсутствует файл конфигурации sql : " + fileNameParameters);
+        }
+        try {
             urlServer = properties.getProperty("Url_Server");
             portServer = properties.getProperty("Port_Server");
             dataBase = properties.getProperty("DataBase");
             user = properties.getProperty("User");
             password = new String(Base64.getDecoder().decode(properties.getProperty("Password")));
-            if (urlServer == null || portServer == null || dataBase == null || user == null || password == null) {
-                System.out.println("один или несколько параметров в файле конфигурации отсутствуют");
-                setDefault();
-            }
-        } catch (IOException e) {
-            System.out.println("файл конфигурации sql не найден");
-            setDefault();
+        } catch (java.lang.Throwable ie) {
+            System.out.println(fileNameParameters + " : ошибка декодирования пароля");
+        }
+        if (urlServer == null || portServer == null || dataBase == null || user == null || password == null) {
+            //throw new Exception(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
+            System.out.println(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
         }
     }
 

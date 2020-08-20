@@ -9,5 +9,6 @@ public interface MainClassCallBackStartFrame {
     // ---------------
     TuningFrame getTuningFrame();
     String[] getParameters();
-    String[] getFileNameSql();
+    String[] getFilesNameSql();
+    String getFileNameSql(String typeBd) throws Exception;
 }
