@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -91,7 +93,19 @@ public class EditUsers extends JFrame implements EditUsersInterface {
         pack();
     }
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    //          нажание органов управления
+    //      воздействие из органов управления
+    private void pushButtonDeactive() {
+
+    }
+    private void pushButtonNewUser() {
+
+    }
+    private void enterTextSurName() {
+
+    }
+    private void enterTextPassword() {
+
+    }
     // <<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>
     //        действия от органов управления
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -175,24 +189,48 @@ public class EditUsers extends JFrame implements EditUsersInterface {
         JButton button = new JButton(text);
         button.setFont(new Font("Times New Roman", fontStyle, fontSize));
         button.setBounds(x, y, width, height);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pushButtonDeactive();
+            }
+        });
         return button;
     }
     private JButton getButtonNewUser(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JButton button = new JButton(text);
         button.setFont(new Font("Times New Roman", fontStyle, fontSize));
         button.setBounds(x, y, width, height);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pushButtonNewUser();
+            }
+        });
         return button;
     }
     private JTextField getFieldSurName(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JTextField textField = new JTextField(text);
         textField.setFont(new Font("Times New Roman", fontStyle, fontSize));
         textField.setBounds(x, y, width, height);
+        textField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enterTextSurName();
+            }
+        });
         return textField;
     }
     private JTextField getFieldPassword(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JTextField textField = new JPasswordField(text);
         textField.setFont(new Font("Times New Roman", fontStyle, fontSize));
         textField.setBounds(x, y, width, height);
+        textField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enterTextPassword();
+            }
+        });
         return textField;
     }
 }
