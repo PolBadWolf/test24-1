@@ -102,10 +102,11 @@ public class DataBaseMySql extends DataBase {
                     "COLUMN_NAME\n" +
                     "FROM information_schema.COLUMNS\n" +
                     "WHERE\tinformation_schema.COLUMNS.TABLE_SCHEMA = ?\n" +
-                    "AND information_schema.COLUMNS.TABLE_NAME = \"table_data\"\n" +
+                    "AND information_schema.COLUMNS.TABLE_NAME = ?\n" +
                     "ORDER BY information_schema.COLUMNS.ORDINAL_POSITION ASC"
             );
             statement.setString(1, base);
+            statement.setString(2, "table_data");
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 sample = resultSet.getString(1);

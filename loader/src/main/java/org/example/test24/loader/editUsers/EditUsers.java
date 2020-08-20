@@ -198,48 +198,28 @@ public class EditUsers extends JFrame implements EditUsersInterface {
         JButton button = new JButton(text);
         button.setFont(new Font("Times New Roman", fontStyle, fontSize));
         button.setBounds(x, y, width, height);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pushButtonDeactive();
-            }
-        });
+        button.addActionListener(e -> pushButtonDeactive());
         return button;
     }
     private JButton getButtonNewUser(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JButton button = new JButton(text);
         button.setFont(new Font("Times New Roman", fontStyle, fontSize));
         button.setBounds(x, y, width, height);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pushButtonNewUser();
-            }
-        });
+        button.addActionListener(e -> pushButtonNewUser());
         return button;
     }
     private JTextField getFieldSurName(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JTextField textField = new JTextField(text);
         textField.setFont(new Font("Times New Roman", fontStyle, fontSize));
         textField.setBounds(x, y, width, height);
-        textField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                enterTextSurName();
-            }
-        });
+        textField.addActionListener(e -> enterTextSurName());
         return textField;
     }
     private JTextField getFieldPassword(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JTextField textField = new JPasswordField(text);
         textField.setFont(new Font("Times New Roman", fontStyle, fontSize));
         textField.setBounds(x, y, width, height);
-        textField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                enterTextPassword();
-            }
-        });
+        textField.addActionListener(e -> enterTextPassword());
         return textField;
     }
 }

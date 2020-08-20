@@ -15,15 +15,13 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import java.util.Arrays;
 
 class TuningFrame {
-    private MainClassCallBackTuningFrame callBackMC = null;
+    private MainClassCallBackTuningFrame callBackMC;
     private StartFrameCallBackTuningFrame callBackTF = null;
 
     private String[] parameters = null;
@@ -242,19 +240,14 @@ class TuningFrame {
         label.setBounds(positionSize);
         return label;
     }
-    private JComboBox getComboBoxCommPort(String itemDefault, Rectangle positionSize) {
+    private JComboBox<String> getComboBoxCommPort(String itemDefault, Rectangle positionSize) {
         String[] listCommPortName = callBackMC.getCommPort().getListPortsName();
         // sort
         Arrays.sort(listCommPortName);
         JComboBox<String> comboBox = new JComboBox<>(listCommPortName);
         comboBox.setSelectedItem(itemDefault);
         comboBox.setBounds(positionSize);
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectCommPort(comboBox);
-            }
-        });
+        comboBox.addActionListener(e -> selectCommPort(comboBox));
         return comboBox;
     }   // ok
     private JTextField getTextFieldStatus(String text, Rectangle positionSize) {
@@ -264,18 +257,13 @@ class TuningFrame {
         return textField;
     }
 
-    private JComboBox getComboBoxTypeBd(String itemDefault, Rectangle positionSize) {
+    private JComboBox<String> getComboBoxTypeBd(String itemDefault, Rectangle positionSize) {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBounds(positionSize);
         comboBox.addItem("MS_SQL");
         comboBox.addItem("MY_SQL");
         comboBox.setSelectedItem(itemDefault);
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectTypeBase(comboBox);
-            }
-        });
+        comboBox.addActionListener(e -> selectTypeBase(comboBox));
         return comboBox;
     }     // ok
     private JTextField getTextTypeBdStatus(String text, Rectangle positionSize) {
@@ -304,92 +292,52 @@ class TuningFrame {
                 super.replace(fb, offset, length, text, attrs);
             }
         });
-        field.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectParametersConnectBd();
-            }
-        });
+        field.addActionListener(e -> selectParametersConnectBd());
         return field;
     }                    // ok
     private JTextField getFieldParamServerPort(String text, Rectangle positionSize) {
         JTextField field = new JTextField(text);
         field.setBounds(positionSize);
-        field.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectParametersConnectBd();
-            }
-        });
+        field.addActionListener(e -> selectParametersConnectBd());
         return field;
     }     // ok
     private JTextField getFieldParamServerLogin(String text, Rectangle positionSize) {
         JTextField field = new JTextField(text);
         field.setBounds(positionSize);
-        field.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectParametersConnectBd();
-            }
-        });
+        field.addActionListener(e -> selectParametersConnectBd());
         return field;
     }    // ok
     private JTextField getFieldParamServerPassword(String text, Rectangle positionSize) {
         JTextField field = new JPasswordField(text);
         field.setBounds(positionSize);
-        field.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectParametersConnectBd();
-            }
-        });
+        field.addActionListener(e -> selectParametersConnectBd());
         return field;
     } // ok
-    private JComboBox getComboBoxListBd(Rectangle positionSize) {
+    private JComboBox<String> getComboBoxListBd(Rectangle positionSize) {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBounds(positionSize);
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectParametersConnectBd();
-            }
-        });
+        comboBox.addActionListener(e -> selectParametersConnectBd());
         return comboBox;
     }                         // ok
     private JButton getButtonOk(String text, Rectangle positionSize) {
         JButton button = new JButton(text);
         button.setBounds(positionSize);
         button.setEnabled(false);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pushButtonOk();
-            }
-        });
+        button.addActionListener(e -> pushButtonOk());
         return button;
     }                    // ok
     private JButton getButtonSave(String text, Rectangle positionSize) {
         JButton button = new JButton(text);
         button.setBounds(positionSize);
         button.setEnabled(false);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pushButtonSave();
-            }
-        });
+        button.addActionListener(e -> pushButtonSave());
         return button;
     }                  // ok
     private JButton getButtonTestBd(String text, Rectangle positionSize) {
         JButton button = new JButton(text);
         button.setBounds(positionSize);
         button.setEnabled(false);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pushButtonTest();
-            }
-        });
+        button.addActionListener(e -> pushButtonTest());
         return button;
     }                // ok
 
@@ -403,23 +351,15 @@ class TuningFrame {
     private JButton getButtonEditUsers(String text, Rectangle positionSize) {
         JButton button = new JButton(text);
         button.setBounds(positionSize);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pushButtonEditUsers();
-            }
-        });
+        button.addActionListener(e -> pushButtonEditUsers());
         return button;
     }
     private JButton getButtonEditPushers(String text, Rectangle positionSize) {
         JButton button = new JButton(text);
         button.setBounds(positionSize);
         button.setEnabled(false);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //closeFrame();
-            }
+        button.addActionListener(e -> {
+            //closeFrame();
         });
         return button;
     }
@@ -444,7 +384,7 @@ class TuningFrame {
             return false;
         }
         // чтение списка БД
-        String[] listBd = new String[0];
+        String[] listBd;
         try {
             listBd = DataBase.getConnectListBd(
                         typeBd,
@@ -510,12 +450,7 @@ class TuningFrame {
     } // ****************
     // ======
     private EditUsersCallBack getEditUserCallBackParent() {
-        return new EditUsersCallBack() {
-            @Override
-            public void messageCloseEditUsers() {
-                editUsers = null;
-            }
-        };
+        return () -> editUsers = null;
     }
     // ==================
     // начальная загрузка параметров
@@ -587,7 +522,6 @@ class TuningFrame {
     }
     // сохранение параметров SQL
     private void saveParametersSql() {
-        boolean stat = false;
         parametersSql.urlServer = fieldParamServerIP.getText();
         parametersSql.portServer = fieldParamServerPort.getText();
         parametersSql.user = fieldParamServerLogin.getText();
@@ -630,24 +564,19 @@ class TuningFrame {
                 flCheckSql = false;
             }
             // доступ к БД
-            //if (flCheckParamSql) {
-                String typeBD, ip, port, user, pass, listBd;
-                try {
-                    flCheckSql = DataBase.testStuctBase(
-                            (String) comboBoxTypeBd.getSelectedItem(),
-                            fieldParamServerIP.getText(),
-                            fieldParamServerPort.getText(),
-                            fieldParamServerLogin.getText(),
-                            fieldParamServerPassword.getText(),
-                            (String) comboBoxListBd.getSelectedItem()
-                    );
-                } catch (java.lang.Throwable e) {
-                    System.out.println("ошибка параметров SQL: " + e.getMessage());
-                    flCheckSql = false;
-                }
-            //} else {
-            //    flCheckSql = false;
-            //}
+            try {
+                flCheckSql = DataBase.testStuctBase(
+                        (String) comboBoxTypeBd.getSelectedItem(),
+                        fieldParamServerIP.getText(),
+                        fieldParamServerPort.getText(),
+                        fieldParamServerLogin.getText(),
+                        fieldParamServerPassword.getText(),
+                        (String) comboBoxListBd.getSelectedItem()
+                );
+            } catch (java.lang.Throwable e) {
+                System.out.println("ошибка параметров SQL: " + e.getMessage());
+                flCheckSql = false;
+            }
         }   // структура БД
     }
     private boolean checkStatusFile() {
@@ -671,7 +600,7 @@ class TuningFrame {
                     ),
                     typeBd
             );
-            boolean flCheckParamSql = false;
+            boolean flCheckParamSql;
             try {
                 parametersSql.load();
                 // параметры БД удачно прочитались
@@ -685,7 +614,6 @@ class TuningFrame {
             }
             // доступ к БД
             if (flCheckParamSql) {
-                String typeBD, ip, port, user, pass, listBd;
                 try {
                     flCheckSql = DataBase.testStuctBase(
                             (String) comboBoxTypeBd.getSelectedItem(),
@@ -762,11 +690,7 @@ class TuningFrame {
     // >>>>>>>>>>>>>>>>>>>>>>
     // разрешение кнопки ок
     private void onOffButtonOk() {
-        if ((chCheckCommPort == CommPort.INITCODE_OK) && flCheckSql) {
-            buttonOk.setEnabled(true);
-        } else {
-            buttonOk.setEnabled(false);
-        }
+        buttonOk.setEnabled((chCheckCommPort == CommPort.INITCODE_OK) && flCheckSql);
     }
     // разрешение кнопки тест
     private void onOffButtonTest() {
