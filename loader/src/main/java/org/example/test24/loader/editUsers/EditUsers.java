@@ -30,7 +30,7 @@ public class EditUsers extends JFrame implements EditUsersInterface {
 
             @Override
             public void windowClosing(WindowEvent e) {
-
+                closeFromLocal();
             }
 
             @Override
@@ -113,10 +113,19 @@ public class EditUsers extends JFrame implements EditUsersInterface {
     // ==========================================
     //  ---
     // ==========================================
-    // интерфейсные методы
+    //           интерфейсные методы
+    // закрытие окна по инициативе родителя
     @Override
     public void closeFromParent() {
-
+        removeAll();
+        dispose();
+        callBack.messageCloseEditUsers();
+    }
+    // закрытие окна по инициативе окна
+    private void closeFromLocal() {
+        removeAll();
+        dispose();
+        callBack.messageCloseEditUsers();
     }
     // ==========================================
     // компоненты
