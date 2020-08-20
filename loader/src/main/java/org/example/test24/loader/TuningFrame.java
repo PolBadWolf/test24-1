@@ -568,12 +568,15 @@ class TuningFrame {
         fieldParamServerLogin.setText(parametersSql.user);
         fieldParamServerPassword.setText(parametersSql.password);
         // чтение списка БД
+        boolean flLoadListBd = false;
         try {
-            getListBdFile(parameters[0]);
+            flLoadListBd = getListBdFile(parameters[0]);
         } catch (Exception e) {
             System.out.println("ошибка загрузки списка БД: " + e.getMessage());
         }
-        onOffButtonTest();
+        if (flLoadListBd) {
+            onOffButtonTest();
+        }
         lockBegin = false;
     }
     // загрузка параметров SQL

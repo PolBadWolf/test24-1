@@ -155,7 +155,7 @@ public class MainClass {
                             parametersSql.dataBase
                     );
                 } catch (java.lang.Throwable e) {
-                    e.printStackTrace();
+                    System.out.println(e.getMessage());
                     stat = false;
                 }
                 return stat;
