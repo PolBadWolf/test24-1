@@ -62,7 +62,7 @@ public class DataBaseMySql extends DataBase {
         ArrayList<String> listColmn = new ArrayList<>();
         Connection connection;
         ResultSet resultSet;
-        Statement statement;
+        PreparedStatement  statement;
         int len, countList, countSql;
         boolean table1 = true;
         boolean table2 = true;
@@ -78,7 +78,6 @@ public class DataBaseMySql extends DataBase {
                     , base
             )  + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
             connection = DriverManager.getConnection(connString, login, password);
-            statement = connection.createStatement();
         } catch (java.lang.Throwable e) {
             System.out.println("test structure base: " + e.getLocalizedMessage());
             return false;
@@ -99,12 +98,15 @@ public class DataBaseMySql extends DataBase {
             }
             countSql = 0;
             countList = listColmn.size();
-            resultSet = statement.executeQuery("SELECT\n" +
+            statement = connection.prepareStatement("SELECT\n" +
                     "COLUMN_NAME\n" +
                     "FROM information_schema.COLUMNS\n" +
-                    "WHERE\tinformation_schema.COLUMNS.TABLE_SCHEMA = \"spc1\"\n" +
+                    "WHERE\tinformation_schema.COLUMNS.TABLE_SCHEMA = ?\n" +
                     "AND information_schema.COLUMNS.TABLE_NAME = \"table_data\"\n" +
-                    "ORDER BY information_schema.COLUMNS.ORDINAL_POSITION ASC");
+                    "ORDER BY information_schema.COLUMNS.ORDINAL_POSITION ASC"
+            );
+            statement.setString(1, base);
+            resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 sample = resultSet.getString(1);
                 countSql++;
