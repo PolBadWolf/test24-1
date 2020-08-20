@@ -379,7 +379,7 @@ class TuningFrame {
             }
         });
         return button;
-    }
+    }                  // ok
     private JButton getButtonTestBd(String text, Rectangle positionSize) {
         JButton button = new JButton(text);
         button.setBounds(positionSize);
@@ -391,7 +391,7 @@ class TuningFrame {
             }
         });
         return button;
-    }
+    }                // ok
 
     private JPanel getPanelSelectEdit(String title, Rectangle positionSize) {
         JPanel panel = new JPanel();
