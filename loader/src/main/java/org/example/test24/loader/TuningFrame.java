@@ -73,7 +73,7 @@ class TuningFrame {
         this.parameters = parameters;
         this.callBackTF = callBackTF;
         frameConstructor();
-        setInitParametrs();
+        setInitParameters();
         checkStatusComp();
         outStatus();
         setButtonBegin();
@@ -375,21 +375,7 @@ class TuningFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                button.setEnabled(false);
-                parametersSql.urlServer = fieldParamServerIP.getText();
-                parametersSql.portServer = fieldParamServerPort.getText();
-                parametersSql.user = fieldParamServerLogin.getText();
-                parametersSql.password = fieldParamServerPassword.getText();
-                parametersSql.dataBase = (String) comboBoxListBd.getSelectedItem();
-                parametersSql.save();
-                checkStatusComp();
-                if (flCheckParamSql) {
-                    parameters[0] = (String) comboBoxTypeBd.getSelectedItem();
-                    callBackMC.saveConfig(parameters);
-                } else {
-                    flCheckSql = false;
-                }
-                buttonOk.setEnabled(true);
+                pushButtonSave();
             }
         });
         return button;
@@ -535,7 +521,7 @@ class TuningFrame {
     }
     // ==================
     // начальная загрузка параметров
-    private void setInitParametrs() {
+    private void setInitParameters() {
         lockBegin = true;
         {
             boolean flSelCommPort = false;
@@ -558,7 +544,7 @@ class TuningFrame {
         // тип БД
         comboBoxTypeBd.setSelectedItem(parameters[0]);
         // загрузка параметров
-        boolean stat = loadParametrsSql(parameters[0]);
+        boolean stat = loadParametersSql(parameters[0]);
         // загрузка списка БД
         comboBoxListBd.removeAllItems();
         if (!stat) return;
@@ -575,12 +561,13 @@ class TuningFrame {
             System.out.println("ошибка загрузки списка БД: " + e.getMessage());
         }
         if (flLoadListBd) {
+            comboBoxListBd.setSelectedItem(parametersSql.dataBase);
             onOffButtonTest();
         }
         lockBegin = false;
     }
     // загрузка параметров SQL
-    private boolean loadParametrsSql(String typeBd) {
+    private boolean loadParametersSql(String typeBd) {
         boolean stat = false;
         parametersSql = new ParametersSql(
                 DataBase.getNameFileParametrsSql(
@@ -596,6 +583,17 @@ class TuningFrame {
             System.out.println("ошибка чтения параметров SQL: " + e.getMessage());
         }
         return stat;
+    }
+    // сохранение параметров SQL
+    private void saveParametersSql() {
+        boolean stat = false;
+        parametersSql.urlServer = fieldParamServerIP.getText();
+        parametersSql.portServer = fieldParamServerPort.getText();
+        parametersSql.user = fieldParamServerLogin.getText();
+        parametersSql.password = fieldParamServerPassword.getText();
+        parametersSql.dataBase = (String) comboBoxListBd.getSelectedItem();
+        parametersSql.save();
+        checkStatusComp();
     }
     // статус основных параметров
     private void checkStatusComp() {
@@ -823,7 +821,9 @@ class TuningFrame {
         if (lockBegin)  return;
         threadSkeepOn = false;
         try {
+            String currentItem = (String) comboBoxListBd.getSelectedItem();
             getListBdComp();
+            comboBoxListBd.setSelectedItem(currentItem);
         } catch (Exception e) {
             System.out.println("ошибка чтения списка БД: " + e.getMessage());
         } // чтение списка БД
@@ -837,7 +837,9 @@ class TuningFrame {
     }
     // нажатие кнопки save
     private void pushButtonSave() {
-
+        if (lockBegin)  return;
+        offButtonSave();
+        saveParametersSql();
     }
     // нажатие кнопки test
     private void pushButtonTest() {
@@ -848,14 +850,14 @@ class TuningFrame {
         // выдача статуса основных параметров
         outStatus();
 
-        buttonOk.setEnabled(false);
+        /*buttonOk.setEnabled(false);
         flCheckSql = bdSql.testStuctBase(
                 fieldParamServerIP.getText(),
                 fieldParamServerPort.getText(),
                 fieldParamServerLogin.getText(),
                 fieldParamServerPassword.getText(),
                 (String) comboBoxListBd.getSelectedItem()
-        );
+        );*/
         onOffButtonSave();
         offButtonTest();
     }
