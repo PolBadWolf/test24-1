@@ -146,11 +146,11 @@ public class MainClass {
                 boolean stat;
                 ParametersSql parametersSql;
                 try {
+                    // подключение БД
+                    bdSql = DataBase.init(parameters[0], fileNameSql);
                     // загрузка параметров SQL
                     parametersSql = bdSql.getParametrsSql();
                     parametersSql.load();
-                    // подключение БД
-                    bdSql = DataBase.init(parameters[0], fileNameSql);
                     // проверка структуры БД
                     stat = bdSql.testStuctBase(
                             parametersSql.urlServer,
