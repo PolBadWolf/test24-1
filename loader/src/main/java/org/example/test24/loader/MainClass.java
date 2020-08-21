@@ -134,19 +134,24 @@ public class MainClass {
     private MainClassCallBackStartFrame getMainClassCallBack() {
         return new MainClassCallBackStartFrame() {
 
+            // проверка Comm Port
             @Override
             public boolean checkCommPort() {
                 return MainClass.this.checkCommPort(parameters[1]);
             }
 
+            // подключение к БД и структуры БД (параметры из файла конфигурации)
             @Override
-            public boolean checkSql() {
+            public boolean checkSqlFile() {
                 boolean stat;
                 ParametersSql parametersSql;
                 try {
-                    bdSql = DataBase.init(parameters[0], fileNameSql);
+                    // загрузка параметров SQL
                     parametersSql = bdSql.getParametrsSql();
                     parametersSql.load();
+                    // подключение БД
+                    bdSql = DataBase.init(parameters[0], fileNameSql);
+                    // проверка структуры БД
                     stat = bdSql.testStuctBase(
                             parametersSql.urlServer,
                             parametersSql.portServer,

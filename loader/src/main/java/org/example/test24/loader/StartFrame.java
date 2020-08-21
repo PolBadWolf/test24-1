@@ -51,8 +51,9 @@ public class StartFrame extends JFrame {
                 setResizable(false);
                 setVisible(true);
             });
+            // проверка Comm port
             flCheckCommPort = callBack.checkCommPort();
-            flCheckSql = callBack.checkSql();
+            flCheckSql = callBack.checkSqlFile();
             if (flCheckSql) {
                 loadListUsers();
             }
@@ -213,7 +214,6 @@ public class StartFrame extends JFrame {
         label4.setVisible(true);
         label5.setVisible(true);
     }
-
     private void offTitleComponents() {
         label1.setVisible(false);
         label2.setVisible(false);
@@ -221,7 +221,6 @@ public class StartFrame extends JFrame {
         label4.setVisible(false);
         label5.setVisible(false);
     }
-
     private void onInputComponents() {
         jLabel1.setVisible(true);
         jLabel2.setVisible(true);
@@ -234,7 +233,6 @@ public class StartFrame extends JFrame {
         buttonTuning.setEnabled(false);
         buttonSetPassword.setVisible(false);
     }
-
     private void offInputComponents() {
         jLabel1.setVisible(false);
         jLabel2.setVisible(false);
@@ -320,7 +318,6 @@ public class StartFrame extends JFrame {
         });
         return button;
     }
-
     private JButton getButtonWork() {
         JButton button = new JButton();
         button.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
@@ -333,7 +330,6 @@ public class StartFrame extends JFrame {
         });
         return button;
     }
-
     private JButton getButtonTuning() {
         JButton button = new JButton();
         button.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
@@ -349,7 +345,6 @@ public class StartFrame extends JFrame {
         });
         return button;
     }
-
     private JButton getButtonSetPassword() {
         JButton button = new JButton();
         button.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
@@ -369,7 +364,6 @@ public class StartFrame extends JFrame {
         });
         return button;
     }
-
     private JComboBox<String> getComboBoxUser() {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBounds(300, 150, 120, 20);
@@ -388,22 +382,29 @@ public class StartFrame extends JFrame {
         return comboBox;
     }
 
+    // callBack из TuningFrame
     private StartFrameCallBackTuningFrame getStartFrameCallBackTuningFrame() {
-        return () -> {
-            StartFrame startFrame = StartFrame.this;
-            startFrame.fieldPassword.setText("");
-            startFrame.buttonEnter.setEnabled(true);
-            flCheckSql = callBack.checkSql();
-            try {
-                if (flCheckSql) {
-                    StartFrame.this.loadListUsers();
+        return new StartFrameCallBackTuningFrame() {
+            @Override
+            public void messageCloseTuningFrame() {
+                StartFrame startFrame = StartFrame.this;
+                startFrame.fieldPassword.setText("");
+                startFrame.buttonEnter.setEnabled(true);
+                flCheckSql = callBack.checkSqlFile();
+                try {
+                    if (flCheckSql) {
+                        StartFrame.this.loadListUsers();
+                    }
+                } catch (Exception e) {
+                    System.out.println("StartFrame.StartFrameCallBackTuningFrame ошибка чтения списка пользователей: " + e.getMessage());
                 }
-            } catch (Exception e) {
-                System.out.println("ошибка чтения списка пользователей: " + e.getMessage());
             }
         };
     }
 
+    // ===========================================================================
+    //                        ===
+    // загрузка пользователей
     private void loadListUsers() throws Exception {
         if (flCheckSql) {
             String[] parameters = callBack.getParameters();
@@ -416,7 +417,7 @@ public class StartFrame extends JFrame {
             try {
                 comboBoxUser.setSelectedItem(listUsers[0].name);
             } catch (java.lang.Throwable e) {
-                System.out.println("ошибка установки текущего пользователя: " + e.getMessage());
+                System.out.println("StartFrame.loadListUsers ошибка установки текущего пользователя: " + e.getMessage());
             }
         }
     }
