@@ -170,4 +170,86 @@ public abstract class DataBase implements SqlWork_interface {
 
     @Override
     public abstract void updateUserPassword(UserClass userClass, String newPassword) throws Exception;
+
+    @Override
+    public void deactiveUser(int id) throws Exception {
+        try {
+            // проверка связи
+            if (getConnect() == null) {
+                throw new Exception("DataBase.deactiveUser: нет связи");
+            }
+        } catch (Exception e) {
+            throw new Exception("DataBase.deactiveUser: " + e.getMessage());
+        }
+        // инициализация переменных
+            PreparedStatement statement;
+            boolean saveAutoCommit = true;
+            // настройка auto commit
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException throwables) {
+            throw new Exception("DataBase.deactiveUser: " + throwables.getMessage());
+        }
+        try {
+            java.util.Date date = new java.util.Date();
+            java.sql.Timestamp timestamp = new java.sql.Timestamp(date.getTime());
+            statement = connection.prepareStatement(
+                    "UPDATE Table_users SET  date_unreg = ? WHERE id = ?"
+            );
+            statement.setTimestamp(1, timestamp);
+            statement.setInt(2, id);
+            statement.executeUpdate();
+            connection.commit();
+            connection.setAutoCommit(saveAutoCommit);
+        } catch (SQLException throwables) {
+            connection.rollback();
+            connection.setAutoCommit(saveAutoCommit);
+            throw new Exception("DataBase.deactiveUser: " + throwables.getMessage());
+        }
+    }
+
+    // запись нового пользователя
+    @Override
+    public void writeNewUser(String name, String password) throws Exception {
+        try {
+            // проверка связи
+            if (getConnect() == null) {
+                throw new Exception("DataBase.writeNewUser: нет связи");
+            }
+        } catch (Exception e) {
+            throw new Exception("DataBase.writeNewUser: " + e.getMessage());
+        }
+        // инициализация переменных
+        PreparedStatement statement;
+        boolean saveAutoCommit = true;
+        // настройка auto commit
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException throwables) {
+            throw new Exception("DataBase.writeNewUser: " + throwables.getMessage());
+        }
+        try {
+            java.util.Date date = new java.util.Date();
+            java.sql.Timestamp timestamp = new java.sql.Timestamp(date.getTime());
+            String pass = new String(java.util.Base64.getEncoder().encode(password.getBytes()));
+            statement = connection.prepareStatement(
+                    "INSERT INTO Table_users (date_reg, name, password)\n"
+                            + " VALUES (?, ?, ?)"
+            );
+            statement.setTimestamp(1, timestamp);
+            statement.setString(2, name);
+            statement.setString(3, pass);
+            statement.executeUpdate();
+            connection.commit();
+            connection.setAutoCommit(saveAutoCommit);
+        } catch (SQLException throwables) {
+            connection.rollback();
+            connection.setAutoCommit(saveAutoCommit);
+            throw new Exception("DataBase.writeNewUser: " + throwables.getMessage());
+        }
+    }
 }
