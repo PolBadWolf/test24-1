@@ -184,7 +184,7 @@ public class DataBaseMySql extends DataBase {
         }
         PreparedStatement statement;
         Statement statementReadSpec = null;
-        boolean saveAutoCommit = false;
+        boolean saveAutoCommit = true;
         try {
             saveAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);

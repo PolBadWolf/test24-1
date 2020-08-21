@@ -450,7 +450,22 @@ class TuningFrame {
     } // ****************
     // ======
     private EditUsersCallBack getEditUserCallBackParent() {
-        return () -> editUsers = null;
+        return new EditUsersCallBack() {
+            @Override
+            public void messageCloseEditUsers() {
+                editUsers = null;
+            }
+
+            @Override
+            public SqlWork_interface getBdInterface() {
+                if (bdSql == null) {
+                    String typeBd = (String) comboBoxTypeBd.getSelectedItem();
+                    // подключение к БД
+                    bdSql = DataBase.init(typeBd, callBackMC.getFilesNameSql());
+                }
+                return bdSql;
+            }
+        };
     }
     // ==================
     // начальная загрузка параметров
@@ -674,11 +689,11 @@ class TuningFrame {
         buttonSave.setEnabled(false);
         // если БД в порядке
         if (flCheckSql) {
-            buttonEditUsers.setEnabled(true);
-            buttonEditPushers.setEnabled(true);
+            onButtonEditUsers();
+            onButtonEditPushers();
         } else {
-            buttonEditUsers.setEnabled(false);
-            buttonEditPushers.setEnabled(false);
+            offButtonEditUsers();
+            offButtonEditPushers();
         }
         // разрешение кнопки тест
         onOffButtonTest();
@@ -692,6 +707,12 @@ class TuningFrame {
     private void onOffButtonOk() {
         buttonOk.setEnabled((chCheckCommPort == CommPort.INITCODE_OK) && flCheckSql);
     }
+    private void onButtonOk() {
+        buttonOk.setEnabled(true);
+    }
+    private void offButtonOk() {
+        buttonOk.setEnabled(false);
+    }
     // разрешение кнопки тест
     private void onOffButtonTest() {
         if (flCheckListBd) {
@@ -699,6 +720,9 @@ class TuningFrame {
         } else {
             buttonTest.setEnabled(false);
         }
+    }
+    private void onButtonTest() {
+        buttonTest.setEnabled(true);
     }
     private void offButtonTest() {
         buttonTest.setEnabled(false);
@@ -711,8 +735,39 @@ class TuningFrame {
             buttonSave.setEnabled(false);
         }
     }
+    private void onButtonSave() {
+        buttonSave.setEnabled(true);
+    }
     private void offButtonSave() {
         buttonSave.setEnabled(false);
+    }
+    // разрешение кнопки редактирование пользователей
+    private void onOffButtonEditUsers() {
+        if (flCheckSql) {
+            buttonEditUsers.setEnabled(true);
+        } else {
+            buttonEditUsers.setEnabled(false);
+        }
+    }
+    private void onButtonEditUsers() {
+        buttonEditUsers.setEnabled(true);
+    }
+    private void offButtonEditUsers() {
+        buttonEditUsers.setEnabled(false);
+    }
+    // разрешение кнопки редактирование толкателей
+    private void onOffButtonEditPushers() {
+        if (flCheckSql) {
+            buttonEditPushers.setEnabled(true);
+        } else {
+            buttonEditPushers.setEnabled(false);
+        }
+    }
+    private void onButtonEditPushers() {
+        buttonEditPushers.setEnabled(true);
+    }
+    private void offButtonEditPushers() {
+        buttonEditPushers.setEnabled(false);
     }
     // <<<<<<<<<<<<<<<<<<<<<<
     // выбран comm port
@@ -754,6 +809,10 @@ class TuningFrame {
         } // чтение списка БД
         // разрешение кнопки тест
         onOffButtonTest();
+        // запрет кнопки редактирования пользователей
+        offButtonEditUsers();
+        // запрет кнопки редактирования толкателей
+        offButtonEditPushers();
     }
     // нажатие кнопки ок
     private void pushButtonOk() {
@@ -771,6 +830,10 @@ class TuningFrame {
         outStatus();
         // разрешение кнопки ок
         onOffButtonOk();
+        // разрешение кнопки редактирования пользователей
+        onOffButtonEditUsers();
+        // разрешение кнопки редактирования толкателей
+        onOffButtonEditPushers();
     }
     // нажатие кнопки test
     private void pushButtonTest() {

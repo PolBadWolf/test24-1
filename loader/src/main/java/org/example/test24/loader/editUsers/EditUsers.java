@@ -1,25 +1,32 @@
 package org.example.test24.loader.editUsers;
 
+import org.example.bd.SqlWork_interface;
+import org.example.test24.allinterface.bd.UserClass;
+
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class EditUsers extends JFrame implements EditUsersInterface {
     private EditUsersCallBack callBack;
-    private boolean lockStart = true;
+    private UserClass[] tableUserClass = null;
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public EditUsers(EditUsersCallBack callBack) {
         this.callBack = callBack;
-        lockStart = true;
         // загрузка параметров
+        readUsersFromBase(); //*************
         // инитциализация компонентов
         initComponents();
-        lockStart = false;
+        // деактивация кнопок
+        offButtonDeactive();
+        offButtonNewUser();
         setVisible(true);
         // ловушка закрытия окна
         addWindowListener(new WindowListener() {
@@ -95,22 +102,95 @@ public class EditUsers extends JFrame implements EditUsersInterface {
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     //      воздействие из органов управления
     private void pushButtonDeactive() {
-
+        // деактивация выбранного пользователя
+        deactiveSelectUser();
     }
     private void pushButtonNewUser() {
-
+        // запись нового пользователя в базу
+        writeNewUserToBase();
     }
     private void enterTextSurName() {
-
-    }
+        // проверка введенных данных о новом пользователе
+        checkFieldsNewUser();
+   }
     private void enterTextPassword() {
-
+        // проверка введенных данных о новом пользователе
+        checkFieldsNewUser();
     }
-    // <<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>
-    //        действия от органов управления
+    private void selectTableCell() {
+        onButtonDeactive();
+    }
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //      воздействие на органы управления
+    private void onButtonDeactive() {
+        buttonDeactive.setEnabled(true);
+    }
+    private void offButtonDeactive() {
+        buttonDeactive.setEnabled(false);
+    }
+    private void onButtonNewUser() {
+        buttonNewUser.setEnabled(true);
+    }
+    private void offButtonNewUser() {
+        buttonNewUser.setEnabled(false);
+    }
     // ==========================================
+    // чтение из базы в массив
+    private void readUsersFromBase() {
+        // доступ к базе
+        SqlWork_interface bdSql = callBack.getBdInterface();
+        try {
+            tableUserClass = bdSql.getListUsers(true);
+        } catch (Exception e) {
+            tableUserClass = null;
+            System.out.println("EditUsers.readUsersFromBase: " + e.getMessage());
+        }
+    }
+    // проверка введенных данных о новом пользователе
+    private void checkFieldsNewUser() {
+        if ((fieldSurName.getText().length() > 0) && (fieldPassword.getText().length() > 0)) {
+            onButtonNewUser();
+        } else {
+            offButtonNewUser();
+        }
+    }
+    // деактивация выбранного пользователя
+    private void deactiveSelectUser() {
+        // выбранная строка
+        int id = tableUserClass[table.getSelectedRow()].id;
+        // доступ к базе
+        SqlWork_interface bdSql = callBack.getBdInterface();
+        try {
+            // деактивация
+            bdSql.deactiveUser(id);
+            // обновить таблицу
+            readUsersFromBase();
+            table.updateUI();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    // запись нового пользователя в базу
+    private void writeNewUserToBase() {
+        // доступ к базе
+        SqlWork_interface bdSql = callBack.getBdInterface();
+        try {
+            // запись
+            bdSql.writeNewUser(fieldSurName.getText(), fieldPassword.getText());
+            // обновить таблицу
+            readUsersFromBase();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // очистка полей
+        fieldSurName.setText("");
+        fieldPassword.setText("");
+        // деактивация кнопки
+        offButtonNewUser();
+        // обновить таблицу
+        readUsersFromBase();
+        table.updateUI();
+    }
     //  ---
     // ==========================================
     //           интерфейсные методы
@@ -143,17 +223,33 @@ public class EditUsers extends JFrame implements EditUsersInterface {
 
         @Override
         public int getRowCount() {
-            return 0;
+            int row = 0;
+            if (tableUserClass != null) {
+                row = tableUserClass.length;
+            }
+            return row;
         }
 
         @Override
         public int getColumnCount() {
-            return 3;
+            return 2;
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            return null;
+            String text = "";
+            if (tableUserClass != null) {
+                switch (columnIndex) {
+                    case 0:
+                        text = tableUserClass[rowIndex].name;
+                        break;
+                    case 1:
+                        text = dateFormat.format(tableUserClass[rowIndex].date_reg);
+                        break;
+                    default:
+                }
+            }
+            return text;
         }
     }
     // ------------------------------------------
@@ -183,6 +279,12 @@ public class EditUsers extends JFrame implements EditUsersInterface {
             table.getTableHeader().setReorderingAllowed(false);
             table.setAutoResizeMode(auto_resize);
             table.getColumnModel().getColumn(columnIndex).setPreferredWidth(width);
+            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    selectTableCell();
+                }
+            });
         } catch (ArrayIndexOutOfBoundsException ae) {
             ae.printStackTrace();
         }
