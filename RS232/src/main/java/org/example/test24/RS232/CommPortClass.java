@@ -2,7 +2,6 @@ package org.example.test24.RS232;
 
 import com.fazecast.jSerialComm.SerialPort;
 import org.example.lib.ControlSumma;
-import org.example.lib.interfaces.RsCallBack;
 
 class CommPortClass implements CommPort {
 
@@ -18,10 +17,10 @@ class CommPortClass implements CommPort {
 
     private SerialPort port = null;
     private Thread threadRS = null;
-    private RsCallBack rsCallBack = null;
+    private CallBack callBack = null;
 
     @Override
-    public int Open(RsCallBack rsCallBack, String portName, BAUD baud) {
+    public int Open(CallBack callBack, String portName, BAUD baud) {
         if (port != null) {
             Close();
         }
@@ -44,7 +43,7 @@ class CommPortClass implements CommPort {
         port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 1000, 0);
 
         if (port.openPort()) {
-            this.rsCallBack = rsCallBack;
+            this.callBack = callBack;
             return INITCODE_OK;
         }
 
@@ -182,7 +181,7 @@ class CommPortClass implements CommPort {
             crc = ControlSumma.crc8(bytes, lenghtRecive - 1);
 
             if (crc == bytes[lenghtRecive - 1]) {
-                rsCallBack.reciveRsPush(bytes, lenghtRecive - 1);
+                callBack.reciveRsPush(bytes, lenghtRecive - 1);
             }
 
             flagHead = true;

@@ -6,10 +6,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class DataBaseMsSql extends DataBase {
+public class DataBaseClassMsSql extends DataBaseClass {
 
     @Override
-    protected void setParametersSql(String[] fileNameSql) {
+    public void setParametersSql(String[] fileNameSql) {
         parametersSql = new ParametersSql(fileNameSql[0], "MS_SQL");
     }
 
