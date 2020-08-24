@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class StartFrame extends JFrame {
-    private MainClassCallBackStartFrame callBack;
+    private CallBack callBack;
     private JLabel label1;
     private JLabel label2;
     private JLabel label3;
@@ -30,7 +30,20 @@ public class StartFrame extends JFrame {
     private UserClass[] listUsers = null;
     private UserClass user = null;
 
-    public static StartFrame main(MainClassCallBackStartFrame callBack) {
+    public interface CallBack {
+        // проверка Comm Port
+        boolean checkCommPort();
+        // подключение к БД и структуры БД (параметры из файла конфигурации)
+        boolean checkSqlFile();
+        void closeFrame();
+        // ---------------
+        TuningFrame getTuningFrame();
+        String[] getParameters();
+        String[] getFilesNameSql();
+        String getFileNameSql(String typeBd) throws Exception;
+    }
+
+    public static StartFrame main(CallBack callBack) {
         final StartFrame[] frame = new StartFrame[1];
         frame[0] = null;
         try {
@@ -71,7 +84,7 @@ public class StartFrame extends JFrame {
             // --------
             TuningFrame tuningFrame;
             tuningFrame = callBack.getTuningFrame();
-            tuningFrame.frameConfig(callBack.getParameters(), getStartFrameCallBackTuningFrame());
+            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
             // -------
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
@@ -79,7 +92,7 @@ public class StartFrame extends JFrame {
 
     }
 
-    private StartFrame(MainClassCallBackStartFrame callBack) {
+    private StartFrame(CallBack callBack) {
         this.callBack = callBack;
         setLayout(null);
         addWindowListener(new WindowListener() {
@@ -341,7 +354,7 @@ public class StartFrame extends JFrame {
             buttonTuning.setEnabled(false);
             TuningFrame tuningFrame;
             tuningFrame = callBack.getTuningFrame();
-            tuningFrame.frameConfig(callBack.getParameters(), getStartFrameCallBackTuningFrame());
+            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
         });
         return button;
     }
@@ -383,23 +396,21 @@ public class StartFrame extends JFrame {
     }
 
     // callBack из TuningFrame
-    private StartFrameCallBackTuningFrame getStartFrameCallBackTuningFrame() {
-        return new StartFrameCallBackTuningFrame() {
-            @Override
-            public void messageCloseTuningFrame() {
-                StartFrame startFrame = StartFrame.this;
-                startFrame.fieldPassword.setText("");
-                startFrame.buttonEnter.setEnabled(true);
-                flCheckSql = callBack.checkSqlFile();
-                try {
-                    if (flCheckSql) {
-                        StartFrame.this.loadListUsers();
-                    }
-                } catch (Exception e) {
-                    System.out.println("StartFrame.StartFrameCallBackTuningFrame ошибка чтения списка пользователей: " + e.getMessage());
+    private class TuningFrameCallBack implements TuningFrame.CallBackToStartFrame {
+        @Override
+        public void messageCloseTuningFrame() {
+            StartFrame startFrame = StartFrame.this;
+            startFrame.fieldPassword.setText("");
+            startFrame.buttonEnter.setEnabled(true);
+            flCheckSql = callBack.checkSqlFile();
+            try {
+                if (flCheckSql) {
+                    StartFrame.this.loadListUsers();
                 }
+            } catch (Exception e) {
+                System.out.println("StartFrame.StartFrameCallBackTuningFrame ошибка чтения списка пользователей: " + e.getMessage());
             }
-        };
+        }
     }
 
     // ===========================================================================

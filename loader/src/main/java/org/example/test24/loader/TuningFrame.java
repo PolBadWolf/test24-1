@@ -6,7 +6,6 @@ import org.example.bd.SqlWork_interface;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.loader.editUsers.EditUsers;
-import org.example.test24.loader.editUsers.EditUsersCallBack;
 import org.example.test24.loader.editUsers.EditUsersInterface;
 
 import javax.swing.*;
@@ -21,8 +20,19 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 class TuningFrame {
-    private MainClassCallBackTuningFrame callBackMC;
-    private StartFrameCallBackTuningFrame callBackTF = null;
+    public interface CallBackToMainClass {
+        CommPort getCommPort();
+        void saveConfig(String[] parametrs);
+        String[] getFilesNameSql();
+        String getFileNameSql(String typeBd) throws Exception;
+    }
+    public interface CallBackToStartFrame {
+        void messageCloseTuningFrame();
+    }
+
+
+    private CallBackToMainClass callBackMC;
+    private CallBackToStartFrame callBackTF = null;
 
     private String[] parameters = null;
     private ParametersSql parametersSql = null;
@@ -63,11 +73,11 @@ class TuningFrame {
 
     private boolean lockBegin = false;
 
-    public TuningFrame(MainClassCallBackTuningFrame callBackMC) {
+    public TuningFrame(CallBackToMainClass callBackMC) {
         this.callBackMC = callBackMC;
     }
 
-    void frameConfig(String[] parameters, StartFrameCallBackTuningFrame callBackTF) {
+    void frameConfig(String[] parameters, CallBackToStartFrame callBackTF) {
         this.parameters = parameters;
         this.callBackTF = callBackTF;
         frameConstructor();
@@ -449,23 +459,21 @@ class TuningFrame {
         }
     } // ****************
     // ======
-    private EditUsersCallBack getEditUserCallBackParent() {
-        return new EditUsersCallBack() {
-            @Override
-            public void messageCloseEditUsers() {
-                editUsers = null;
-            }
+    private class EditUsersCallBack implements EditUsers.CallBack {
+        @Override
+        public void messageCloseEditUsers() {
+            editUsers = null;
+        }
 
-            @Override
-            public SqlWork_interface getBdInterface() {
-                if (bdSql == null) {
-                    String typeBd = (String) comboBoxTypeBd.getSelectedItem();
-                    // подключение к БД
-                    bdSql = DataBase.init(typeBd, callBackMC.getFilesNameSql());
-                }
-                return bdSql;
+        @Override
+        public SqlWork_interface getBdInterface() {
+            if (bdSql == null) {
+                String typeBd = (String) comboBoxTypeBd.getSelectedItem();
+                // подключение к БД
+                bdSql = DataBase.init(typeBd, callBackMC.getFilesNameSql());
             }
-        };
+            return bdSql;
+        }
     }
     // ==================
     // начальная загрузка параметров
@@ -849,7 +857,7 @@ class TuningFrame {
     // нажатие кнопки редактирование пользователей
     private void pushButtonEditUsers() {
         if (editUsers == null) {
-            editUsers = new EditUsers(getEditUserCallBackParent());
+            editUsers = new EditUsers(new EditUsersCallBack());
         }
     }
 }

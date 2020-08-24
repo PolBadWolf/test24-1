@@ -39,7 +39,7 @@ public class MainClass {
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 
-        startFrame = StartFrame.main(getMainClassCallBack());
+        startFrame = StartFrame.main(new StartFrameCallBack());
         try {
             while (startFrame != null) {
                 Thread.yield();
@@ -131,111 +131,106 @@ public class MainClass {
         return ch == CommPort.INITCODE_OK;
     }
 
-    private MainClassCallBackStartFrame getMainClassCallBack() {
-        return new MainClassCallBackStartFrame() {
+    private class StartFrameCallBack implements StartFrame.CallBack {
+        // проверка Comm Port
+        @Override
+        public boolean checkCommPort() {
+            return MainClass.this.checkCommPort(parameters[1]);
+        }
 
-            // проверка Comm Port
-            @Override
-            public boolean checkCommPort() {
-                return MainClass.this.checkCommPort(parameters[1]);
+        // подключение к БД и структуры БД (параметры из файла конфигурации)
+        @Override
+        public boolean checkSqlFile() {
+            boolean stat;
+            ParametersSql parametersSql;
+            try {
+                // подключение БД
+                bdSql = DataBase.init(parameters[0], fileNameSql);
+                // загрузка параметров SQL
+                parametersSql = bdSql.getParametrsSql();
+                parametersSql.load();
+                // проверка структуры БД
+                stat = bdSql.testStuctBase(
+                        parametersSql.urlServer,
+                        parametersSql.portServer,
+                        parametersSql.user,
+                        parametersSql.password,
+                        parametersSql.dataBase
+                );
+            } catch (java.lang.Throwable e) {
+                System.out.println(e.getMessage());
+                stat = false;
             }
+            return stat;
+        }
 
-            // подключение к БД и структуры БД (параметры из файла конфигурации)
-            @Override
-            public boolean checkSqlFile() {
-                boolean stat;
-                ParametersSql parametersSql;
-                try {
-                    // подключение БД
-                    bdSql = DataBase.init(parameters[0], fileNameSql);
-                    // загрузка параметров SQL
-                    parametersSql = bdSql.getParametrsSql();
-                    parametersSql.load();
-                    // проверка структуры БД
-                    stat = bdSql.testStuctBase(
-                            parametersSql.urlServer,
-                            parametersSql.portServer,
-                            parametersSql.user,
-                            parametersSql.password,
-                            parametersSql.dataBase
-                    );
-                } catch (java.lang.Throwable e) {
-                    System.out.println(e.getMessage());
-                    stat = false;
-                }
-                return stat;
-            }
+        @Override
+        public void closeFrame() {
+            MainClass.this.startFrame = null;
+        }
 
-            @Override
-            public void closeFrame() {
-                MainClass.this.startFrame = null;
-            }
+        @Override
+        public TuningFrame getTuningFrame() {
+            return new TuningFrame(new TuningFrameCallBack());
+        }
 
-            @Override
-            public TuningFrame getTuningFrame() {
-                return new TuningFrame(getMainClassCallBackTuningFrame());
-            }
+        @Override
+        public String[] getParameters() {
+            return parameters;
+        }
 
-            @Override
-            public String[] getParameters() {
-                return parameters;
-            }
+        @Override
+        public String[] getFilesNameSql() {
+            return fileNameSql;
+        }
 
-            @Override
-            public String[] getFilesNameSql() {
-                return fileNameSql;
+        @Override
+        public String getFileNameSql(String typeBd) throws Exception {
+            String fileName;
+            switch (typeBd) {
+                case "MS_SQL" :
+                    fileName = fileNameMsSql;
+                    break;
+                case "MY_SQL" :
+                    fileName = fileNameMySql;
+                    break;
+                default:
+                    throw new Exception("неизвестный тип BD");
             }
-
-            @Override
-            public String getFileNameSql(String typeBd) throws Exception {
-                String fileName;
-                switch (typeBd) {
-                    case "MS_SQL" :
-                        fileName = fileNameMsSql;
-                        break;
-                    case "MY_SQL" :
-                        fileName = fileNameMySql;
-                        break;
-                    default:
-                        throw new Exception("неизвестный тип BD");
-                }
-                return fileName;
-            }
-        };
+            return fileName;
+        }
     }
 
-    private MainClassCallBackTuningFrame getMainClassCallBackTuningFrame() {
-        return new MainClassCallBackTuningFrame() {
-            @Override
-            public CommPort getCommPort() {
-                return commPort;
-            }
+    private class TuningFrameCallBack implements TuningFrame.CallBackToMainClass {
+        @Override
+        public CommPort getCommPort() {
+            return commPort;
+        }
 
-            @Override
-            public void saveConfig(String[] parametrs) {
-                MainClass.this.saveConfig(parametrs);
-            }
+        @Override
+        public void saveConfig(String[] parametrs) {
+            MainClass.this.saveConfig(parametrs);
+        }
 
-            @Override
-            public String[] getFilesNameSql() {
-                return fileNameSql;
-            }
+        @Override
+        public String[] getFilesNameSql() {
+            return fileNameSql;
+        }
 
-            @Override
-            public String getFileNameSql(String typeBd) throws Exception {
-                String fileName;
-                switch (typeBd) {
-                    case "MS_SQL" :
-                        fileName = fileNameMsSql;
-                        break;
-                    case "MY_SQL" :
-                        fileName = fileNameMySql;
-                        break;
-                    default:
-                        throw new Exception("неизвестный тип BD");
-                }
-                return fileName;
+        @Override
+        public String getFileNameSql(String typeBd) throws Exception {
+            String fileName;
+            switch (typeBd) {
+                case "MS_SQL" :
+                    fileName = fileNameMsSql;
+                    break;
+                case "MY_SQL" :
+                    fileName = fileNameMySql;
+                    break;
+                default:
+                    throw new Exception("неизвестный тип BD");
             }
-        };
+            return fileName;
+        }
     }
 }

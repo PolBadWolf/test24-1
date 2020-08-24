@@ -14,11 +14,16 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 public class EditUsers extends JFrame implements EditUsersInterface {
-    private EditUsersCallBack callBack;
+    public interface CallBack {
+        void messageCloseEditUsers();
+        SqlWork_interface getBdInterface();
+    }
+
+    private CallBack callBack;
     private UserClass[] tableUserClass = null;
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public EditUsers(EditUsersCallBack callBack) {
+    public EditUsers(CallBack callBack) {
         this.callBack = callBack;
         // загрузка параметров
         readUsersFromBase(); //*************
