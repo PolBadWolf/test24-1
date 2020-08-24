@@ -17,13 +17,49 @@ public class MainClass {
     final public String fileNameMsSql = "ms_sql.txt";
     final public String fileNameMySql = "my_sql.txt";
     final public String[] fileNameSql = {fileNameMsSql, fileNameMySql};
-
+    // ===============================================
+    // модули
     private ScreenClass mainFx;
     private Runner runner = null;
-    public CommPort commPort = null;
+    private CommPort commPort = null;
     private DataBase bdSql = null;
-    private String[] parameters = null;
     private StartFrame startFrame = null;
+    // ===============================================
+    private void close() {
+        if (mainFx != null) {
+            mainFx.exitApp();
+            mainFx = null;
+        }
+        if (commPort != null) {
+            commPort.Close();
+            commPort = null;
+        }
+        if (runner != null) {
+            runner.Close();
+            runner = null;
+        }
+        System.exit(0);
+    }
+    private class ScreenCloser implements Closer {
+        @Override
+        public void close() {
+            MainClass.this.close();
+        }
+    }
+    private class RunnerCloser implements Closer {
+        @Override
+        public void close() {
+            MainClass.this.close();
+        }
+    }
+    private class CommPortCloser implements Closer {
+        @Override
+        public void close() {
+            MainClass.this.close();
+        }
+    }
+    // ===============================================
+    private String[] parameters = null;
 
     public static void main(String[] args) {
         new MainClass().start(args);
@@ -33,11 +69,9 @@ public class MainClass {
         parameters = getConfig();
         String namePort = parameters[1];
 
-        mainFx= new ScreenClass();
-        runner = Runner.main();
-        commPort = CommPort.main();
-
-        Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
+        mainFx= new ScreenClass(new ScreenCloser());
+        runner = Runner.main(new RunnerCloser());
+        commPort = CommPort.main(new CommPortCloser());
 
         startFrame = StartFrame.main(new StartFrameCallBack());
         try {
@@ -96,7 +130,7 @@ public class MainClass {
 
         try {
             properties.load(new FileReader(fileNameConfig));
-            strings[0] = properties.getProperty("DataBaseClass").toUpperCase();
+            strings[0] = properties.getProperty("DataBase").toUpperCase();
             strings[1] = properties.getProperty("CommPort").toUpperCase();
 
             if (strings[0] == null || strings[1] == null)   flagReload = true;
@@ -117,7 +151,7 @@ public class MainClass {
     public void saveConfig(String[] parameters) {
         Properties properties = new Properties();
         try {
-            properties.setProperty("DataBaseClass", parameters[0].toUpperCase());
+            properties.setProperty("DataBase", parameters[0].toUpperCase());
             properties.setProperty("CommPort", parameters[1].toUpperCase());
             properties.store(new FileWriter(fileNameConfig), "config");
         } catch (IOException e) {

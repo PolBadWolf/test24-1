@@ -4,6 +4,7 @@ import javafx.scene.paint.Color;
 import org.example.bd.MyBlob;
 import org.example.bd.DataBase;
 import org.example.test24.RS232.CommPort;
+import org.example.test24.allinterface.Closer;
 import org.example.test24.allinterface.bd.DistClass;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 import ru.yandex.fixcolor.my_lib.graphics.Plot;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 class RunningClass implements Runner {
+    private Closer closer;
     private CommPort commPort = null;
     private MainFrame_interface mainFrame = null;
     private Plot plot = null;
@@ -27,6 +29,9 @@ class RunningClass implements Runner {
 
     private int tik, tik0;
 
+    public RunningClass(Closer closer) {
+        this.closer = closer;
+    }
 
     @Override
     public void init(DataBase bdSql, CommPort commPort, MainFrame_interface mainFrame) {

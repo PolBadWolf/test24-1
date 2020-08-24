@@ -48,7 +48,6 @@ public class StartFrame extends JFrame {
         try {
             SwingUtilities.invokeAndWait(() -> frame[0] = new StartFrame(callBack));
             new Thread( ()->frame[0].start()).start();
-            Thread.sleep(10_000);
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
         }

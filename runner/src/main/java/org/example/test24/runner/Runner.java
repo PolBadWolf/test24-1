@@ -2,11 +2,12 @@ package org.example.test24.runner;
 
 import org.example.bd.DataBase;
 import org.example.test24.RS232.CommPort;
+import org.example.test24.allinterface.Closer;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 
 public interface Runner {
-    static Runner main() {
-        return new RunningClass();
+    static Runner main(Closer closer) {
+        return new RunningClass(closer);
     }
 
     void init(DataBase bdSql, CommPort commPort, MainFrame_interface mainFrame);

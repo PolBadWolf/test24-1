@@ -10,7 +10,14 @@ import org.example.test24.allinterface.Closer;
 
 import java.io.IOException;
 
-public class ScreenClass extends Application implements ScreenClass_impl, Runnable {
+public class ScreenClass extends Application implements ScreenClass_interface, Runnable {
+    private static Closer closer;
+
+    public ScreenClass(Closer closer) {
+        this.closer = closer;
+    }
+    public ScreenClass() {
+    }
 
     public static void main(String[] args) {
         launch(args);
@@ -45,7 +52,7 @@ public class ScreenClass extends Application implements ScreenClass_impl, Runnab
 
     @Override
     public void stop() throws Exception {
-        Closer.getCloser().closeAll();
+        closer.close();
         super.stop();
     }
 }

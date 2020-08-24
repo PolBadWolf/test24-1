@@ -2,8 +2,18 @@ package org.example.test24.RS232;
 
 import com.fazecast.jSerialComm.SerialPort;
 import org.example.lib.ControlSumma;
+import org.example.test24.allinterface.Closer;
 
 class CommPortClass implements CommPort {
+
+    private SerialPort port = null;
+    private Thread threadRS = null;
+    private CallBack callBack = null;
+    private Closer closer;
+
+    public CommPortClass(Closer closer) {
+        this.closer = closer;
+    }
 
     @Override
     public String[] getListPortsName() {
@@ -14,10 +24,6 @@ class CommPortClass implements CommPort {
         }
         return namePorts;
     }
-
-    private SerialPort port = null;
-    private Thread threadRS = null;
-    private CallBack callBack = null;
 
     @Override
     public int Open(CallBack callBack, String portName, BAUD baud) {
