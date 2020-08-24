@@ -13,7 +13,8 @@ import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-public class EditUsers extends JFrame implements EditUsersInterface {
+public class EditUsers extends JFrame
+{
     public interface CallBack {
         void messageCloseEditUsers();
         SqlWork_interface getBdInterface();
@@ -200,7 +201,6 @@ public class EditUsers extends JFrame implements EditUsersInterface {
     // ==========================================
     //           интерфейсные методы
     // закрытие окна по инициативе родителя
-    @Override
     public void closeFromParent() {
         removeAll();
         dispose();

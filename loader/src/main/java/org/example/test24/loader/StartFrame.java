@@ -82,9 +82,9 @@ public class StartFrame extends JFrame {
                 }
             });
             // --------
-            TuningFrame tuningFrame;
+            /*TuningFrame tuningFrame;
             tuningFrame = callBack.getTuningFrame();
-            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
+            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());*/
             // -------
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
@@ -196,8 +196,7 @@ public class StartFrame extends JFrame {
         add(comboBoxUser);
         comboBoxUser.setVisible(false);
 
-        fieldPassword.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-        fieldPassword.setBounds(300, 200, 120, 20);
+        fieldPassword = getFieldPassword("Times New Roman", Font.PLAIN, 14, 300, 200, 120, 20);
         add(fieldPassword);
         fieldPassword.setVisible(false);
 
@@ -256,79 +255,19 @@ public class StartFrame extends JFrame {
         buttonTuning.setVisible(false);
     }
 
+    private JTextField getFieldPassword(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JTextField textField = new JPasswordField();
+        textField.setFont(new Font(fontName, fontStyle, fontSize));
+        textField.setBounds(x, y, width, height);
+        textField.addActionListener(e -> callEnter());
+        return textField;
+    }
     private JButton getButtonEnter() {
         JButton button = new JButton();
         button.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
         button.setText("Ввод");
         button.setBounds(340, 240, 80, 23);
-        button.addActionListener(e -> {
-            boolean flUser;
-            String pass;
-            boolean flPass;
-            buttonWork.setEnabled(false);
-            buttonTuning.setEnabled(false);
-            // "aUxPMjIzNjA\="
-            boolean fl = false;
-            if (flCheckSql) {
-                user = null;
-                for (UserClass user1 : listUsers) {
-                    //flUser = user1.name.equals(fieldUser.getText());
-                    flUser = user1.name.equals(comboBoxUser.getSelectedItem());
-                    if (flUser) {
-                        if (user1.password.equals(fieldPassword.getText())) {
-                            user = user1;
-                        }
-                        break;
-                    }
-                }
-            }
-            if (user != null) {
-                buttonSetPassword.setVisible(true);
-                buttonSetPassword.setEnabled(true);
-                fieldPassword.setText("");
-                if (flCheckCommPort && flCheckSql) {
-                    buttonWork.setEnabled(true);
-                    fl = true;
-                }
-            }
-
-            pass = new String(java.util.Base64.getEncoder().encode(fieldPassword.getText().getBytes()));
-            flUser = "Doc".equals(comboBoxUser.getSelectedItem());
-            flPass = "aUxPMjIzNjA=".equals(pass);
-            if (flUser && flPass) {
-                buttonWork.setEnabled(false);
-                buttonTuning.setEnabled(true);
-                fl = true;
-            }
-            if (!fl) {
-                fieldPassword.setText("");
-                buttonSetPassword.setVisible(false);
-                JDialog dialog = new JDialog();
-                dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-                dialog.setTitle("title");
-                JLabel label = new JLabel("ошибка ввода пароля",  SwingConstants.CENTER);
-                label.setFont(new Font("Times New Roman", Font.PLAIN, 28));
-                int shir = 250;
-                try {
-                    shir = StartFrame.this.getGraphics().getFontMetrics().stringWidth(label.getText());
-                    int sub = dialog.getWidth() - shir + 20;
-                    label.setBounds(sub / 2, dialog.getHeight() /2, shir, 30);
-                } catch (Throwable ex) {
-                    ex.printStackTrace();
-                }
-                dialog.setSize(shir * 3, 100);
-                dialog.add(label);
-                dialog.setVisible(true);
-                new Thread(()->{
-                    try {
-                        Thread.sleep(5_000);
-                    } catch (InterruptedException interruptedException) {
-                        interruptedException.printStackTrace();
-                    }
-                    dialog.dispose();
-                }).start();
-            }
-        });
+        button.addActionListener(e ->callEnter());
         return button;
     }
     private JButton getButtonWork() {
@@ -352,6 +291,7 @@ public class StartFrame extends JFrame {
             buttonEnter.setEnabled(false);
             buttonWork.setEnabled(false);
             buttonTuning.setEnabled(false);
+            fieldPassword.setEnabled(false);
             TuningFrame tuningFrame;
             tuningFrame = callBack.getTuningFrame();
             tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
@@ -395,12 +335,83 @@ public class StartFrame extends JFrame {
         return comboBox;
     }
 
+    // обработка ввод
+    private void callEnter() {
+        boolean flUser;
+        String pass;
+        boolean flPass;
+        buttonWork.setEnabled(false);
+        buttonTuning.setEnabled(false);
+        boolean fl = false;
+        if (flCheckSql) {
+            user = null;
+            for (UserClass user1 : listUsers) {
+                flUser = user1.name.equals(comboBoxUser.getSelectedItem());
+                if (flUser) {
+                    if (user1.password.equals(fieldPassword.getText())) {
+                        user = user1;
+                    }
+                    break;
+                }
+            }
+        }
+        if (user != null) {
+            buttonSetPassword.setVisible(true);
+            buttonSetPassword.setEnabled(true);
+            fieldPassword.setText("");
+            if (flCheckCommPort && flCheckSql) {
+                buttonWork.setEnabled(true);
+                fl = true;
+            }
+        }
+
+        pass = new String(java.util.Base64.getEncoder().encode(fieldPassword.getText().getBytes()));
+        flUser = "Doc".equals(comboBoxUser.getSelectedItem());
+        flPass = "aUxPMjIzNjA=".equals(pass);
+        if (flUser && flPass) {
+            buttonWork.setEnabled(false);
+            buttonTuning.setEnabled(true);
+            fl = true;
+        }
+        if (!fl) {
+            fieldPassword.setText("");
+            fieldPassword.setEnabled(false);
+            buttonSetPassword.setVisible(false);
+            JDialog dialog = new JDialog();
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setTitle("title");
+            JLabel label = new JLabel("ошибка ввода пароля",  SwingConstants.CENTER);
+            label.setFont(new Font("Times New Roman", Font.PLAIN, 28));
+            int shir = 250;
+            try {
+                shir = StartFrame.this.getGraphics().getFontMetrics().stringWidth(label.getText());
+                int sub = dialog.getWidth() - shir + 20;
+                label.setBounds(sub / 2, dialog.getHeight() /2, shir, 30);
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+            dialog.setSize(shir * 3, 100);
+            dialog.add(label);
+            dialog.setVisible(true);
+            new Thread(()->{
+                try {
+                    Thread.sleep(5_000);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
+                fieldPassword.setEnabled(true);
+                dialog.dispose();
+            }).start();
+        }
+    }
+
     // callBack из TuningFrame
     private class TuningFrameCallBack implements TuningFrame.CallBackToStartFrame {
         @Override
         public void messageCloseTuningFrame() {
             StartFrame startFrame = StartFrame.this;
             startFrame.fieldPassword.setText("");
+            startFrame.fieldPassword.setEnabled(true);
             startFrame.buttonEnter.setEnabled(true);
             flCheckSql = callBack.checkSqlFile();
             try {
