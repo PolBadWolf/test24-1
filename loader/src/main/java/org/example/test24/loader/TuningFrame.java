@@ -448,7 +448,7 @@ class TuningFrame {
         }
     } // ****************
     // ======
-    class EditUsersCallBack implements EditUsers.CallBack {
+    private class EditUsersCallBack implements EditUsers.CallBack {
         @Override
         public void messageCloseEditUsers() {
             editUsers = null;

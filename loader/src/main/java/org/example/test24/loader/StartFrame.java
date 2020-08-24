@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class StartFrame extends JFrame {
-    private MainClassCallBackStartFrame callBack;
+    private CallBack callBack;
     private JLabel label1;
     private JLabel label2;
     private JLabel label3;
@@ -30,7 +30,20 @@ public class StartFrame extends JFrame {
     private UserClass[] listUsers = null;
     private UserClass user = null;
 
-    public static StartFrame main(MainClassCallBackStartFrame callBack) {
+    public interface CallBack {
+        // проверка Comm Port
+        boolean checkCommPort();
+        // подключение к БД и структуры БД (параметры из файла конфигурации)
+        boolean checkSqlFile();
+        void closeFrame();
+        // ---------------
+        TuningFrame getTuningFrame();
+        String[] getParameters();
+        String[] getFilesNameSql();
+        String getFileNameSql(String typeBd) throws Exception;
+    }
+
+    public static StartFrame main(CallBack callBack) {
         final StartFrame[] frame = new StartFrame[1];
         frame[0] = null;
         try {
@@ -79,7 +92,7 @@ public class StartFrame extends JFrame {
 
     }
 
-    private StartFrame(MainClassCallBackStartFrame callBack) {
+    private StartFrame(CallBack callBack) {
         this.callBack = callBack;
         setLayout(null);
         addWindowListener(new WindowListener() {
