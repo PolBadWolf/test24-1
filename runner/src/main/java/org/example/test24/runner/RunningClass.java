@@ -11,7 +11,7 @@ import ru.yandex.fixcolor.my_lib.graphics.Plot;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Running implements Runner_Interface {
+class RunningClass implements Runner {
     private CommPort_Interface commPort = null;
     private MainFrame_interface mainFrame = null;
     private Plot plot = null;

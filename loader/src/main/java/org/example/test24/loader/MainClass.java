@@ -4,7 +4,7 @@ import org.example.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.Closer;
 import org.example.test24.RS232.BAUD;
-import org.example.test24.runner.Running;
+import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenClass;
 
@@ -19,7 +19,7 @@ public class MainClass {
     final public String[] fileNameSql = {fileNameMsSql, fileNameMySql};
 
     private ScreenClass mainFx;
-    private Running runner = null;
+    private Runner runner = null;
     public CommPort commPort = null;
     private SqlWork_interface bdSql = null;
     private String[] parameters = null;
@@ -34,7 +34,7 @@ public class MainClass {
         String namePort = parameters[1];
 
         mainFx= new ScreenClass();
-        runner = new Running();
+        runner = Runner.main();
         commPort = new CommPort();
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
