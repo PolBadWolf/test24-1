@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class DataBaseMySql extends DataBase {
+public class DataBaseClassMySql extends DataBaseClass {
 
     @Override
     protected void setParametersSql(String[] fileNameSql) {

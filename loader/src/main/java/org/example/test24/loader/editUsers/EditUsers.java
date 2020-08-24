@@ -1,6 +1,6 @@
 package org.example.test24.loader.editUsers;
 
-import org.example.bd.SqlWork_interface;
+import org.example.bd.DataBase;
 import org.example.test24.allinterface.bd.UserClass;
 
 import javax.swing.*;
@@ -17,7 +17,7 @@ public class EditUsers extends JFrame
 {
     public interface CallBack {
         void messageCloseEditUsers();
-        SqlWork_interface getBdInterface();
+        DataBase getBdInterface();
     }
 
     private CallBack callBack;
@@ -144,7 +144,7 @@ public class EditUsers extends JFrame
     // чтение из базы в массив
     private void readUsersFromBase() {
         // доступ к базе
-        SqlWork_interface bdSql = callBack.getBdInterface();
+        DataBase bdSql = callBack.getBdInterface();
         try {
             tableUserClass = bdSql.getListUsers(true);
         } catch (Exception e) {
@@ -165,7 +165,7 @@ public class EditUsers extends JFrame
         // выбранная строка
         int id = tableUserClass[table.getSelectedRow()].id;
         // доступ к базе
-        SqlWork_interface bdSql = callBack.getBdInterface();
+        DataBase bdSql = callBack.getBdInterface();
         try {
             // деактивация
             bdSql.deactiveUser(id);
@@ -179,7 +179,7 @@ public class EditUsers extends JFrame
     // запись нового пользователя в базу
     private void writeNewUserToBase() {
         // доступ к базе
-        SqlWork_interface bdSql = callBack.getBdInterface();
+        DataBase bdSql = callBack.getBdInterface();
         try {
             // запись
             bdSql.writeNewUser(fieldSurName.getText(), fieldPassword.getText());

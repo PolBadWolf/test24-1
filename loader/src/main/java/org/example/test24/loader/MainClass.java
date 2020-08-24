@@ -21,7 +21,7 @@ public class MainClass {
     private ScreenClass mainFx;
     private Runner runner = null;
     public CommPort commPort = null;
-    private SqlWork_interface bdSql = null;
+    private DataBase bdSql = null;
     private String[] parameters = null;
     private StartFrame startFrame = null;
 
@@ -96,7 +96,7 @@ public class MainClass {
 
         try {
             properties.load(new FileReader(fileNameConfig));
-            strings[0] = properties.getProperty("DataBase").toUpperCase();
+            strings[0] = properties.getProperty("DataBaseClass").toUpperCase();
             strings[1] = properties.getProperty("CommPort").toUpperCase();
 
             if (strings[0] == null || strings[1] == null)   flagReload = true;
@@ -117,7 +117,7 @@ public class MainClass {
     public void saveConfig(String[] parameters) {
         Properties properties = new Properties();
         try {
-            properties.setProperty("DataBase", parameters[0].toUpperCase());
+            properties.setProperty("DataBaseClass", parameters[0].toUpperCase());
             properties.setProperty("CommPort", parameters[1].toUpperCase());
             properties.store(new FileWriter(fileNameConfig), "config");
         } catch (IOException e) {

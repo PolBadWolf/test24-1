@@ -2,7 +2,7 @@ package org.example.test24.runner;
 
 import javafx.scene.paint.Color;
 import org.example.bd.MyBlob;
-import org.example.bd.SqlWork_interface;
+import org.example.bd.DataBase;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.bd.DistClass;
 import org.example.test24.allinterface.screen.MainFrame_interface;
@@ -16,7 +16,7 @@ class RunningClass implements Runner {
     private MainFrame_interface mainFrame = null;
     private Plot plot = null;
 
-    private SqlWork_interface bdSql = null;
+    private DataBase bdSql = null;
     private ArrayList<DistClass>  distanceOut = null;
     private int ves;
     private int tik_shelf;
@@ -29,7 +29,7 @@ class RunningClass implements Runner {
 
 
     @Override
-    public void init(SqlWork_interface bdSql, CommPort commPort, MainFrame_interface mainFrame) {
+    public void init(DataBase bdSql, CommPort commPort, MainFrame_interface mainFrame) {
         this.commPort = commPort;
         this.mainFrame = mainFrame;
         this.bdSql = bdSql;

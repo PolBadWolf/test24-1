@@ -29,7 +29,7 @@ public class ParametersSql {
         try {
             urlServer = properties.getProperty("Url_Server");
             portServer = properties.getProperty("Port_Server");
-            dataBase = properties.getProperty("DataBase");
+            dataBase = properties.getProperty("DataBaseClass");
             user = properties.getProperty("User");
             password = new String(Base64.getDecoder().decode(properties.getProperty("Password")));
         } catch (java.lang.Throwable ie) {
@@ -45,7 +45,7 @@ public class ParametersSql {
         properties.clear();
         properties.setProperty("Url_Server", urlServer);
         properties.setProperty("Port_Server", portServer);
-        properties.setProperty("DataBase", dataBase);
+        properties.setProperty("DataBaseClass", dataBase);
         properties.setProperty("User", user);
         properties.setProperty("Password", new String(java.util.Base64.getEncoder().encode(password.getBytes())));
         try {

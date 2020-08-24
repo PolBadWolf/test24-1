@@ -1,7 +1,6 @@
 package org.example.test24.loader;
 
 import org.example.bd.DataBase;
-import org.example.bd.SqlWork_interface;
 import org.example.test24.allinterface.bd.UserClass;
 
 import javax.swing.*;
@@ -306,7 +305,7 @@ public class StartFrame extends JFrame {
         button.addActionListener(e -> {
             try {
                 String[] parameters = callBack.getParameters();
-                SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
+                DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
                 bd.updateUserPassword(user, fieldPassword.getText());
                 loadListUsers();
                 comboBoxUser.setSelectedItem(user.name);
@@ -430,7 +429,7 @@ public class StartFrame extends JFrame {
     private void loadListUsers() throws Exception {
         if (flCheckSql) {
             String[] parameters = callBack.getParameters();
-            SqlWork_interface bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
+            DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
             listUsers = bd.getListUsers(true);
             comboBoxUser.removeAllItems();
             for (UserClass listUser : listUsers) {

@@ -1,8 +1,7 @@
 package org.example.test24.loader;
 
-import org.example.bd.DataBase;
 import org.example.bd.ParametersSql;
-import org.example.bd.SqlWork_interface;
+import org.example.bd.DataBase;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.loader.editUsers.EditUsers;
@@ -35,7 +34,7 @@ class TuningFrame {
 
     private String[] parameters = null;
     private ParametersSql parametersSql = null;
-    private SqlWork_interface bdSql = null;
+    private DataBase bdSql = null;
     private Thread threadSkeep = null;
     private boolean threadSkeepOn;
 
@@ -465,7 +464,7 @@ class TuningFrame {
         }
 
         @Override
-        public SqlWork_interface getBdInterface() {
+        public DataBase getBdInterface() {
             if (bdSql == null) {
                 String typeBd = (String) comboBoxTypeBd.getSelectedItem();
                 // подключение к БД
