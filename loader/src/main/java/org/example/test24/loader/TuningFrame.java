@@ -6,7 +6,6 @@ import org.example.bd.SqlWork_interface;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.loader.editUsers.EditUsers;
-import org.example.test24.loader.editUsers.EditUsersInterface;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -46,7 +45,7 @@ class TuningFrame {
     private boolean flCheckSql = false;
 
     private JFrame frameTuning = null;
-    private EditUsersInterface editUsers = null;
+    private EditUsers editUsers = null;
 
     private JPanel panelCommPort = null;
     private JLabel labelPortCurrent = null;
