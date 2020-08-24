@@ -9,10 +9,10 @@ import java.util.Date;
 
 abstract class DataBaseClass implements DataBase {
     protected Connection connection = null;
-    protected static DataBaseClass dataBaseClass = null;
     protected ParametersSql parametersSql = null;
 
-    protected abstract void setParametersSql(String[] fileNameSql);
+    @Override
+    public abstract void setParametersSql(String[] fileNameSql);
 
     protected abstract void connectBd() throws Exception;
 

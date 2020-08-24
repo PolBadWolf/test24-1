@@ -10,7 +10,7 @@ import java.util.TimeZone;
 public class DataBaseClassMySql extends DataBaseClass {
 
     @Override
-    protected void setParametersSql(String[] fileNameSql) {
+    public void setParametersSql(String[] fileNameSql) {
         parametersSql = new ParametersSql(fileNameSql[1], "MY_SQL");
     }
 

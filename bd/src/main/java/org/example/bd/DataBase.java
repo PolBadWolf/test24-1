@@ -6,34 +6,11 @@ import java.sql.Blob;
 import java.sql.Connection;
 import java.util.Date;
 
-import static org.example.bd.DataBaseClass.dataBaseClass;
-
 public interface DataBase {
-
-    static DataBase init(String typeBase, String[] fileNameSql) {
-        dataBaseClass = null;
-        switch (typeBase) {
-            case "MS_SQL" :
-                dataBaseClass = new DataBaseClassMsSql();
-                break;
-            case "MY_SQL" :
-                dataBaseClass = new DataBaseClassMySql();
-                break;
-            default:
-                System.out.println("неизвестный тип BD");
-                break;
-        }
-        if (dataBaseClass != null)   dataBaseClass.setParametersSql(fileNameSql);
-        return dataBaseClass;
-    }
-
-
     Connection getConnect() throws Exception;
     String getTypeBD();
     boolean testStuctBase(String ip, String portServer, String login, String password, String base);
-
     String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception;
-
     ParametersSql getParametrsSql();
     // запись
     void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception;
@@ -45,8 +22,25 @@ public interface DataBase {
     void deactiveUser(int id) throws Exception;
     // запись нового пользователя
     void writeNewUser(String name, String password) throws Exception;
+    void setParametersSql(String[] fileNameSql);
 
 
+    static DataBase init(String typeBase, String[] fileNameSql) {
+        DataBase dataBase = null;
+        switch (typeBase) {
+            case "MS_SQL" :
+                dataBase = new DataBaseClassMsSql();
+                break;
+            case "MY_SQL" :
+                dataBase = new DataBaseClassMySql();
+                break;
+            default:
+                System.out.println("неизвестный тип BD");
+                break;
+        }
+        if (dataBase != null)   dataBase.setParametersSql(fileNameSql);
+        return dataBase;
+    }
     static String[] getConnectListBd(String typeBD, String ip, String portServer, String login, String password) throws Exception {
         String[] list;
         switch (typeBD) {
