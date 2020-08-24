@@ -35,7 +35,7 @@ public class MainClass {
 
         mainFx= new ScreenClass();
         runner = Runner.main();
-        commPort = new CommPort();
+        commPort = CommPort.main();
 
         Closer.getCloser().init(() -> commPort.Close(), () -> runner.Close(), mainFx);
 

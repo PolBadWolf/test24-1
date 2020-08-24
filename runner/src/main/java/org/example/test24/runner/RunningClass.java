@@ -3,7 +3,7 @@ package org.example.test24.runner;
 import javafx.scene.paint.Color;
 import org.example.bd.MyBlob;
 import org.example.bd.SqlWork_interface;
-import org.example.test24.RS232.CommPort_Interface;
+import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.bd.DistClass;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 import ru.yandex.fixcolor.my_lib.graphics.Plot;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 class RunningClass implements Runner {
-    private CommPort_Interface commPort = null;
+    private CommPort commPort = null;
     private MainFrame_interface mainFrame = null;
     private Plot plot = null;
 
@@ -29,7 +29,7 @@ class RunningClass implements Runner {
 
 
     @Override
-    public void init(SqlWork_interface bdSql, CommPort_Interface commPort, MainFrame_interface mainFrame) {
+    public void init(SqlWork_interface bdSql, CommPort commPort, MainFrame_interface mainFrame) {
         this.commPort = commPort;
         this.mainFrame = mainFrame;
         this.bdSql = bdSql;
