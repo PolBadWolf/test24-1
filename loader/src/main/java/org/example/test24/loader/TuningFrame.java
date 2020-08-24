@@ -442,7 +442,7 @@ class TuningFrame {
             } catch (java.lang.Throwable e) {
                 System.out.println(e.getMessage());
             }
-            callBackTF.pusk();
+            callBackTF.messageCloseTuningFrame();
         }
         if (editUsers != null) {
 
