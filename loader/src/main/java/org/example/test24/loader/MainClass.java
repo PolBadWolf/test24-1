@@ -98,7 +98,8 @@ public class MainClass {
         }
 
 
-        (new Thread(mainFx)).start();
+        //(new Thread(mainFx)).start();
+        mainFx.main();
         while (MainFrame.mainFrame == null) {
             Thread.yield();
         }
