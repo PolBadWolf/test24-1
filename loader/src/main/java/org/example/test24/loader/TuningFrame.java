@@ -20,7 +20,15 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 class TuningFrame {
-    private MainClassCallBackTuningFrame callBackMC;
+    public interface CallBackToMainClass {
+        CommPort getCommPort();
+        void saveConfig(String[] parametrs);
+        String[] getFilesNameSql();
+        String getFileNameSql(String typeBd) throws Exception;
+    }
+
+
+    private CallBackToMainClass callBackMC;
     private StartFrameCallBackTuningFrame callBackTF = null;
 
     private String[] parameters = null;
@@ -62,7 +70,7 @@ class TuningFrame {
 
     private boolean lockBegin = false;
 
-    public TuningFrame(MainClassCallBackTuningFrame callBackMC) {
+    public TuningFrame(CallBackToMainClass callBackMC) {
         this.callBackMC = callBackMC;
     }
 

@@ -171,7 +171,7 @@ public class MainClass {
 
         @Override
         public TuningFrame getTuningFrame() {
-            return new TuningFrame(getMainClassCallBackTuningFrame());
+            return new TuningFrame(new TuningFrameCallBack());
         }
 
         @Override
@@ -201,38 +201,36 @@ public class MainClass {
         }
     }
 
-    private MainClassCallBackTuningFrame getMainClassCallBackTuningFrame() {
-        return new MainClassCallBackTuningFrame() {
-            @Override
-            public CommPort getCommPort() {
-                return commPort;
-            }
+    private class TuningFrameCallBack implements TuningFrame.CallBackToMainClass {
+        @Override
+        public CommPort getCommPort() {
+            return commPort;
+        }
 
-            @Override
-            public void saveConfig(String[] parametrs) {
-                MainClass.this.saveConfig(parametrs);
-            }
+        @Override
+        public void saveConfig(String[] parametrs) {
+            MainClass.this.saveConfig(parametrs);
+        }
 
-            @Override
-            public String[] getFilesNameSql() {
-                return fileNameSql;
-            }
+        @Override
+        public String[] getFilesNameSql() {
+            return fileNameSql;
+        }
 
-            @Override
-            public String getFileNameSql(String typeBd) throws Exception {
-                String fileName;
-                switch (typeBd) {
-                    case "MS_SQL" :
-                        fileName = fileNameMsSql;
-                        break;
-                    case "MY_SQL" :
-                        fileName = fileNameMySql;
-                        break;
-                    default:
-                        throw new Exception("неизвестный тип BD");
-                }
-                return fileName;
+        @Override
+        public String getFileNameSql(String typeBd) throws Exception {
+            String fileName;
+            switch (typeBd) {
+                case "MS_SQL" :
+                    fileName = fileNameMsSql;
+                    break;
+                case "MY_SQL" :
+                    fileName = fileNameMySql;
+                    break;
+                default:
+                    throw new Exception("неизвестный тип BD");
             }
-        };
+            return fileName;
+        }
     }
 }
