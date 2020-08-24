@@ -6,14 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="runner" />
         <module name="bd" />
-        <module name="graphics" />
         <module name="lib" />
-        <module name="loader" />
-        <module name="RS232" />
         <module name="allinterface" />
+        <module name="loader" />
         <module name="screen" />
+        <module name="RS232" />
+        <module name="graphics" />
+        <module name="runner" />
       </profile>
     </annotationProcessing>
   </component>
