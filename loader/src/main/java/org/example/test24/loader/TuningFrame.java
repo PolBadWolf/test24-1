@@ -26,10 +26,13 @@ class TuningFrame {
         String[] getFilesNameSql();
         String getFileNameSql(String typeBd) throws Exception;
     }
+    public interface CallBackToStartFrame {
+        void messageCloseTuningFrame();
+    }
 
 
     private CallBackToMainClass callBackMC;
-    private StartFrameCallBackTuningFrame callBackTF = null;
+    private CallBackToStartFrame callBackTF = null;
 
     private String[] parameters = null;
     private ParametersSql parametersSql = null;
@@ -74,7 +77,7 @@ class TuningFrame {
         this.callBackMC = callBackMC;
     }
 
-    void frameConfig(String[] parameters, StartFrameCallBackTuningFrame callBackTF) {
+    void frameConfig(String[] parameters, CallBackToStartFrame callBackTF) {
         this.parameters = parameters;
         this.callBackTF = callBackTF;
         frameConstructor();

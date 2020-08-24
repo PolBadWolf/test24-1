@@ -84,7 +84,7 @@ public class StartFrame extends JFrame {
             // --------
             TuningFrame tuningFrame;
             tuningFrame = callBack.getTuningFrame();
-            tuningFrame.frameConfig(callBack.getParameters(), getStartFrameCallBackTuningFrame());
+            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
             // -------
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
@@ -354,7 +354,7 @@ public class StartFrame extends JFrame {
             buttonTuning.setEnabled(false);
             TuningFrame tuningFrame;
             tuningFrame = callBack.getTuningFrame();
-            tuningFrame.frameConfig(callBack.getParameters(), getStartFrameCallBackTuningFrame());
+            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
         });
         return button;
     }
@@ -396,23 +396,21 @@ public class StartFrame extends JFrame {
     }
 
     // callBack из TuningFrame
-    private StartFrameCallBackTuningFrame getStartFrameCallBackTuningFrame() {
-        return new StartFrameCallBackTuningFrame() {
-            @Override
-            public void messageCloseTuningFrame() {
-                StartFrame startFrame = StartFrame.this;
-                startFrame.fieldPassword.setText("");
-                startFrame.buttonEnter.setEnabled(true);
-                flCheckSql = callBack.checkSqlFile();
-                try {
-                    if (flCheckSql) {
-                        StartFrame.this.loadListUsers();
-                    }
-                } catch (Exception e) {
-                    System.out.println("StartFrame.StartFrameCallBackTuningFrame ошибка чтения списка пользователей: " + e.getMessage());
+    private class TuningFrameCallBack implements TuningFrame.CallBackToStartFrame {
+        @Override
+        public void messageCloseTuningFrame() {
+            StartFrame startFrame = StartFrame.this;
+            startFrame.fieldPassword.setText("");
+            startFrame.buttonEnter.setEnabled(true);
+            flCheckSql = callBack.checkSqlFile();
+            try {
+                if (flCheckSql) {
+                    StartFrame.this.loadListUsers();
                 }
+            } catch (Exception e) {
+                System.out.println("StartFrame.StartFrameCallBackTuningFrame ошибка чтения списка пользователей: " + e.getMessage());
             }
-        };
+        }
     }
 
     // ===========================================================================
