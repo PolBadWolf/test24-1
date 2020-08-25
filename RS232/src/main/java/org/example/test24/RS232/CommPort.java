@@ -1,10 +1,11 @@
 package org.example.test24.RS232;
 
-import org.example.test24.allinterface.Closer;
-
 public interface CommPort {
     interface CallBack {
         void reciveRsPush(byte[] bytes, int lenght);
+    }
+    interface Closer {
+        void close();
     }
     static CommPort main(Closer closer) {
         return new CommPortClass(closer);

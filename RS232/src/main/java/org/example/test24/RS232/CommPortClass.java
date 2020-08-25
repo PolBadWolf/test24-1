@@ -2,7 +2,6 @@ package org.example.test24.RS232;
 
 import com.fazecast.jSerialComm.SerialPort;
 import org.example.lib.ControlSumma;
-import org.example.test24.allinterface.Closer;
 
 class CommPortClass implements CommPort {
 
