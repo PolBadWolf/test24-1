@@ -6,7 +6,7 @@ import org.example.test24.allinterface.Closer;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
-import org.example.test24.screen.ScreenClass;
+import org.example.test24.screen.ScreenFx;
 
 import java.io.*;
 import java.util.Properties;
@@ -19,16 +19,16 @@ public class MainClass {
     final public String[] fileNameSql = {fileNameMsSql, fileNameMySql};
     // ===============================================
     // модули
-    private ScreenClass mainFx;
-    private Runner runner = null;
-    private CommPort commPort = null;
-    private DataBase bdSql = null;
-    private StartFrame startFrame = null;
+    private ScreenFx screenFx;
+    private Runner runner;
+    private CommPort commPort;
+    private DataBase bdSql;
+    private StartFrame startFrame;
     // ===============================================
     private void close() {
-        if (mainFx != null) {
-            mainFx.exitApp();
-            mainFx = null;
+        if (screenFx != null) {
+            screenFx.exitApp();
+            screenFx = null;
         }
         if (commPort != null) {
             commPort.Close();
@@ -40,7 +40,7 @@ public class MainClass {
         }
         System.exit(0);
     }
-    private class ScreenCloser implements Closer {
+    private class ScreenCloser implements ScreenFx.Closer {
         @Override
         public void close() {
             MainClass.this.close();
@@ -62,14 +62,14 @@ public class MainClass {
     private String[] parameters = null;
 
     public static void main(String[] args) {
-        new MainClass().start(args);
+        new MainClass().start();
     }
 
-    private void start(String[] args) {
+    private void start() {
         parameters = getConfig();
         String namePort = parameters[1];
 
-        mainFx= new ScreenClass(new ScreenCloser());
+        screenFx = ScreenFx.init(new ScreenCloser());
         runner = Runner.main(new RunnerCloser());
         commPort = CommPort.main(new CommPortCloser());
 
@@ -97,9 +97,7 @@ public class MainClass {
             System.exit(1);
         }
 
-
-        //(new Thread(mainFx)).start();
-        mainFx.main();
+        screenFx.main();
         while (MainFrame.mainFrame == null) {
             Thread.yield();
         }

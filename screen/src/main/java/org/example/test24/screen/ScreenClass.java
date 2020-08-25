@@ -10,10 +10,7 @@ import org.example.test24.allinterface.Closer;
 
 import java.io.IOException;
 
-public class ScreenClass
-        extends Application
-        implements ScreenClass_interface
-{
+public class ScreenClass extends Application implements ScreenFx {
     private static Closer closer;
 
     public ScreenClass(Closer closer) {
@@ -22,6 +19,7 @@ public class ScreenClass
     public ScreenClass() {
     }
 
+    @Override
     public void main() {
         new Thread(()-> {
             launch(null);
