@@ -190,7 +190,7 @@ public class StartFrame extends JFrame {
         add(jLabel2);
         jLabel2.setVisible(false);
 
-        comboBoxUser = getComboBoxUser();
+        comboBoxUser = getComboBoxUser("Times New Roman", Font.PLAIN, 14, 300, 150, 120, 20);
         add(comboBoxUser);
         comboBoxUser.setVisible(false);
 
@@ -198,19 +198,19 @@ public class StartFrame extends JFrame {
         add(fieldPassword);
         fieldPassword.setVisible(false);
 
-        buttonEnter = getButtonEnter();
+        buttonEnter = getButtonEnter("Ввод", "Times New Roman", Font.PLAIN, 14, 340, 240, 80, 23);
         add(buttonEnter);
         buttonEnter.setVisible(false);
 
-        buttonWork = getButtonWork();
+        buttonWork = getButtonWork("работа", "Times New Roman", Font.PLAIN, 14, 340, 280, 80, 23);
         add(buttonWork);
         buttonWork.setVisible(false);
 
-        buttonTuning = getButtonTuning();
+        buttonTuning = getButtonTuning("настройка", "Times New Roman", Font.PLAIN, 14, 320, 320, 100, 23);
         add(buttonTuning);
         buttonTuning.setVisible(false);
 
-        buttonSetPassword = getButtonSetPassword();
+        buttonSetPassword = getButtonSetPassword("новый пароль", "Times New Roman", Font.PLAIN, 14, 440, 198, 140, 23);
         add(buttonSetPassword);
         buttonSetPassword.setVisible(false);
 
@@ -260,19 +260,19 @@ public class StartFrame extends JFrame {
         textField.addActionListener(e -> callEnter());
         return textField;
     }
-    private JButton getButtonEnter() {
+    private JButton getButtonEnter(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JButton button = new JButton();
-        button.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-        button.setText("Ввод");
-        button.setBounds(340, 240, 80, 23);
+        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
+        button.setText(text);
+        button.setBounds(x, y, width, height);
         button.addActionListener(e ->callEnter());
         return button;
     }
-    private JButton getButtonWork() {
+    private JButton getButtonWork(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JButton button = new JButton();
-        button.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-        button.setText("работа");
-        button.setBounds(340, 280, 80, 23);
+        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
+        button.setText(text);
+        button.setBounds(x, y, width, height);
         button.addActionListener(e -> {
             removeAll();
             dispose();
@@ -280,11 +280,11 @@ public class StartFrame extends JFrame {
         });
         return button;
     }
-    private JButton getButtonTuning() {
+    private JButton getButtonTuning(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JButton button = new JButton();
-        button.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-        button.setText("настройка");
-        button.setBounds(320, 320, 100, 23);
+        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
+        button.setText(text);
+        button.setBounds(x, y, width, height);
         button.addActionListener(e -> {
             buttonEnter.setEnabled(false);
             buttonWork.setEnabled(false);
@@ -296,11 +296,11 @@ public class StartFrame extends JFrame {
         });
         return button;
     }
-    private JButton getButtonSetPassword() {
+    private JButton getButtonSetPassword(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JButton button = new JButton();
-        button.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-        button.setText("новый пароль");
-        button.setBounds(440, 198, 140, 23);
+        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
+        button.setText(text);
+        button.setBounds(x, y, width, height);
         button.addActionListener(e -> {
             try {
                 String[] parameters = callBack.getParameters();
@@ -315,10 +315,10 @@ public class StartFrame extends JFrame {
         });
         return button;
     }
-    private JComboBox<String> getComboBoxUser() {
+    private JComboBox<String> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JComboBox<String> comboBox = new JComboBox<>();
-        comboBox.setBounds(300, 150, 120, 20);
-        comboBox.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
+        comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
+        comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(true);
         comboBox.addActionListener(e -> {
 
