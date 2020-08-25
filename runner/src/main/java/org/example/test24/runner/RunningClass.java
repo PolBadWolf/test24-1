@@ -4,7 +4,6 @@ import javafx.scene.paint.Color;
 import org.example.bd.MyBlob;
 import org.example.bd.DataBase;
 import org.example.test24.RS232.CommPort;
-import org.example.test24.allinterface.Closer;
 import org.example.test24.allinterface.bd.DistClass;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 import ru.yandex.fixcolor.my_lib.graphics.Plot;

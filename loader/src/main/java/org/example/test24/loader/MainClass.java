@@ -2,7 +2,6 @@ package org.example.test24.loader;
 
 import org.example.bd.*;
 import org.example.test24.RS232.CommPort;
-import org.example.test24.allinterface.Closer;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
@@ -46,13 +45,13 @@ public class MainClass {
             MainClass.this.close();
         }
     }
-    private class RunnerCloser implements Closer {
+    private class RunnerCloser implements Runner.Closer {
         @Override
         public void close() {
             MainClass.this.close();
         }
     }
-    private class CommPortCloser implements Closer {
+    private class CommPortCloser implements CommPort.Closer {
         @Override
         public void close() {
             MainClass.this.close();
