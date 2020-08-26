@@ -364,10 +364,6 @@ public class StartFrame extends JFrame {
             buttonTuning.setEnabled(true);
         }
         //
-        /*if (user == null && !flAdmin) {
-            buttonEnter.setEnabled(true);
-        }*/
-        //
         if (!flCheckSql) {
             MySwingUtil.showMessage(this, "Base Data","Ошибка базы данных", 6_000);
         } else {
@@ -378,7 +374,7 @@ public class StartFrame extends JFrame {
         if (user == null && !flAdmin) {
             comboBoxUser.setEnabled(false);
             fieldPassword.setEnabled(false);
-            MySwingUtil.showMessage(this, (String) comboBoxUser.getSelectedItem(),"Ошибка пользователь/пароль", 16_000, (o)-> {
+            MySwingUtil.showMessage(this, (String) comboBoxUser.getSelectedItem(),"Ошибка пользователь/пароль", 16_000, o-> {
                 comboBoxUser.setEnabled(true);
                 fieldPassword.setEnabled(true);
                 buttonEnter.setEnabled(true);
