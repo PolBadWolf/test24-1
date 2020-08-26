@@ -19,7 +19,7 @@ public class MySwingUtil {
         );
         pane.setInitialValue(null);
         dialog = new JDialog( (Frame) window,
-                "title",
+                title,
                 false);
         dialog.setComponentOrientation(pane.getComponentOrientation());
 
