@@ -1,6 +1,7 @@
 package org.example.test24.loader;
 
 import org.example.bd.DataBase;
+import org.example.lib.MySwingUtil;
 import org.example.test24.allinterface.bd.UserClass;
 import sun.awt.AppContext;
 
@@ -337,27 +338,6 @@ public class StartFrame extends JFrame {
     }
 
 
-    private void outFlyMessage(String text, int timeout) {
-        Window window = (Window) this;
-        JOptionPane pane = new JOptionPane(
-                text,
-                1,
-                -1,
-                null, null, null
-        );
-        pane.setInitialValue(null);
-        JDialog dialog = new JDialog( (Frame) window,
-                "title",
-                false);
-        dialog.setComponentOrientation(pane.getComponentOrientation());
-        Container contentPane = dialog.getContentPane();
-
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(pane, BorderLayout.CENTER);
-        dialog.pack();
-        pane.selectInitialValue();
-        dialog.setVisible(true);
-    }
 
     // обработка ввод
     private void callEnter() {
@@ -385,9 +365,8 @@ public class StartFrame extends JFrame {
             buttonSetPassword.setEnabled(true);
             fieldPassword.setText("");
             if (!flCheckCommPort) {
-                //JOptionPane.showMessageDialog(this, "asd!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                //MyOptionPane.showMessageDialog(this, "!!!!!!!!!!!!!!!@@@@@@@@@@@@");
-                outFlyMessage("1111111111111111333333333333", 5_000);
+                MySwingUtil.outFlyMessage(this, "Comm Port","Ошибка подключения к ком порту", 5_000);
+                return;
             } else {
                 if (!flCheckSql) {
 
@@ -446,6 +425,7 @@ public class StartFrame extends JFrame {
             startFrame.fieldPassword.setEnabled(true);
             startFrame.buttonEnter.setEnabled(true);
             flCheckSql = callBack.checkSqlFile();
+            flCheckCommPort = callBack.checkCommPort();
             try {
                 if (flCheckSql) {
                     StartFrame.this.loadListUsers();
