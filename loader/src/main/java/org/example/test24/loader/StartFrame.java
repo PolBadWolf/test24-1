@@ -2,10 +2,13 @@ package org.example.test24.loader;
 
 import org.example.bd.DataBase;
 import org.example.test24.allinterface.bd.UserClass;
+import sun.awt.AppContext;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public class StartFrame extends JFrame {
     private CallBack callBack;
@@ -333,6 +336,29 @@ public class StartFrame extends JFrame {
         return comboBox;
     }
 
+
+    private void outFlyMessage(String text, int timeout) {
+        Window window = (Window) this;
+        JOptionPane pane = new JOptionPane(
+                text,
+                1,
+                -1,
+                null, null, null
+        );
+        pane.setInitialValue(null);
+        JDialog dialog = new JDialog( (Frame) window,
+                "title",
+                false);
+        dialog.setComponentOrientation(pane.getComponentOrientation());
+        Container contentPane = dialog.getContentPane();
+
+        contentPane.setLayout(new BorderLayout());
+        contentPane.add(pane, BorderLayout.CENTER);
+        dialog.pack();
+        pane.selectInitialValue();
+        dialog.setVisible(true);
+    }
+
     // обработка ввод
     private void callEnter() {
         boolean flUser;
@@ -354,12 +380,20 @@ public class StartFrame extends JFrame {
             }
         }
         if (user != null) {
+            fl = true;
             buttonSetPassword.setVisible(true);
             buttonSetPassword.setEnabled(true);
             fieldPassword.setText("");
-            if (flCheckCommPort && flCheckSql) {
-                buttonWork.setEnabled(true);
-                fl = true;
+            if (!flCheckCommPort) {
+                //JOptionPane.showMessageDialog(this, "asd!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                //MyOptionPane.showMessageDialog(this, "!!!!!!!!!!!!!!!@@@@@@@@@@@@");
+                outFlyMessage("1111111111111111333333333333", 5_000);
+            } else {
+                if (!flCheckSql) {
+
+                } else {
+                    buttonWork.setEnabled(true);
+                }
             }
         }
 
