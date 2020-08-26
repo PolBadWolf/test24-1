@@ -1,11 +1,15 @@
 package org.example.test24.loader;
 
 import org.example.bd.DataBase;
+import org.example.lib.MySwingUtil;
 import org.example.test24.allinterface.bd.UserClass;
+import sun.awt.AppContext;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public class StartFrame extends JFrame {
     private CallBack callBack;
@@ -333,6 +337,8 @@ public class StartFrame extends JFrame {
         return comboBox;
     }
 
+
+
     // обработка ввод
     private void callEnter() {
         boolean flUser;
@@ -354,12 +360,19 @@ public class StartFrame extends JFrame {
             }
         }
         if (user != null) {
+            fl = true;
             buttonSetPassword.setVisible(true);
             buttonSetPassword.setEnabled(true);
             fieldPassword.setText("");
-            if (flCheckCommPort && flCheckSql) {
-                buttonWork.setEnabled(true);
-                fl = true;
+            if (!flCheckCommPort) {
+                MySwingUtil.outFlyMessage(this, "Comm Port","Ошибка подключения к ком порту", 5_000);
+                return;
+            } else {
+                if (!flCheckSql) {
+
+                } else {
+                    buttonWork.setEnabled(true);
+                }
             }
         }
 
@@ -412,6 +425,7 @@ public class StartFrame extends JFrame {
             startFrame.fieldPassword.setEnabled(true);
             startFrame.buttonEnter.setEnabled(true);
             flCheckSql = callBack.checkSqlFile();
+            flCheckCommPort = callBack.checkCommPort();
             try {
                 if (flCheckSql) {
                     StartFrame.this.loadListUsers();
