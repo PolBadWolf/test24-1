@@ -374,6 +374,9 @@ public class StartFrame extends JFrame {
                 MySwingUtil.outFlyMessage(this, "Comm Port","Ошибка подключения к ком порту", 6_000);
             }
         }
+        if (user == null && !flAdmin) {
+            MySwingUtil.outFlyMessage(this, "---","Ошибка пользователь/пароль", 6_000);
+        }
     }
 
     // callBack из TuningFrame
