@@ -310,6 +310,7 @@ public class StartFrame extends JFrame {
 
     // проверка пользавателея по списку
     private UserClass checkUserFromList(String surName, String password) {
+        if (password.equals("")) return null;
         UserClass user = null;
         boolean flUser;
         for (int i = 0; i < listUsers.length; i++) {
@@ -363,19 +364,25 @@ public class StartFrame extends JFrame {
             buttonTuning.setEnabled(true);
         }
         //
-        if (user == null && !flAdmin) {
+        /*if (user == null && !flAdmin) {
             buttonEnter.setEnabled(true);
-        }
+        }*/
         //
         if (!flCheckSql) {
-            MySwingUtil.outFlyMessage(this, "Base Data","Ошибка базы данных", 6_000);
+            MySwingUtil.showMessage(this, "Base Data","Ошибка базы данных", 6_000);
         } else {
             if (!flCheckCommPort) {
-                MySwingUtil.outFlyMessage(this, "Comm Port","Ошибка подключения к ком порту", 6_000);
+                MySwingUtil.showMessage(this, "Comm Port","Ошибка подключения к ком порту", 6_000);
             }
         }
         if (user == null && !flAdmin) {
-            MySwingUtil.outFlyMessage(this, "---","Ошибка пользователь/пароль", 6_000);
+            comboBoxUser.setEnabled(false);
+            fieldPassword.setEnabled(false);
+            MySwingUtil.showMessage(this, (String) comboBoxUser.getSelectedItem(),"Ошибка пользователь/пароль", 16_000, (o)-> {
+                comboBoxUser.setEnabled(true);
+                fieldPassword.setEnabled(true);
+                buttonEnter.setEnabled(true);
+            });
         }
     }
 
