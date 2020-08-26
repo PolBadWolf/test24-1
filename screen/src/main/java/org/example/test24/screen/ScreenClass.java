@@ -8,11 +8,12 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class ScreenClass extends Application implements ScreenFx {
-    private static Closer closer;
+    private static Consumer closer;
 
-    public ScreenClass(Closer closer) {
+    public ScreenClass(Consumer closer) {
         this.closer = closer;
     }
     public ScreenClass() {
@@ -49,7 +50,7 @@ public class ScreenClass extends Application implements ScreenFx {
 
     @Override
     public void stop() throws Exception {
-        closer.close();
+        closer.accept(null);
         super.stop();
     }
 }

@@ -10,9 +10,10 @@ import ru.yandex.fixcolor.my_lib.graphics.Plot;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.function.Consumer;
 
 class RunningClass implements Runner {
-    private Closer closer;
+    private Consumer closer;
     private CommPort commPort = null;
     private MainFrame_interface mainFrame = null;
     private Plot plot = null;
@@ -28,7 +29,7 @@ class RunningClass implements Runner {
 
     private int tik, tik0;
 
-    public RunningClass(Closer closer) {
+    public RunningClass(Consumer closer) {
         this.closer = closer;
     }
 

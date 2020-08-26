@@ -4,11 +4,13 @@ import org.example.bd.DataBase;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 
+import java.util.function.Consumer;
+
 public interface Runner {
     interface Closer {
         void close();
     }
-    static Runner main(Closer closer) {
+    static Runner main(Consumer closer) {
         return new RunningClass(closer);
     }
 

@@ -1,5 +1,7 @@
 package org.example.test24.RS232;
 
+import java.util.function.Consumer;
+
 public interface CommPort {
     interface CallBack {
         void reciveRsPush(byte[] bytes, int lenght);
@@ -7,7 +9,7 @@ public interface CommPort {
     interface Closer {
         void close();
     }
-    static CommPort main(Closer closer) {
+    static CommPort main(Consumer closer) {
         return new CommPortClass(closer);
     }
     String[] getListPortsName();

@@ -3,14 +3,16 @@ package org.example.test24.RS232;
 import com.fazecast.jSerialComm.SerialPort;
 import org.example.lib.ControlSumma;
 
+import java.util.function.Consumer;
+
 class CommPortClass implements CommPort {
 
     private SerialPort port = null;
     private Thread threadRS = null;
     private CallBack callBack = null;
-    private Closer closer;
+    private Consumer closer;
 
-    public CommPortClass(Closer closer) {
+    public CommPortClass(Consumer closer) {
         this.closer = closer;
     }
 

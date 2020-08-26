@@ -39,23 +39,14 @@ public class MainClass {
         }
         System.exit(0);
     }
-    private class ScreenCloser implements ScreenFx.Closer {
-        @Override
-        public void close() {
-            MainClass.this.close();
-        }
+    private void screenCloser() {
+        close();
     }
-    private class RunnerCloser implements Runner.Closer {
-        @Override
-        public void close() {
-            MainClass.this.close();
-        }
+    private void runnerCloser() {
+        close();
     }
-    private class CommPortCloser implements CommPort.Closer {
-        @Override
-        public void close() {
-            MainClass.this.close();
-        }
+    private void commPortCloser() {
+        close();
     }
     // ===============================================
     private String[] parameters = null;
@@ -68,9 +59,9 @@ public class MainClass {
         parameters = getConfig();
         String namePort = parameters[1];
 
-        screenFx = ScreenFx.init(new ScreenCloser());
-        runner = Runner.main(new RunnerCloser());
-        commPort = CommPort.main(new CommPortCloser());
+        screenFx = ScreenFx.init(o->screenCloser());
+        runner = Runner.main(o->runnerCloser());
+        commPort = CommPort.main(o->commPortCloser());
 
         startFrame = StartFrame.main(new StartFrameCallBack());
         try {
