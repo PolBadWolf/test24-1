@@ -6,9 +6,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.function.Consumer;
 
 public class MySwingUtil {
-    public static void outFlyMessage(Component parent, String title, String text, int timeout) {
+    public static void showMessage(Component parent, String title, String text, int timeout) {
+        showMessage(parent, title, text, timeout, null);
+    }
+    public static void showMessage(Component parent, String title, String text, int timeout, Consumer callBack) {
         JDialog dialog;
         Window window = (Window) parent;
         JOptionPane pane = new JOptionPane(
@@ -19,7 +23,7 @@ public class MySwingUtil {
         );
         pane.setInitialValue(null);
         dialog = new JDialog( (Frame) window,
-                "title",
+                title,
                 false);
         dialog.setComponentOrientation(pane.getComponentOrientation());
 
@@ -64,6 +68,9 @@ public class MySwingUtil {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
+                if (callBack != null) {
+                    callBack.accept(null);
+                }
                 dialog.dispose();
             }
         }, "popup").start();

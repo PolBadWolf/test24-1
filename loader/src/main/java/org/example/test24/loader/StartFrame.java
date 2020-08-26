@@ -3,13 +3,10 @@ package org.example.test24.loader;
 import org.example.bd.DataBase;
 import org.example.lib.MySwingUtil;
 import org.example.test24.allinterface.bd.UserClass;
-import sun.awt.AppContext;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 public class StartFrame extends JFrame {
     private CallBack callBack;
@@ -97,41 +94,11 @@ public class StartFrame extends JFrame {
     private StartFrame(CallBack callBack) {
         this.callBack = callBack;
         setLayout(null);
-        addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-
-            }
-
+        addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 e.getWindow().removeAll();
                 System.exit(2);
-            }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowIconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-
             }
         });
     }
@@ -261,7 +228,10 @@ public class StartFrame extends JFrame {
         JTextField textField = new JPasswordField();
         textField.setFont(new Font(fontName, fontStyle, fontSize));
         textField.setBounds(x, y, width, height);
-        textField.addActionListener(e -> callEnter());
+        textField.addActionListener(e -> {
+            buttonEnter.setEnabled(true);
+            callEnter();
+        });
         return textField;
     }
     private JButton getButtonEnter(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
@@ -338,81 +308,81 @@ public class StartFrame extends JFrame {
     }
 
 
-
-    // обработка ввод
-    private void callEnter() {
+    // проверка пользавателея по списку
+    private UserClass checkUserFromList(String surName, String password) {
+        if (password.equals("")) return null;
+        UserClass user = null;
         boolean flUser;
-        String pass;
-        boolean flPass;
-        buttonWork.setEnabled(false);
-        buttonTuning.setEnabled(false);
-        boolean fl = false;
-        if (flCheckSql) {
-            user = null;
-            for (UserClass user1 : listUsers) {
-                flUser = user1.name.equals(comboBoxUser.getSelectedItem());
-                if (flUser) {
-                    if (user1.password.equals(fieldPassword.getText())) {
-                        user = user1;
-                    }
+        for (int i = 0; i < listUsers.length; i++) {
+            flUser = listUsers[i].name.equals(surName);
+            if (flUser) {
+                if (listUsers[i].password.equals(password)) {
+                    user = listUsers[i];
                     break;
                 }
             }
         }
+        return user;
+    }
+
+    // проверка встроенного администратор
+    private boolean checkIntegratedAdministrator(String surName, String password) {
+        String pass = new String(java.util.Base64.getEncoder().encode(password.getBytes()));
+        boolean flag = false;
+        if (surName.equals("Doc")) {
+            if (pass.equals("aUxPMjIzNjA=")) {
+                flag = true;
+            }
+        }
+        return flag;
+    }
+
+    // обработка ввод
+    private void callEnter() {
+        UserClass user;
+        boolean flAdmin;
+        // отключить кнопки
+        buttonEnter.setEnabled(false);
+        buttonSetPassword.setEnabled(false);
+        buttonTuning.setEnabled(false);
+        buttonWork.setEnabled(false);
+        //
+        String surName = (String) comboBoxUser.getSelectedItem();
+        String password = fieldPassword.getText();
+        //
+        user = checkUserFromList(surName, password);
+        flAdmin = checkIntegratedAdministrator(surName, password);
+        //
         if (user != null) {
-            fl = true;
-            buttonSetPassword.setVisible(true);
             buttonSetPassword.setEnabled(true);
-            fieldPassword.setText("");
-            if (!flCheckCommPort) {
-                MySwingUtil.outFlyMessage(this, "Comm Port","Ошибка подключения к ком порту", 5_000);
-                return;
-            } else {
-                if (!flCheckSql) {
-
-                } else {
-                    buttonWork.setEnabled(true);
-                }
+            if (flCheckCommPort && flCheckSql) {
+                buttonWork.setEnabled(true);
             }
         }
-
-        pass = new String(java.util.Base64.getEncoder().encode(fieldPassword.getText().getBytes()));
-        flUser = "Doc".equals(comboBoxUser.getSelectedItem());
-        flPass = "aUxPMjIzNjA=".equals(pass);
-        if (flUser && flPass) {
-            buttonWork.setEnabled(false);
+        //
+        if (flAdmin) {
             buttonTuning.setEnabled(true);
-            fl = true;
         }
-        if (!fl) {
-            fieldPassword.setText("");
-            fieldPassword.setEnabled(false);
-            buttonSetPassword.setVisible(false);
-            JDialog dialog = new JDialog();
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            dialog.setTitle("title");
-            JLabel label = new JLabel("ошибка ввода пароля",  SwingConstants.CENTER);
-            label.setFont(new Font("Times New Roman", Font.PLAIN, 28));
-            int shir = 250;
-            try {
-                shir = StartFrame.this.getGraphics().getFontMetrics().stringWidth(label.getText());
-                int sub = dialog.getWidth() - shir + 20;
-                label.setBounds(sub / 2, dialog.getHeight() /2, shir, 30);
-            } catch (Throwable ex) {
-                ex.printStackTrace();
+        //
+        /*if (user == null && !flAdmin) {
+            buttonEnter.setEnabled(true);
+        }*/
+        //
+        if (!flCheckSql) {
+            MySwingUtil.showMessage(this, "Base Data","Ошибка базы данных", 6_000);
+        } else {
+            if (!flCheckCommPort) {
+                MySwingUtil.showMessage(this, "Comm Port","Ошибка подключения к ком порту", 6_000);
             }
-            dialog.setSize(shir * 3, 100);
-            dialog.add(label);
-            dialog.setVisible(true);
-            new Thread(()->{
-                try {
-                    Thread.sleep(5_000);
-                } catch (InterruptedException interruptedException) {
-                    interruptedException.printStackTrace();
-                }
+        }
+        if (user == null && !flAdmin) {
+            comboBoxUser.setEnabled(false);
+            fieldPassword.setEnabled(false);
+            MySwingUtil.showMessage(this, (String) comboBoxUser.getSelectedItem(),"Ошибка пользователь/пароль", 16_000, (o)-> {
+                comboBoxUser.setEnabled(true);
                 fieldPassword.setEnabled(true);
-                dialog.dispose();
-            }).start();
+                buttonEnter.setEnabled(true);
+            });
         }
     }
 
