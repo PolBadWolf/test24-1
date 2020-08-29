@@ -312,13 +312,15 @@ public class StartFrame extends JFrame {
     private UserClass checkUserFromList(String surName, String password) {
         if (password.equals("")) return null;
         UserClass user = null;
-        boolean flUser;
-        for (int i = 0; i < listUsers.length; i++) {
-            flUser = listUsers[i].name.equals(surName);
-            if (flUser) {
-                if (listUsers[i].password.equals(password)) {
-                    user = listUsers[i];
-                    break;
+        if (listUsers != null) {
+            boolean flUser;
+            for (int i = 0; i < listUsers.length; i++) {
+                flUser = listUsers[i].name.equals(surName);
+                if (flUser) {
+                    if (listUsers[i].password.equals(password)) {
+                        user = listUsers[i];
+                        break;
+                    }
                 }
             }
         }
