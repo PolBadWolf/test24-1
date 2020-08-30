@@ -1,28 +1,14 @@
 package org.example.test24.loader;
 
+import org.example.test24.bd.BaseData;
+
 import java.io.*;
 import java.util.Properties;
 
-public class ParametersConfig {
-    final public static int MS_SQL = 0;
-    final public static int MY_SQL = 1;
-    final public static int ERROR = 99;
-    public enum TypeBaseData {
-        MS_SQL  (ParametersConfig.MS_SQL),
-        MY_SQL  (ParametersConfig.MY_SQL),
-        ERROR   (ParametersConfig.ERROR);
-        private int typeBaseData;
+import static org.example.test24.bd.BaseData.typeBaseDataCode;
+import static org.example.test24.bd.BaseData.typeBaseDataString;
 
-        TypeBaseData(int typeBaseData) {
-            this.typeBaseData = typeBaseData;
-        }
-        public int getTypeBaseData() {
-            return typeBaseData;
-        }
-        public String getTypeBaseDataString() {
-            return typeBaseDataString(typeBaseData);
-        }
-    }
+public class ParametersConfig {
     final public static int OK = 0;
     final public static int FILE_NOT_FOUND = 1;
     final public static int ERROR_LOAD = 2;
@@ -44,56 +30,14 @@ public class ParametersConfig {
             return diagnos;
         }
     }
-    public static TypeBaseData typeBaseDataCode(String nameTypeBaseData) {
-        TypeBaseData typeBaseData;
-        switch (nameTypeBaseData.toUpperCase()) {
-            case "MS_SQL":
-                typeBaseData = TypeBaseData.MS_SQL;
-                break;
-            case "MY_SQL":
-                typeBaseData = TypeBaseData.MY_SQL;
-                break;
-            default:
-                typeBaseData = TypeBaseData.ERROR;
-        }
-        return typeBaseData;
-    }
-    public static String typeBaseDataString(TypeBaseData codeTypeBaseData) {
-        String stroka;
-        switch (codeTypeBaseData) {
-            case MS_SQL:
-                stroka = "MS_SQL";
-                break;
-            case MY_SQL:
-                stroka = "MY_SQL";
-                break;
-            default:
-                stroka = "ERROR";
-        }
-        return stroka;
-    }
-    private static String typeBaseDataString(int codeTypeBaseData) {
-        String stroka;
-        switch (codeTypeBaseData) {
-            case MS_SQL:
-                stroka = "MS_SQL";
-                break;
-            case MY_SQL:
-                stroka = "MY_SQL";
-                break;
-            default:
-                stroka = "ERROR";
-        }
-        return stroka;
-    }
 
     private String fileNameConfig;
     private String portName;
-    private TypeBaseData typeBaseData;
+    private BaseData.TypeBaseData typeBaseData;
 
     public ParametersConfig(String fileNameConfig) {
         this.fileNameConfig = fileNameConfig;
-        typeBaseData = TypeBaseData.ERROR;
+        typeBaseData = BaseData.TypeBaseData.ERROR;
         portName = null;
     }
 
@@ -103,10 +47,10 @@ public class ParametersConfig {
     public void setPortName(String portName) {
         this.portName = portName;
     }
-    public TypeBaseData getTypeBaseData() {
+    public BaseData.TypeBaseData getTypeBaseData() {
         return typeBaseData;
     }
-    public void setTypeBaseData(TypeBaseData typeBaseData) {
+    public void setTypeBaseData(BaseData.TypeBaseData typeBaseData) {
         this.typeBaseData = typeBaseData;
     }
 
@@ -127,12 +71,12 @@ public class ParametersConfig {
     }
     public void setDefault() {
         portName = "com2";
-        typeBaseData = TypeBaseData.MY_SQL;
+        typeBaseData = BaseData.TypeBaseData.MY_SQL;
     }
 
     public Diagnostic save() {
         Diagnostic status;
-        if (typeBaseData == TypeBaseData.ERROR || portName == null || portName == "") {
+        if (typeBaseData == BaseData.TypeBaseData.ERROR || portName == null || portName == "") {
             status = Diagnostic.ERROR_PARAMETERS;
         } else {
             Properties properties = new Properties();

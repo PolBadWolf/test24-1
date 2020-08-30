@@ -1,8 +1,9 @@
 package org.example.test24.loader;
 
-import org.example.bd.*;
+import org.example.test24.bd.BaseData;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
+import org.example.test24.bd.ParametersSql;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenFx;
@@ -21,8 +22,10 @@ public class MainClass {
     private ScreenFx screenFx;
     private Runner runner;
     private CommPort commPort;
-    private DataBase bdSql;
+    private BaseData bdSql;
     private StartFrame startFrame;
+    // ===============================================
+    private org.example.test24.loader.BaseData baseData;
     // ===============================================
     private void close() {
         if (screenFx != null) {
@@ -57,15 +60,23 @@ public class MainClass {
     }
 
     private void start() {
+        //
         String portName;
         //parameters = getConfig();
         parameters1 = new ParametersConfig(fileNameConfig);
         parameters1.load();
         //portName = parameters[1];
-
+        //
         screenFx = ScreenFx.init(o->screenCloser());
         runner = Runner.main(o->runnerCloser());
         commPort = CommPort.main(o->commPortCloser());
+
+        try {
+            baseData = new org.example.test24.loader.BaseData(new BaseDataCallBack());
+            baseData.initBaseData(parameters1.getTypeBaseData());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         startFrame = StartFrame.main(new StartFrameCallBack());
         try {
@@ -84,7 +95,7 @@ public class MainClass {
         }
 
         try {
-            bdSql = DataBase.init(parameters1.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
+            bdSql = BaseData.init(parameters1.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
             bdSql.getConnect();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
@@ -95,9 +106,7 @@ public class MainClass {
         while (MainFrame.mainFrame == null) {
             Thread.yield();
         }
-
         runner.init(bdSql, commPort, MainFrame.mainFrame);
-
         commPort.ReciveStart();
     }
 
@@ -116,46 +125,22 @@ public class MainClass {
         }
     }
 
-    public String[] getConfig() {
-        Properties properties = new Properties();
-        boolean flagReload = false;
-        String[] strings = new String[2];
-
-        try {
-            properties.load(new FileReader(fileNameConfig));
-            strings[0] = properties.getProperty("DataBase").toUpperCase();
-            strings[1] = properties.getProperty("CommPort").toUpperCase();
-
-            if (strings[0] == null || strings[1] == null)   flagReload = true;
-
-        } catch (IOException e) {
-            System.out.println("файл config.txt не найден");
-            flagReload = true;
-        }
-
-        if (flagReload) {
-            strings[0] = "MY_SQL";
-            strings[1] = "com2";
-            saveConfig(strings);
-        }
-
-        return strings;
-    }
-    public void saveConfig(String[] parameters) {
-        Properties properties = new Properties();
-        try {
-            properties.setProperty("DataBase", parameters[0].toUpperCase());
-            properties.setProperty("CommPort", parameters[1].toUpperCase());
-            properties.store(new FileWriter(fileNameConfig), "config");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private boolean  checkCommPort(String portName) {
         int ch =  commPort.Open(null, portName, BAUD.baud57600);
         commPort.Close();
         return ch == CommPort.INITCODE_OK;
+    }
+
+    private class BaseDataCallBack implements org.example.test24.loader.BaseData.CallBack {
+        @Override
+        public BaseData.TypeBaseData loadTypeBaseData() {
+            return parameters1.getTypeBaseData();
+        }
+
+        @Override
+        public String[] getFileNameSql() {
+            return fileNameSql;
+        }
     }
 
     private class StartFrameCallBack implements StartFrame.CallBack {
@@ -172,7 +157,7 @@ public class MainClass {
             ParametersSql parametersSql;
             try {
                 // подключение БД
-                bdSql = DataBase.init(parameters1.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
+                bdSql = BaseData.init(parameters1.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
                 // загрузка параметров SQL
                 parametersSql = bdSql.getParametrsSql();
                 parametersSql.load();
@@ -228,7 +213,7 @@ public class MainClass {
         }
 
         @Override
-        public ParametersConfig.TypeBaseData loadConfigTypeBaseData() {
+        public BaseData.TypeBaseData loadConfigTypeBaseData() {
             return parameters1.getTypeBaseData();
         }
     }
@@ -246,7 +231,7 @@ public class MainClass {
         }
 
         @Override
-        public void saveConfigTypeBaseData(ParametersConfig.TypeBaseData typeBaseData) {
+        public void saveConfigTypeBaseData(BaseData.TypeBaseData typeBaseData) {
             parameters1.setTypeBaseData(typeBaseData);
             parameters1.save();
         }
@@ -257,7 +242,7 @@ public class MainClass {
         }
 
         @Override
-        public ParametersConfig.TypeBaseData loadConfigTypeBaseData() {
+        public BaseData.TypeBaseData loadConfigTypeBaseData() {
             return parameters1.getTypeBaseData();
         }
 

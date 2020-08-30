@@ -1,7 +1,7 @@
 package org.example.test24.loader;
 
-import org.example.bd.ParametersSql;
-import org.example.bd.DataBase;
+import org.example.test24.bd.ParametersSql;
+import org.example.test24.bd.BaseData;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.loader.editUsers.EditUsers;
@@ -14,7 +14,6 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -22,9 +21,9 @@ class TuningFrame {
     public interface CallBackToMainClass {
         CommPort getCommPort();
         void saveConfigCommPort(String portName);
-        void saveConfigTypeBaseData(ParametersConfig.TypeBaseData typeBaseData);
+        void saveConfigTypeBaseData(BaseData.TypeBaseData typeBaseData);
         String loadConfigCommPort();
-        ParametersConfig.TypeBaseData loadConfigTypeBaseData();
+        BaseData.TypeBaseData loadConfigTypeBaseData();
         String[] getFilesNameSql();
         String getFileNameSql(String typeBd) throws Exception;
     }
@@ -38,7 +37,7 @@ class TuningFrame {
 
     //private String[] parameters = null;
     private ParametersSql parametersSql = null;
-    private DataBase bdSql = null;
+    private BaseData bdSql = null;
     private Thread threadSkeep = null;
     private boolean threadSkeepOn;
 
@@ -370,7 +369,7 @@ class TuningFrame {
         // чтение списка БД
         String[] listBd;
         try {
-            listBd = DataBase.getConnectListBd(
+            listBd = BaseData.getConnectListBd(
                         typeBd,
                         parametersSqlLocal.urlServer,
                         parametersSqlLocal.portServer,
@@ -393,7 +392,7 @@ class TuningFrame {
         try {
             String typeBd = (String) comboBoxTypeBd.getSelectedItem();
             // подключение к БД
-            bdSql = DataBase.init(typeBd, callBackMC.getFilesNameSql());
+            bdSql = BaseData.init(typeBd, callBackMC.getFilesNameSql());
             String[] listBd = bdSql.getConnectListBd(
                     fieldParamServerIP.getText(),
                     fieldParamServerPort.getText(),
@@ -440,11 +439,11 @@ class TuningFrame {
         }
 
         @Override
-        public DataBase getBdInterface() {
+        public BaseData getBdInterface() {
             if (bdSql == null) {
                 String typeBd = (String) comboBoxTypeBd.getSelectedItem();
                 // подключение к БД
-                bdSql = DataBase.init(typeBd, callBackMC.getFilesNameSql());
+                bdSql = BaseData.init(typeBd, callBackMC.getFilesNameSql());
             }
             return bdSql;
         }
@@ -508,7 +507,7 @@ class TuningFrame {
     private boolean loadParametersSql(String typeBd) {
         boolean stat = false;
         parametersSql = new ParametersSql(
-                DataBase.getNameFileParametrsSql(
+                BaseData.getNameFileParametrsSql(
                         typeBd,
                         callBackMC.getFilesNameSql()
                 ),
@@ -548,7 +547,7 @@ class TuningFrame {
             String typeBd = (String) comboBoxTypeBd.getSelectedItem();
             //загрузка параметров с выбранным типом
             parametersSql = new ParametersSql(
-                    DataBase.getNameFileParametrsSql(
+                    BaseData.getNameFileParametrsSql(
                             typeBd,
                             callBackMC.getFilesNameSql()
                     ),
@@ -567,7 +566,7 @@ class TuningFrame {
             }
             // доступ к БД
             try {
-                flCheckSql = DataBase.testStuctBase(
+                flCheckSql = BaseData.testStuctBase(
                         (String) comboBoxTypeBd.getSelectedItem(),
                         fieldParamServerIP.getText(),
                         fieldParamServerPort.getText(),
@@ -597,7 +596,7 @@ class TuningFrame {
             String typeBd = callBackMC.loadConfigTypeBaseData().getTypeBaseDataString();
             //загрузка параметров с выбранным типом
             parametersSql = new ParametersSql(
-                    DataBase.getNameFileParametrsSql(
+                    BaseData.getNameFileParametrsSql(
                             typeBd,
                             callBackMC.getFilesNameSql()
                     ),
@@ -618,7 +617,7 @@ class TuningFrame {
             // доступ к БД
             if (flCheckParamSql) {
                 try {
-                    flCheckSql = DataBase.testStuctBase(
+                    flCheckSql = BaseData.testStuctBase(
                             (String) comboBoxTypeBd.getSelectedItem(),
                             fieldParamServerIP.getText(),
                             fieldParamServerPort.getText(),
@@ -781,7 +780,7 @@ class TuningFrame {
         outStatus();
         //сохранить
         if (flCheckParamSql) {
-            callBackMC.saveConfigTypeBaseData(ParametersConfig.typeBaseDataCode((String) comboBox.getSelectedItem()));
+            callBackMC.saveConfigTypeBaseData(BaseData.typeBaseDataCode((String) comboBox.getSelectedItem()));
         }
     }
     // смена параметров подключения к SQL серверу
