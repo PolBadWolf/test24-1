@@ -21,7 +21,10 @@ import java.util.Arrays;
 class TuningFrame {
     public interface CallBackToMainClass {
         CommPort getCommPort();
-        void saveConfig(String[] parametrs);
+        void saveConfigCommPort(String portName);
+        void saveConfigTypeBaseData(ParametersConfig.TypeBaseData typeBaseData);
+        String loadConfigCommPort();
+        ParametersConfig.TypeBaseData loadConfigTypeBaseData();
         String[] getFilesNameSql();
         String getFileNameSql(String typeBd) throws Exception;
     }
@@ -33,7 +36,7 @@ class TuningFrame {
     private CallBackToMainClass callBackMC;
     private CallBackToStartFrame callBackTF = null;
 
-    private String[] parameters = null;
+    //private String[] parameters = null;
     private ParametersSql parametersSql = null;
     private DataBase bdSql = null;
     private Thread threadSkeep = null;
@@ -77,7 +80,7 @@ class TuningFrame {
     }
 
     void frameConfig(String[] parameters, CallBackToStartFrame callBackTF) {
-        this.parameters = parameters;
+        //this.parameters = parameters;
         this.callBackTF = callBackTF;
         frameConstructor();
         setInitParameters();
@@ -95,10 +98,11 @@ class TuningFrame {
             //
             panelCommPort.add(getLabel("текщий порт: ", new Rectangle(6, 15, 100, 30)));
             //
-            labelPortCurrent = getLabel(parameters[1].toUpperCase(), new Rectangle(80, 15, 100, 30));
+//            labelPortCurrent = getLabel(parameters[1].toUpperCase(), new Rectangle(80, 15, 100, 30));
+            labelPortCurrent = getLabel(callBackMC.loadConfigCommPort(), new Rectangle(80, 15, 100, 30));
             panelCommPort.add(labelPortCurrent);
             //
-            comboBoxCommPort = getComboBoxCommPort(parameters[1], new Rectangle(6, 50, 110, 20));
+            comboBoxCommPort = getComboBoxCommPort(callBackMC.loadConfigCommPort(), new Rectangle(6, 50, 110, 20));
             panelCommPort.add(comboBoxCommPort);
             //
             textPortStatus = getTextFieldStatus("sel", new Rectangle(6, 80, 110, 20));
@@ -110,7 +114,8 @@ class TuningFrame {
 
             panelTypeBd.add(getLabel("тип базы данных: ", new Rectangle(10, 10, 140, 30)));
 
-            comboBoxTypeBd = getComboBoxTypeBd(parameters[0], new Rectangle(6, 50, 110, 20));
+//            comboBoxTypeBd = getComboBoxTypeBd(parameters[0], new Rectangle(6, 50, 110, 20));
+            comboBoxTypeBd = getComboBoxTypeBd(callBackMC.loadConfigTypeBaseData().getTypeBaseDataString(), new Rectangle(6, 50, 110, 20));
             panelTypeBd.add(comboBoxTypeBd);
 
             textTypeBdStatus = getTextTypeBdStatus("unknow", new Rectangle(6, 80, 110, 20));
@@ -457,19 +462,23 @@ class TuningFrame {
             comboBoxCommPort.removeAllItems();
             for (String portName : listCommPortName) {
                 comboBoxCommPort.addItem(portName);
-                if (portName.equals(parameters[1])) flSelCommPort = true;
+//                if (portName.equals(parameters[1])) flSelCommPort = true;
+                if (portName.equals(callBackMC.loadConfigCommPort())) flSelCommPort = true;
             }
             if (flSelCommPort) {
-                comboBoxCommPort.setSelectedItem(parameters[1]);
+//                comboBoxCommPort.setSelectedItem(parameters[1]);
+                comboBoxCommPort.setSelectedItem(callBackMC.loadConfigCommPort());
             } else {
                 comboBoxCommPort.addItem("");
                 comboBoxCommPort.setSelectedItem("");
             }
         }
         // тип БД
-        comboBoxTypeBd.setSelectedItem(parameters[0]);
+//        comboBoxTypeBd.setSelectedItem(parameters[0]);
+        comboBoxTypeBd.setSelectedItem(callBackMC.loadConfigTypeBaseData().getTypeBaseDataString());
         // загрузка параметров
-        boolean stat = loadParametersSql(parameters[0]);
+//        boolean stat = loadParametersSql(parameters[0]);
+        boolean stat = loadParametersSql(callBackMC.loadConfigTypeBaseData().getTypeBaseDataString());
         // загрузка списка БД
         comboBoxListBd.removeAllItems();
         if (!stat) {
@@ -484,7 +493,8 @@ class TuningFrame {
         // чтение списка БД
         boolean flLoadListBd = false;
         try {
-            flLoadListBd = getListBdFile(parameters[0]);
+//            flLoadListBd = getListBdFile(parameters[0]);
+            flLoadListBd = getListBdFile(callBackMC.loadConfigTypeBaseData().getTypeBaseDataString());
         } catch (Exception e) {
             System.out.println("ошибка загрузки списка БД: " + e.getMessage());
         }
@@ -583,7 +593,8 @@ class TuningFrame {
         }   // статус ком порта
         {
             // тип текущей БД
-            String typeBd = parameters[0];
+//            String typeBd = parameters[0];
+            String typeBd = callBackMC.loadConfigTypeBaseData().getTypeBaseDataString();
             //загрузка параметров с выбранным типом
             parametersSql = new ParametersSql(
                     DataBase.getNameFileParametrsSql(
@@ -635,11 +646,13 @@ class TuningFrame {
                     statusText = "ok";
                     break;
                 case CommPort.INITCODE_NOTEXIST:
-                    portName = parameters[1];
+//                    portName = parameters[1];
+                    portName = callBackMC.loadConfigCommPort();
                     statusText = "порт не найден";
                     break;
                 case CommPort.INITCODE_ERROROPEN:
-                    portName = parameters[1];
+//                    portName = parameters[1];
+                    portName = callBackMC.loadConfigCommPort();
                     statusText = "ошибка открытия";
                     break;
                 default:
@@ -757,8 +770,7 @@ class TuningFrame {
         onOffButtonOk();
         // сохранить
         if (chCheckCommPort == CommPort.INITCODE_OK) {
-            parameters[1] = (String) comboBoxCommPort.getSelectedItem();
-            callBackMC.saveConfig(parameters);
+            callBackMC.saveConfigCommPort((String) comboBoxCommPort.getSelectedItem());
         }
     }
     // выбран тип БД
@@ -769,8 +781,7 @@ class TuningFrame {
         outStatus();
         //сохранить
         if (flCheckParamSql) {
-            parameters[0] = (String) comboBox.getSelectedItem();
-            callBackMC.saveConfig(parameters);
+            callBackMC.saveConfigTypeBaseData(ParametersConfig.typeBaseDataCode((String) comboBox.getSelectedItem()));
         }
     }
     // смена параметров подключения к SQL серверу

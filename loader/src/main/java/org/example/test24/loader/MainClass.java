@@ -49,15 +49,19 @@ public class MainClass {
         close();
     }
     // ===============================================
-    private String[] parameters = null;
+    //private String[] parameters = null;
+    ParametersConfig parameters1;
 
     public static void main(String[] args) {
         new MainClass().start();
     }
 
     private void start() {
-        parameters = getConfig();
-        String namePort = parameters[1];
+        String portName;
+        //parameters = getConfig();
+        parameters1 = new ParametersConfig(fileNameConfig);
+        parameters1.load();
+        //portName = parameters[1];
 
         screenFx = ScreenFx.init(o->screenCloser());
         runner = Runner.main(o->runnerCloser());
@@ -73,14 +77,14 @@ public class MainClass {
             e.printStackTrace();
         }
 
-        int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud57600);
+        int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), parameters1.getPortName(), BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
             errorCommMessage(checkComm, commPort);
             System.exit(0);
         }
 
         try {
-            bdSql = DataBase.init(parameters[0], fileNameSql);
+            bdSql = DataBase.init(parameters1.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
             bdSql.getConnect();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
@@ -158,7 +162,7 @@ public class MainClass {
         // проверка Comm Port
         @Override
         public boolean checkCommPort() {
-            return MainClass.this.checkCommPort(parameters[1]);
+            return MainClass.this.checkCommPort(parameters1.getPortName());
         }
 
         // подключение к БД и структуры БД (параметры из файла конфигурации)
@@ -168,7 +172,7 @@ public class MainClass {
             ParametersSql parametersSql;
             try {
                 // подключение БД
-                bdSql = DataBase.init(parameters[0], fileNameSql);
+                bdSql = DataBase.init(parameters1.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
                 // загрузка параметров SQL
                 parametersSql = bdSql.getParametrsSql();
                 parametersSql.load();
@@ -198,11 +202,6 @@ public class MainClass {
         }
 
         @Override
-        public String[] getParameters() {
-            return parameters;
-        }
-
-        @Override
         public String[] getFilesNameSql() {
             return fileNameSql;
         }
@@ -222,6 +221,16 @@ public class MainClass {
             }
             return fileName;
         }
+
+        @Override
+        public String loadConfigCommPort() {
+            return parameters1.getPortName();
+        }
+
+        @Override
+        public ParametersConfig.TypeBaseData loadConfigTypeBaseData() {
+            return parameters1.getTypeBaseData();
+        }
     }
 
     private class TuningFrameCallBack implements TuningFrame.CallBackToMainClass {
@@ -231,8 +240,25 @@ public class MainClass {
         }
 
         @Override
-        public void saveConfig(String[] parametrs) {
-            MainClass.this.saveConfig(parametrs);
+        public void saveConfigCommPort(String portName) {
+            parameters1.setPortName(portName);
+            parameters1.save();
+        }
+
+        @Override
+        public void saveConfigTypeBaseData(ParametersConfig.TypeBaseData typeBaseData) {
+            parameters1.setTypeBaseData(typeBaseData);
+            parameters1.save();
+        }
+
+        @Override
+        public String loadConfigCommPort() {
+            return parameters1.getPortName();
+        }
+
+        @Override
+        public ParametersConfig.TypeBaseData loadConfigTypeBaseData() {
+            return parameters1.getTypeBaseData();
         }
 
         @Override

@@ -4,26 +4,36 @@ import java.io.*;
 import java.util.Properties;
 
 public class ParametersConfig {
+    final public static int MS_SQL = 0;
+    final public static int MY_SQL = 1;
+    final public static int ERROR = 99;
     public enum TypeBaseData {
-        MS_SQL  (0),
-        MY_SQL  (1),
-        ERROR   (99);
+        MS_SQL  (ParametersConfig.MS_SQL),
+        MY_SQL  (ParametersConfig.MY_SQL),
+        ERROR   (ParametersConfig.ERROR);
         private int typeBaseData;
 
         TypeBaseData(int typeBaseData) {
             this.typeBaseData = typeBaseData;
         }
-
         public int getTypeBaseData() {
             return typeBaseData;
         }
+        public String getTypeBaseDataString() {
+            return typeBaseDataString(typeBaseData);
+        }
     }
+    final public static int OK = 0;
+    final public static int FILE_NOT_FOUND = 1;
+    final public static int ERROR_LOAD = 2;
+    final public static int ERROR_PARAMETERS = 3;
+    final public static int ERROR_SAVE = 9;
     public enum Diagnostic {
-        OK      (0),
-        FILE_NOT_FOUND  (1),
-        ERROR_LOAD  (2),
-        ERROR_PARAMETERS    (3),
-        ERROR_SAVE  (9);
+        OK  (ParametersConfig.OK),
+        FILE_NOT_FOUND  (ParametersConfig.FILE_NOT_FOUND),
+        ERROR_LOAD  (ParametersConfig.ERROR_LOAD),
+        ERROR_PARAMETERS    (ParametersConfig.ERROR_PARAMETERS),
+        ERROR_SAVE  (ParametersConfig.ERROR_SAVE);
         private int diagnos;
 
         Diagnostic(int diagnos) {
@@ -49,6 +59,20 @@ public class ParametersConfig {
         return typeBaseData;
     }
     public static String typeBaseDataString(TypeBaseData codeTypeBaseData) {
+        String stroka;
+        switch (codeTypeBaseData) {
+            case MS_SQL:
+                stroka = "MS_SQL";
+                break;
+            case MY_SQL:
+                stroka = "MY_SQL";
+                break;
+            default:
+                stroka = "ERROR";
+        }
+        return stroka;
+    }
+    private static String typeBaseDataString(int codeTypeBaseData) {
         String stroka;
         switch (codeTypeBaseData) {
             case MS_SQL:

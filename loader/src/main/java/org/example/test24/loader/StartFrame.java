@@ -38,9 +38,11 @@ public class StartFrame extends JFrame {
         void closeFrame();
         // ---------------
         TuningFrame getTuningFrame();
-        String[] getParameters();
+        //String[] getParameters();
         String[] getFilesNameSql();
         String getFileNameSql(String typeBd) throws Exception;
+        String loadConfigCommPort();
+        ParametersConfig.TypeBaseData loadConfigTypeBaseData();
     }
 
     public static StartFrame main(CallBack callBack) {
@@ -266,7 +268,8 @@ public class StartFrame extends JFrame {
             fieldPassword.setEnabled(false);
             TuningFrame tuningFrame;
             tuningFrame = callBack.getTuningFrame();
-            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
+//            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
+            tuningFrame.frameConfig(null, new TuningFrameCallBack());
         });
         return button;
     }
@@ -277,8 +280,8 @@ public class StartFrame extends JFrame {
         button.setBounds(x, y, width, height);
         button.addActionListener(e -> {
             try {
-                String[] parameters = callBack.getParameters();
-                DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
+//                DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
+                DataBase bd = DataBase.init(callBack.loadConfigTypeBaseData().getTypeBaseDataString(), callBack.getFilesNameSql());
                 bd.updateUserPassword(user, fieldPassword.getText());
                 loadListUsers();
                 comboBoxUser.setSelectedItem(user.name);
@@ -409,8 +412,8 @@ public class StartFrame extends JFrame {
     // загрузка пользователей
     private void loadListUsers() throws Exception {
         if (flCheckSql) {
-            String[] parameters = callBack.getParameters();
-            DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
+            String baseDataName = callBack.loadConfigTypeBaseData().getTypeBaseDataString();
+            DataBase bd = DataBase.init(baseDataName, callBack.getFilesNameSql());
             listUsers = bd.getListUsers(true);
             comboBoxUser.removeAllItems();
             for (UserClass listUser : listUsers) {
