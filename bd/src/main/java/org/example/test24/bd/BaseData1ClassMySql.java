@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class BaseDataClassMySql extends BaseDataClass {
+public class BaseData1ClassMySql extends BaseData1Class {
 
     @Override
     public void setParametersSql(String[] fileNameSql) {

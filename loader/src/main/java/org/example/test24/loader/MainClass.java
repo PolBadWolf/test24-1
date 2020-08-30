@@ -1,15 +1,12 @@
 package org.example.test24.loader;
 
-import org.example.test24.bd.BaseData;
+import org.example.test24.bd.BaseData1;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.bd.ParametersSql;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenFx;
-
-import java.io.*;
-import java.util.Properties;
 
 
 public class MainClass {
@@ -22,7 +19,7 @@ public class MainClass {
     private ScreenFx screenFx;
     private Runner runner;
     private CommPort commPort;
-    private BaseData bdSql;
+    private BaseData1 bdSql;
     private StartFrame startFrame;
     // ===============================================
     private org.example.test24.loader.BaseData baseData;
@@ -95,7 +92,7 @@ public class MainClass {
         }
 
         try {
-            bdSql = BaseData.init(parameters1.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
+            bdSql = BaseData1.init(parameters1.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
             bdSql.getConnect();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
@@ -133,7 +130,7 @@ public class MainClass {
 
     private class BaseDataCallBack implements org.example.test24.loader.BaseData.CallBack {
         @Override
-        public BaseData.TypeBaseData loadTypeBaseData() {
+        public BaseData1.TypeBaseData loadTypeBaseData() {
             return parameters1.getTypeBaseData();
         }
 
@@ -157,7 +154,7 @@ public class MainClass {
             ParametersSql parametersSql;
             try {
                 // подключение БД
-                bdSql = BaseData.init(parameters1.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
+                bdSql = BaseData1.init(parameters1.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
                 // загрузка параметров SQL
                 parametersSql = bdSql.getParametrsSql();
                 parametersSql.load();
@@ -213,7 +210,7 @@ public class MainClass {
         }
 
         @Override
-        public BaseData.TypeBaseData loadConfigTypeBaseData() {
+        public BaseData1.TypeBaseData loadConfigTypeBaseData() {
             return parameters1.getTypeBaseData();
         }
     }
@@ -231,7 +228,7 @@ public class MainClass {
         }
 
         @Override
-        public void saveConfigTypeBaseData(BaseData.TypeBaseData typeBaseData) {
+        public void saveConfigTypeBaseData(BaseData1.TypeBaseData typeBaseData) {
             parameters1.setTypeBaseData(typeBaseData);
             parameters1.save();
         }
@@ -242,7 +239,7 @@ public class MainClass {
         }
 
         @Override
-        public BaseData.TypeBaseData loadConfigTypeBaseData() {
+        public BaseData1.TypeBaseData loadConfigTypeBaseData() {
             return parameters1.getTypeBaseData();
         }
 

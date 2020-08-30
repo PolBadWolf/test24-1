@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 
-abstract class BaseDataClass implements BaseData {
+abstract class BaseData1Class implements BaseData1 {
     protected Connection connection = null;
     protected ParametersSql parametersSql = null;
 
@@ -43,12 +43,12 @@ abstract class BaseDataClass implements BaseData {
 
     @Override
     public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
-        return BaseData.testStuctBase(getTypeBD(), ip, portServer, login, password, base);
+        return BaseData1.testStuctBase(getTypeBD(), ip, portServer, login, password, base);
     }
 
     @Override
     public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
-        return BaseData.getConnectListBd(getTypeBD(), ip, portServer, login, password);
+        return BaseData1.getConnectListBd(getTypeBD(), ip, portServer, login, password);
     }
 
     @Override

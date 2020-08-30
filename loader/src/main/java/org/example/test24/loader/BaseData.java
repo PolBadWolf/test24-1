@@ -1,13 +1,15 @@
 package org.example.test24.loader;
 
+import org.example.test24.bd.BaseData1;
+
 public class BaseData {
     public interface CallBack {
-        org.example.test24.bd.BaseData.TypeBaseData loadTypeBaseData();
+        BaseData1.TypeBaseData loadTypeBaseData();
         String[] getFileNameSql();
     }
     private CallBack callBack;
-    private org.example.test24.bd.BaseData.TypeBaseData typeBaseData;
-    private org.example.test24.bd.BaseData bd;
+    private BaseData1.TypeBaseData typeBaseData;
+    private BaseData1 bd;
     private String[] fileNameSql;
 
     public BaseData(CallBack callBack) {
@@ -15,8 +17,8 @@ public class BaseData {
         this.fileNameSql = callBack.getFileNameSql();
         typeBaseData = callBack.loadTypeBaseData();
     }
-    public void initBaseData(org.example.test24.bd.BaseData.TypeBaseData typeBaseData) {
-        bd = org.example.test24.bd.BaseData.init(typeBaseData, fileNameSql);
+    public void initBaseData(BaseData1.TypeBaseData typeBaseData) {
+        bd = BaseData1.init(typeBaseData, fileNameSql);
         try {
             //bd.;
         } catch (Exception e) {

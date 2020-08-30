@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class BaseDataClassMsSql extends BaseDataClass {
+public class BaseData1ClassMsSql extends BaseData1Class {
 
     @Override
     public void setParametersSql(String[] fileNameSql) {

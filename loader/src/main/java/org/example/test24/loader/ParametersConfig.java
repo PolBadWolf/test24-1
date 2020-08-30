@@ -1,12 +1,12 @@
 package org.example.test24.loader;
 
-import org.example.test24.bd.BaseData;
+import org.example.test24.bd.BaseData1;
 
 import java.io.*;
 import java.util.Properties;
 
-import static org.example.test24.bd.BaseData.typeBaseDataCode;
-import static org.example.test24.bd.BaseData.typeBaseDataString;
+import static org.example.test24.bd.BaseData1.typeBaseDataCode;
+import static org.example.test24.bd.BaseData1.typeBaseDataString;
 
 public class ParametersConfig {
     final public static int OK = 0;
@@ -33,11 +33,11 @@ public class ParametersConfig {
 
     private String fileNameConfig;
     private String portName;
-    private BaseData.TypeBaseData typeBaseData;
+    private BaseData1.TypeBaseData typeBaseData;
 
     public ParametersConfig(String fileNameConfig) {
         this.fileNameConfig = fileNameConfig;
-        typeBaseData = BaseData.TypeBaseData.ERROR;
+        typeBaseData = BaseData1.TypeBaseData.ERROR;
         portName = null;
     }
 
@@ -47,10 +47,10 @@ public class ParametersConfig {
     public void setPortName(String portName) {
         this.portName = portName;
     }
-    public BaseData.TypeBaseData getTypeBaseData() {
+    public BaseData1.TypeBaseData getTypeBaseData() {
         return typeBaseData;
     }
-    public void setTypeBaseData(BaseData.TypeBaseData typeBaseData) {
+    public void setTypeBaseData(BaseData1.TypeBaseData typeBaseData) {
         this.typeBaseData = typeBaseData;
     }
 
@@ -71,12 +71,12 @@ public class ParametersConfig {
     }
     public void setDefault() {
         portName = "com2";
-        typeBaseData = BaseData.TypeBaseData.MY_SQL;
+        typeBaseData = BaseData1.TypeBaseData.MY_SQL;
     }
 
     public Diagnostic save() {
         Diagnostic status;
-        if (typeBaseData == BaseData.TypeBaseData.ERROR || portName == null || portName == "") {
+        if (typeBaseData == BaseData1.TypeBaseData.ERROR || portName == null || portName == "") {
             status = Diagnostic.ERROR_PARAMETERS;
         } else {
             Properties properties = new Properties();

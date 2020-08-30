@@ -1,6 +1,6 @@
 package org.example.test24.loader;
 
-import org.example.test24.bd.BaseData;
+import org.example.test24.bd.BaseData1;
 import org.example.lib.MySwingUtil;
 import org.example.test24.allinterface.bd.UserClass;
 
@@ -42,7 +42,7 @@ public class StartFrame extends JFrame {
         String[] getFilesNameSql();
         String getFileNameSql(String typeBd) throws Exception;
         String loadConfigCommPort();
-        BaseData.TypeBaseData loadConfigTypeBaseData();
+        BaseData1.TypeBaseData loadConfigTypeBaseData();
     }
 
     public static StartFrame main(CallBack callBack) {
@@ -281,7 +281,7 @@ public class StartFrame extends JFrame {
         button.addActionListener(e -> {
             try {
 //                DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
-                BaseData bd = BaseData.init(callBack.loadConfigTypeBaseData().getTypeBaseDataString(), callBack.getFilesNameSql());
+                BaseData1 bd = BaseData1.init(callBack.loadConfigTypeBaseData().getTypeBaseDataString(), callBack.getFilesNameSql());
                 bd.updateUserPassword(user, fieldPassword.getText());
                 loadListUsers();
                 comboBoxUser.setSelectedItem(user.name);
@@ -413,7 +413,7 @@ public class StartFrame extends JFrame {
     private void loadListUsers() throws Exception {
         if (flCheckSql) {
             String baseDataName = callBack.loadConfigTypeBaseData().getTypeBaseDataString();
-            BaseData bd = BaseData.init(baseDataName, callBack.getFilesNameSql());
+            BaseData1 bd = BaseData1.init(baseDataName, callBack.getFilesNameSql());
             listUsers = bd.getListUsers(true);
             comboBoxUser.removeAllItems();
             for (UserClass listUser : listUsers) {
