@@ -15,50 +15,32 @@ public interface BaseData {
         public int getTypeBaseData() {
             return typeBaseData;
         }
-        public String getTypeBaseDataString() {
-            return typeBaseDataString(typeBaseData);
+        public String toString() {
+            return BaseDataClass.typeBaseDataString(typeBaseData);
         }
     }
-    static TypeBaseData typeBaseDataCode(String nameTypeBaseData) {
-        TypeBaseData typeBaseData;
-        switch (nameTypeBaseData.toUpperCase()) {
-            case "MS_SQL":
-                typeBaseData = TypeBaseData.MS_SQL;
-                break;
-            case "MY_SQL":
-                typeBaseData = TypeBaseData.MY_SQL;
-                break;
-            default:
-                typeBaseData = TypeBaseData.ERROR;
-        }
-        return typeBaseData;
+    //
+    interface CallBack {
+
     }
-    static String typeBaseDataString(BaseData1.TypeBaseData codeTypeBaseData) {
-        String stroka;
-        switch (codeTypeBaseData) {
-            case MS_SQL:
-                stroka = "MS_SQL";
-                break;
-            case MY_SQL:
-                stroka = "MY_SQL";
-                break;
-            default:
-                stroka = "ERROR";
-        }
-        return stroka;
+    class Parameters {
+        String  ip;
+        int     port;
+        String  login;
+        String  password;
+        String  base;
     }
-    static String typeBaseDataString(int codeTypeBaseData) {
-        String stroka;
-        switch (codeTypeBaseData) {
-            case MS_SQL:
-                stroka = "MS_SQL";
-                break;
-            case MY_SQL:
-                stroka = "MY_SQL";
-                break;
-            default:
-                stroka = "ERROR";
-        }
-        return stroka;
-    }
+    // проверка подключения (логин/пароль)
+    boolean checkConnect(TypeBaseData typeBaseData, Parameters parameters);
+    // проверка подключения (логин/пароль + база)
+    boolean checkConnectBase(TypeBaseData typeBaseData, Parameters parameters);
+    // проверка структуры базы
+    boolean checkStructBase(TypeBaseData typeBaseData, Parameters parameters);
+    // список пользователей в заданом подключении
+    String[] getListUsers(TypeBaseData typeBaseData, Parameters parameters);
+    // список пользовательских БД
+    String[] getListBaseData(TypeBaseData typeBaseData, Parameters parameters);
+    //-----------------
+    // список пользователей в текущем подкдлючении
+    String[] getListUsers();
 }
