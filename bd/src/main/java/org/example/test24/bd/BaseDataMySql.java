@@ -33,7 +33,7 @@ class BaseDataMySql extends BaseDataParent {
         } catch (SQLException e) {
             return CONNECT_ERROR;
         }
-        parametersTest = parameters;
+        testParameters = parameters;
         return OK;
     }
     // тестовое соединение список доступных баз
@@ -126,6 +126,44 @@ class BaseDataMySql extends BaseDataParent {
             table1 = countList == countSql;
             if (!table1)    return STRUCTURE_ERROR;
         } // table_data
+        return OK;
+    }
+    // инициализация рабочего соединения
+    @Override
+    public int workConnectInit(Parameters parameters) {
+        workConnection = null;
+        // подключение драйвера
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            return DRIVER_ERROR;
+        }
+        // установка параметров соединения
+        String connectionUrl = "jdbc:mysql://%1$s:%2$s/%3$s";
+        String connString = String.format(connectionUrl
+                , parameters.ip
+                , parameters.port
+                , parameters.base
+        ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
+        // соединение
+        try {
+            Connection connection = DriverManager.getConnection(connString, parameters.login, parameters.password);
+            workConnection = connection;
+        } catch (SQLException e) {
+            int stat;
+            switch (e.getErrorCode()) {
+                case 1045:
+                    stat = CONNECT_PASS_ERROR;
+                    break;
+                case 1049:
+                    stat = CONNECT_BASE_ERROR;
+                    break;
+                default:
+                    stat = CONNECT_ERROR;
+            }
+            return stat;
+        }
+        workParameters = parameters;
         return OK;
     }
 }

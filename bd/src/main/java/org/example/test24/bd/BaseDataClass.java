@@ -102,6 +102,11 @@ public class BaseDataClass implements BaseData {
     // инициализация рабочего соединения
     @Override
     public int workConnectInit(Parameters parameters) {
-        return 0;
+        return workConnect.workConnectInit(parameters);
+    }
+    // чтение списка пользователей
+    @Override
+    public UserClass[] getListUsers(boolean actual) throws Exception {
+        return workConnect.getListUsers(actual);
     }
 }

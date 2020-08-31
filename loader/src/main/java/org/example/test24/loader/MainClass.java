@@ -65,8 +65,10 @@ public class MainClass {
         try {
             //testBd.createTest(org.example.test24.bd.BaseData.TypeBaseData.ERROR);
             testBd.createTestConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL);
-            testStat1 = testBd.testConnectInit(new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My*22360", "bas1"));
-            listBd = testBd.testConnectListBd();
+            //testStat1 = testBd.testConnectInit(new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My*22360", "bas1"));
+            //listBd = testBd.testConnectListBd();
+            testBd.createWorkConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL);
+            testStat2 = testBd.workConnectInit(new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas1"));
         } catch (IllegalStateException ise) {
             System.out.println(ise.getLocalizedMessage());
         } catch (Exception e) {

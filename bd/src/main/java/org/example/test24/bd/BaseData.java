@@ -1,5 +1,7 @@
 package org.example.test24.bd;
 
+import java.util.Base64;
+
 public interface BaseData {
     int MS_SQL = 0;
     int MY_SQL = 1;
@@ -24,8 +26,9 @@ public interface BaseData {
     int DRIVER_ERROR = 1;
     int CONNECT_ERROR = 2;
     int CONNECT_BASE_ERROR = 3;
-    int QUERY_ERROR = 4;
-    int STRUCTURE_ERROR = 5;
+    int CONNECT_PASS_ERROR = 4;
+    int QUERY_ERROR = 5;
+    int STRUCTURE_ERROR = 6;
     int UNKNOWN_ERROR = 99;
     // -------------------------
     interface CallBack {
@@ -46,6 +49,18 @@ public interface BaseData {
             this.base = base;
         }
     }
+    class Password {
+        public static String encoding(String password) {
+            return new String(java.util.Base64.getEncoder().encode(password.getBytes()));
+        }
+        public static String decoding(String password) throws Exception {
+            try {
+                return new String(Base64.getDecoder().decode(password));
+            } catch (java.lang.Throwable e) {
+                throw new Exception(e.getLocalizedMessage());
+            }
+        }
+    }
     // создание тестового соединения
     void createTestConnect(TypeBaseData typeBaseData) throws IllegalStateException;
     // инициализация тестового соединения
@@ -58,6 +73,8 @@ public interface BaseData {
     void createWorkConnect(TypeBaseData typeBaseData) throws IllegalStateException;
     // инициализация рабочего соединения
     int workConnectInit(BaseData.Parameters parameters);
+    // чтение списка пользователей
+    UserClass[] getListUsers(boolean actual) throws Exception;
     /*
     // проверка подключения (логин/пароль)
     boolean checkConnect(TypeBaseData typeBaseData, Parameters parameters);

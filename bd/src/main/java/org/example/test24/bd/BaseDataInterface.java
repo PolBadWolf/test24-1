@@ -9,4 +9,6 @@ interface BaseDataInterface {
     int testConnectCheckStructure(String base);
     // инициализация рабочего соединения
     int workConnectInit(BaseData.Parameters parameters);
+    // чтение списка пользователей
+    UserClass[] getListUsers(boolean actual) throws Exception;
 }
