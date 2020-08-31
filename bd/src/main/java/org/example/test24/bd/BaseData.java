@@ -19,17 +19,42 @@ public interface BaseData {
             return BaseDataClass.typeBaseDataString(typeBaseData);
         }
     }
-    //
+    // -------------------------
+    int OK = 0;
+    int DRIVER_ERROR = 1;
+    int CONNECT_ERROR = 2;
+    int CONNECT_BASE_ERROR = 3;
+    int QUERY_ERROR = 4;
+    int STRUCTURE_ERROR = 5;
+    int UNKNOWN_ERROR = 99;
+    // -------------------------
     interface CallBack {
 
     }
     class Parameters {
         String  ip;
-        int     port;
+        String  port;
         String  login;
         String  password;
         String  base;
+
+        public Parameters(String ip, String port, String login, String password, String base) {
+            this.ip = ip;
+            this.port = port;
+            this.login = login;
+            this.password = password;
+            this.base = base;
+        }
     }
+    // создание тестового соединения
+    void createTest(TypeBaseData typeBaseData) throws IllegalStateException;
+    // тестовое соединение
+    int testConnectInit(BaseData.Parameters parameters);
+    // тестовое соединение список доступных БД
+    String[] testConnectListBd() throws Exception;
+    // тестовое соединение проверка структуры БД
+    int testConnectCheckStructure(String base);
+    /*
     // проверка подключения (логин/пароль)
     boolean checkConnect(TypeBaseData typeBaseData, Parameters parameters);
     // проверка подключения (логин/пароль + база)
@@ -43,4 +68,5 @@ public interface BaseData {
     //-----------------
     // список пользователей в текущем подкдлючении
     String[] getListUsers();
+    */
 }

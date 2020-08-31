@@ -49,43 +49,39 @@ public class BaseDataClass implements BaseData {
     public BaseDataClass(CallBack callBack) {
         this.callBack = callBack;
     }
-
+    // ==============================================
+    //                 var
+    private BaseDataInterface testConnect = null;
+    // ----------------------------------------------
+    // создание тестового соединения
     @Override
-    public boolean checkConnect(TypeBaseData typeBaseData, Parameters parameters) {
+    public void createTest(TypeBaseData typeBaseData) throws IllegalStateException {
         boolean stat = false;
         switch (typeBaseData) {
             case MS_SQL:
-                stat = new BaseDataMsSql().checkConnect(parameters);
+                testConnect = new BaseDataMsSql();
                 break;
             case MY_SQL:
-                stat = new BaseDataMySql().checkConnect(parameters);
+                testConnect = new BaseDataMySql();
                 break;
+            default:
+                testConnect = null;
+                throw new IllegalStateException("BaseDataClass.createTest Unexpected type Base Data: " + typeBaseData);
         }
-        return stat;
     }
-
+    // тестовое соединение
     @Override
-    public boolean checkConnectBase(TypeBaseData typeBaseData, Parameters parameters) {
-        return false;
+    public int testConnectInit(Parameters parameters) {
+        return testConnect.testConnectInit(parameters);
     }
-
+    // тестовое соединение список доступных баз
     @Override
-    public boolean checkStructBase(TypeBaseData typeBaseData, Parameters parameters) {
-        return false;
+    public String[] testConnectListBd() throws Exception {
+        return testConnect.testConnectListBd();
     }
-
+    // тестовое соединение проверка структуры БД
     @Override
-    public String[] getListUsers(TypeBaseData typeBaseData, Parameters parameters) {
-        return new String[0];
-    }
-
-    @Override
-    public String[] getListBaseData(TypeBaseData typeBaseData, Parameters parameters) {
-        return new String[0];
-    }
-
-    @Override
-    public String[] getListUsers() {
-        return new String[0];
+    public int testConnectCheckStructure(String base) {
+        return testConnect.testConnectCheckStructure(base);
     }
 }

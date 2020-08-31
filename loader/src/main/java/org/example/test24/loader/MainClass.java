@@ -3,6 +3,7 @@ package org.example.test24.loader;
 import org.example.test24.bd.BaseData1;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
+import org.example.test24.bd.BaseDataClass;
 import org.example.test24.bd.ParametersSql;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
@@ -57,6 +58,21 @@ public class MainClass {
     }
 
     private void start() {
+        org.example.test24.bd.BaseData testBd = new BaseDataClass(new org.example.test24.bd.BaseData.CallBack() {
+        });
+        int testStat1, testStat2, testStat3, testStat4;
+        String[] listBd;
+        try {
+            //testBd.createTest(org.example.test24.bd.BaseData.TypeBaseData.ERROR);
+            testBd.createTest(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL);
+            testStat1 = testBd.testConnectInit(new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My*22360", "bas1"));
+            listBd = testBd.testConnectListBd();
+        } catch (IllegalStateException ise) {
+            System.out.println(ise.getLocalizedMessage());
+        } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
         //
         String portName;
         //parameters = getConfig();
