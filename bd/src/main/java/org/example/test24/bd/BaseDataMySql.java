@@ -49,16 +49,16 @@ class BaseDataMySql extends BaseDataParent {
     }
     // тестовое соединение список доступных баз
     @Override
-    public String[] testConnectListBd() throws Exception {
+    public String[] testConnectListBd() {
         if (testConnection == null) {
-            throw new Exception("BaseDataMySql.testConnectListBd: CONNECT_ERROR -> testConnection");
+            return new String[0];
         }
         // запрос на список
         ResultSet resultSet;
         try {
             resultSet = testConnection.createStatement().executeQuery("SHOW DATABASES");
         } catch (SQLException throwables) {
-            throw new Exception("BaseDataMySql.testConnectListBd: QUERY_ERROR -> " + throwables.getMessage());
+            return new String[0];
         }
         // отсев системных БД
         ArrayList<String> listBd = new ArrayList<>();
@@ -74,7 +74,7 @@ class BaseDataMySql extends BaseDataParent {
             }
             resultSet.close();
         } catch (SQLException throwables) {
-            throw new Exception("BaseDataMySql.testConnectListBd: PARSING_ERROR -> " + throwables.getMessage());
+            return new String[0];
         }
         return listBd.toArray(new String[0]);
     }

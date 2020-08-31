@@ -4,7 +4,7 @@ interface BaseDataInterface {
     // тестовое соединение
     int testConnectInit(BaseData.Parameters parameters);
     // тестовое соединение список доступных баз
-    String[] testConnectListBd() throws Exception;
+    String[] testConnectListBd();
     // тестовое соединение проверка структуры БД
     int testConnectCheckStructure(String base);
     // инициализация рабочего соединения

@@ -66,14 +66,12 @@ public interface BaseData {
     // создание тестового соединения
     int createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // тестовое соединение список доступных БД
-    String[] testConnectListBd() throws Exception;
+    String[] testConnectListBd();
     // тестовое соединение проверка структуры БД
     int testConnectCheckStructure(String base);
     // -----------------------------------------------------------
     // создание рабочего соединения
     int createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
-    // инициализация рабочего соединения
-    int workConnectInit(BaseData.Parameters parameters);
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
     /*

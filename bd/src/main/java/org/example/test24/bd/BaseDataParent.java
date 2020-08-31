@@ -20,7 +20,7 @@ class BaseDataParent implements BaseDataInterface {
     }
     // тестовое соединение список доступных баз
     @Override
-    public String[] testConnectListBd() throws Exception {
+    public String[] testConnectListBd() {
         return new String[0];
     }
     // тестовое соединение проверка структуры БД
@@ -40,7 +40,7 @@ class BaseDataParent implements BaseDataInterface {
             throw new Exception("BaseDataParent.getListUsers: CONNECT_ERROR -> workConnection");
         }
         ArrayList<UserClass> listUsers = new ArrayList<>();
-        PreparedStatement statement;
+        Statement statement;
         ResultSet result;
         boolean saveAutoCommit;
         try {
@@ -52,22 +52,22 @@ class BaseDataParent implements BaseDataInterface {
         try {
             workConnection.setAutoCommit(false);
             workConnection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            String tab = "table_users";
+            statement = workConnection.createStatement();
             if (actual) {
-                statement = workConnection.prepareStatement(
-                        "SELECT        id, date_reg, date_unreg, name, password\n" +
-                                "FROM            ?\n" +
-                                "WHERE        (date_unreg IS NULL)\n" +
+                result = statement.executeQuery(
+                        "SELECT        id, date_reg, date_unreg, name, password" +
+                                "FROM            `" + tab + "` " +
+                                "WHERE        (date_unreg IS NULL) " +
                                 "ORDER BY id"
                 );
             } else {
-                statement = workConnection.prepareStatement(
-                        "SELECT        id, date_reg, date_unreg, name, password\n" +
-                                "FROM            ?\n" +
-                                "ORDER BY id"
+                result = statement.executeQuery(
+                        "SELECT id, date_reg, date_unreg, name, password " +
+                                "FROM            `" + tab + "` " +
+                                "ORDER BY id "
                 );
             }
-            statement.setString(1, "table_users");
-            result = statement.executeQuery();
             workConnection.commit();
             workConnection.setAutoCommit(saveAutoCommit);
         } catch (SQLException throwables) {

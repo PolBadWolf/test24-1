@@ -72,7 +72,7 @@ public class BaseDataClass implements BaseData {
     }
     // тестовое соединение список доступных баз
     @Override
-    public String[] testConnectListBd() throws Exception {
+    public String[] testConnectListBd() {
         return testConnect.testConnectListBd();
     }
     // тестовое соединение проверка структуры БД
@@ -94,11 +94,6 @@ public class BaseDataClass implements BaseData {
                 workConnect = null;
                 return UNEXPECTED_TYPE_BD;
         }
-        return workConnect.workConnectInit(parameters);
-    }
-    // инициализация рабочего соединения
-    @Override
-    public int workConnectInit(Parameters parameters) {
         return workConnect.workConnectInit(parameters);
     }
     // чтение списка пользователей

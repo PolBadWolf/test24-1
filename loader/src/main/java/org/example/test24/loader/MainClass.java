@@ -5,9 +5,12 @@ import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.bd.BaseDataClass;
 import org.example.test24.bd.ParametersSql;
+import org.example.test24.bd.UserClass;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenFx;
+
+import java.util.Arrays;
 
 
 public class MainClass {
@@ -62,30 +65,33 @@ public class MainClass {
         });
         int testStat1 = 99, testStat2 = 99, testStat3, testStat4;
         String[] listBd;
-        try {
-            testStat1 = connBd.createTestConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL,
-                    new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My*22360", "bas1")
-            );
-            if (testStat1 == org.example.test24.bd.BaseData.OK) {
-                listBd = connBd.testConnectListBd();
-            } else {
-                listBd = null;
-            }
-            testStat2 = connBd.createWorkConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL,
-                    new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas1")
-            );
-            if (testStat2 == org.example.test24.bd.BaseData.OK) {
-                //listBd = connBd.testConnectListBd();
-            } else {
-                //listBd = null;
-            }
-            System.out.println("test conn: " + testStat1);
-            System.out.println("work conn: " + testStat2);
-        } catch (IllegalStateException ise) {
-            System.out.println(ise.getLocalizedMessage());
-        } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+        UserClass[] listUsers;
+
+        testStat1 = connBd.createTestConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL,
+                new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas1")
+        );
+        if (testStat1 == org.example.test24.bd.BaseData.OK) {
+            listBd = connBd.testConnectListBd();
+        } else {
+            listBd = null;
         }
+        testStat2 = connBd.createWorkConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL,
+                new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas2")
+        );
+        if (testStat2 == org.example.test24.bd.BaseData.OK) {
+            try {
+                listUsers = connBd.getListUsers(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+                listUsers = new UserClass[0];
+            }
+        } else {
+            listUsers = new UserClass[0];
+        }
+        System.out.println("test conn: " + testStat1);
+        Arrays.stream(listBd).iterator().forEachRemaining(s-> System.out.println(s));
+        System.out.println("work conn: " + testStat2);
+        Arrays.stream(listUsers).iterator().forEachRemaining(userClass -> System.out.println(userClass.name));
 
         //
         String portName;
