@@ -56,7 +56,7 @@ public class BaseDataClass implements BaseData {
     // ----------------------------------------------
     // создание тестового соединения
     @Override
-    public void createTestConnect(TypeBaseData typeBaseData) throws IllegalStateException {
+    public int createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
         switch (typeBaseData) {
             case MS_SQL:
                 testConnect = new BaseDataMsSql();
@@ -66,12 +66,8 @@ public class BaseDataClass implements BaseData {
                 break;
             default:
                 testConnect = null;
-                throw new IllegalStateException("BaseDataClass.createTestConnect Unexpected type Base Data: " + typeBaseData);
+                return UNEXPECTED_TYPE_BD;
         }
-    }
-    // тестовое соединение
-    @Override
-    public int testConnectInit(Parameters parameters) {
         return testConnect.testConnectInit(parameters);
     }
     // тестовое соединение список доступных баз
@@ -86,7 +82,7 @@ public class BaseDataClass implements BaseData {
     }
     // создание рабочего соединения
     @Override
-    public void createWorkConnect(TypeBaseData typeBaseData) throws IllegalStateException {
+    public int createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
         switch (typeBaseData) {
             case MS_SQL:
                 workConnect = new BaseDataMsSql();
@@ -96,8 +92,9 @@ public class BaseDataClass implements BaseData {
                 break;
             default:
                 workConnect = null;
-                throw new IllegalStateException("BaseDataClass.createWorkConnect Unexpected type Base Data: " + typeBaseData);
+                return UNEXPECTED_TYPE_BD;
         }
+        return workConnect.workConnectInit(parameters);
     }
     // инициализация рабочего соединения
     @Override

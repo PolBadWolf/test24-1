@@ -23,12 +23,13 @@ public interface BaseData {
     }
     // -------------------------
     int OK = 0;
-    int DRIVER_ERROR = 1;
-    int CONNECT_ERROR = 2;
-    int CONNECT_BASE_ERROR = 3;
-    int CONNECT_PASS_ERROR = 4;
-    int QUERY_ERROR = 5;
-    int STRUCTURE_ERROR = 6;
+    int UNEXPECTED_TYPE_BD = 1;
+    int DRIVER_ERROR = 2;
+    int CONNECT_PASS_ERROR = 3;
+    int CONNECT_BASE_ERROR = 4;
+    int CONNECT_ERROR = 5;
+    int QUERY_ERROR = 6;
+    int STRUCTURE_ERROR = 7;
     int UNKNOWN_ERROR = 99;
     // -------------------------
     interface CallBack {
@@ -61,16 +62,16 @@ public interface BaseData {
             }
         }
     }
+    // -----------------------------------------------------------
     // создание тестового соединения
-    void createTestConnect(TypeBaseData typeBaseData) throws IllegalStateException;
-    // инициализация тестового соединения
-    int testConnectInit(BaseData.Parameters parameters);
+    int createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // тестовое соединение список доступных БД
     String[] testConnectListBd() throws Exception;
     // тестовое соединение проверка структуры БД
     int testConnectCheckStructure(String base);
+    // -----------------------------------------------------------
     // создание рабочего соединения
-    void createWorkConnect(TypeBaseData typeBaseData) throws IllegalStateException;
+    int createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // инициализация рабочего соединения
     int workConnectInit(BaseData.Parameters parameters);
     // чтение списка пользователей

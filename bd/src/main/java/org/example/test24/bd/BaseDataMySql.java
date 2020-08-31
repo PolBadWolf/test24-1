@@ -31,7 +31,18 @@ class BaseDataMySql extends BaseDataParent {
             Connection connection = DriverManager.getConnection(connString, parameters.login, parameters.password);
             testConnection = connection;
         } catch (SQLException e) {
-            return CONNECT_ERROR;
+            int stat;
+            switch (e.getErrorCode()) {
+                case 1045:
+                    stat = CONNECT_PASS_ERROR;
+                    break;
+                case 1049:
+                    stat = CONNECT_BASE_ERROR;
+                    break;
+                default:
+                    stat = CONNECT_ERROR;
+            }
+            return stat;
         }
         testParameters = parameters;
         return OK;

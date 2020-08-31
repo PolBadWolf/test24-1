@@ -58,17 +58,29 @@ public class MainClass {
     }
 
     private void start() {
-        org.example.test24.bd.BaseData testBd = new BaseDataClass(new org.example.test24.bd.BaseData.CallBack() {
+        org.example.test24.bd.BaseData connBd = new BaseDataClass(new org.example.test24.bd.BaseData.CallBack() {
         });
-        int testStat1, testStat2, testStat3, testStat4;
+        int testStat1 = 99, testStat2 = 99, testStat3, testStat4;
         String[] listBd;
         try {
-            //testBd.createTest(org.example.test24.bd.BaseData.TypeBaseData.ERROR);
-            testBd.createTestConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL);
-            //testStat1 = testBd.testConnectInit(new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My*22360", "bas1"));
-            //listBd = testBd.testConnectListBd();
-            testBd.createWorkConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL);
-            testStat2 = testBd.workConnectInit(new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas1"));
+            testStat1 = connBd.createTestConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL,
+                    new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My*22360", "bas1")
+            );
+            if (testStat1 == org.example.test24.bd.BaseData.OK) {
+                listBd = connBd.testConnectListBd();
+            } else {
+                listBd = null;
+            }
+            testStat2 = connBd.createWorkConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL,
+                    new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas1")
+            );
+            if (testStat2 == org.example.test24.bd.BaseData.OK) {
+                //listBd = connBd.testConnectListBd();
+            } else {
+                //listBd = null;
+            }
+            System.out.println("test conn: " + testStat1);
+            System.out.println("work conn: " + testStat2);
         } catch (IllegalStateException ise) {
             System.out.println(ise.getLocalizedMessage());
         } catch (Exception e) {
