@@ -1,7 +1,7 @@
 package org.example.test24.loader.editUsers;
 
 import org.example.test24.bd.BaseData1;
-import org.example.test24.allinterface.bd.UserClass;
+import org.example.test24.bd.UserClass;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

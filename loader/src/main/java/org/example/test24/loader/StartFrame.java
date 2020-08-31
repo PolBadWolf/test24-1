@@ -2,7 +2,7 @@ package org.example.test24.loader;
 
 import org.example.test24.bd.BaseData1;
 import org.example.lib.MySwingUtil;
-import org.example.test24.allinterface.bd.UserClass;
+import org.example.test24.bd.UserClass;
 
 import javax.swing.*;
 import java.awt.*;

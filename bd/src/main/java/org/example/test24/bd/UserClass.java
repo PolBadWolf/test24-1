@@ -1,4 +1,4 @@
-package org.example.test24.allinterface.bd;
+package org.example.test24.bd;
 
 import java.util.Date;
 

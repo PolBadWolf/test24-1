@@ -1,7 +1,5 @@
 package org.example.test24.bd;
 
-import org.example.test24.allinterface.bd.UserClass;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
