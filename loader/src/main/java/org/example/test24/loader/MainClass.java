@@ -64,7 +64,7 @@ public class MainClass {
         String[] listBd;
         try {
             //testBd.createTest(org.example.test24.bd.BaseData.TypeBaseData.ERROR);
-            testBd.createTest(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL);
+            testBd.createTestConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL);
             testStat1 = testBd.testConnectInit(new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My*22360", "bas1"));
             listBd = testBd.testConnectListBd();
         } catch (IllegalStateException ise) {

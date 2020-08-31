@@ -20,9 +20,14 @@ class BaseDataParent implements BaseDataInterface {
     public String[] testConnectListBd() throws Exception {
         return new String[0];
     }
-
+    // тестовое соединение проверка структуры БД
     @Override
     public int testConnectCheckStructure(String base) {
+        return UNKNOWN_ERROR;
+    }
+    // инициализация рабочего соединения
+    @Override
+    public int workConnectInit(Parameters parameters) {
         return UNKNOWN_ERROR;
     }
 }

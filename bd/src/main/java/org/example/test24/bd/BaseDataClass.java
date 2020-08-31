@@ -52,11 +52,11 @@ public class BaseDataClass implements BaseData {
     // ==============================================
     //                 var
     private BaseDataInterface testConnect = null;
+    private BaseDataInterface workConnect = null;
     // ----------------------------------------------
     // создание тестового соединения
     @Override
-    public void createTest(TypeBaseData typeBaseData) throws IllegalStateException {
-        boolean stat = false;
+    public void createTestConnect(TypeBaseData typeBaseData) throws IllegalStateException {
         switch (typeBaseData) {
             case MS_SQL:
                 testConnect = new BaseDataMsSql();
@@ -66,7 +66,7 @@ public class BaseDataClass implements BaseData {
                 break;
             default:
                 testConnect = null;
-                throw new IllegalStateException("BaseDataClass.createTest Unexpected type Base Data: " + typeBaseData);
+                throw new IllegalStateException("BaseDataClass.createTestConnect Unexpected type Base Data: " + typeBaseData);
         }
     }
     // тестовое соединение
@@ -83,5 +83,25 @@ public class BaseDataClass implements BaseData {
     @Override
     public int testConnectCheckStructure(String base) {
         return testConnect.testConnectCheckStructure(base);
+    }
+    // создание рабочего соединения
+    @Override
+    public void createWorkConnect(TypeBaseData typeBaseData) throws IllegalStateException {
+        switch (typeBaseData) {
+            case MS_SQL:
+                workConnect = new BaseDataMsSql();
+                break;
+            case MY_SQL:
+                workConnect = new BaseDataMySql();
+                break;
+            default:
+                workConnect = null;
+                throw new IllegalStateException("BaseDataClass.createWorkConnect Unexpected type Base Data: " + typeBaseData);
+        }
+    }
+    // инициализация рабочего соединения
+    @Override
+    public int workConnectInit(Parameters parameters) {
+        return 0;
     }
 }

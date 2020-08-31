@@ -47,13 +47,17 @@ public interface BaseData {
         }
     }
     // создание тестового соединения
-    void createTest(TypeBaseData typeBaseData) throws IllegalStateException;
-    // тестовое соединение
+    void createTestConnect(TypeBaseData typeBaseData) throws IllegalStateException;
+    // инициализация тестового соединения
     int testConnectInit(BaseData.Parameters parameters);
     // тестовое соединение список доступных БД
     String[] testConnectListBd() throws Exception;
     // тестовое соединение проверка структуры БД
     int testConnectCheckStructure(String base);
+    // создание рабочего соединения
+    void createWorkConnect(TypeBaseData typeBaseData) throws IllegalStateException;
+    // инициализация рабочего соединения
+    int workConnectInit(BaseData.Parameters parameters);
     /*
     // проверка подключения (логин/пароль)
     boolean checkConnect(TypeBaseData typeBaseData, Parameters parameters);
