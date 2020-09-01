@@ -13,13 +13,14 @@ public interface FrameCallBack {
     int testConnectCheckStructure(String base);
     // создание рабочего соединения
     int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
-
-
-
     // прочитать список пользователей
     UserClass[] getListUsers(boolean actual);
     // чтение comm port из конфига
     String getCommPortNameFromConfig();
+
+
+
+
     // проверка Comm Port на валидность
     boolean checkCommPort(String portName);
     //---------------------------
