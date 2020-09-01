@@ -62,20 +62,15 @@ public class StartFrame extends JFrame {
         // начальная инициация соединения c БД и получение списка пользователей
         res = beginInitConnectBdGetListUsers();
 
-
-
-        if (typeBaseData != BaseData.TypeBaseData.ERROR) {
-        } else {
-            listUsers = new UserClass[0];
-        }
         // задержка на пока начального экрана
         try {
             Thread.sleep(2_000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // стение порта из конфига
+        // чтение порта из конфига
         String portName = callBack.getCommPortNameFromConfig();
+
         // проверка Comm port
         flCheckCommPort = callBack.checkCommPort(portName);
 
@@ -108,58 +103,63 @@ public class StartFrame extends JFrame {
 
     // начальная инициация соединения c БД и получение списка пользователей
     private boolean beginInitConnectBdGetListUsers() {
-        int 
+        int result;
         // чтение типа БД
         BaseData.TypeBaseData typeBaseData = callBack.getTypeBaseDataFromConfig();
         if (typeBaseData != BaseData.TypeBaseData.ERROR) {
             listUsers = new UserClass[0];
+            flCheckSql = false;
             return false;
         }
         // чтение параметров из конфига
         ParametersSql parametersSql = callBack.getParametersSqlFromConfig(typeBaseData);
         if (parametersSql.getStat() != ParametersSql.OK) {
             listUsers = new UserClass[0];
+            flCheckSql = false;
             return false;
         }
-
-
-                // установка тестового соединения
-                int r = callBack.createTestConnectBd(typeBaseData,
-                        new BaseData.Parameters(
-                                parametersSql.urlServer,
-                                parametersSql.portServer,
-                                parametersSql.user,
-                                parametersSql.password,
-                                parametersSql.dataBase
-                        )
-                );
-                if (r == BaseData.OK) {
-                    // проверка структуры БД
-                    r = callBack.testConnectCheckStructure(parametersSql.dataBase);
-                    if (r == BaseData.OK) {
-                        // установка рабочего соединения
-                        r = callBack.createWorkConnect(typeBaseData,
-                                new BaseData.Parameters(
-                                        parametersSql.urlServer,
-                                        parametersSql.portServer,
-                                        parametersSql.user,
-                                        parametersSql.password,
-                                        parametersSql.dataBase
-                                )
-                        );
-
-                    }
-
-
-                    // загрузка списка пользователей
-                    listUsers = callBack.getListUsers(true);
-                } else {
-                    // соединение не установлено
-                    listUsers = new UserClass[0];
-                }
-            }
-        } else {
-
+        // установка тестового соединения
+        result = callBack.createTestConnectBd(typeBaseData,
+                new BaseData.Parameters(
+                        parametersSql.urlServer,
+                        parametersSql.portServer,
+                        parametersSql.user,
+                        parametersSql.password,
+                        parametersSql.dataBase
+                )
+        );
+        if (result != BaseData.OK) {
+            listUsers = new UserClass[0];
+            flCheckSql = false;
+            return false;
+        }
+        // проверка структуры БД
+        result = callBack.testConnectCheckStructure(parametersSql.dataBase);
+        if (result != BaseData.OK) {
+            listUsers = new UserClass[0];
+            flCheckSql = false;
+            return false;
+        }
+        // установка рабочего соединения
+        result = callBack.createWorkConnect(typeBaseData,
+                new BaseData.Parameters(
+                        parametersSql.urlServer,
+                        parametersSql.portServer,
+                        parametersSql.user,
+                        parametersSql.password,
+                        parametersSql.dataBase
+                )
+        );
+        if (result != BaseData.OK) {
+            listUsers = new UserClass[0];
+            flCheckSql = false;
+            return false;
+        }
+        flCheckSql = true;
+        // загрузка списка пользователей
+        listUsers = callBack.getListUsers(true);
+        if (listUsers.length == 0) {
+            return false;
         }
         return true;
     }
