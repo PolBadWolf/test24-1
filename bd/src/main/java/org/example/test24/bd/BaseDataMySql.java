@@ -82,7 +82,7 @@ class BaseDataMySql extends BaseDataParent {
     @Override
     public int testConnectCheckStructure(String base) {
         if (testConnection == null) {
-            //throw new Exception("BaseDataMySql.testConnectCheckStructure: CONNECT_ERROR -> testConnection");
+            return CONNECT_ERROR;
         }
         boolean table1;
         String sample;

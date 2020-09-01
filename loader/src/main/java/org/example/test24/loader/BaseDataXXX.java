@@ -1,8 +1,8 @@
 package org.example.test24.loader;
 
 import org.example.test24.bd.BaseData1;
-
-public class BaseData {
+/*
+public class BaseDataXXX {
     public interface CallBack {
         BaseData1.TypeBaseData loadTypeBaseData();
         String[] getFileNameSql();
@@ -12,7 +12,7 @@ public class BaseData {
     private BaseData1 bd;
     private String[] fileNameSql;
 
-    public BaseData(CallBack callBack) {
+    public BaseDataXXX(CallBack callBack) {
         this.callBack = callBack;
         this.fileNameSql = callBack.getFileNameSql();
         typeBaseData = callBack.loadTypeBaseData();
@@ -26,3 +26,4 @@ public class BaseData {
         }
     }
 }
+*/

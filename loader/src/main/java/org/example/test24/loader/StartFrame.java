@@ -1,7 +1,8 @@
 package org.example.test24.loader;
 
-import org.example.test24.bd.BaseData1;
+import org.example.test24.bd.BaseData;
 import org.example.lib.MySwingUtil;
+import org.example.test24.bd.ParametersSql;
 import org.example.test24.bd.UserClass;
 
 import javax.swing.*;
@@ -9,7 +10,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class StartFrame extends JFrame {
-    private CallBack callBack;
+    private FrameCallBack callBack;
     private JLabel label1;
     private JLabel label2;
     private JLabel label3;
@@ -29,28 +30,20 @@ public class StartFrame extends JFrame {
     private boolean flCheckSql = false;
     private UserClass[] listUsers = null;
     private UserClass user = null;
+    //
 
-    public interface CallBack {
-        // проверка Comm Port
-        boolean checkCommPort();
-        // подключение к БД и структуры БД (параметры из файла конфигурации)
-        boolean checkSqlFile();
-        void closeFrame();
-        // ---------------
-        TuningFrame getTuningFrame();
-        //String[] getParameters();
-        String[] getFilesNameSql();
-        String getFileNameSql(String typeBd) throws Exception;
-        String loadConfigCommPort();
-        BaseData1.TypeBaseData loadConfigTypeBaseData();
-    }
 
-    public static StartFrame main(CallBack callBack) {
+
+    public static StartFrame main(FrameCallBack callBack) {
         final StartFrame[] frame = new StartFrame[1];
         frame[0] = null;
         try {
-            SwingUtilities.invokeAndWait(() -> frame[0] = new StartFrame(callBack));
-            new Thread( ()->frame[0].start()).start();
+            SwingUtilities.invokeAndWait(() -> {
+                frame[0] = new StartFrame(callBack);
+            });
+            new Thread( ()-> {
+                frame[0].start();
+            }).start();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
         }
@@ -58,20 +51,40 @@ public class StartFrame extends JFrame {
     }
 
     private void start() {
+        boolean res;
+        // загрузка компонентов и вывод загаловка
+        SwingUtilities.invokeLater(() -> {
+            initComponents();
+            onTitleComponents();
+            setResizable(false);
+            setVisible(true);
+        });
+        // начальная инициация соединения c БД и получение списка пользователей
+        res = beginInitConnectBdGetListUsers();
+
+
+
+        if (typeBaseData != BaseData.TypeBaseData.ERROR) {
+        } else {
+            listUsers = new UserClass[0];
+        }
+        // задержка на пока начального экрана
         try {
-            SwingUtilities.invokeLater(() -> {
-                initComponents();
-                onTitleComponents();
-                setResizable(false);
-                setVisible(true);
-            });
-            // проверка Comm port
-            flCheckCommPort = callBack.checkCommPort();
+            Thread.sleep(2_000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // стение порта из конфига
+        String portName = callBack.getCommPortNameFromConfig();
+        // проверка Comm port
+        flCheckCommPort = callBack.checkCommPort(portName);
+
+
+        try {
             flCheckSql = callBack.checkSqlFile();
             if (flCheckSql) {
-                loadListUsers();
+                loadListUsers_old();
             }
-            Thread.sleep(1_000);
             SwingUtilities.invokeAndWait(() -> {
                 offTitleComponents();
                 onInputComponents();
@@ -93,7 +106,65 @@ public class StartFrame extends JFrame {
 
     }
 
-    private StartFrame(CallBack callBack) {
+    // начальная инициация соединения c БД и получение списка пользователей
+    private boolean beginInitConnectBdGetListUsers() {
+        int 
+        // чтение типа БД
+        BaseData.TypeBaseData typeBaseData = callBack.getTypeBaseDataFromConfig();
+        if (typeBaseData != BaseData.TypeBaseData.ERROR) {
+            listUsers = new UserClass[0];
+            return false;
+        }
+        // чтение параметров из конфига
+        ParametersSql parametersSql = callBack.getParametersSqlFromConfig(typeBaseData);
+        if (parametersSql.getStat() != ParametersSql.OK) {
+            listUsers = new UserClass[0];
+            return false;
+        }
+
+
+                // установка тестового соединения
+                int r = callBack.createTestConnectBd(typeBaseData,
+                        new BaseData.Parameters(
+                                parametersSql.urlServer,
+                                parametersSql.portServer,
+                                parametersSql.user,
+                                parametersSql.password,
+                                parametersSql.dataBase
+                        )
+                );
+                if (r == BaseData.OK) {
+                    // проверка структуры БД
+                    r = callBack.testConnectCheckStructure(parametersSql.dataBase);
+                    if (r == BaseData.OK) {
+                        // установка рабочего соединения
+                        r = callBack.createWorkConnect(typeBaseData,
+                                new BaseData.Parameters(
+                                        parametersSql.urlServer,
+                                        parametersSql.portServer,
+                                        parametersSql.user,
+                                        parametersSql.password,
+                                        parametersSql.dataBase
+                                )
+                        );
+
+                    }
+
+
+                    // загрузка списка пользователей
+                    listUsers = callBack.getListUsers(true);
+                } else {
+                    // соединение не установлено
+                    listUsers = new UserClass[0];
+                }
+            }
+        } else {
+
+        }
+        return true;
+    }
+
+    private StartFrame(FrameCallBack callBack) {
         this.callBack = callBack;
         setLayout(null);
         addWindowListener(new WindowAdapter() {
@@ -280,10 +351,11 @@ public class StartFrame extends JFrame {
         button.setBounds(x, y, width, height);
         button.addActionListener(e -> {
             try {
+                BaseData bd = null;
 //                DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
-                BaseData1 bd = BaseData1.init(callBack.loadConfigTypeBaseData().getTypeBaseDataString(), callBack.getFilesNameSql());
-                bd.updateUserPassword(user, fieldPassword.getText());
-                loadListUsers();
+//                BaseData1 bd = BaseData1.init(callBack.loadConfigTypeBaseData().getTypeBaseDataString(), callBack.getFilesNameSql());
+//                bd.updateUserPassword(user, fieldPassword.getText());
+                loadListUsers_old();
                 comboBoxUser.setSelectedItem(user.name);
             } catch (Throwable ex) {
                 ex.printStackTrace();
@@ -396,10 +468,10 @@ public class StartFrame extends JFrame {
             startFrame.fieldPassword.setEnabled(true);
             startFrame.buttonEnter.setEnabled(true);
             flCheckSql = callBack.checkSqlFile();
-            flCheckCommPort = callBack.checkCommPort();
+            //flCheckCommPort = callBack.checkCommPort();
             try {
                 if (flCheckSql) {
-                    StartFrame.this.loadListUsers();
+                    StartFrame.this.loadListUsers_old();
                 }
             } catch (Exception e) {
                 System.out.println("StartFrame.StartFrameCallBackTuningFrame ошибка чтения списка пользователей: " + e.getMessage());
@@ -410,11 +482,12 @@ public class StartFrame extends JFrame {
     // ===========================================================================
     //                        ===
     // загрузка пользователей
-    private void loadListUsers() throws Exception {
+    private void loadListUsers_old() throws Exception {
         if (flCheckSql) {
-            String baseDataName = callBack.loadConfigTypeBaseData().getTypeBaseDataString();
-            BaseData1 bd = BaseData1.init(baseDataName, callBack.getFilesNameSql());
-            listUsers = bd.getListUsers(true);
+            String baseDataName;
+            //baseDataName = callBack.loadConfigTypeBaseData().getTypeBaseDataString();
+            //BaseData1 bd = BaseData1.init(baseDataName, callBack.getFilesNameSql());
+            //listUsers = bd.getListUsers(true);
             comboBoxUser.removeAllItems();
             for (UserClass listUser : listUsers) {
                 comboBoxUser.addItem(listUser.name);

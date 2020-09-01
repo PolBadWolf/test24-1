@@ -24,17 +24,17 @@ public interface BaseData1 {
             return typeBaseDataString(typeBaseData);
         }
     }
-    static TypeBaseData typeBaseDataCode(String nameTypeBaseData) {
-        BaseData1.TypeBaseData typeBaseData;
+    static BaseData.TypeBaseData typeBaseDataCode(String nameTypeBaseData) {
+        BaseData.TypeBaseData typeBaseData;
         switch (nameTypeBaseData.toUpperCase()) {
             case "MS_SQL":
-                typeBaseData = BaseData1.TypeBaseData.MS_SQL;
+                typeBaseData = BaseData.TypeBaseData.MS_SQL;
                 break;
             case "MY_SQL":
-                typeBaseData = BaseData1.TypeBaseData.MY_SQL;
+                typeBaseData = BaseData.TypeBaseData.MY_SQL;
                 break;
             default:
-                typeBaseData = BaseData1.TypeBaseData.ERROR;
+                typeBaseData = BaseData.TypeBaseData.ERROR;
         }
         return typeBaseData;
     }

@@ -1,7 +1,7 @@
 package org.example.test24.bd;
 
 public class BaseDataClass implements BaseData {
-    static String typeBaseDataString(int codeTypeBaseData) {
+    public static String typeBaseDataString(int codeTypeBaseData) {
         String stroka;
         switch (codeTypeBaseData) {
             case MS_SQL:
@@ -15,7 +15,7 @@ public class BaseDataClass implements BaseData {
         }
         return stroka;
     }
-    static TypeBaseData typeBaseDataCode(String nameTypeBaseData) {
+    public static TypeBaseData typeBaseDataCode(String nameTypeBaseData) {
         TypeBaseData typeBaseData;
         switch (nameTypeBaseData.toUpperCase()) {
             case "MS_SQL":

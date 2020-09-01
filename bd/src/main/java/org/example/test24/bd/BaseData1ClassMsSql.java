@@ -8,7 +8,7 @@ public class BaseData1ClassMsSql extends BaseData1Class {
 
     @Override
     public void setParametersSql(String[] fileNameSql) {
-        parametersSql = new ParametersSql(fileNameSql[0], "MS_SQL");
+        parametersSql = new ParametersSql(fileNameSql[0]);
     }
 
     @Override
