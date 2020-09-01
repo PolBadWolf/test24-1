@@ -218,7 +218,10 @@ public class MainClass {
     // создание рабочего соединения
     @Override
     public int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
-        return 0;
+        if (connBd == null || typeBaseData == BaseData.TypeBaseData.ERROR) {
+            return BaseData.CONNECT_ERROR;
+        }
+        return connBd.createWorkConnect(typeBaseData, parameters);
     }
 
     // загрузка пользователей

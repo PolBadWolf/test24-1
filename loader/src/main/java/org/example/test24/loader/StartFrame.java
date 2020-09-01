@@ -31,7 +31,8 @@ public class StartFrame extends JFrame {
     private UserClass[] listUsers = null;
     private UserClass user = null;
     //
-
+    private ParametersSql parametersSql;
+    private BaseData.TypeBaseData typeBaseData;
 
 
     public static StartFrame main(FrameCallBack callBack) {
@@ -59,9 +60,12 @@ public class StartFrame extends JFrame {
             setResizable(false);
             setVisible(true);
         });
-        // начальная инициация соединения c БД и получение списка пользователей
-        res = beginInitConnectBdGetListUsers();
-
+        // начальная загрузка параметров соединения с БД
+        res =  beginInitParametersSql();
+        if (res) {
+            // начальная инициация соединения c БД и получение списка пользователей
+            res = beginInitConnectBdGetListUsers();
+        }
         // задержка на пока начального экрана
         try {
             Thread.sleep(2_000);
@@ -70,25 +74,13 @@ public class StartFrame extends JFrame {
         }
         // чтение порта из конфига
         String portName = callBack.getCommPortNameFromConfig();
-
         // проверка Comm port
         flCheckCommPort = callBack.checkCommPort(portName);
-
-
         try {
-            flCheckSql = callBack.checkSqlFile();
-            if (flCheckSql) {
-                loadListUsers_old();
-            }
             SwingUtilities.invokeAndWait(() -> {
                 offTitleComponents();
                 onInputComponents();
-                if (!flCheckCommPort) {
-                    System.out.println("ошибка открытия comm port");
-                }
-                if (!flCheckSql) {
-                    System.out.println("ошибка подключения к BD");
-                }
+                // загрузка параметров
             });
             // --------
             /*TuningFrame tuningFrame;
@@ -101,23 +93,29 @@ public class StartFrame extends JFrame {
 
     }
 
-    // начальная инициация соединения c БД и получение списка пользователей
-    private boolean beginInitConnectBdGetListUsers() {
-        int result;
-        // чтение типа БД
-        BaseData.TypeBaseData typeBaseData = callBack.getTypeBaseDataFromConfig();
-        if (typeBaseData != BaseData.TypeBaseData.ERROR) {
+    // начальная загрузка параметров соединения с БД
+    private boolean beginInitParametersSql() {
+        // тип БД
+        typeBaseData = callBack.getTypeBaseDataFromConfig();
+        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
         }
+        int result;
         // чтение параметров из конфига
-        ParametersSql parametersSql = callBack.getParametersSqlFromConfig(typeBaseData);
+        parametersSql = callBack.getParametersSqlFromConfig(typeBaseData);
         if (parametersSql.getStat() != ParametersSql.OK) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
         }
+        return true;
+    }
+
+    // начальная инициация соединения c БД и получение списка пользователей
+    private boolean beginInitConnectBdGetListUsers() {
+        int result;
         // установка тестового соединения
         result = callBack.createTestConnectBd(typeBaseData,
                 new BaseData.Parameters(
