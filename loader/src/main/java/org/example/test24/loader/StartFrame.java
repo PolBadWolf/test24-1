@@ -364,12 +364,17 @@ public class StartFrame extends JFrame {
         button.setBounds(x, y, width, height);
         button.addActionListener(e -> {
             try {
-                BaseData bd = null;
+                UserClass currentUser = (UserClass) comboBoxUser.getSelectedItem();
+                boolean result = callBack.setUserNewPassword(currentUser, fieldPassword.getText());
+                System.out.println("логин = " + currentUser.name + " новый пароль = " + comboBoxUser.getSelectedItem() + " статус = " + result);
+                currentUser.password = fieldPassword.getText();
+
+                //                BaseData bd = null;
 //                DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
 //                BaseData1 bd = BaseData1.init(callBack.loadConfigTypeBaseData().getTypeBaseDataString(), callBack.getFilesNameSql());
 //                bd.updateUserPassword(user, fieldPassword.getText());
-                loadListUsers_old();
-                comboBoxUser.setSelectedItem(user.name);
+//                loadListUsers_old();
+                //comboBoxUser.setSelectedItem(user.name);
             } catch (Throwable ex) {
                 ex.printStackTrace();
             }
@@ -397,31 +402,10 @@ public class StartFrame extends JFrame {
         return comboBox;
     }
 
-
-    // проверка пользавателея по списку
-    private UserClass checkUserFromList(String surName, String password) {
-        if (password.equals("")) return null;
-        UserClass user = null;
-        if (listUsers != null) {
-            boolean flUser;
-            for (int i = 0; i < listUsers.length; i++) {
-                flUser = listUsers[i].name.equals(surName);
-                if (flUser) {
-                    if (listUsers[i].password.equals(password)) {
-                        user = listUsers[i];
-                        break;
-                    }
-                }
-            }
-        }
-        return user;
-    }
-
     // проверка встроенного администратор
     private boolean checkIntegratedAdministrator(String surName, String password) {
         return  surName.equals("Doc") && password.equals("aUxPMjIzNjA=");
     }
-
     // обработка ввод
     private void callEnter() {
         UserClass user = null;
@@ -481,7 +465,7 @@ public class StartFrame extends JFrame {
             //flCheckCommPort = callBack.checkCommPort();
             try {
                 if (flCheckSql) {
-                    StartFrame.this.loadListUsers_old();
+                    //StartFrame.this.loadListUsers_old();
                 }
             } catch (Exception e) {
                 System.out.println("StartFrame.StartFrameCallBackTuningFrame ошибка чтения списка пользователей: " + e.getMessage());
@@ -490,23 +474,4 @@ public class StartFrame extends JFrame {
     }
 
     // ===========================================================================
-    //                        ===
-    // загрузка пользователей
-    private void loadListUsers_old() throws Exception {
-        /*if (flCheckSql) {
-            String baseDataName;
-            //baseDataName = callBack.loadConfigTypeBaseData().getTypeBaseDataString();
-            //BaseData1 bd = BaseData1.init(baseDataName, callBack.getFilesNameSql());
-            //listUsers = bd.getListUsers(true);
-            comboBoxUser.removeAllItems();
-            for (UserClass listUser : listUsers) {
-                comboBoxUser.addItem(listUser.name);
-            }
-            try {
-                comboBoxUser.setSelectedItem(listUsers[0].name);
-            } catch (java.lang.Throwable e) {
-                System.out.println("StartFrame.loadListUsers ошибка установки текущего пользователя: " + e.getMessage());
-            }
-        }*/
-    }
 }

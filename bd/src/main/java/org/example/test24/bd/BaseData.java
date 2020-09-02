@@ -74,6 +74,12 @@ public interface BaseData {
     int createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
+    // установка нового пароля пользователя
+    boolean setUserNewPassword(UserClass user, String newPassword);
+
+
+
+
     /*
     // проверка подключения (логин/пароль)
     boolean checkConnect(TypeBaseData typeBaseData, Parameters parameters);

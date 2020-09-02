@@ -223,7 +223,6 @@ public class MainClass {
         }
         return connBd.createWorkConnect(typeBaseData, parameters);
     }
-
     // загрузка пользователей
     @Override
     public UserClass[] getListUsers(boolean actual) {
@@ -245,6 +244,12 @@ public class MainClass {
     @Override
     public boolean checkCommPort(String portName) {
         return MainClass.this.checkCommPort(portName);
+    }
+    // установка нового пароля пользователя
+    @Override
+    public boolean setUserNewPassword(UserClass user, String newPassword) {
+        if (connBd == null) return false;
+        return connBd.setUserNewPassword(user, newPassword);
     }
 
     // --------------------------------------------------------

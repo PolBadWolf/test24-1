@@ -108,4 +108,42 @@ class BaseDataParent implements BaseDataInterface {
         //
         return listUsers.toArray(new UserClass[0]);
     }
+    // установка нового пароля пользователя
+    @Override
+    public boolean setUserNewPassword(UserClass user, String newPassword) {
+        try {
+        if (workConnection.isClosed()) return false;
+        } catch (SQLException e) {
+            return false;
+        }
+        boolean saveAutoCommit;
+        PreparedStatement preparedStatement;
+        ResultSet result;
+        try {
+            saveAutoCommit = workConnection.getAutoCommit();
+            workConnection.setAutoCommit(true);
+        } catch (SQLException throwables) {
+            return false;
+        }
+        try {
+            preparedStatement = workConnection.prepareStatement(
+                    "UPDATE Table_users SET  password = ? WHERE id = ?"
+            );
+        } catch (SQLException throwables) {
+            try {
+                workConnection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException e) {
+            }
+            return false;
+        }
+        try {
+            preparedStatement.setString(1, BaseData.Password.encoding(newPassword));
+            preparedStatement.setInt(2, user.id);
+            int r  = preparedStatement.executeUpdate();
+            System.out.println("pass upd res = " + r);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return true;
+    }
 }

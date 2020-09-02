@@ -17,12 +17,15 @@ public interface FrameCallBack {
     UserClass[] getListUsers(boolean actual);
     // чтение comm port из конфига
     String getCommPortNameFromConfig();
-
-
-
-
     // проверка Comm Port на валидность
     boolean checkCommPort(String portName);
+
+    // ----------------
+    // установка нового пароля пользователя
+    boolean setUserNewPassword(UserClass user, String newPassword);
+
+
+
     //---------------------------
     // подключение к БД и структуры БД (параметры из файла конфигурации)
     boolean checkSqlFile();

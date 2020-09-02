@@ -11,4 +11,6 @@ interface BaseDataInterface {
     int workConnectInit(BaseData.Parameters parameters);
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
+    // установка нового пароля пользователя
+    boolean setUserNewPassword(UserClass user, String newPassword);
 }

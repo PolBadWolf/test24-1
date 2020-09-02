@@ -101,4 +101,10 @@ public class BaseDataClass implements BaseData {
     public UserClass[] getListUsers(boolean actual) throws Exception {
         return workConnect.getListUsers(actual);
     }
+    // установка нового пароля пользователя
+    @Override
+    public boolean setUserNewPassword(UserClass user, String newPassword) {
+        if (workConnect == null) return false;
+        return workConnect.setUserNewPassword(user, newPassword);
+    }
 }
