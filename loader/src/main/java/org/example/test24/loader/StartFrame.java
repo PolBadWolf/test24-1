@@ -456,6 +456,9 @@ public class StartFrame extends JFrame {
         if (!flAdmin) {
             // здесь проверка условий запуска и ...
             System.out.println("тут должна быть ");
+            fieldPassword.setText("");
+            buttonSetPassword.setEnabled(true);
+            if (flCheckCommPort && flCheckSql) buttonWork.setEnabled(true);
             return;
         }
         // ==== тут админ ===
@@ -464,42 +467,6 @@ public class StartFrame extends JFrame {
         buttonWork.setEnabled(false);
         if (!askLocalAdmin) buttonSetPassword.setEnabled(true);
         buttonTuning.setEnabled(true);
-
-
-        //
-        //surName = (String) comboBoxUser.getSelectedItem();
-        //String password = fieldPassword.getText();
-        //
-        //user = checkUserFromList(surName, password);
-        //flAdmin = checkIntegratedAdministrator(surName, password);
-        //
-        /*if (user != null) {
-            buttonSetPassword.setEnabled(true);
-            if (flCheckCommPort && flCheckSql) {
-                buttonWork.setEnabled(true);
-            }
-        }*/
-        //
-        /*if (flAdmin) {
-            buttonTuning.setEnabled(true);
-        }
-        //
-        if (!flCheckSql) {
-            MySwingUtil.showMessage(this, "Base Data","Ошибка базы данных", 6_000);
-        } else {
-            if (!flCheckCommPort) {
-                MySwingUtil.showMessage(this, "Comm Port","Ошибка подключения к ком порту", 6_000);
-            }
-        }
-        if (user == null && !flAdmin) {
-            comboBoxUser.setEnabled(false);
-            fieldPassword.setEnabled(false);
-            MySwingUtil.showMessage(this, (String) comboBoxUser.getSelectedItem(),"Ошибка пользователь/пароль", 16_000, o-> {
-                comboBoxUser.setEnabled(true);
-                fieldPassword.setEnabled(true);
-                buttonEnter.setEnabled(true);
-            });
-        }*/
     }
 
     // callBack из TuningFrame
