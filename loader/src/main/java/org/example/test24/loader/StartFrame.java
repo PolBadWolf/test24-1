@@ -8,6 +8,8 @@ import org.example.test24.bd.UserClass;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class StartFrame extends JFrame {
     private FrameCallBack callBack;
@@ -22,7 +24,7 @@ public class StartFrame extends JFrame {
     private JButton buttonWork;
     private JButton buttonSetPassword;
     private JTextField fieldPassword;
-    private JComboBox<String> comboBoxUser;
+    private JComboBox<UserClass> comboBoxUser;
     private JLabel jLabel1;
     private JLabel jLabel2;
 //
@@ -80,7 +82,8 @@ public class StartFrame extends JFrame {
             SwingUtilities.invokeAndWait(() -> {
                 offTitleComponents();
                 onInputComponents();
-                // загрузка параметров
+                // загрузка пользователей в комбо бокс
+                loadUsersToComboBox();
             });
             // --------
             /*TuningFrame tuningFrame;
@@ -91,6 +94,17 @@ public class StartFrame extends JFrame {
             e.printStackTrace();
         }
 
+    }
+
+    // загрузка пользователей в комбо бокс
+    private void loadUsersToComboBox() {
+        comboBoxUser.removeAllItems();
+        Arrays.stream(listUsers).sorted(new Comparator<UserClass>() {
+            @Override
+            public int compare(UserClass a, UserClass b) {
+                return a.name.compareTo(b.name);
+            }
+        }).forEach (u->comboBoxUser.addItem(u));
     }
 
     // начальная загрузка параметров соединения с БД
@@ -283,7 +297,8 @@ public class StartFrame extends JFrame {
         buttonWork.setEnabled(false);
         buttonTuning.setVisible(true);
         buttonTuning.setEnabled(false);
-        buttonSetPassword.setVisible(false);
+        buttonSetPassword.setVisible(true);
+        buttonSetPassword.setEnabled(false);
     }
     private void offInputComponents() {
         jLabel1.setVisible(false);
@@ -362,8 +377,8 @@ public class StartFrame extends JFrame {
         });
         return button;
     }
-    private JComboBox<String> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JComboBox<String> comboBox = new JComboBox<>();
+    private JComboBox<UserClass> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JComboBox<UserClass> comboBox = new JComboBox<>();
         comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(true);
@@ -371,11 +386,13 @@ public class StartFrame extends JFrame {
 
         });
         comboBox.addItemListener(e -> {
+            if (e.getStateChange() == 1) return;
             fieldPassword.setText("");
+            fieldPassword.setEnabled(true);
             buttonEnter.setEnabled(true);
             buttonWork.setEnabled(false);
             buttonTuning.setEnabled(false);
-            buttonSetPassword.setVisible(false);
+            buttonSetPassword.setEnabled(false);
         });
         return comboBox;
     }
@@ -402,40 +419,68 @@ public class StartFrame extends JFrame {
 
     // проверка встроенного администратор
     private boolean checkIntegratedAdministrator(String surName, String password) {
-        String pass = new String(java.util.Base64.getEncoder().encode(password.getBytes()));
-        boolean flag = false;
-        if (surName.equals("Doc")) {
-            if (pass.equals("aUxPMjIzNjA=")) {
-                flag = true;
-            }
-        }
-        return flag;
+        return  surName.equals("Doc") && password.equals("aUxPMjIzNjA=");
     }
 
     // обработка ввод
     private void callEnter() {
-        UserClass user;
+        UserClass user = null;
+        String password;
+        boolean askLocalAdmin;
         boolean flAdmin;
-        // отключить кнопки
+        try {
+            user = (UserClass) comboBoxUser.getSelectedItem();
+            askLocalAdmin = false;
+        } catch (ClassCastException e) {
+            System.out.println("Local Admin ?");
+            askLocalAdmin = true;
+        }
+        password = fieldPassword.getText();
+        if (askLocalAdmin) {
+            String surName = (String) comboBoxUser.getSelectedItem();
+            String pass = BaseData.Password.encoding(password);
+            // проверка на локального админа
+            flAdmin = checkIntegratedAdministrator(surName, pass);
+            if (!flAdmin) {
+                System.out.println("пароль интегрированного админа не совпал");
+                return;
+            }
+        } else {
+            if (!user.password.equals(password)) {
+                System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
+                return;
+            }
+            flAdmin = false; // тут должна быть проверка на администрирование
+        }
+
+        if (!flAdmin) {
+            // здесь проверка условий запуска и ...
+            System.out.println("тут должна быть ");
+            return;
+        }
+        // ==== тут админ ===
+        fieldPassword.setText("");
         buttonEnter.setEnabled(false);
-        buttonSetPassword.setEnabled(false);
-        buttonTuning.setEnabled(false);
         buttonWork.setEnabled(false);
+        if (!askLocalAdmin) buttonSetPassword.setEnabled(true);
+        buttonTuning.setEnabled(true);
+
+
         //
-        String surName = (String) comboBoxUser.getSelectedItem();
-        String password = fieldPassword.getText();
+        //surName = (String) comboBoxUser.getSelectedItem();
+        //String password = fieldPassword.getText();
         //
-        user = checkUserFromList(surName, password);
-        flAdmin = checkIntegratedAdministrator(surName, password);
+        //user = checkUserFromList(surName, password);
+        //flAdmin = checkIntegratedAdministrator(surName, password);
         //
-        if (user != null) {
+        /*if (user != null) {
             buttonSetPassword.setEnabled(true);
             if (flCheckCommPort && flCheckSql) {
                 buttonWork.setEnabled(true);
             }
-        }
+        }*/
         //
-        if (flAdmin) {
+        /*if (flAdmin) {
             buttonTuning.setEnabled(true);
         }
         //
@@ -454,7 +499,7 @@ public class StartFrame extends JFrame {
                 fieldPassword.setEnabled(true);
                 buttonEnter.setEnabled(true);
             });
-        }
+        }*/
     }
 
     // callBack из TuningFrame
@@ -481,7 +526,7 @@ public class StartFrame extends JFrame {
     //                        ===
     // загрузка пользователей
     private void loadListUsers_old() throws Exception {
-        if (flCheckSql) {
+        /*if (flCheckSql) {
             String baseDataName;
             //baseDataName = callBack.loadConfigTypeBaseData().getTypeBaseDataString();
             //BaseData1 bd = BaseData1.init(baseDataName, callBack.getFilesNameSql());
@@ -495,6 +540,6 @@ public class StartFrame extends JFrame {
             } catch (java.lang.Throwable e) {
                 System.out.println("StartFrame.loadListUsers ошибка установки текущего пользователя: " + e.getMessage());
             }
-        }
+        }*/
     }
 }

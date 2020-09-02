@@ -16,4 +16,9 @@ public class UserClass {
         this.name = name;
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
