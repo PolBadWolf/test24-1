@@ -363,22 +363,7 @@ public class StartFrame extends JFrame {
         button.setText(text);
         button.setBounds(x, y, width, height);
         button.addActionListener(e -> {
-            try {
-                UserClass currentUser = (UserClass) comboBoxUser.getSelectedItem();
-                boolean result = callBack.setUserNewPassword(currentUser, fieldPassword.getText());
-                System.out.println("логин = " + currentUser.name + " новый пароль = " + comboBoxUser.getSelectedItem() + " статус = " + result);
-                currentUser.password = fieldPassword.getText();
-
-                //                BaseData bd = null;
-//                DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
-//                BaseData1 bd = BaseData1.init(callBack.loadConfigTypeBaseData().getTypeBaseDataString(), callBack.getFilesNameSql());
-//                bd.updateUserPassword(user, fieldPassword.getText());
-//                loadListUsers_old();
-                //comboBoxUser.setSelectedItem(user.name);
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            }
-            fieldPassword.setText("");
+            callSetNewPassword();
         });
         return button;
     }
@@ -451,6 +436,25 @@ public class StartFrame extends JFrame {
         buttonWork.setEnabled(false);
         if (!askLocalAdmin) buttonSetPassword.setEnabled(true);
         buttonTuning.setEnabled(true);
+    }
+    // обработка новый пароль
+    private void callSetNewPassword() {
+        String newPassword = fieldPassword.getText();
+        if  (newPassword.length() == 0) {
+            System.out.println("новый пароль пустой!!!");
+            return;
+        }
+        try {
+            UserClass currentUser = (UserClass) comboBoxUser.getSelectedItem();
+            // обновление записи в БД
+            boolean result = callBack.setUserNewPassword(currentUser, newPassword);
+            // обновление текущей записи в comboBox
+            currentUser.password = newPassword;
+            System.out.println("логин = " + currentUser.name + " новый пароль = " + newPassword + " статус = " + result);
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        }
+        fieldPassword.setText("");
     }
 
     // callBack из TuningFrame

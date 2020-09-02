@@ -21,7 +21,6 @@ public class MainClass {
     private BaseData1 bdSql;
     private StartFrame startFrame;
     // ===============================================
-    //private BaseDataXXX baseData;
     private BaseData connBd;
     // ===============================================
     private void close() {
