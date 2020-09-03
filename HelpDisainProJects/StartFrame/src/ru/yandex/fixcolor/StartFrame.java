@@ -28,7 +28,6 @@ public class StartFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jToggleButton1 = new javax.swing.JToggleButton();
         label1 = new javax.swing.JLabel();
         label2 = new javax.swing.JLabel();
         label3 = new javax.swing.JLabel();
@@ -38,15 +37,13 @@ public class StartFrame extends javax.swing.JFrame {
         buttonSetPassword = new javax.swing.JButton();
         fieldPassword = new javax.swing.JTextField();
         comboBoxUser = new javax.swing.JComboBox<>();
+        comboBoxPusher = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         buttonEditUsers = new javax.swing.JButton();
         buttonEditPushers = new javax.swing.JButton();
-
-        jToggleButton1.setText("jToggleButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(640, 480));
@@ -97,6 +94,11 @@ public class StartFrame extends javax.swing.JFrame {
         getContentPane().add(comboBoxUser);
         comboBoxUser.setBounds(190, 190, 350, 24);
 
+        comboBoxPusher.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        comboBoxPusher.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pushers" }));
+        getContentPane().add(comboBoxPusher);
+        comboBoxPusher.setBounds(190, 270, 350, 24);
+
         jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel1.setText("Пользователь : ");
         getContentPane().add(jLabel1);
@@ -106,11 +108,6 @@ public class StartFrame extends javax.swing.JFrame {
         jLabel2.setText("Пароль :");
         getContentPane().add(jLabel2);
         jLabel2.setBounds(100, 240, 90, 16);
-
-        jComboBox1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pushers" }));
-        getContentPane().add(jComboBox1);
-        jComboBox1.setBounds(190, 270, 350, 24);
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel3.setText("Толкатель :");
@@ -193,14 +190,13 @@ public class StartFrame extends javax.swing.JFrame {
     private javax.swing.JButton buttonSetPassword;
     private javax.swing.JButton buttonTuning;
     private javax.swing.JButton buttonWork;
+    private javax.swing.JComboBox<String> comboBoxPusher;
     private javax.swing.JComboBox<String> comboBoxUser;
     private javax.swing.JTextField fieldPassword;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JLabel label1;
     private javax.swing.JLabel label2;
     private javax.swing.JLabel label3;
