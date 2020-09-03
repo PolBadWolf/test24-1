@@ -123,7 +123,7 @@ public class MainClass {
                 break;
         }
 
-        startFrame = StartFrame.main(new StartFrameCallBack());
+        startFrame = StartFrame.main(false, new StartFrameCallBack());
         try {
             while (startFrame != null) {
                 Thread.yield();

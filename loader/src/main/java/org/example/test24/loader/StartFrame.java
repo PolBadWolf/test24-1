@@ -13,6 +13,7 @@ import java.util.Comparator;
 
 public class StartFrame extends JFrame {
     private FrameCallBack callBack;
+    private boolean statUserPass;
 
     // title
     private JLabel label1;
@@ -46,12 +47,12 @@ public class StartFrame extends JFrame {
     private BaseData.TypeBaseData typeBaseData;
 
 
-    public static StartFrame main(FrameCallBack callBack) {
+    public static StartFrame main(boolean statUserPass, FrameCallBack callBack) {
         final StartFrame[] frame = new StartFrame[1];
         frame[0] = null;
         try {
             SwingUtilities.invokeAndWait(() -> {
-                frame[0] = new StartFrame(callBack);
+                frame[0] = new StartFrame(statUserPass, callBack);
             });
             new Thread( ()-> {
                 frame[0].start();
@@ -185,7 +186,8 @@ public class StartFrame extends JFrame {
         return true;
     }
 
-    private StartFrame(FrameCallBack callBack) {
+    private StartFrame(boolean statUserPass, FrameCallBack callBack) {
+        this.statUserPass = statUserPass;
         this.callBack = callBack;
         setLayout(null);
         addWindowListener(new WindowAdapter() {
@@ -337,6 +339,7 @@ public class StartFrame extends JFrame {
         buttonSetPassword.setEnabled(false);
         buttonEditUsers.setEnabled(false);
         buttonEditPushers.setEnabled(false);
+        comboBoxPusher.setEnabled(statUserPass);
     }
     private void offInputComponents() {
         jLabel1.setVisible(false);
