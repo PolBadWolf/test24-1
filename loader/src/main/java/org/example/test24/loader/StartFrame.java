@@ -231,18 +231,18 @@ public class StartFrame extends JFrame {
         label5.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 16)); // NOI18N
         label5.setText("ЦЗЛАМ ЛА");
         add(label5);
-        label5.setBounds(460, 400, 81, 19);
+        label5.setBounds(460, 400, 90, 19);
         label5.setVisible(false);
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14)); // NOI18N
         jLabel1.setText("Пользователь : ");
-        jLabel1.setBounds(100, 230, 90, 14);
+        jLabel1.setBounds(100, 235, 90, 16);
         add(jLabel1);
         jLabel1.setVisible(false);
 
         jLabel2.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14)); // NOI18N
         jLabel2.setText("Пароль :");
-        jLabel2.setBounds(100, 280, 90, 14);
+        jLabel2.setBounds(100, 285, 90, 16);
         add(jLabel2);
         jLabel2.setVisible(false);
 
@@ -250,7 +250,7 @@ public class StartFrame extends JFrame {
         add(comboBoxUser);
         comboBoxUser.setVisible(false);
 
-        fieldPassword = getFieldPassword("Times New Roman", Font.PLAIN, 14, 190, 280, 120, 20);
+        fieldPassword = getFieldPassword("Times New Roman", Font.PLAIN, 14, 190, 280, 120, 24);
         add(fieldPassword);
         fieldPassword.setVisible(false);
 
