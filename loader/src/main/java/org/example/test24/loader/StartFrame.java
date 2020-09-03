@@ -13,6 +13,7 @@ import java.util.Comparator;
 
 public class StartFrame extends JFrame {
     private FrameCallBack callBack;
+    private boolean statMainWork;
     private boolean statUserPass;
 
     // title
@@ -47,12 +48,12 @@ public class StartFrame extends JFrame {
     private BaseData.TypeBaseData typeBaseData;
 
 
-    public static StartFrame main(boolean statUserPass, FrameCallBack callBack) {
+    public static StartFrame main(boolean statMainWork, FrameCallBack callBack) {
         final StartFrame[] frame = new StartFrame[1];
         frame[0] = null;
         try {
             SwingUtilities.invokeAndWait(() -> {
-                frame[0] = new StartFrame(statUserPass, callBack);
+                frame[0] = new StartFrame(statMainWork, callBack);
             });
             new Thread( ()-> {
                 frame[0].start();
@@ -186,8 +187,9 @@ public class StartFrame extends JFrame {
         return true;
     }
 
-    private StartFrame(boolean statUserPass, FrameCallBack callBack) {
-        this.statUserPass = statUserPass;
+    private StartFrame(boolean statMainWork, FrameCallBack callBack) {
+        // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
+        this.statUserPass = this.statMainWork = statMainWork;
         this.callBack = callBack;
         setLayout(null);
         addWindowListener(new WindowAdapter() {
@@ -294,10 +296,10 @@ public class StartFrame extends JFrame {
             jPanel1.setBounds(380, 310, 160, 90);
             jPanel1.setBorder(BorderFactory.createTitledBorder("редактирование"));
             // кнопка редактирования пользователей
-            buttonEditUsers = getButtonEnter("Пользователей", "Times New Roman", Font.PLAIN, 14, 20, 20, 120, 24);
+            buttonEditUsers = getButtonEditUsers("Пользователей", "Times New Roman", Font.PLAIN, 14, 20, 20, 120, 24);
             jPanel1.add(buttonEditUsers);
             // кнопка редактирования толкателей
-            buttonEditPushers = getButtonEnter("Толкателей", "Times New Roman", Font.PLAIN, 14, 20, 55, 120, 24);
+            buttonEditPushers = getButtonEditPushers("Толкателей", "Times New Roman", Font.PLAIN, 14, 20, 55, 120, 24);
             jPanel1.add(buttonEditPushers);
 
             add(jPanel1);
@@ -330,16 +332,22 @@ public class StartFrame extends JFrame {
         fieldPassword.setVisible(true);
         buttonEnter.setVisible(true);
         buttonWork.setVisible(true);
-        buttonTuning.setVisible(true);
         buttonSetPassword.setVisible(true);
         jPanel1.setVisible(true);
+        buttonTuning.setVisible(false);
         //
-        buttonWork.setEnabled(false);
         buttonTuning.setEnabled(false);
         buttonSetPassword.setEnabled(false);
         buttonEditUsers.setEnabled(false);
         buttonEditPushers.setEnabled(false);
-        comboBoxPusher.setEnabled(statUserPass);
+        if (statMainWork) {
+            buttonWork.setEnabled(true);
+            comboBoxPusher.setEnabled(true);
+            // здесь установка последнего пользователя текущим !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        } else {
+            buttonWork.setEnabled(false);
+            comboBoxPusher.setEnabled(false);
+        }
     }
     private void offInputComponents() {
         jLabel1.setVisible(false);
@@ -374,11 +382,7 @@ public class StartFrame extends JFrame {
         button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         button.setText(text);
         button.setBounds(x, y, width, height);
-        button.addActionListener(e -> {
-            removeAll();
-            dispose();
-            callBack.closeFrame();
-        });
+        button.addActionListener(e ->callReturnToWork());
         return button;
     }
     private JButton getButtonTuning(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
@@ -386,16 +390,7 @@ public class StartFrame extends JFrame {
         button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         button.setText(text);
         button.setBounds(x, y, width, height);
-        button.addActionListener(e -> {
-            buttonEnter.setEnabled(false);
-            buttonWork.setEnabled(false);
-            buttonTuning.setEnabled(false);
-            fieldPassword.setEnabled(false);
-            TuningFrame tuningFrame;
-            tuningFrame = callBack.getTuningFrame();
-//            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
-            tuningFrame.frameConfig(null, new TuningFrameCallBack());
-        });
+        button.addActionListener(e -> callTuning());
         return button;
     }
     private JButton getButtonSetPassword(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
@@ -403,9 +398,7 @@ public class StartFrame extends JFrame {
         button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         button.setText(text);
         button.setBounds(x, y, width, height);
-        button.addActionListener(e -> {
-            callSetNewPassword();
-        });
+        button.addActionListener(e -> callSetNewPassword());
         return button;
     }
     private JComboBox<UserClass> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
@@ -418,12 +411,7 @@ public class StartFrame extends JFrame {
         });
         comboBox.addItemListener(e -> {
             if (e.getStateChange() == 1) return;
-            fieldPassword.setText("");
-            fieldPassword.setEnabled(true);
-            buttonEnter.setEnabled(true);
-            buttonWork.setEnabled(false);
-            buttonTuning.setEnabled(false);
-            buttonSetPassword.setEnabled(false);
+            callSelectUser();
         });
         return comboBox;
     }
@@ -445,9 +433,7 @@ public class StartFrame extends JFrame {
         button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         button.setText(text);
         button.setBounds(x, y, width, height);
-        button.addActionListener(e -> {
-            //callSetNewPassword();
-        });
+        button.addActionListener(e ->callEditUsers());
         return button;
     }
     private JButton getButtonEditPushers(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
@@ -455,9 +441,7 @@ public class StartFrame extends JFrame {
         button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         button.setText(text);
         button.setBounds(x, y, width, height);
-        button.addActionListener(e -> {
-            //callSetNewPassword();
-        });
+        button.addActionListener(e -> callEditPushers());
         return button;
     }
 
@@ -529,6 +513,41 @@ public class StartFrame extends JFrame {
             ex.printStackTrace();
         }
         fieldPassword.setText("");
+    }
+    // обработка выбора пользователя
+    private void callSelectUser() {
+        fieldPassword.setText("");
+        fieldPassword.setEnabled(true);
+        buttonEnter.setEnabled(true);
+        buttonWork.setEnabled(false);
+        buttonTuning.setEnabled(false);
+        buttonSetPassword.setEnabled(false);
+        buttonTuning.setVisible(false);
+    }
+    // обработка "работа"
+    private void callReturnToWork() {
+        removeAll();
+        dispose();
+        callBack.closeFrame();
+    }
+    // обработка настройка
+    private void callTuning() {
+        buttonEnter.setEnabled(false);
+        buttonWork.setEnabled(false);
+        buttonTuning.setEnabled(false);
+        fieldPassword.setEnabled(false);
+        TuningFrame tuningFrame;
+        tuningFrame = callBack.getTuningFrame();
+//            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
+        tuningFrame.frameConfig(null, new TuningFrameCallBack());
+    }
+    // обработка редактирование пользователей
+    private void callEditUsers() {
+
+    }
+    // обработка редактирование толкателей
+    private void callEditPushers() {
+
     }
 
     // callBack из TuningFrame
