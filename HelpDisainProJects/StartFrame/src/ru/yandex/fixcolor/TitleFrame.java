@@ -9,12 +9,12 @@ package ru.yandex.fixcolor;
  *
  * @author Gumerovmn
  */
-public class StartFrame extends javax.swing.JFrame {
+public class TitleFrame extends javax.swing.JFrame {
 
     /**
-     * Creates new form StartFrame2
+     * Creates new form StartFrame
      */
-    public StartFrame() {
+    public TitleFrame() {
         initComponents();
     }
 
@@ -27,10 +27,41 @@ public class StartFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        label1 = new javax.swing.JLabel();
+        label2 = new javax.swing.JLabel();
+        label3 = new javax.swing.JLabel();
+        label4 = new javax.swing.JLabel();
+        label5 = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(640, 480));
         setResizable(false);
         getContentPane().setLayout(null);
+
+        label1.setFont(new java.awt.Font("Times New Roman", 0, 57)); // NOI18N
+        label1.setText("Стенд");
+        getContentPane().add(label1);
+        label1.setBounds(220, 130, 148, 66);
+
+        label2.setFont(new java.awt.Font("Times New Roman", 0, 36)); // NOI18N
+        label2.setText("для испытания");
+        getContentPane().add(label2);
+        label2.setBounds(180, 180, 227, 42);
+
+        label3.setFont(new java.awt.Font("Times New Roman", 0, 36)); // NOI18N
+        label3.setText("гидротолкателей");
+        getContentPane().add(label3);
+        label3.setBounds(170, 210, 258, 42);
+
+        label4.setFont(new java.awt.Font("Times New Roman", 0, 11)); // NOI18N
+        label4.setText("Гумеров М.Н.");
+        getContentPane().add(label4);
+        label4.setBounds(380, 400, 68, 20);
+
+        label5.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
+        label5.setText("ЦЗЛАМ ЛА");
+        getContentPane().add(label5);
+        label5.setBounds(460, 400, 90, 20);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -52,13 +83,13 @@ public class StartFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(StartFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TitleFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(StartFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TitleFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(StartFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TitleFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(StartFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TitleFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -66,11 +97,16 @@ public class StartFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new StartFrame().setVisible(true);
+                new TitleFrame().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel label1;
+    private javax.swing.JLabel label2;
+    private javax.swing.JLabel label3;
+    private javax.swing.JLabel label4;
+    private javax.swing.JLabel label5;
     // End of variables declaration//GEN-END:variables
 }

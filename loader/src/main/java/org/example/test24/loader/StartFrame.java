@@ -231,7 +231,7 @@ public class StartFrame extends JFrame {
         label5.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 16)); // NOI18N
         label5.setText("ЦЗЛАМ ЛА");
         add(label5);
-        label5.setBounds(460, 400, 81, 19);
+        label5.setBounds(460, 400, 90, 19);
         label5.setVisible(false);
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14)); // NOI18N
