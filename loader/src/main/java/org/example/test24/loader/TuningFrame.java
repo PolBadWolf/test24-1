@@ -101,7 +101,7 @@ class TuningFrame extends Parrent_Frame {
     // загрузка начальных параметров
     private void loadBeginerParameters() {
         // загрузка типа БД
-        typeBaseData = callBack.loadConfigTypeBaseData();
+        //typeBaseData = callBack.loadConfigTypeBaseData();
         // загрузка ком порта
         commPortName = callBack.getCommPortNameFromConfig();
         // загрузка списка ком портов

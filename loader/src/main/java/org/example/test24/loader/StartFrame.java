@@ -514,14 +514,15 @@ public class StartFrame extends Parrent_Frame {
         fieldPassword.setEnabled(false);
         buttonEnter.setEnabled(false);
         buttonTuning.setEnabled(false);
+        // вызов окна
+        TuningFrame.createFrame(new TuningFrameCallBack());
 
-
-
+/*
         TuningFrame tuningFrame;
         tuningFrame = callBack.getTuningFrame();
 //            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack_old());
         tuningFrame.frameConfig(null, new TuningFrameCallBack_old());
-
+        */
     }
     // обработка редактирование пользователей
     private void callEditUsers() {
@@ -540,7 +541,7 @@ public class StartFrame extends Parrent_Frame {
             startFrame.fieldPassword.setText("");
             startFrame.fieldPassword.setEnabled(true);
             startFrame.buttonEnter.setEnabled(true);
-            flCheckSql = callBack.checkSqlFile();
+            //flCheckSql = callBack.checkSqlFile();
             //flCheckCommPort = callBack.checkCommPort();
             try {
                 if (flCheckSql) {
@@ -604,41 +605,9 @@ public class StartFrame extends Parrent_Frame {
             return false;
         }
 
-
-
-        @Override
-        public boolean checkSqlFile() {
-            return false;
-        }
-
         @Override
         public void closeFrame() {
 
-        }
-
-        @Override
-        public TuningFrame getTuningFrame() {
-            return null;
-        }
-
-        @Override
-        public String[] getFilesNameSql() {
-            return new String[0];
-        }
-
-        @Override
-        public String getFileNameSql(String typeBd) throws Exception {
-            return null;
-        }
-
-        @Override
-        public String loadConfigCommPort() {
-            return null;
-        }
-
-        @Override
-        public BaseData.TypeBaseData loadConfigTypeBaseData() {
-            return null;
         }
     }
     // ===========================================================================

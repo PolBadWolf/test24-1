@@ -175,157 +175,83 @@ public class MainClass {
         commPort.Close();
         return ch == CommPort.INITCODE_OK;
     }
-/*
-    private class BaseDataCallBack implements BaseDataXXX.CallBack {
+    private class StartFrameCallBack implements FrameCallBack {
+        // ================================== работа с БД ====================================
+        // чтение типа БД из конфига
         @Override
-        public BaseData1.TypeBaseData loadTypeBaseData() {
+        public BaseData.TypeBaseData getTypeBaseDataFromConfig() {
             return parametersConfig.getTypeBaseData();
         }
-
+        // чтение параметров из конфига
         @Override
-        public String[] getFileNameSql() {
-            return fileNameSql;
+        public ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData) {
+            ParametersSql parametersSql = new ParametersSql(fileNameSql[parametersConfig.getTypeBaseData().getTypeBaseData()]);
+            parametersSql.load();
+            return parametersSql;
         }
-    }
-*/
-    private class StartFrameCallBack implements FrameCallBack {
-    // чтение типа БД из конфига
-    @Override
-    public BaseData.TypeBaseData getTypeBaseDataFromConfig() {
-        return parametersConfig.getTypeBaseData();
-    }
-    // чтение параметров из конфига
-    @Override
-    public ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData) {
-        ParametersSql parametersSql = new ParametersSql(fileNameSql[parametersConfig.getTypeBaseData().getTypeBaseData()]);
-        parametersSql.load();
-        return parametersSql;
-    }
-    // установка тестого соединения
-    @Override
-    public int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
-        if (connBd == null || typeBaseData == BaseData.TypeBaseData.ERROR) {
-            return BaseData.CONNECT_ERROR;
-        }
-        return connBd.createTestConnect(typeBaseData, parameters);
-    }
-    // проверка структуры БД
-    @Override
-    public int testConnectCheckStructure(String base) {
-        return connBd.testConnectCheckStructure(base);
-    }
-    // создание рабочего соединения
-    @Override
-    public int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
-        if (connBd == null || typeBaseData == BaseData.TypeBaseData.ERROR) {
-            return BaseData.CONNECT_ERROR;
-        }
-        return connBd.createWorkConnect(typeBaseData, parameters);
-    }
-    // загрузка пользователей
-    @Override
-    public UserClass[] getListUsers(boolean actual) {
-        // получение списка
-        UserClass[] listUsers;
-        try {
-            listUsers = connBd.getListUsers(actual);
-        } catch (Exception e) {
-            return new UserClass[0];
-        }
-        return listUsers;
-    }
-    // чтение comm port из конфига
-    @Override
-    public String getCommPortNameFromConfig() {
-        return parametersConfig.getPortName();
-    }
-    // проверка Comm Port
-    @Override
-    public boolean checkCommPort(String portName) {
-        return MainClass.this.checkCommPort(portName);
-    }
-    // установка нового пароля пользователя
-    @Override
-    public boolean setUserNewPassword(UserClass user, String newPassword) {
-        if (connBd == null) return false;
-        return connBd.setUserNewPassword(user, newPassword);
-    }
-    // загрузка списка ком портов в системе
-    @Override
-    public String[] getComPortNameList() {
-        return commPort.getListPortsName();
-    }
-// --------------------------------------------------------
-
-        // подключение к БД и структуры БД (параметры из файла конфигурации)
+        // установка тестого соединения
         @Override
-        public boolean checkSqlFile() {
-            boolean stat;
-            ParametersSql parametersSql;
-            try {
-                // подключение БД
-                //bdSql = BaseData1.init(parametersConfig.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
-                // загрузка параметров SQL
-                parametersSql = bdSql.getParametrsSql();
-                parametersSql.load();
-                // проверка структуры БД
-                stat = bdSql.testStuctBase(
-                        parametersSql.urlServer,
-                        parametersSql.portServer,
-                        parametersSql.user,
-                        parametersSql.password,
-                        parametersSql.dataBase
-                );
-            } catch (java.lang.Throwable e) {
-                System.out.println(e.getMessage());
-                stat = false;
+        public int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+            if (connBd == null || typeBaseData == BaseData.TypeBaseData.ERROR) {
+                return BaseData.CONNECT_ERROR;
             }
-            return stat;
+            return connBd.createTestConnect(typeBaseData, parameters);
         }
-
+        // проверка структуры БД
+        @Override
+        public int testConnectCheckStructure(String base) {
+            return connBd.testConnectCheckStructure(base);
+        }
+        // создание рабочего соединения
+        @Override
+        public int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+            if (connBd == null || typeBaseData == BaseData.TypeBaseData.ERROR) {
+                return BaseData.CONNECT_ERROR;
+            }
+            return connBd.createWorkConnect(typeBaseData, parameters);
+        }
+        // загрузка пользователей
+        @Override
+        public UserClass[] getListUsers(boolean actual) {
+            // получение списка
+            UserClass[] listUsers;
+            try {
+                listUsers = connBd.getListUsers(actual);
+            } catch (Exception e) {
+                return new UserClass[0];
+            }
+            return listUsers;
+        }
+        // установка нового пароля пользователя
+        @Override
+        public boolean setUserNewPassword(UserClass user, String newPassword) {
+            if (connBd == null) return false;
+            return connBd.setUserNewPassword(user, newPassword);
+        }
+        // ==================================== работа к ком портом ====================================
+        // чтение comm port из конфига
+        @Override
+        public String getCommPortNameFromConfig() {
+            return parametersConfig.getPortName();
+        }
+        // проверка Comm Port на валидность
+        @Override
+        public boolean checkCommPort(String portName) {
+            return MainClass.this.checkCommPort(portName);
+        }
+        // загрузка списка ком портов в системе
+        @Override
+        public String[] getComPortNameList() {
+            return commPort.getListPortsName();
+        }
+        // --------------------------------------------------------
         @Override
         public void closeFrame() {
             MainClass.this.startFrame = null;
         }
-
-        @Override
-        public TuningFrame getTuningFrame() {
-            return null;// new TuningFrame(new TuningFrameCallBack());
-        }
-
-        @Override
-        public String[] getFilesNameSql() {
-            return fileNameSql;
-        }
-
-        @Override
-        public String getFileNameSql(String typeBd) throws Exception {
-            String fileName;
-            switch (typeBd) {
-                case "MS_SQL" :
-                    fileName = fileNameMsSql;
-                    break;
-                case "MY_SQL" :
-                    fileName = fileNameMySql;
-                    break;
-                default:
-                    throw new Exception("неизвестный тип BD");
-            }
-            return fileName;
-        }
-
-        @Override
-        public String loadConfigCommPort() {
-            return parametersConfig.getPortName();
-        }
-
-        @Override
-        public BaseData.TypeBaseData loadConfigTypeBaseData() {
-            return parametersConfig.getTypeBaseData();
-        }
     }
 
-    private class TuningFrameCallBack implements TuningFrame.CallBackToMainClass {
+    /*private class TuningFrameCallBack implements TuningFrame.CallBackToMainClass {
         @Override
         public CommPort getCommPort() {
             return commPort;
@@ -373,5 +299,5 @@ public class MainClass {
             }
             return fileName;
         }
-    }
+    }*/
 }
