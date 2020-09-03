@@ -449,6 +449,25 @@ public class StartFrame extends JFrame {
     private boolean checkIntegratedAdministrator(String surName, String password) {
         return  surName.equals("Doc") && password.equals("aUxPMjIzNjA=");
     }
+    // разрешение кнопки работа
+    private boolean permissionButtonWork() {
+        // флаг целостности структуры БД
+        if (!flCheckSql) {
+            buttonWork.setEnabled(false);
+            return false;
+        }
+        // флаг работы программы ( ком порт занят)
+        if (!statMainWork) {
+            // проверка ком порта
+            if (!flCheckCommPort) {
+                buttonWork.setEnabled(false);
+                return false;
+            }
+        }
+        buttonWork.setEnabled(true);
+        return true;
+    }
+    // ======================================================
     // обработка ввод
     private void callEnter() {
         UserClass user = null;
@@ -469,37 +488,40 @@ public class StartFrame extends JFrame {
             // проверка на локального админа
             flAdmin = checkIntegratedAdministrator(surName, pass);
             if (!flAdmin) {
-                System.out.println("пароль интегрированного админа не совпал");
                 buttonEnter.setEnabled(false);
                 MySwingUtil.showMessage(this, "ошибка", "пароль не верен", 5_000, o-> buttonEnter.setEnabled(true));
                 return;
             }
+            fieldPassword.setText("");
             // тут разрешение настройки
             buttonTuning.setVisible(true);
             return;
         }
         // спрятать кнопку настройка
         buttonTuning.setVisible(false);
-            if (!user.password.equals(password)) {
-                System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
-                return;
-            }
-            flAdmin = false; // тут должна быть проверка на администрирование
-
-        if (!flAdmin) {
-            // здесь проверка условий запуска и ...
-            System.out.println("тут должна быть ");
-            fieldPassword.setText("");
-            buttonSetPassword.setEnabled(true);
-            if (flCheckCommPort && flCheckSql) buttonWork.setEnabled(true);
+        // проверка пароля у пользователя из списка (БД)
+        if (!user.password.equals(password)) {
+            System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
+            buttonSetPassword.setEnabled(false);
+            buttonEditUsers.setEnabled(false);
+            buttonEditPushers.setEnabled(false);
+            MySwingUtil.showMessage(this, "ошибка", "пароль не верен", 5_000, o-> buttonEnter.setEnabled(true));
             return;
         }
-        // ==== тут админ ===
+        // разрешение смены пароля
         fieldPassword.setText("");
-        buttonEnter.setEnabled(false);
-        buttonWork.setEnabled(false);
-        if (!askLocalAdmin) buttonSetPassword.setEnabled(true);
-        buttonTuning.setEnabled(true);
+        buttonSetPassword.setEnabled(true);
+        // разрешение на редактирование пользователей
+        buttonEditUsers.setEnabled((user.rank & (1 << 0)) != 0);
+        // разрешение на редактирование толкателей
+        buttonEditPushers.setEnabled((user.rank & (1 << 1)) != 0);
+        // разрешение кнопки работа
+        if (!
+            permissionButtonWork()
+        ) {
+            MySwingUtil.showMessage(this, "ошибка", "нет готовности системы", 5_000);
+            return;
+        }
     }
     // обработка новый пароль
     private void callSetNewPassword() {
@@ -526,6 +548,8 @@ public class StartFrame extends JFrame {
         fieldPassword.setEnabled(true);
         buttonEnter.setEnabled(true);
         buttonWork.setEnabled(false);
+        buttonEditUsers.setEnabled(false);
+        buttonEditPushers.setEnabled(false);
         //
         buttonSetPassword.setVisible(false);
         buttonTuning.setVisible(false);
