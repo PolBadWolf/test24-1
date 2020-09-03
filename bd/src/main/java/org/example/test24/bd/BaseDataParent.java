@@ -56,14 +56,14 @@ class BaseDataParent implements BaseDataInterface {
             statement = workConnection.createStatement();
             if (actual) {
                 result = statement.executeQuery(
-                        "SELECT id, date_reg, date_unreg, name, password " +
+                        "SELECT id, date_reg, date_unreg, name, password, rang " +
                                 "FROM " + tab + " " +
                                 "WHERE (date_unreg IS NULL) " +
                                 "ORDER BY id "
                 );
             } else {
                 result = statement.executeQuery(
-                        "SELECT id, date_reg, date_unreg, name, password " +
+                        "SELECT id, date_reg, date_unreg, name, password, rang " +
                                 "FROM " + tab + " " +
                                 "ORDER BY id "
                 );
@@ -92,7 +92,8 @@ class BaseDataParent implements BaseDataInterface {
                                 result.getTimestamp("date_reg"),
                                 result.getTimestamp("date_unreg"),
                                 result.getString("name"),
-                                pass
+                                pass,
+                                result.getInt("rang") // user status
                         )
                 );
             }

@@ -336,7 +336,7 @@ public class StartFrame extends JFrame {
         jPanel1.setVisible(true);
         buttonTuning.setVisible(false);
         //
-        buttonTuning.setEnabled(false);
+        buttonTuning.setEnabled(true);
         buttonSetPassword.setEnabled(false);
         buttonEditUsers.setEnabled(false);
         buttonEditPushers.setEnabled(false);
@@ -470,15 +470,21 @@ public class StartFrame extends JFrame {
             flAdmin = checkIntegratedAdministrator(surName, pass);
             if (!flAdmin) {
                 System.out.println("пароль интегрированного админа не совпал");
+                buttonEnter.setEnabled(false);
+                MySwingUtil.showMessage(this, "ошибка", "пароль не верен", 5_000, o-> buttonEnter.setEnabled(true));
                 return;
             }
-        } else {
+            // тут разрешение настройки
+            buttonTuning.setVisible(true);
+            return;
+        }
+        // спрятать кнопку настройка
+        buttonTuning.setVisible(false);
             if (!user.password.equals(password)) {
                 System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
                 return;
             }
             flAdmin = false; // тут должна быть проверка на администрирование
-        }
 
         if (!flAdmin) {
             // здесь проверка условий запуска и ...
@@ -520,8 +526,8 @@ public class StartFrame extends JFrame {
         fieldPassword.setEnabled(true);
         buttonEnter.setEnabled(true);
         buttonWork.setEnabled(false);
-        buttonTuning.setEnabled(false);
-        buttonSetPassword.setEnabled(false);
+        //
+        buttonSetPassword.setVisible(false);
         buttonTuning.setVisible(false);
     }
     // обработка "работа"

@@ -8,13 +8,15 @@ public class UserClass {
     public Date date_unreg;
     public String name;
     public String password;
+    public int rank;
 
-    public UserClass(int id, Date date_reg, Date date_unreg, String name, String password) {
+    public UserClass(int id, Date date_reg, Date date_unreg, String name, String password, int rank) {
         this.id = id;
         this.date_reg = date_reg;
         this.date_unreg = date_unreg;
         this.name = name;
         this.password = password;
+        this.rank = rank;
     }
 
     @Override
