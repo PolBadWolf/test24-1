@@ -1,4 +1,4 @@
-package org.example.test24.allinterface.bd;
+package org.example.test24.bd;
 
 import java.util.Date;
 
@@ -15,5 +15,10 @@ public class UserClass {
         this.date_unreg = date_unreg;
         this.name = name;
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

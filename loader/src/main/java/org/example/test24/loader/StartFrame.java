@@ -1,15 +1,18 @@
 package org.example.test24.loader;
 
-import org.example.bd.DataBase;
+import org.example.test24.bd.BaseData;
 import org.example.lib.MySwingUtil;
-import org.example.test24.allinterface.bd.UserClass;
+import org.example.test24.bd.ParametersSql;
+import org.example.test24.bd.UserClass;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class StartFrame extends JFrame {
-    private CallBack callBack;
+    private FrameCallBack callBack;
     private JLabel label1;
     private JLabel label2;
     private JLabel label3;
@@ -21,7 +24,7 @@ public class StartFrame extends JFrame {
     private JButton buttonWork;
     private JButton buttonSetPassword;
     private JTextField fieldPassword;
-    private JComboBox<String> comboBoxUser;
+    private JComboBox<UserClass> comboBoxUser;
     private JLabel jLabel1;
     private JLabel jLabel2;
 //
@@ -29,26 +32,21 @@ public class StartFrame extends JFrame {
     private boolean flCheckSql = false;
     private UserClass[] listUsers = null;
     private UserClass user = null;
+    //
+    private ParametersSql parametersSql;
+    private BaseData.TypeBaseData typeBaseData;
 
-    public interface CallBack {
-        // проверка Comm Port
-        boolean checkCommPort();
-        // подключение к БД и структуры БД (параметры из файла конфигурации)
-        boolean checkSqlFile();
-        void closeFrame();
-        // ---------------
-        TuningFrame getTuningFrame();
-        String[] getParameters();
-        String[] getFilesNameSql();
-        String getFileNameSql(String typeBd) throws Exception;
-    }
 
-    public static StartFrame main(CallBack callBack) {
+    public static StartFrame main(FrameCallBack callBack) {
         final StartFrame[] frame = new StartFrame[1];
         frame[0] = null;
         try {
-            SwingUtilities.invokeAndWait(() -> frame[0] = new StartFrame(callBack));
-            new Thread( ()->frame[0].start()).start();
+            SwingUtilities.invokeAndWait(() -> {
+                frame[0] = new StartFrame(callBack);
+            });
+            new Thread( ()-> {
+                frame[0].start();
+            }).start();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
         }
@@ -56,29 +54,36 @@ public class StartFrame extends JFrame {
     }
 
     private void start() {
+        boolean res;
+        // загрузка компонентов и вывод загаловка
+        SwingUtilities.invokeLater(() -> {
+            initComponents();
+            onTitleComponents();
+            setResizable(false);
+            setVisible(true);
+        });
+        // начальная загрузка параметров соединения с БД
+        res =  beginInitParametersSql();
+        if (res) {
+            // начальная инициация соединения c БД и получение списка пользователей
+            res = beginInitConnectBdGetListUsers();
+        }
+        // задержка на пока начального экрана
         try {
-            SwingUtilities.invokeLater(() -> {
-                initComponents();
-                onTitleComponents();
-                setResizable(false);
-                setVisible(true);
-            });
-            // проверка Comm port
-            flCheckCommPort = callBack.checkCommPort();
-            flCheckSql = callBack.checkSqlFile();
-            if (flCheckSql) {
-                loadListUsers();
-            }
-            Thread.sleep(1_000);
+            Thread.sleep(2_000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // чтение порта из конфига
+        String portName = callBack.getCommPortNameFromConfig();
+        // проверка Comm port
+        flCheckCommPort = callBack.checkCommPort(portName);
+        try {
             SwingUtilities.invokeAndWait(() -> {
                 offTitleComponents();
                 onInputComponents();
-                if (!flCheckCommPort) {
-                    System.out.println("ошибка открытия comm port");
-                }
-                if (!flCheckSql) {
-                    System.out.println("ошибка подключения к BD");
-                }
+                // загрузка пользователей в комбо бокс
+                loadUsersToComboBox();
             });
             // --------
             /*TuningFrame tuningFrame;
@@ -91,7 +96,87 @@ public class StartFrame extends JFrame {
 
     }
 
-    private StartFrame(CallBack callBack) {
+    // загрузка пользователей в комбо бокс
+    private void loadUsersToComboBox() {
+        comboBoxUser.removeAllItems();
+        Arrays.stream(listUsers).sorted(new Comparator<UserClass>() {
+            @Override
+            public int compare(UserClass a, UserClass b) {
+                return a.name.compareTo(b.name);
+            }
+        }).forEach (u->comboBoxUser.addItem(u));
+    }
+
+    // начальная загрузка параметров соединения с БД
+    private boolean beginInitParametersSql() {
+        // тип БД
+        typeBaseData = callBack.getTypeBaseDataFromConfig();
+        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
+            listUsers = new UserClass[0];
+            flCheckSql = false;
+            return false;
+        }
+        int result;
+        // чтение параметров из конфига
+        parametersSql = callBack.getParametersSqlFromConfig(typeBaseData);
+        if (parametersSql.getStat() != ParametersSql.OK) {
+            listUsers = new UserClass[0];
+            flCheckSql = false;
+            return false;
+        }
+        return true;
+    }
+
+    // начальная инициация соединения c БД и получение списка пользователей
+    private boolean beginInitConnectBdGetListUsers() {
+        int result;
+        // установка тестового соединения
+        result = callBack.createTestConnectBd(typeBaseData,
+                new BaseData.Parameters(
+                        parametersSql.urlServer,
+                        parametersSql.portServer,
+                        parametersSql.user,
+                        parametersSql.password,
+                        parametersSql.dataBase
+                )
+        );
+        if (result != BaseData.OK) {
+            listUsers = new UserClass[0];
+            flCheckSql = false;
+            return false;
+        }
+        // проверка структуры БД
+        result = callBack.testConnectCheckStructure(parametersSql.dataBase);
+        if (result != BaseData.OK) {
+            listUsers = new UserClass[0];
+            flCheckSql = false;
+            return false;
+        }
+        // установка рабочего соединения
+        result = callBack.createWorkConnect(typeBaseData,
+                new BaseData.Parameters(
+                        parametersSql.urlServer,
+                        parametersSql.portServer,
+                        parametersSql.user,
+                        parametersSql.password,
+                        parametersSql.dataBase
+                )
+        );
+        if (result != BaseData.OK) {
+            listUsers = new UserClass[0];
+            flCheckSql = false;
+            return false;
+        }
+        flCheckSql = true;
+        // загрузка списка пользователей
+        listUsers = callBack.getListUsers(true);
+        if (listUsers.length == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    private StartFrame(FrameCallBack callBack) {
         this.callBack = callBack;
         setLayout(null);
         addWindowListener(new WindowAdapter() {
@@ -212,7 +297,8 @@ public class StartFrame extends JFrame {
         buttonWork.setEnabled(false);
         buttonTuning.setVisible(true);
         buttonTuning.setEnabled(false);
-        buttonSetPassword.setVisible(false);
+        buttonSetPassword.setVisible(true);
+        buttonSetPassword.setEnabled(false);
     }
     private void offInputComponents() {
         jLabel1.setVisible(false);
@@ -266,7 +352,8 @@ public class StartFrame extends JFrame {
             fieldPassword.setEnabled(false);
             TuningFrame tuningFrame;
             tuningFrame = callBack.getTuningFrame();
-            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
+//            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack());
+            tuningFrame.frameConfig(null, new TuningFrameCallBack());
         });
         return button;
     }
@@ -276,21 +363,12 @@ public class StartFrame extends JFrame {
         button.setText(text);
         button.setBounds(x, y, width, height);
         button.addActionListener(e -> {
-            try {
-                String[] parameters = callBack.getParameters();
-                DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
-                bd.updateUserPassword(user, fieldPassword.getText());
-                loadListUsers();
-                comboBoxUser.setSelectedItem(user.name);
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            }
-            fieldPassword.setText("");
+            callSetNewPassword();
         });
         return button;
     }
-    private JComboBox<String> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JComboBox<String> comboBox = new JComboBox<>();
+    private JComboBox<UserClass> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JComboBox<UserClass> comboBox = new JComboBox<>();
         comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(true);
@@ -298,88 +376,85 @@ public class StartFrame extends JFrame {
 
         });
         comboBox.addItemListener(e -> {
+            if (e.getStateChange() == 1) return;
             fieldPassword.setText("");
+            fieldPassword.setEnabled(true);
             buttonEnter.setEnabled(true);
             buttonWork.setEnabled(false);
             buttonTuning.setEnabled(false);
-            buttonSetPassword.setVisible(false);
+            buttonSetPassword.setEnabled(false);
         });
         return comboBox;
     }
 
-
-    // проверка пользавателея по списку
-    private UserClass checkUserFromList(String surName, String password) {
-        if (password.equals("")) return null;
-        UserClass user = null;
-        boolean flUser;
-        for (int i = 0; i < listUsers.length; i++) {
-            flUser = listUsers[i].name.equals(surName);
-            if (flUser) {
-                if (listUsers[i].password.equals(password)) {
-                    user = listUsers[i];
-                    break;
-                }
-            }
-        }
-        return user;
-    }
-
     // проверка встроенного администратор
     private boolean checkIntegratedAdministrator(String surName, String password) {
-        String pass = new String(java.util.Base64.getEncoder().encode(password.getBytes()));
-        boolean flag = false;
-        if (surName.equals("Doc")) {
-            if (pass.equals("aUxPMjIzNjA=")) {
-                flag = true;
-            }
-        }
-        return flag;
+        return  surName.equals("Doc") && password.equals("aUxPMjIzNjA=");
     }
-
     // обработка ввод
     private void callEnter() {
-        UserClass user;
+        UserClass user = null;
+        String password;
+        boolean askLocalAdmin;
         boolean flAdmin;
-        // отключить кнопки
-        buttonEnter.setEnabled(false);
-        buttonSetPassword.setEnabled(false);
-        buttonTuning.setEnabled(false);
-        buttonWork.setEnabled(false);
-        //
-        String surName = (String) comboBoxUser.getSelectedItem();
-        String password = fieldPassword.getText();
-        //
-        user = checkUserFromList(surName, password);
-        flAdmin = checkIntegratedAdministrator(surName, password);
-        //
-        if (user != null) {
-            buttonSetPassword.setEnabled(true);
-            if (flCheckCommPort && flCheckSql) {
-                buttonWork.setEnabled(true);
+        try {
+            user = (UserClass) comboBoxUser.getSelectedItem();
+            askLocalAdmin = false;
+        } catch (ClassCastException e) {
+            System.out.println("Local Admin ?");
+            askLocalAdmin = true;
+        }
+        password = fieldPassword.getText();
+        if (askLocalAdmin) {
+            String surName = (String) comboBoxUser.getSelectedItem();
+            String pass = BaseData.Password.encoding(password);
+            // проверка на локального админа
+            flAdmin = checkIntegratedAdministrator(surName, pass);
+            if (!flAdmin) {
+                System.out.println("пароль интегрированного админа не совпал");
+                return;
             }
-        }
-        //
-        if (flAdmin) {
-            buttonTuning.setEnabled(true);
-        }
-        //
-        if (!flCheckSql) {
-            MySwingUtil.showMessage(this, "Base Data","Ошибка базы данных", 6_000);
         } else {
-            if (!flCheckCommPort) {
-                MySwingUtil.showMessage(this, "Comm Port","Ошибка подключения к ком порту", 6_000);
+            if (!user.password.equals(password)) {
+                System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
+                return;
             }
+            flAdmin = false; // тут должна быть проверка на администрирование
         }
-        if (user == null && !flAdmin) {
-            comboBoxUser.setEnabled(false);
-            fieldPassword.setEnabled(false);
-            MySwingUtil.showMessage(this, (String) comboBoxUser.getSelectedItem(),"Ошибка пользователь/пароль", 16_000, o-> {
-                comboBoxUser.setEnabled(true);
-                fieldPassword.setEnabled(true);
-                buttonEnter.setEnabled(true);
-            });
+
+        if (!flAdmin) {
+            // здесь проверка условий запуска и ...
+            System.out.println("тут должна быть ");
+            fieldPassword.setText("");
+            buttonSetPassword.setEnabled(true);
+            if (flCheckCommPort && flCheckSql) buttonWork.setEnabled(true);
+            return;
         }
+        // ==== тут админ ===
+        fieldPassword.setText("");
+        buttonEnter.setEnabled(false);
+        buttonWork.setEnabled(false);
+        if (!askLocalAdmin) buttonSetPassword.setEnabled(true);
+        buttonTuning.setEnabled(true);
+    }
+    // обработка новый пароль
+    private void callSetNewPassword() {
+        String newPassword = fieldPassword.getText();
+        if  (newPassword.length() == 0) {
+            System.out.println("новый пароль пустой!!!");
+            return;
+        }
+        try {
+            UserClass currentUser = (UserClass) comboBoxUser.getSelectedItem();
+            // обновление записи в БД
+            boolean result = callBack.setUserNewPassword(currentUser, newPassword);
+            // обновление текущей записи в comboBox
+            currentUser.password = newPassword;
+            System.out.println("логин = " + currentUser.name + " новый пароль = " + newPassword + " статус = " + result);
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        }
+        fieldPassword.setText("");
     }
 
     // callBack из TuningFrame
@@ -391,10 +466,10 @@ public class StartFrame extends JFrame {
             startFrame.fieldPassword.setEnabled(true);
             startFrame.buttonEnter.setEnabled(true);
             flCheckSql = callBack.checkSqlFile();
-            flCheckCommPort = callBack.checkCommPort();
+            //flCheckCommPort = callBack.checkCommPort();
             try {
                 if (flCheckSql) {
-                    StartFrame.this.loadListUsers();
+                    //StartFrame.this.loadListUsers_old();
                 }
             } catch (Exception e) {
                 System.out.println("StartFrame.StartFrameCallBackTuningFrame ошибка чтения списка пользователей: " + e.getMessage());
@@ -403,22 +478,4 @@ public class StartFrame extends JFrame {
     }
 
     // ===========================================================================
-    //                        ===
-    // загрузка пользователей
-    private void loadListUsers() throws Exception {
-        if (flCheckSql) {
-            String[] parameters = callBack.getParameters();
-            DataBase bd = DataBase.init(parameters[0], callBack.getFilesNameSql());
-            listUsers = bd.getListUsers(true);
-            comboBoxUser.removeAllItems();
-            for (UserClass listUser : listUsers) {
-                comboBoxUser.addItem(listUser.name);
-            }
-            try {
-                comboBoxUser.setSelectedItem(listUsers[0].name);
-            } catch (java.lang.Throwable e) {
-                System.out.println("StartFrame.loadListUsers ошибка установки текущего пользователя: " + e.getMessage());
-            }
-        }
-    }
 }

@@ -1,4 +1,4 @@
-package org.example.bd;
+package org.example.test24.bd;
 
 import org.example.lib.Converts;
 import org.example.test24.allinterface.bd.DistClass;

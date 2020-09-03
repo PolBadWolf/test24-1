@@ -1,21 +1,20 @@
-package org.example.bd;
-
-import org.example.test24.allinterface.bd.UserClass;
+package org.example.test24.bd;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
 
-public class DataBaseClassMsSql extends DataBaseClass {
+public class BaseData1ClassMySql extends BaseData1Class {
 
     @Override
     public void setParametersSql(String[] fileNameSql) {
-        parametersSql = new ParametersSql(fileNameSql[0], "MS_SQL");
+        parametersSql = new ParametersSql(fileNameSql[1]);
     }
 
     @Override
     public String getTypeBD() {
-        return "MS_SQL";
+        return "MY_SQL";
     }
 
     static String[] getConnectListBd1(String ip, String portServer, String login, String password) throws Exception {
@@ -23,20 +22,20 @@ public class DataBaseClassMsSql extends DataBaseClass {
         ResultSet rs;
         // подключение драйвера
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
         }
         // установка параметров соединения
-        String connectionUrl = "jdbc:sqlserver://%1$s:%2$s";
+        String connectionUrl = "jdbc:mysql://%1$s:%2$s";
         String connString = String.format(connectionUrl
                 , ip
                 , portServer
-        );
+        ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
         // соединение и запрос на список
         try {
             connection = DriverManager.getConnection(connString, login, password);
-            rs = connection.createStatement().executeQuery("SELECT name FROM sys.databases");
+            rs = connection.createStatement().executeQuery("SHOW DATABASES");
         } catch (SQLException e) {
             throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
         }
@@ -45,10 +44,10 @@ public class DataBaseClassMsSql extends DataBaseClass {
         String s;
         while (rs.next()) {
             s = rs.getString(1);
-            if (s.toLowerCase().equals("master"))   continue;
-            if (s.toLowerCase().equals("tempdb"))   continue;
-            if (s.toLowerCase().equals("model"))   continue;
-            if (s.toLowerCase().equals("msdb"))   continue;
+            if (s.toLowerCase().equals("information_schema"))   continue;
+            if (s.toLowerCase().equals("mysql"))   continue;
+            if (s.toLowerCase().equals("performance_schema"))   continue;
+            if (s.toLowerCase().equals("sys"))   continue;
             listBd.add(s);
         }
         rs.close();
@@ -61,7 +60,7 @@ public class DataBaseClassMsSql extends DataBaseClass {
         ArrayList<String> listColmn = new ArrayList<>();
         Connection connection;
         ResultSet resultSet;
-        Statement statement;
+        PreparedStatement  statement;
         int len, countList, countSql;
         boolean table1 = true;
         boolean table2 = true;
@@ -69,15 +68,14 @@ public class DataBaseClassMsSql extends DataBaseClass {
         String sample;
         // check connect
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            String connectionUrl = "jdbc:sqlserver://%1$s:%2$s;databaseName=%3$s";
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            String connectionUrl = "jdbc:mysql://%1$s:%2$s/%3$s";
             String connString = String.format(connectionUrl
                     , ip
                     , portServer
                     , base
-            );
+            )  + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
             connection = DriverManager.getConnection(connString, login, password);
-            statement = connection.createStatement();
         } catch (java.lang.Throwable e) {
             System.out.println("test structure base: " + e.getLocalizedMessage());
             return false;
@@ -85,6 +83,7 @@ public class DataBaseClassMsSql extends DataBaseClass {
         // check table data
         try {
             {
+                listColmn.clear();
                 listColmn.add("id");
                 listColmn.add("dateTime");
                 listColmn.add("id_spec");
@@ -97,7 +96,16 @@ public class DataBaseClassMsSql extends DataBaseClass {
             }
             countSql = 0;
             countList = listColmn.size();
-            resultSet = statement.executeQuery("select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'Table_Data'");
+            statement = connection.prepareStatement("SELECT\n" +
+                    "COLUMN_NAME\n" +
+                    "FROM information_schema.COLUMNS\n" +
+                    "WHERE\tinformation_schema.COLUMNS.TABLE_SCHEMA = ?\n" +
+                    "AND information_schema.COLUMNS.TABLE_NAME = ?\n" +
+                    "ORDER BY information_schema.COLUMNS.ORDINAL_POSITION ASC"
+            );
+            statement.setString(1, base);
+            statement.setString(2, "table_data");
+            resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 sample = resultSet.getString(1);
                 countSql++;
@@ -138,7 +146,7 @@ public class DataBaseClassMsSql extends DataBaseClass {
     }
 
     @Override
-    protected void connectBd() throws Exception {
+    public void connectBd() throws Exception {
         // загрузка параметров
         try {
             parametersSql.load();
@@ -147,17 +155,17 @@ public class DataBaseClassMsSql extends DataBaseClass {
         }
         // подключение драйвера
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             throw new Exception(e.getLocalizedMessage().substring(0, e.getLocalizedMessage().lastIndexOf(".")));
         }
         // установка параметров соединения
-        String connectionUrl = "jdbc:sqlserver://%1$s:%2$s;databaseName=%3$s";
+        String connectionUrl = "jdbc:mysql://%1$s:%2$s/%3$s";
         String connString = String.format(connectionUrl
                 , parametersSql.urlServer
                 , parametersSql.portServer
                 , parametersSql.dataBase
-        );
+        ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
         // соединение
         try {
             connection = DriverManager.getConnection(connString, parametersSql.user, parametersSql.password);
@@ -173,15 +181,14 @@ public class DataBaseClassMsSql extends DataBaseClass {
             throw new Exception("нет связи");
         }
         PreparedStatement statement;
-        Statement statementReadSpec;
-        boolean saveAutoCommit = false;
+        Statement statementReadSpec = null;
+        boolean saveAutoCommit = true;
         try {
             saveAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
             connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             // чтение id спец
-            statementReadSpec = connection.createStatement();
-            ResultSet resultSpec = statementReadSpec.executeQuery("SELECT TOP 1 table_spec.id FROM table_spec ORDER BY table_spec.id DESC");
+            ResultSet resultSpec = statementReadSpec.executeQuery("SELECT table_spec.id FROM table_spec ORDER BY table_spec.id DESC LIMIT 1");
             if (!resultSpec.next()) {
                 throw new SQLException("таблица table_spec пуста");
             }
@@ -219,13 +226,13 @@ public class DataBaseClassMsSql extends DataBaseClass {
         }
         String pass = new String(java.util.Base64.getEncoder().encode(newPassword.getBytes()));
         PreparedStatement statement;
-        boolean saveAutoCommit = true;
+        boolean saveAutoCommit = false;
         try {
             saveAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(true);
             // запись
             statement = connection.prepareStatement(
-                    "UPDATE Table_users SET  \"password\" = ? WHERE \"id\" = ?"
+                    "UPDATE Table_users SET  password = ? WHERE id = ?"
             );
             statement.setString(1, pass);
             statement.setInt(2, userClass.id);

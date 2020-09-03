@@ -1,20 +1,18 @@
-package org.example.bd;
-
-import org.example.test24.allinterface.bd.UserClass;
+package org.example.test24.bd;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 
-abstract class DataBaseClass implements DataBase {
+abstract class BaseData1Class implements BaseData1 {
     protected Connection connection = null;
     protected ParametersSql parametersSql = null;
 
     @Override
     public abstract void setParametersSql(String[] fileNameSql);
 
-    protected abstract void connectBd() throws Exception;
+    //protected abstract void connectBd() throws Exception;
 
     @Override
     public Connection getConnect() throws Exception {
@@ -43,12 +41,12 @@ abstract class DataBaseClass implements DataBase {
 
     @Override
     public boolean testStuctBase(String ip, String portServer, String login, String password, String base) {
-        return DataBase.testStuctBase(getTypeBD(), ip, portServer, login, password, base);
+        return BaseData1.testStuctBase(getTypeBD(), ip, portServer, login, password, base);
     }
 
     @Override
     public String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception {
-        return DataBase.getConnectListBd(getTypeBD(), ip, portServer, login, password);
+        return BaseData1.getConnectListBd(getTypeBD(), ip, portServer, login, password);
     }
 
     @Override

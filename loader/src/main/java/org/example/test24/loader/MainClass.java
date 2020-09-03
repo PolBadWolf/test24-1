@@ -1,14 +1,11 @@
 package org.example.test24.loader;
 
-import org.example.bd.*;
+import org.example.test24.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenFx;
-
-import java.io.*;
-import java.util.Properties;
 
 
 public class MainClass {
@@ -21,8 +18,10 @@ public class MainClass {
     private ScreenFx screenFx;
     private Runner runner;
     private CommPort commPort;
-    private DataBase bdSql;
+    private BaseData1 bdSql;
     private StartFrame startFrame;
+    // ===============================================
+    private BaseData connBd;
     // ===============================================
     private void close() {
         if (screenFx != null) {
@@ -49,19 +48,80 @@ public class MainClass {
         close();
     }
     // ===============================================
-    private String[] parameters = null;
+    ParametersConfig parametersConfig;
 
     public static void main(String[] args) {
         new MainClass().start();
     }
 
     private void start() {
-        parameters = getConfig();
-        String namePort = parameters[1];
+        // создание объекта для БД
+        connBd = new BaseDataClass(new BaseData.CallBack() {
+        });
+        /*
+        int testStat1 = 99, testStat2 = 99, testStat3, testStat4;
+        String[] listBd;
+        UserClass[] listUsers;
 
+        testStat1 = connBd.createTestConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL,
+                new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas1")
+        );
+        if (testStat1 == org.example.test24.bd.BaseData.OK) {
+            listBd = connBd.testConnectListBd();
+        } else {
+            listBd = null;
+        }
+        testStat2 = connBd.createWorkConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL,
+                new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas2")
+        );
+        if (testStat2 == org.example.test24.bd.BaseData.OK) {
+            try {
+                listUsers = connBd.getListUsers(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+                listUsers = new UserClass[0];
+            }
+        } else {
+            listUsers = new UserClass[0];
+        }
+        System.out.println("test conn: " + testStat1);
+        Arrays.stream(listBd).iterator().forEachRemaining(s-> System.out.println(s));
+        System.out.println("work conn: " + testStat2);
+        Arrays.stream(listUsers).iterator().forEachRemaining(userClass -> System.out.println(userClass.name));
+        */
+        //
+//        String portName;
+        //parameters = getConfig();
+        //portName = parameters[1];
+        // создание основных объектов
+        parametersConfig = new ParametersConfig(fileNameConfig);
         screenFx = ScreenFx.init(o->screenCloser());
         runner = Runner.main(o->runnerCloser());
         commPort = CommPort.main(o->commPortCloser());
+
+        /*try {
+            baseData = new org.example.test24.loader.BaseDataXXX(new BaseDataCallBack());
+            baseData.initBaseData(parameters1.getTypeBaseData());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+        // загрузка начальной конфигурации
+        ParametersConfig.Diagnostic result = parametersConfig.load();
+        switch (result) {
+            case FILE_NOT_FOUND:
+                System.out.println("Файл конфигурации не найден");
+                // параметры по умолчанию
+                parametersConfig.setDefault();
+                break;
+            case ERROR_LOAD:
+                System.out.println("Ошибка загрузки файла конфигурации");
+                // параметры по умолчанию
+                parametersConfig.setDefault();
+                break;
+            case ERROR_PARAMETERS:
+                System.out.println("Ошибка параметров файла конфигурации");
+                break;
+        }
 
         startFrame = StartFrame.main(new StartFrameCallBack());
         try {
@@ -73,27 +133,25 @@ public class MainClass {
             e.printStackTrace();
         }
 
-        int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), namePort, BAUD.baud57600);
+        int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), parametersConfig.getPortName(), BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
             errorCommMessage(checkComm, commPort);
             System.exit(0);
         }
 
-        try {
-            bdSql = DataBase.init(parameters[0], fileNameSql);
+        /*try {
+            bdSql = BaseData1.init(parametersConfig.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
             bdSql.getConnect();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
             System.exit(1);
-        }
+        }*/
 
         screenFx.main();
         while (MainFrame.mainFrame == null) {
             Thread.yield();
         }
-
         runner.init(bdSql, commPort, MainFrame.mainFrame);
-
         commPort.ReciveStart();
     }
 
@@ -112,54 +170,88 @@ public class MainClass {
         }
     }
 
-    public String[] getConfig() {
-        Properties properties = new Properties();
-        boolean flagReload = false;
-        String[] strings = new String[2];
-
-        try {
-            properties.load(new FileReader(fileNameConfig));
-            strings[0] = properties.getProperty("DataBase").toUpperCase();
-            strings[1] = properties.getProperty("CommPort").toUpperCase();
-
-            if (strings[0] == null || strings[1] == null)   flagReload = true;
-
-        } catch (IOException e) {
-            System.out.println("файл config.txt не найден");
-            flagReload = true;
-        }
-
-        if (flagReload) {
-            strings[0] = "MY_SQL";
-            strings[1] = "com2";
-            saveConfig(strings);
-        }
-
-        return strings;
-    }
-    public void saveConfig(String[] parameters) {
-        Properties properties = new Properties();
-        try {
-            properties.setProperty("DataBase", parameters[0].toUpperCase());
-            properties.setProperty("CommPort", parameters[1].toUpperCase());
-            properties.store(new FileWriter(fileNameConfig), "config");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean  checkCommPort(String portName) {
+    private boolean checkCommPort(String portName) {
         int ch =  commPort.Open(null, portName, BAUD.baud57600);
         commPort.Close();
         return ch == CommPort.INITCODE_OK;
     }
-
-    private class StartFrameCallBack implements StartFrame.CallBack {
-        // проверка Comm Port
+/*
+    private class BaseDataCallBack implements BaseDataXXX.CallBack {
         @Override
-        public boolean checkCommPort() {
-            return MainClass.this.checkCommPort(parameters[1]);
+        public BaseData1.TypeBaseData loadTypeBaseData() {
+            return parametersConfig.getTypeBaseData();
         }
+
+        @Override
+        public String[] getFileNameSql() {
+            return fileNameSql;
+        }
+    }
+*/
+    private class StartFrameCallBack implements FrameCallBack {
+    // чтение типа БД из конфига
+    @Override
+    public BaseData.TypeBaseData getTypeBaseDataFromConfig() {
+        return parametersConfig.getTypeBaseData();
+    }
+    // чтение параметров из конфига
+    @Override
+    public ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData) {
+        ParametersSql parametersSql = new ParametersSql(fileNameSql[parametersConfig.getTypeBaseData().getTypeBaseData()]);
+        parametersSql.load();
+        return parametersSql;
+    }
+    // установка тестого соединения
+    @Override
+    public int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        if (connBd == null || typeBaseData == BaseData.TypeBaseData.ERROR) {
+            return BaseData.CONNECT_ERROR;
+        }
+        return connBd.createTestConnect(typeBaseData, parameters);
+    }
+    // проверка структуры БД
+    @Override
+    public int testConnectCheckStructure(String base) {
+        return connBd.testConnectCheckStructure(base);
+    }
+    // создание рабочего соединения
+    @Override
+    public int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        if (connBd == null || typeBaseData == BaseData.TypeBaseData.ERROR) {
+            return BaseData.CONNECT_ERROR;
+        }
+        return connBd.createWorkConnect(typeBaseData, parameters);
+    }
+    // загрузка пользователей
+    @Override
+    public UserClass[] getListUsers(boolean actual) {
+        // получение списка
+        UserClass[] listUsers;
+        try {
+            listUsers = connBd.getListUsers(actual);
+        } catch (Exception e) {
+            return new UserClass[0];
+        }
+        return listUsers;
+    }
+    // чтение comm port из конфига
+    @Override
+    public String getCommPortNameFromConfig() {
+        return parametersConfig.getPortName();
+    }
+    // проверка Comm Port
+    @Override
+    public boolean checkCommPort(String portName) {
+        return MainClass.this.checkCommPort(portName);
+    }
+    // установка нового пароля пользователя
+    @Override
+    public boolean setUserNewPassword(UserClass user, String newPassword) {
+        if (connBd == null) return false;
+        return connBd.setUserNewPassword(user, newPassword);
+    }
+
+    // --------------------------------------------------------
 
         // подключение к БД и структуры БД (параметры из файла конфигурации)
         @Override
@@ -168,7 +260,7 @@ public class MainClass {
             ParametersSql parametersSql;
             try {
                 // подключение БД
-                bdSql = DataBase.init(parameters[0], fileNameSql);
+                //bdSql = BaseData1.init(parametersConfig.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
                 // загрузка параметров SQL
                 parametersSql = bdSql.getParametrsSql();
                 parametersSql.load();
@@ -198,11 +290,6 @@ public class MainClass {
         }
 
         @Override
-        public String[] getParameters() {
-            return parameters;
-        }
-
-        @Override
         public String[] getFilesNameSql() {
             return fileNameSql;
         }
@@ -222,6 +309,16 @@ public class MainClass {
             }
             return fileName;
         }
+
+        @Override
+        public String loadConfigCommPort() {
+            return parametersConfig.getPortName();
+        }
+
+        @Override
+        public BaseData.TypeBaseData loadConfigTypeBaseData() {
+            return parametersConfig.getTypeBaseData();
+        }
     }
 
     private class TuningFrameCallBack implements TuningFrame.CallBackToMainClass {
@@ -231,8 +328,25 @@ public class MainClass {
         }
 
         @Override
-        public void saveConfig(String[] parametrs) {
-            MainClass.this.saveConfig(parametrs);
+        public void saveConfigCommPort(String portName) {
+            parametersConfig.setPortName(portName);
+            parametersConfig.save();
+        }
+
+        @Override
+        public void saveConfigTypeBaseData(BaseData.TypeBaseData typeBaseData) {
+            parametersConfig.setTypeBaseData(typeBaseData);
+            parametersConfig.save();
+        }
+
+        @Override
+        public String loadConfigCommPort() {
+            return parametersConfig.getPortName();
+        }
+
+        @Override
+        public BaseData.TypeBaseData loadConfigTypeBaseData() {
+            return parametersConfig.getTypeBaseData();
         }
 
         @Override
