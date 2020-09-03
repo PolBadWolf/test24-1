@@ -27,10 +27,76 @@ public class StartFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        label1 = new javax.swing.JLabel();
+        label2 = new javax.swing.JLabel();
+        label3 = new javax.swing.JLabel();
+        buttonEnter = new javax.swing.JButton();
+        buttonWork = new javax.swing.JButton();
+        buttonTuning = new javax.swing.JButton();
+        buttonSetPassword = new javax.swing.JButton();
+        fieldPassword = new javax.swing.JTextField();
+        comboBoxUser = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(640, 480));
         setResizable(false);
         getContentPane().setLayout(null);
+
+        label1.setFont(new java.awt.Font("Times New Roman", 0, 57)); // NOI18N
+        label1.setText("Стенд");
+        getContentPane().add(label1);
+        label1.setBounds(250, 40, 150, 66);
+
+        label2.setFont(new java.awt.Font("Times New Roman", 0, 36)); // NOI18N
+        label2.setText("для испытания");
+        getContentPane().add(label2);
+        label2.setBounds(210, 90, 230, 42);
+
+        label3.setFont(new java.awt.Font("Times New Roman", 0, 36)); // NOI18N
+        label3.setText("гидротолкателей");
+        getContentPane().add(label3);
+        label3.setBounds(220, 120, 260, 42);
+
+        buttonEnter.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonEnter.setText("проверка");
+        getContentPane().add(buttonEnter);
+        buttonEnter.setBounds(332, 280, 90, 24);
+
+        buttonWork.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonWork.setText("работа");
+        getContentPane().add(buttonWork);
+        buttonWork.setBounds(332, 316, 90, 24);
+
+        buttonTuning.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonTuning.setText("настройка");
+        getContentPane().add(buttonTuning);
+        buttonTuning.setBounds(424, 316, 116, 24);
+
+        buttonSetPassword.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonSetPassword.setText("новый пароль");
+        getContentPane().add(buttonSetPassword);
+        buttonSetPassword.setBounds(424, 280, 116, 24);
+
+        fieldPassword.setText("Enter Password");
+        getContentPane().add(fieldPassword);
+        fieldPassword.setBounds(190, 280, 120, 24);
+
+        comboBoxUser.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        comboBoxUser.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Users" }));
+        getContentPane().add(comboBoxUser);
+        comboBoxUser.setBounds(190, 230, 350, 24);
+
+        jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jLabel1.setText("Пользователь : ");
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(100, 235, 90, 14);
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel2.setText("Пароль :");
+        getContentPane().add(jLabel2);
+        jLabel2.setBounds(100, 285, 90, 16);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -72,5 +138,16 @@ public class StartFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonEnter;
+    private javax.swing.JButton buttonSetPassword;
+    private javax.swing.JButton buttonTuning;
+    private javax.swing.JButton buttonWork;
+    private javax.swing.JComboBox<String> comboBoxUser;
+    private javax.swing.JTextField fieldPassword;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel label1;
+    private javax.swing.JLabel label2;
+    private javax.swing.JLabel label3;
     // End of variables declaration//GEN-END:variables
 }
