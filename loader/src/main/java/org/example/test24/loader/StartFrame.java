@@ -79,8 +79,9 @@ public class StartFrame extends Parrent_Frame {
         // начальная загрузка параметров соединения с БД
         res =  beginInitParametersSql();
         if (res) {
+            int result;
             // начальная инициация соединения c БД и получение списка пользователей
-            res = beginInitConnectBdGetListUsers();
+            result = initTestConnectBd();
         }
         // задержка на пока начального экрана
         try {
@@ -119,26 +120,6 @@ public class StartFrame extends Parrent_Frame {
                 return a.name.compareTo(b.name);
             }
         }).forEach (u->comboBoxUser.addItem(u));
-    }
-
-    // начальная загрузка параметров соединения с БД
-    private boolean beginInitParametersSql() {
-        // тип БД
-        typeBaseData = callBack.getTypeBaseDataFromConfig();
-        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
-            listUsers = new UserClass[0];
-            flCheckSql = false;
-            return false;
-        }
-        int result;
-        // чтение параметров из конфига
-        parametersSql = callBack.getParametersSqlFromConfig(typeBaseData);
-        if (parametersSql.getStat() != ParametersSql.OK) {
-            listUsers = new UserClass[0];
-            flCheckSql = false;
-            return false;
-        }
-        return true;
     }
 
     private StartFrame(boolean statMainWork, FrameCallBack callBack) {
@@ -565,14 +546,19 @@ public class StartFrame extends Parrent_Frame {
         // чтение параметров из конфига
         @Override
         public ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData)  {
-            int a = 1/0;
-            return null;
+            return callBack.getParametersSqlFromConfig(typeBaseData);
         }
         // создание тестого соединения
         @Override
         public int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
             int a = 1/0;
             return 0;
+        }
+        // список доступных БД из тестового соединения
+        @Override
+        public String[] getListBdFromTestConnect() {
+            int a = 1 /0;
+            return callBack.getListBdFromTestConnect();
         }
         // проверка структуры БД
         @Override

@@ -72,7 +72,7 @@ public class BaseDataClass implements BaseData {
     }
     // тестовое соединение список доступных баз
     @Override
-    public String[] testConnectListBd() {
+    public String[] getListBdFromTestConnect() {
         return testConnect.testConnectListBd();
     }
     // тестовое соединение проверка структуры БД

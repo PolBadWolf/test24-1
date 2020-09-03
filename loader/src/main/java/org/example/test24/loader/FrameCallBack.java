@@ -10,6 +10,8 @@ public interface FrameCallBack {
     ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData);
     // создание тестого соединения
     int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
+    // список доступных БД из тестового соединения
+    String[] getListBdFromTestConnect();
     // проверка структуры БД
     int testConnectCheckStructure(String base);
     // создание рабочего соединения

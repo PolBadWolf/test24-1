@@ -106,7 +106,12 @@ class TuningFrame extends TuningFrameVars {
         commPortName = callBack.getCommPortNameFromConfig();
         // загрузка списка ком портов
         comPortNameList = callBack.getComPortNameList();
+        // загрузка параметов соединения с БД
+        if (!beginInitParametersSql()) {
+            // ошибка загрузки параметорв
+        } else {
 
+        }
     }
 
 
@@ -121,111 +126,85 @@ class TuningFrame extends TuningFrameVars {
     }
 
     private void frameConstructor() {
-        frameTuning = getFrameTuning("настройка", new Dimension(640, 480));
+        frameTuning = getFrameTuning("настройка", 640, 480);
         Container container = frameTuning.getContentPane();
         {
-            panelCommPort = getPanelTitle("выбор Comm порта", new Rectangle(10, 10, 130, 110));
+            panelCommPort = getPanelTitle("выбор Comm порта",10, 10, 130, 110);
             container.add(panelCommPort);
             //
-            panelCommPort.add(getLabel("текщий порт: ", new Rectangle(6, 15, 100, 30)));
+            panelCommPort.add(getLabel("текщий порт: ", 6, 15, 100, 30));
             //
-            labelPortCurrent = getLabel(commPortName, new Rectangle(80, 15, 100, 30));
+            labelPortCurrent = getLabel(commPortName, 80, 15, 100, 30);
             panelCommPort.add(labelPortCurrent);
             //
-            comboBoxCommPort = getComboBoxCommPort(commPortName, new Rectangle(6, 50, 110, 20));
+            comboBoxCommPort = getComboBoxCommPort(commPortName, 6, 50, 110, 20);
             panelCommPort.add(comboBoxCommPort);
             //
-            textPortStatus = getTextFieldStatus("sel", new Rectangle(6, 80, 110, 20));
+            textPortStatus = getTextFieldStatus(commPortName, 6, 80, 110, 20);
             panelCommPort.add(textPortStatus);
         } // Comm Port
         {
-            panelTypeBd = getPanelTitle("выбор Базы данных ", new Rectangle(140, 10, 230, 110));
+            panelTypeBd = getPanelTitle("выбор Базы данных ", 140, 10, 230, 110);
             container.add(panelTypeBd);
 
-            panelTypeBd.add(getLabel("тип базы данных: ", new Rectangle(10, 10, 140, 30)));
+            panelTypeBd.add(getLabel("тип базы данных: ", 10, 10, 140, 30));
 
-            //comboBoxTypeBd = getComboBoxTypeBd(callBack MC.loadConfigTypeBaseData().getTypeBaseDataString(), new Rectangle(6, 50, 110, 20));
-            comboBoxTypeBd = getComboBoxTypeBd(typeBaseData.toString(), new Rectangle(6, 50, 110, 20));
+            comboBoxTypeBd = getComboBoxTypeBd(typeBaseData.toString(), 6, 50, 110, 20);
             panelTypeBd.add(comboBoxTypeBd);
 
-            textTypeBdStatus = getTextTypeBdStatus("unknow", new Rectangle(6, 80, 110, 20));
+            textTypeBdStatus = getTextTypeBdStatus(typeBaseData.toString(), 6, 80, 110, 20);
             panelTypeBd.add(textTypeBdStatus);
         } // Type Base
         {
-            panelParamSQL = getPanelTitle("параметры подключения", new Rectangle(10, 130, 360, 200));
+            panelParamSQL = getPanelTitle("параметры подключения", 10, 130, 360, 200);
             container.add(panelParamSQL);
 
-            panelParamSQL.add(getLabel("ip адрес сервера: ", new Rectangle(6, 10, 140, 30)));
-            fieldParamServerIP = getFieldParamServerIP(new Rectangle(160, 15, 140, 18));
+            panelParamSQL.add(getLabel("ip адрес сервера: ", 6, 10, 140, 30));
+            fieldParamServerIP = getFieldParamServerIP(parametersSql.urlServer, 160, 15, 140, 18);
             panelParamSQL.add(fieldParamServerIP);
 
-            panelParamSQL.add(getLabel("порт: ", new Rectangle(6, 30, 140, 30)));
-            fieldParamServerPort = getFieldParamServerPort("123", new Rectangle(160, 36, 140, 18));
+            panelParamSQL.add(getLabel("порт: ", 6, 30, 140, 30));
+            fieldParamServerPort = getFieldParamServerPort(parametersSql.portServer, 160, 36, 140, 18);
             panelParamSQL.add(fieldParamServerPort);
 
-            panelParamSQL.add(getLabel("логин: ", new Rectangle(6, 50, 140, 30)));
-            fieldParamServerLogin = getFieldParamServerLogin("login", new Rectangle(160, 56, 140, 18));
+            panelParamSQL.add(getLabel("логин: ", 6, 50, 140, 30));
+            fieldParamServerLogin = getFieldParamServerLogin(parametersSql.user, 160, 56, 140, 18);
             panelParamSQL.add(fieldParamServerLogin);
 
-            panelParamSQL.add(getLabel("пароль: ", new Rectangle(6, 80, 140, 30)));
-            fieldParamServerPassword = getFieldParamServerPassword("password", new Rectangle(160, 86, 140, 18));
+            panelParamSQL.add(getLabel("пароль: ", 6, 80, 140, 30));
+            fieldParamServerPassword = getFieldParamServerPassword(parametersSql.password, 160, 86, 140, 18);
             panelParamSQL.add(fieldParamServerPassword);
 
-            panelParamSQL.add(getLabel("база данных: ", new Rectangle(6, 110, 140, 30)));
-            comboBoxListBd = getComboBoxListBd(new Rectangle(160, 116, 140, 20));
+            panelParamSQL.add(getLabel("база данных: ", 6, 110, 140, 30));
+            comboBoxListBd = getComboBoxListBd(null, "",   160, 116, 140, 20);
             panelParamSQL.add(comboBoxListBd);
 
-            buttonOk = getButtonOk("Ok", new Rectangle(16, 140, 80, 30));
+            buttonOk = getButtonOk("Ok", 16, 140, 80, 30);
             panelParamSQL.add(buttonOk);
 
-            buttonSave = getButtonSave("Сохранить", new Rectangle(108, 140, 100, 30));
+            buttonSave = getButtonSave("Сохранить", 108, 140, 100, 30);
             panelParamSQL.add(buttonSave);
 
-            buttonTest = getButtonTestBd("Тест", new Rectangle(220, 140, 80, 30));
+            buttonTest = getButtonTestBd("Тест", 220, 140, 80, 30);
             panelParamSQL.add(buttonTest);
         } // Parameters Base
         {
-            panelSelectEdit = getPanelSelectEdit("редактирование", new Rectangle(10, 340, 360, 80));
+            panelSelectEdit = getPanelSelectEdit("редактирование", 10, 340, 360, 80);
             container.add(panelSelectEdit);
 
-            buttonEditUsers = getButtonEditUsers("Пользователи", new Rectangle(16, 30, 140, 30));
+            buttonEditUsers = getButtonEditUsers("Пользователи", 16, 30, 140, 30);
             panelSelectEdit.add(buttonEditUsers);
 
-            buttonEditPushers = getButtonEditPushers("Толкатели", new Rectangle(200, 30, 140, 30));
+            buttonEditPushers = getButtonEditPushers("Толкатели", 200, 30, 140, 30);
             panelSelectEdit.add(buttonEditPushers);
         } // Select Edit
         frameTuning.pack();
         frameTuning.setResizable(false);
         frameTuning.setVisible(true);
-            /*
-            threadSkeep = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    int count = 15 * 10;
-                    threadSkeepOn = true;
-                    try {
-                        while (threadSkeepOn) {
-                            count--;
-                            buttonOk.setText(String.valueOf(count / 10));
-                            Thread.sleep(100);
-                            if (count == 0) break;
-                        }
-                        if (count == 0) {
-                            System.out.println("skeep");
-                            closeFrame();
-                        } else {
-                            buttonOk.setText("Ok");
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            threadSkeep.start();
-            */
     }
-    private JFrame getFrameTuning(String title, Dimension size) {
+    private JFrame getFrameTuning(String title, int width, int height) {
         JFrame frame = new JFrame(title);
+        Dimension size = new Dimension(width, height);
         frame.setSize(size);
         frame.setPreferredSize(size);
         frame.setLayout(null);
@@ -242,53 +221,53 @@ class TuningFrame extends TuningFrameVars {
         return frame;
     }
 
-    private JPanel getPanelTitle(String title, Rectangle positionSize) {
+    private JPanel getPanelTitle(String title, int x, int y, int width, int height) {
         JPanel panel = new JPanel();
-        panel.setBounds(positionSize);
+        panel.setBounds(x, y, width, height);
         panel.setBorder(BorderFactory.createTitledBorder(title));
         panel.setLayout(null);
         return panel;
     }
-    private JLabel getLabel(String text, Rectangle positionSize) {
+    private JLabel getLabel(String text, int x, int y, int width, int height) {
         JLabel label = new JLabel(text);
-        label.setBounds(positionSize);
+        label.setBounds(x, y, width, height);
         return label;
     }
-    private JComboBox<String> getComboBoxCommPort(String itemDefault, Rectangle positionSize) {
+    private JComboBox<String> getComboBoxCommPort(String itemDefault, int x, int y, int width, int height) {
         String[] listCommPortName = comPortNameList;
         // sort
         Arrays.sort(listCommPortName);
         JComboBox<String> comboBox = new JComboBox<>(listCommPortName);
         comboBox.setSelectedItem(itemDefault);
-        comboBox.setBounds(positionSize);
+        comboBox.setBounds(x, y, width, height);
         comboBox.addActionListener(e -> selectCommPort(comboBox));
         return comboBox;
     }   // ok
-    private JTextField getTextFieldStatus(String text, Rectangle positionSize) {
+    private JTextField getTextFieldStatus(String text, int x, int y, int width, int height) {
         JTextField textField = new JTextField(text);
-        textField.setBounds(positionSize);
+        textField.setBounds(x, y, width, height);
         textField.setEditable(false);
         return textField;
     }
 
-    private JComboBox<String> getComboBoxTypeBd(String itemDefault, Rectangle positionSize) {
+    private JComboBox<String> getComboBoxTypeBd(String itemDefault, int x, int y, int width, int height) {
         JComboBox<String> comboBox = new JComboBox<>();
-        comboBox.setBounds(positionSize);
+        comboBox.setBounds(x, y, width, height);
         comboBox.addItem("MS_SQL");
         comboBox.addItem("MY_SQL");
         comboBox.setSelectedItem(itemDefault);
         comboBox.addActionListener(e -> selectTypeBase(comboBox));
         return comboBox;
     }     // ok
-    private JTextField getTextTypeBdStatus(String text, Rectangle positionSize) {
+    private JTextField getTextTypeBdStatus(String text, int x, int y, int width, int height) {
         JTextField textField = new JTextField(text);
-        textField.setBounds(positionSize);
+        textField.setBounds(x, y, width, height);
         textField.setEditable(false);
         return textField;
     }
-    private JTextField getFieldParamServerIP(Rectangle positionSize) {
-        JTextField field = new JTextField("256.256.256.256");
-        field.setBounds(positionSize);
+    private JTextField getFieldParamServerIP(String text, int x, int y, int width, int height) {
+        JTextField field = new JTextField(text);
+        field.setBounds(x, y, width, height);
         ((PlainDocument)field.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
             public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
@@ -296,7 +275,6 @@ class TuningFrame extends TuningFrameVars {
                     super.insertString(fb, offset, string, attr);
                 }
             }
-
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
                 if (text.length() == 1) {
@@ -309,68 +287,69 @@ class TuningFrame extends TuningFrameVars {
         field.addActionListener(e -> selectParametersConnectBd());
         return field;
     }                    // ok
-    private JTextField getFieldParamServerPort(String text, Rectangle positionSize) {
+    private JTextField getFieldParamServerPort(String text, int x, int y, int width, int height) {
         JTextField field = new JTextField(text);
-        field.setBounds(positionSize);
+        field.setBounds(x, y, width, height);
         field.addActionListener(e -> selectParametersConnectBd());
         return field;
     }     // ok
-    private JTextField getFieldParamServerLogin(String text, Rectangle positionSize) {
+    private JTextField getFieldParamServerLogin(String text, int x, int y, int width, int height) {
         JTextField field = new JTextField(text);
-        field.setBounds(positionSize);
+        field.setBounds(x, y, width, height);
         field.addActionListener(e -> selectParametersConnectBd());
         return field;
     }    // ok
-    private JTextField getFieldParamServerPassword(String text, Rectangle positionSize) {
+    private JTextField getFieldParamServerPassword(String text, int x, int y, int width, int height) {
         JTextField field = new JPasswordField(text);
-        field.setBounds(positionSize);
+        field.setBounds(x, y, width, height);
         field.addActionListener(e -> selectParametersConnectBd());
         return field;
     } // ok
-    private JComboBox<String> getComboBoxListBd(Rectangle positionSize) {
+    private JComboBox<String> getComboBoxListBd(String[] bases, String baseDef, int x, int y, int width, int height) {
         JComboBox<String> comboBox = new JComboBox<>();
-        comboBox.setBounds(positionSize);
+        comboBox.setBounds(x, y, width, height);
         comboBox.addActionListener(e -> selectParametersConnectBd());
         return comboBox;
     }                         // ok
-    private JButton getButtonOk(String text, Rectangle positionSize) {
+    private JButton getButtonOk(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
-        button.setBounds(positionSize);
+        button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> pushButtonOk());
         return button;
     }                    // ok
-    private JButton getButtonSave(String text, Rectangle positionSize) {
+    private JButton getButtonSave(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
-        button.setBounds(positionSize);
+        button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> pushButtonSave());
         return button;
     }                  // ok
-    private JButton getButtonTestBd(String text, Rectangle positionSize) {
+    private JButton getButtonTestBd(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
-        button.setBounds(positionSize);
+        button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> pushButtonTest());
         return button;
     }                // ok
 
-    private JPanel getPanelSelectEdit(String title, Rectangle positionSize) {
+    private JPanel getPanelSelectEdit(String title, int x, int y, int width, int height) {
         JPanel panel = new JPanel();
-        panel.setBounds(positionSize);
+        panel.setBounds(x, y, width, height);
         panel.setBorder(BorderFactory.createTitledBorder(title));
         panel.setLayout(null);
         return panel;
     }
-    private JButton getButtonEditUsers(String text, Rectangle positionSize) {
+    private JButton getButtonEditUsers(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
-        button.setBounds(positionSize);
+        button.setBounds(x, y, width, height);
+        button.setEnabled(false);
         button.addActionListener(e -> pushButtonEditUsers());
         return button;
     }
-    private JButton getButtonEditPushers(String text, Rectangle positionSize) {
+    private JButton getButtonEditPushers(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
-        button.setBounds(positionSize);
+        button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> {
             //closeFrame();

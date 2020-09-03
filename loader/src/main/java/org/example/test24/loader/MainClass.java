@@ -197,6 +197,11 @@ public class MainClass {
             }
             return connBd.createTestConnect(typeBaseData, parameters);
         }
+        // список доступных БД из тестового соединения
+        @Override
+        public String[] getListBdFromTestConnect() {
+            return connBd.getListBdFromTestConnect();
+        }
         // проверка структуры БД
         @Override
         public int testConnectCheckStructure(String base) {

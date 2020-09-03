@@ -65,8 +65,8 @@ public interface BaseData {
     // -----------------------------------------------------------
     // создание тестового соединения
     int createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
-    // тестовое соединение список доступных БД
-    String[] testConnectListBd();
+    // список доступных БД из тестового соединения
+    String[] getListBdFromTestConnect();
     // тестовое соединение проверка структуры БД
     int testConnectCheckStructure(String base);
     // -----------------------------------------------------------
