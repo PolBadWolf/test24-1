@@ -43,8 +43,8 @@ public class StartFrame extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        buttonEditUsers = new javax.swing.JButton();
+        buttonEditPushers = new javax.swing.JButton();
 
         jToggleButton1.setText("jToggleButton1");
 
@@ -59,14 +59,14 @@ public class StartFrame extends javax.swing.JFrame {
         label1.setBounds(250, 20, 150, 66);
 
         label2.setFont(new java.awt.Font("Times New Roman", 0, 36)); // NOI18N
-        label2.setText("для испытания");
+        label2.setText("испытания");
         getContentPane().add(label2);
-        label2.setBounds(210, 70, 230, 42);
+        label2.setBounds(240, 70, 180, 42);
 
         label3.setFont(new java.awt.Font("Times New Roman", 0, 36)); // NOI18N
         label3.setText("гидротолкателей");
         getContentPane().add(label3);
-        label3.setBounds(220, 100, 260, 42);
+        label3.setBounds(200, 100, 260, 42);
 
         buttonEnter.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         buttonEnter.setText("проверка");
@@ -121,21 +121,21 @@ public class StartFrame extends javax.swing.JFrame {
         jPanel1.setToolTipText("");
         jPanel1.setLayout(null);
 
-        jButton1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton1.setText("Пользователей");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        buttonEditUsers.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonEditUsers.setText("Пользователей");
+        buttonEditUsers.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                buttonEditUsersActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1);
-        jButton1.setBounds(20, 20, 120, 25);
+        jPanel1.add(buttonEditUsers);
+        buttonEditUsers.setBounds(20, 20, 120, 25);
 
-        jButton2.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton2.setText("Толкателей");
-        jButton2.setToolTipText("123");
-        jPanel1.add(jButton2);
-        jButton2.setBounds(20, 55, 120, 25);
+        buttonEditPushers.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonEditPushers.setText("Толкателей");
+        buttonEditPushers.setToolTipText("123");
+        jPanel1.add(buttonEditPushers);
+        buttonEditPushers.setBounds(20, 55, 120, 25);
 
         getContentPane().add(jPanel1);
         jPanel1.setBounds(380, 310, 160, 90);
@@ -144,9 +144,9 @@ public class StartFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void buttonEditUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditUsersActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_buttonEditUsersActionPerformed
 
     /**
      * @param args the command line arguments
@@ -187,14 +187,14 @@ public class StartFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonEditPushers;
+    private javax.swing.JButton buttonEditUsers;
     private javax.swing.JButton buttonEnter;
     private javax.swing.JButton buttonSetPassword;
     private javax.swing.JButton buttonTuning;
     private javax.swing.JButton buttonWork;
     private javax.swing.JComboBox<String> comboBoxUser;
     private javax.swing.JTextField fieldPassword;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

@@ -13,6 +13,8 @@ import java.util.Comparator;
 
 public class StartFrame extends JFrame {
     private FrameCallBack callBack;
+
+    // title
     private JLabel label1;
     private JLabel label2;
     private JLabel label3;
@@ -27,7 +29,12 @@ public class StartFrame extends JFrame {
     private JComboBox<UserClass> comboBoxUser;
     private JLabel jLabel1;
     private JLabel jLabel2;
-//
+
+    // редактирование
+    private JPanel jPanel1;
+    private JButton buttonEditUsers;
+    private JButton buttonEditPushers;
+    //
     private boolean flCheckCommPort = false;
     private boolean flCheckSql = false;
     private UserClass[] listUsers = null;
