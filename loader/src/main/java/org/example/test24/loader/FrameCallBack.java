@@ -19,6 +19,8 @@ public interface FrameCallBack {
     String getCommPortNameFromConfig();
     // проверка Comm Port на валидность
     boolean checkCommPort(String portName);
+    // загрузка списка ком портов в системе
+    String[] getComPortNameList();
 
     // ----------------
     // установка нового пароля пользователя

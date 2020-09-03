@@ -16,7 +16,7 @@ import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-class TuningFrame {
+class TuningFrame extends Parrent_Frame {
     public interface CallBackToMainClass {
         CommPort getCommPort();
         void saveConfigCommPort(String portName);
@@ -29,13 +29,11 @@ class TuningFrame {
     public interface CallBackToStartFrame {
         void messageCloseTuningFrame();
     }
-
-
     private CallBackToMainClass callBackMC;
+
+
     private CallBackToStartFrame callBackTF = null;
 
-    //private String[] parameters = null;
-    private ParametersSql parametersSql = null;
     private BaseData1 bdSql = null;
     private Thread threadSkeep = null;
     private boolean threadSkeepOn;
@@ -43,8 +41,12 @@ class TuningFrame {
     private int chCheckCommPort = CommPort.INITCODE_NOTEXIST;
     private boolean flCheckParamSql = false;
     private boolean flCheckListBd = false;
-    private boolean flCheckSql = false;
+    // список доступных портов
+    private String[] comPortNameList;
 
+    private boolean lockBegin = false;
+
+    // ===== компоненты JFrame =======
     private JFrame frameTuning = null;
     private EditUsers editUsers = null;
 
@@ -71,11 +73,42 @@ class TuningFrame {
     private JButton buttonEditUsers = null;
     private JButton buttonEditPushers = null;
 
-    private boolean lockBegin = false;
 
-    public TuningFrame(CallBackToMainClass callBackMC) {
-        this.callBackMC = callBackMC;
+    // ===============================================
+
+
+
+    public static TuningFrame createFrame(FrameCallBack callBack) {
+        TuningFrame[] tuningFrames = new TuningFrame[1];
+        Thread thread = new Thread(()->{
+            tuningFrames[0] = new TuningFrame(callBack);
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            return null;
+        }
+        return tuningFrames[0];
     }
+
+    protected TuningFrame(FrameCallBack callBack) {
+        this.callBack = callBack;
+        // загрузка параметров
+        loadBeginerParameters();
+        // конструктор окна
+    }
+    // загрузка начальных параметров
+    private void loadBeginerParameters() {
+        // загрузка типа БД
+        typeBaseData = callBack.loadConfigTypeBaseData();
+        // загрузка ком порта
+        commPortName = callBack.getCommPortNameFromConfig();
+        // загрузка списка ком портов
+        comPortNameList = callBack.getComPortNameList();
+
+    }
+
 
     void frameConfig(String[] parameters, CallBackToStartFrame callBackTF) {
         //this.parameters = parameters;

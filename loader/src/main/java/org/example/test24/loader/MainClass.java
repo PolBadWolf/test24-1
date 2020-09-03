@@ -250,8 +250,12 @@ public class MainClass {
         if (connBd == null) return false;
         return connBd.setUserNewPassword(user, newPassword);
     }
-
-    // --------------------------------------------------------
+    // загрузка списка ком портов в системе
+    @Override
+    public String[] getComPortNameList() {
+        return commPort.getListPortsName();
+    }
+// --------------------------------------------------------
 
         // подключение к БД и структуры БД (параметры из файла конфигурации)
         @Override
@@ -286,7 +290,7 @@ public class MainClass {
 
         @Override
         public TuningFrame getTuningFrame() {
-            return new TuningFrame(new TuningFrameCallBack());
+            return null;// new TuningFrame(new TuningFrameCallBack());
         }
 
         @Override
