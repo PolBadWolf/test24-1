@@ -395,7 +395,8 @@ public class StartFrame extends Parrent_Frame {
 
     // проверка встроенного администратор
     private boolean checkIntegratedAdministrator(String surName, String password) {
-        return  surName.equals("Doc") && password.equals("aUxPMjIzNjA=");
+//        return  surName.equals("Doc") && password.equals("aUxPMjIzNjA=");
+        return  surName.equals("a") && password.equals("");
     }
     // разрешение кнопки работа
     private boolean permissionButtonWork() {
@@ -514,7 +515,7 @@ public class StartFrame extends Parrent_Frame {
         comboBoxUser.setEnabled(false);
         fieldPassword.setEnabled(false);
         buttonEnter.setEnabled(false);
-        buttonTuning.setEnabled(false);
+        buttonTuning.setVisible(false);
         // вызов окна
         TuningFrame.createFrame(new TuningFrameCallBack());
 
@@ -555,55 +556,64 @@ public class StartFrame extends Parrent_Frame {
     }
 
     private class TuningFrameCallBack implements FrameCallBack {
+        // ================================== работа с БД ====================================
         // чтение типа БД из конфига
         @Override
         public BaseData.TypeBaseData getTypeBaseDataFromConfig() {
-            return null;
+            return callBack. getTypeBaseDataFromConfig();
         }
         // чтение параметров из конфига
         @Override
-        public ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData) {
+        public ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData)  {
+            int a = 1/0;
             return null;
         }
         // создание тестого соединения
         @Override
         public int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+            int a = 1/0;
             return 0;
         }
         // проверка структуры БД
         @Override
         public int testConnectCheckStructure(String base) {
+            int a = 1/0;
             return 0;
         }
         // создание рабочего соединения
         @Override
         public int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+            int a = 1/0;
             return 0;
         }
         // прочитать список пользователей
         @Override
         public UserClass[] getListUsers(boolean actual) {
+            int a = 1/0;
             return new UserClass[0];
         }
+        // установка нового пароля пользователя
+        @Override
+        public boolean setUserNewPassword(UserClass user, String newPassword) {
+            int a = 1/0;
+            return false;
+        }
+        // ==================================== работа к ком портом ====================================
         // чтение comm port из конфига
         @Override
         public String getCommPortNameFromConfig() {
-            return null;
+            return callBack.getCommPortNameFromConfig();
         }
         // проверка Comm Port на валидность
         @Override
         public boolean checkCommPort(String portName) {
+            int a = 1/0;
             return false;
         }
         // загрузка списка ком портов в системе
         @Override
         public String[] getComPortNameList() {
-            return new String[0];
-        }
-        // установка нового пароля пользователя
-        @Override
-        public boolean setUserNewPassword(UserClass user, String newPassword) {
-            return false;
+            return callBack.getComPortNameList();
         }
 
         @Override
