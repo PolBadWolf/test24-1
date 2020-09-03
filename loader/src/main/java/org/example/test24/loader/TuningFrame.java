@@ -82,7 +82,8 @@ class TuningFrame extends Parrent_Frame {
         TuningFrame[] tuningFrames = new TuningFrame[1];
         Thread thread = new Thread(()->{
             tuningFrames[0] = new TuningFrame(callBack);
-        });
+        }, "start tuning frame"
+        );
         thread.start();
         try {
             thread.join();
@@ -97,6 +98,7 @@ class TuningFrame extends Parrent_Frame {
         // загрузка параметров
         loadBeginerParameters();
         // конструктор окна
+        frameConstructor();
     }
     // загрузка начальных параметров
     private void loadBeginerParameters() {
@@ -130,10 +132,10 @@ class TuningFrame extends Parrent_Frame {
             panelCommPort.add(getLabel("текщий порт: ", new Rectangle(6, 15, 100, 30)));
             //
 //            labelPortCurrent = getLabel(parameters[1].toUpperCase(), new Rectangle(80, 15, 100, 30));
-            labelPortCurrent = getLabel(callBackMC.loadConfigCommPort(), new Rectangle(80, 15, 100, 30));
+            labelPortCurrent = getLabel(commPortName, new Rectangle(80, 15, 100, 30));
             panelCommPort.add(labelPortCurrent);
             //
-            comboBoxCommPort = getComboBoxCommPort(callBackMC.loadConfigCommPort(), new Rectangle(6, 50, 110, 20));
+            comboBoxCommPort = getComboBoxCommPort(commPortName, new Rectangle(6, 50, 110, 20));
             panelCommPort.add(comboBoxCommPort);
             //
             textPortStatus = getTextFieldStatus("sel", new Rectangle(6, 80, 110, 20));

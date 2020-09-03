@@ -51,7 +51,8 @@ public class StartFrame extends Parrent_Frame {
 //            });
             new Thread( ()-> {
                 frame[0].start();
-            }).start();
+            }, "start start frame"
+            ).start();
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
         }
@@ -607,7 +608,10 @@ public class StartFrame extends Parrent_Frame {
 
         @Override
         public void closeFrame() {
-
+            // включение управления
+            comboBoxUser.setEnabled(true);
+            fieldPassword.setEnabled(true);
+            buttonEnter.setEnabled(true);
         }
     }
     // ===========================================================================
