@@ -49,6 +49,7 @@ public class MainClass {
     private void commPortCloser() {
         close();
     }
+
     // ===============================================
     ParametersConfig parametersConfig;
 
@@ -60,6 +61,28 @@ public class MainClass {
         // создание объекта для БД
         connBd = new BaseDataClass(new BaseData.CallBack() {
         });
+        // создание основных объектов
+        parametersConfig = new ParametersConfig(fileNameConfig);
+        screenFx = ScreenFx.init(o->screenCloser());
+        runner = Runner.main(o->runnerCloser());
+        commPort = CommPort.main(o->commPortCloser());
+        // загрузка начальной конфигурации
+        ParametersConfig.Diagnostic result = parametersConfig.load();
+        switch (result) {
+            case FILE_NOT_FOUND:
+                System.out.println("Файл конфигурации не найден");
+                // параметры по умолчанию
+                parametersConfig.setDefault();
+                break;
+            case ERROR_LOAD:
+                System.out.println("Ошибка загрузки файла конфигурации");
+                // параметры по умолчанию
+                parametersConfig.setDefault();
+                break;
+            case ERROR_PARAMETERS:
+                System.out.println("Ошибка параметров файла конфигурации");
+                break;
+        }
         /*
         int testStat1 = 99, testStat2 = 99, testStat3, testStat4;
         String[] listBd;
@@ -95,11 +118,6 @@ public class MainClass {
 //        String portName;
         //parameters = getConfig();
         //portName = parameters[1];
-        // создание основных объектов
-        parametersConfig = new ParametersConfig(fileNameConfig);
-        screenFx = ScreenFx.init(o->screenCloser());
-        runner = Runner.main(o->runnerCloser());
-        commPort = CommPort.main(o->commPortCloser());
 
         /*try {
             baseData = new org.example.test24.loader.BaseDataXXX(new BaseDataCallBack());
@@ -107,23 +125,6 @@ public class MainClass {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-        // загрузка начальной конфигурации
-        ParametersConfig.Diagnostic result = parametersConfig.load();
-        switch (result) {
-            case FILE_NOT_FOUND:
-                System.out.println("Файл конфигурации не найден");
-                // параметры по умолчанию
-                parametersConfig.setDefault();
-                break;
-            case ERROR_LOAD:
-                System.out.println("Ошибка загрузки файла конфигурации");
-                // параметры по умолчанию
-                parametersConfig.setDefault();
-                break;
-            case ERROR_PARAMETERS:
-                System.out.println("Ошибка параметров файла конфигурации");
-                break;
-        }
 
         startFrame = StartFrame.main(false, new StartFrameCallBack());
         try {
@@ -178,6 +179,12 @@ public class MainClass {
         return ch == CommPort.INITCODE_OK;
     }
     private class StartFrameCallBack implements FrameCallBack {
+        // чтение параметров из конфига
+        @Override
+        public ParametersConfig getParametersConfig() throws Exception {
+            if (parametersConfig == null) throw new Exception("ошибка получения параметров из конфига");
+            return parametersConfig;
+        }
         // ================================== работа с БД ====================================
         // чтение типа БД из конфига
         @Override
@@ -241,8 +248,12 @@ public class MainClass {
         // ==================================== работа к ком портом ====================================
         // чтение comm port из конфига
         @Override
-        public String getCommPortNameFromConfig() {
-            return parametersConfig.getPortName();
+        public boolean requestCommPortNameFromConfig(Consumer<String> portName) {
+            if (parametersConfig == null) return false;
+            String name = parametersConfig.getPortName();
+            if (name == null) return false;
+            portName.accept(name);
+            return true;
         }
         // проверка Comm Port на валидность
         @Override

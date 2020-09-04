@@ -5,6 +5,9 @@ import org.example.test24.bd.*;
 import java.util.function.Consumer;
 
 public interface FrameCallBack {
+    // =================================
+    // чтение параметров из конфига
+    ParametersConfig getParametersConfig() throws Exception;
     // ================================== работа с БД ====================================
     // чтение типа БД из конфига
     BaseData.TypeBaseData getTypeBaseDataFromConfig();
@@ -24,7 +27,7 @@ public interface FrameCallBack {
     boolean setUserNewPassword(UserClass user, String newPassword);
     // ==================================== работа к ком портом ====================================
     // чтение comm port из конфига
-    String getCommPortNameFromConfig();
+    boolean requestCommPortNameFromConfig(Consumer<String> portName);
     // проверка Comm Port на валидность
     boolean checkCommPort(String portName);
     // загрузка списка ком портов в системе

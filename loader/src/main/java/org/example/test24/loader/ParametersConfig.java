@@ -1,7 +1,6 @@
 package org.example.test24.loader;
 
 import org.example.test24.bd.BaseData;
-import org.example.test24.bd.BaseData1;
 
 import java.io.*;
 import java.util.Properties;
