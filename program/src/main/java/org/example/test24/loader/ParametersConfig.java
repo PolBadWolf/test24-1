@@ -10,12 +10,14 @@ import static org.example.test24.bd.BaseDataClass.*;
 public class ParametersConfig {
     final public static int OK = 0;
     final public static int FILE_NOT_FOUND = 1;
-    final public static int ERROR_LOAD = 2;
-    final public static int ERROR_PARAMETERS = 3;
+    final public static int FILE_NOT_SPECIFIED = 2;
+    final public static int ERROR_LOAD = 3;
+    final public static int ERROR_PARAMETERS = 4;
     final public static int ERROR_SAVE = 9;
     public enum Diagnostic {
         OK  (ParametersConfig.OK),
         FILE_NOT_FOUND  (ParametersConfig.FILE_NOT_FOUND),
+        FILE_NOT_SPECIFIED  (ParametersConfig.FILE_NOT_SPECIFIED),
         ERROR_LOAD  (ParametersConfig.ERROR_LOAD),
         ERROR_PARAMETERS    (ParametersConfig.ERROR_PARAMETERS),
         ERROR_SAVE  (ParametersConfig.ERROR_SAVE);

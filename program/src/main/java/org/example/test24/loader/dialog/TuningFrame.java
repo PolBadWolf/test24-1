@@ -12,6 +12,7 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 class TuningFrame extends TuningFrameVars {
@@ -58,17 +59,17 @@ class TuningFrame extends TuningFrameVars {
 
 
 
-    public static TuningFrame createFrame(FrameCallBack callBack, boolean statMainWork) {
+    public static TuningFrame createFrame(FrameCallBack callBack, boolean statMainWork) throws Exception {
         TuningFrame[] tuningFrames = new TuningFrame[1];
-        Thread thread = new Thread(()->{
-            tuningFrames[0] = new TuningFrame(callBack, statMainWork);
-        }, "start tuning frame"
-        );
-        thread.start();
+        // конструктор
         try {
-            thread.join();
+            SwingUtilities.invokeAndWait(()-> {
+                tuningFrames[0] = new TuningFrame(callBack, statMainWork);
+            });
         } catch (InterruptedException e) {
-            return null;
+            throw new Exception("Ошибка создание окна настройки");
+        } catch (InvocationTargetException e) {
+            throw new Exception("Ошибка создание окна настройки");
         }
         return tuningFrames[0];
     }
@@ -85,7 +86,7 @@ class TuningFrame extends TuningFrameVars {
     }
     // загрузка начальных параметров
     private void loadBeginerParameters() {
-        // загрузка типа БД
+        /*// загрузка типа БД
         typeBaseData = callBack.getTypeBaseDataFromConfig();
         // загрузка ком порта
         if (!callBack.requestCommPortNameFromConfig(portName -> {
@@ -107,7 +108,7 @@ class TuningFrame extends TuningFrameVars {
             listBaseData = l;
         })) {
             listBaseData = new String[0];
-        }
+        }*/
     }
     // установка компонентов в начальное положение
     private void setComponentsBegin() {

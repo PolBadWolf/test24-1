@@ -57,11 +57,10 @@ public class StartFrame extends StartFrameVars {
         return frame[0];
     }
 
-    private StartFrame(boolean statMainWork, FrameCallBack callBack) {
+    protected StartFrame(boolean statMainWork, FrameCallBack callBack) {
         // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
         this.statMainWork = statMainWork;
         this.callBack = callBack;
-        // =================== загрузка начальных параметров ===================
     }
 
 
@@ -82,13 +81,29 @@ public class StartFrame extends StartFrameVars {
                 }
             });
         });
+        // =================== загрузка начальных параметров ===================
+        // загрузка параметров соединения с БД
+        BaseData.TypeBaseData typeBaseData = BaseData.TypeBaseData.ERROR;
+        ParametersSql parametersSql;
+        try {
+            typeBaseData = callBack.requestParametersConfig().getTypeBaseData();
+        } catch (Exception e) {
+            MySwingUtil.showMessage(frame, "загрузка параметров соединения с БД", e.getMessage(), 5_000);
+            typeBaseData = BaseData.TypeBaseData.ERROR;
+        }
+        if (typeBaseData != BaseData.TypeBaseData.ERROR) {
+            //parametersSql = getParametersSql(typeBaseData);
+        } else {
+            //parametersSql = new ParametersSql()
+        }
+
         // получения списка пользователей параметры из конфига
-        res =  getListUserFromConfig();
-        if (res) {
+        //res =  getListUserFromConfig();
+        /*if (res) {
             flCheckSql = true;
         } else {
             flCheckSql = false;
-        }
+        }*/
         // задержка на пока начального экрана
         try {
             Thread.sleep(2_000);
@@ -342,9 +357,6 @@ public class StartFrame extends StartFrameVars {
         comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(true);
-        comboBox.addActionListener(e -> {
-
-        });
         comboBox.addItemListener(e -> {
             if (e.getStateChange() == 1) return;
             callSelectUser();
@@ -505,7 +517,7 @@ public class StartFrame extends StartFrameVars {
         buttonEnter.setEnabled(false);
         buttonTuning.setVisible(false);
         // вызов окна
-        TuningFrame.createFrame(new TuningFrameCallBack(), statMainWork);
+        //TuningFrame.createFrame(new TuningFrameCallBack(), statMainWork);
 
 /*
         TuningFrame tuningFrame;
@@ -551,15 +563,10 @@ public class StartFrame extends StartFrameVars {
             return workParametersConfig;
         }
         // ================================== работа с БД ====================================
-        // чтение типа БД из конфига
-        @Override
-        public BaseData.TypeBaseData getTypeBaseDataFromConfig() {
-            return callBack. getTypeBaseDataFromConfig();
-        }
         // чтение параметров из конфига
         @Override
-        public ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData)  {
-            return callBack.getParametersSql(typeBaseData);
+        public int requestParametersSql(BaseData.TypeBaseData typeBaseData, Consumer<ParametersSql> sql) {
+            return callBack.requestParametersSql(typeBaseData, sql);
         }
         // создание тестого соединения
         @Override

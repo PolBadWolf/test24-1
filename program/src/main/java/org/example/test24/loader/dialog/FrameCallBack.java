@@ -8,12 +8,13 @@ import java.util.function.Consumer;
 public interface FrameCallBack {
     // =================================
     // чтение параметров из конфига
-    ParametersConfig getParametersConfig() throws Exception;
+    int requestParametersConfig(Consumer<ParametersConfig> configParameters);
+
+
+
     // ================================== работа с БД ====================================
-    // чтение типа БД из конфига
-    BaseData.TypeBaseData getTypeBaseDataFromConfig();
-    // чтение параметров
-    ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData);
+    // чтение параметров соединения с БД
+    int requestParametersSql(BaseData.TypeBaseData typeBaseData, Consumer<ParametersSql> sql);
     // создание тестого соединения
     int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // список доступных БД из тестового соединения

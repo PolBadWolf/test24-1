@@ -6,7 +6,6 @@ import org.example.test24.RS232.BAUD;
 import org.example.test24.loader.dialog.FrameCallBack;
 import org.example.test24.loader.dialog.StartFrame;
 import org.example.test24.runner.Runner;
-import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenFx;
 
 import java.util.function.Consumer;
@@ -53,7 +52,7 @@ public class MainClass {
     }
 
     // ===============================================
-    ParametersConfig parametersConfig;
+    protected ParametersConfig parametersConfig;
 
     public static void main(String[] args) {
         new MainClass().start();
@@ -64,15 +63,20 @@ public class MainClass {
         connBd = new BaseDataClass(new BaseData.CallBack() {
         });
         // создание основных объектов
-        parametersConfig = new ParametersConfig(fileNameConfig);
         screenFx = ScreenFx.init(o->screenCloser());
         runner = Runner.main(o->runnerCloser());
         commPort = CommPort.main(o->commPortCloser());
         // загрузка начальной конфигурации
-        ParametersConfig.Diagnostic result = parametersConfig.load();
-        switch (result) {
+        switch (requestParametersConfig(fileNameConfig, parameters -> {
+            parametersConfig = parameters;
+        })) {
             case FILE_NOT_FOUND:
                 System.out.println("Файл конфигурации не найден");
+                // параметры по умолчанию
+                parametersConfig.setDefault();
+                break;
+            case FILE_NOT_SPECIFIED:
+                System.out.println("Файл конфигурации не указан");
                 // параметры по умолчанию
                 parametersConfig.setDefault();
                 break;
@@ -85,6 +89,11 @@ public class MainClass {
                 System.out.println("Ошибка параметров файла конфигурации");
                 break;
         }
+
+        startFrame = StartFrame.main(false, new StartFrameCallBack());
+
+
+        //ParametersConfig.Diagnostic result = parametersConfig.load();
         /*
         int testStat1 = 99, testStat2 = 99, testStat3, testStat4;
         String[] listBd;
@@ -128,21 +137,20 @@ public class MainClass {
             e.printStackTrace();
         }*/
 
-        startFrame = StartFrame.main(false, new StartFrameCallBack());
-        try {
+        /*try {
             while (startFrame != null) {
                 Thread.yield();
                 Thread.sleep(500);
             }
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
-        }
+        }*/
 
-        int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), parametersConfig.getPortName(), BAUD.baud57600);
+        /*int checkComm = commPort.Open((bytes, lenght) -> runner.reciveRsPush(bytes, lenght), parametersConfig.getPortName(), BAUD.baud57600);
         if (checkComm != CommPort.INITCODE_OK) {
             errorCommMessage(checkComm, commPort);
             System.exit(0);
-        }
+        }*/
 
         /*try {
             bdSql = BaseData1.init(parametersConfig.getTypeBaseData().getTypeBaseDataString(), fileNameSql);
@@ -152,12 +160,20 @@ public class MainClass {
             System.exit(1);
         }*/
 
-        screenFx.main();
+        /*screenFx.main();
         while (MainFrame.mainFrame == null) {
             Thread.yield();
         }
         runner.init(bdSql, commPort, MainFrame.mainFrame);
-        commPort.ReciveStart();
+        commPort.ReciveStart();*/
+    }
+
+    // загрузка конфигурации
+    private ParametersConfig.Diagnostic requestParametersConfig(String fileNameConfig, Consumer<ParametersConfig> parametersConfig) {
+        ParametersConfig parameters = new ParametersConfig(fileNameConfig);
+        ParametersConfig.Diagnostic result = parameters.load();
+        if (parametersConfig != null) parametersConfig.accept(parameters);
+        return result;
     }
 
     private void errorCommMessage(int checkComm, CommPort commPort) {
@@ -183,26 +199,54 @@ public class MainClass {
     private class StartFrameCallBack implements FrameCallBack {
         // чтение параметров из конфига
         @Override
+        public int requestParametersConfig(Consumer<ParametersConfig> configParameters) {
+            if (parametersConfig == null) {
+                synchronized (parametersConfig) {
+                    if (parametersConfig == null) {
+                        switch (requestParametersConfig(fileNameConfig, parameters -> {
+                            parametersConfig = parameters;
+                        })) {
+                            case ParametersConfig.FILE_NOT_FOUND:
+                                System.out.println("Файл конфигурации не найден");
+                                // параметры по умолчанию
+                                parametersConfig.setDefault();
+                                break;
+                            case ParametersConfig.FILE_NOT_SPECIFIED:
+                                System.out.println("Файл конфигурации не указан");
+                                // параметры по умолчанию
+                                parametersConfig.setDefault();
+                                break;
+                            case ParametersConfig.ERROR_LOAD:
+                                System.out.println("Ошибка загрузки файла конфигурации");
+                                // параметры по умолчанию
+                                parametersConfig.setDefault();
+                                break;
+                            case ParametersConfig.ERROR_PARAMETERS:
+                                System.out.println("Ошибка параметров файла конфигурации");
+                                break;
+                        }
+                    }
+                }
+            }
+        }
         public ParametersConfig getParametersConfig() throws Exception {
-            if (parametersConfig == null) throw new Exception("ошибка получения параметров из конфига");
+            if (parametersConfig == null) throw new Exception("отсутствуют параметры конфигурации");
             return parametersConfig;
         }
         // ================================== работа с БД ====================================
-        // чтение типа БД из конфига
-        @Override
-        public BaseData.TypeBaseData getTypeBaseDataFromConfig() {
-            return parametersConfig.getTypeBaseData();
-        }
         // чтение параметров
         @Override
-        public ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData) {
+        public int requestParametersSql(BaseData.TypeBaseData typeBaseData, Consumer<ParametersSql> sql) {
             if (typeBaseData == BaseData.TypeBaseData.ERROR) {
-                return null;
+                return ParametersSql.UNKNOWN_ERROR;
             }
             ParametersSql parametersSql = new ParametersSql(fileNameSql[typeBaseData.getTypeBaseData()], typeBaseData);
             parametersSql.load();
-            return parametersSql;
+            sql.accept(parametersSql);
+            return ParametersSql.OK;
         }
+
+
         // установка тестого соединения
         @Override
         public int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {

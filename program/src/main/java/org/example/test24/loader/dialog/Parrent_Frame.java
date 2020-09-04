@@ -32,17 +32,17 @@ class Parrent_Frame {
     protected UserClass user = null;
     // ================================================
     // загрузка параметров соединения с БД
-    protected ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData) {
+    protected ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
         if (typeBaseData == BaseData.TypeBaseData.ERROR) {
             return null;
         }
-        return callBack.getParametersSql(typeBaseData);
+        return null; //callBack.getParametersSql(typeBaseData);
     }
 
     // начальная загрузка параметров соединения с БД
     protected boolean beginInitParametersSql() {
-        // тип БД
-        typeBaseData = callBack.getTypeBaseDataFromConfig();
+        /*// тип БД
+        typeBaseData = callBack.getTypeBaseDataFromConfig(null);
         if (typeBaseData == BaseData.TypeBaseData.ERROR) {
             listUsers = new UserClass[0];
             flCheckSql = false;
@@ -55,7 +55,7 @@ class Parrent_Frame {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
-        }
+        }*/
         return true;
     }
     // инициация тестового соединения c БД
@@ -202,7 +202,7 @@ class Parrent_Frame {
         return true;
     }
     // получения списка пользователей параметры из конфига
-    protected boolean getListUserFromConfig(Consumer<ParametersSql> setParameters) {
+    /*protected boolean getListUserFromConfig(Consumer<ParametersSql> setParameters) {
         BaseData.TypeBaseData typeBaseData;
         ParametersSql parametersSql;
         int resultInt;
@@ -259,8 +259,8 @@ class Parrent_Frame {
             setParameters.accept(parametersSql);
         }
         return true;
-    }
-    protected boolean getListUserFromConfig() {
+    }*/
+    /*protected boolean getListUserFromConfig() {
         return getListUserFromConfig(null);
-    }
+    }*/
 }
