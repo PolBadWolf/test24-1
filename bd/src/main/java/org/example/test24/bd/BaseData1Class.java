@@ -92,7 +92,8 @@ abstract class BaseData1Class implements BaseData1 {
                             result.getTimestamp("date_reg"),
                             result.getTimestamp("date_unreg"),
                             result.getString("name"),
-                            pass
+                            pass,
+                            0 // это статус
                     ));
                 } catch (java.lang.Throwable throwable) {
                     throwable.printStackTrace();

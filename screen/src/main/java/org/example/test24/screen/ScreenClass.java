@@ -22,7 +22,7 @@ public class ScreenClass extends Application implements ScreenFx {
     @Override
     public void main() {
         new Thread(()-> {
-            launch(null);
+            launch(new String[0]);
         }, "Screen-Fx").start();
     }
 

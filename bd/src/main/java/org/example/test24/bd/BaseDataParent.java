@@ -2,6 +2,7 @@ package org.example.test24.bd;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import static org.example.test24.bd.BaseData.*;
 
@@ -20,8 +21,8 @@ class BaseDataParent implements BaseDataInterface {
     }
     // тестовое соединение список доступных баз
     @Override
-    public String[] testConnectListBd() {
-        return new String[0];
+    public boolean requestListBdFrom(Consumer<String[]> list) {
+        return false;
     }
     // тестовое соединение проверка структуры БД
     @Override
@@ -56,14 +57,14 @@ class BaseDataParent implements BaseDataInterface {
             statement = workConnection.createStatement();
             if (actual) {
                 result = statement.executeQuery(
-                        "SELECT id, date_reg, date_unreg, name, password " +
+                        "SELECT id, date_reg, date_unreg, name, password, rang " +
                                 "FROM " + tab + " " +
                                 "WHERE (date_unreg IS NULL) " +
                                 "ORDER BY id "
                 );
             } else {
                 result = statement.executeQuery(
-                        "SELECT id, date_reg, date_unreg, name, password " +
+                        "SELECT id, date_reg, date_unreg, name, password, rang " +
                                 "FROM " + tab + " " +
                                 "ORDER BY id "
                 );
@@ -92,7 +93,8 @@ class BaseDataParent implements BaseDataInterface {
                                 result.getTimestamp("date_reg"),
                                 result.getTimestamp("date_unreg"),
                                 result.getString("name"),
-                                pass
+                                pass,
+                                result.getInt("rang") // user status
                         )
                 );
             }

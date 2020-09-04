@@ -2,39 +2,34 @@ package org.example.test24.loader;
 
 import org.example.test24.bd.*;
 
+import java.util.function.Consumer;
+
 public interface FrameCallBack {
+    // ================================== работа с БД ====================================
     // чтение типа БД из конфига
     BaseData.TypeBaseData getTypeBaseDataFromConfig();
-    // чтение параметров из конфига
-    ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData);
+    // чтение параметров
+    ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData);
     // создание тестого соединения
     int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
+    // список доступных БД из тестового соединения
+    boolean requestListBdFromTestConnect(Consumer<String[]> list);
     // проверка структуры БД
     int testConnectCheckStructure(String base);
     // создание рабочего соединения
     int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
-    // прочитать список пользователей
+    // загрузка пользователей
     UserClass[] getListUsers(boolean actual);
+    // установка нового пароля пользователя
+    boolean setUserNewPassword(UserClass user, String newPassword);
+    // ==================================== работа к ком портом ====================================
     // чтение comm port из конфига
     String getCommPortNameFromConfig();
     // проверка Comm Port на валидность
     boolean checkCommPort(String portName);
-
-    // ----------------
-    // установка нового пароля пользователя
-    boolean setUserNewPassword(UserClass user, String newPassword);
-
-
-
+    // загрузка списка ком портов в системе
+    String[] getComPortNameList();
     //---------------------------
-    // подключение к БД и структуры БД (параметры из файла конфигурации)
-    boolean checkSqlFile();
     void closeFrame();
     // ---------------
-    TuningFrame getTuningFrame();
-    //String[] getParameters();
-    String[] getFilesNameSql();
-    String getFileNameSql(String typeBd) throws Exception;
-    String loadConfigCommPort();
-    BaseData.TypeBaseData loadConfigTypeBaseData();
 }

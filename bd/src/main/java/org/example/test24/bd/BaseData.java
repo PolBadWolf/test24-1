@@ -1,6 +1,7 @@
 package org.example.test24.bd;
 
 import java.util.Base64;
+import java.util.function.Consumer;
 
 public interface BaseData {
     int MS_SQL = 0;
@@ -65,8 +66,8 @@ public interface BaseData {
     // -----------------------------------------------------------
     // создание тестового соединения
     int createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
-    // тестовое соединение список доступных БД
-    String[] testConnectListBd();
+    // список доступных БД из тестового соединения
+    boolean requestListBdFromTestConnect(Consumer<String[]> list);
     // тестовое соединение проверка структуры БД
     int testConnectCheckStructure(String base);
     // -----------------------------------------------------------
