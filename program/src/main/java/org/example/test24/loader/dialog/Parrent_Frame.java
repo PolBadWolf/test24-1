@@ -1,4 +1,4 @@
-package org.example.test24.loader;
+package org.example.test24.loader.dialog;
 
 import org.example.lib.MySwingUtil;
 import org.example.test24.bd.BaseData;

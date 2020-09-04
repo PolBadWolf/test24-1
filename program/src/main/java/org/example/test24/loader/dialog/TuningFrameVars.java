@@ -1,4 +1,4 @@
-package org.example.test24.loader;
+package org.example.test24.loader.dialog;
 
 class TuningFrameVars extends Parrent_Frame {
     // список доступных портов

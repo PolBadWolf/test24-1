@@ -1,9 +1,10 @@
-package org.example.test24.loader;
+package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.BaseData;
 import org.example.lib.MySwingUtil;
 import org.example.test24.bd.ParametersSql;
 import org.example.test24.bd.UserClass;
+import org.example.test24.loader.ParametersConfig;
 
 import javax.swing.*;
 import java.awt.*;
