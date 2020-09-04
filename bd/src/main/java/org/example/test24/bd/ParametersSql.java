@@ -16,14 +16,16 @@ public class ParametersSql {
     private String fileNameParameters;
     private Properties properties;
     private int stat;
+    final public BaseData.TypeBaseData typeBaseData;
     public String urlServer;
     public String portServer;
     public String dataBase;
     public String user;
     public String password;
 
-    public ParametersSql(String fileNameParameters) {
+    public ParametersSql(String fileNameParameters, BaseData.TypeBaseData typeBaseData) {
         this.fileNameParameters = fileNameParameters;
+        this.typeBaseData = typeBaseData;
         properties = new Properties();
     }
 
@@ -44,7 +46,7 @@ public class ParametersSql {
             //System.out.println(fileNameParameters + " : ошибка декодирования пароля");
             stat = ERROR_PASSWORD;
         }
-        if (urlServer == null || portServer == null || dataBase == null || user == null) {
+        if (typeBaseData == BaseData.TypeBaseData.ERROR || urlServer == null || portServer == null || dataBase == null || user == null) {
             //throw new Exception(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
             //System.out.println(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
             stat = ERROR_PARAMETERS;

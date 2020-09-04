@@ -7,6 +7,8 @@ import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.ScreenFx;
 
+import java.util.function.Consumer;
+
 
 public class MainClass {
     final public String fileNameConfig = "config.txt";
@@ -182,10 +184,13 @@ public class MainClass {
         public BaseData.TypeBaseData getTypeBaseDataFromConfig() {
             return parametersConfig.getTypeBaseData();
         }
-        // чтение параметров из конфига
+        // чтение параметров
         @Override
-        public ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData) {
-            ParametersSql parametersSql = new ParametersSql(fileNameSql[parametersConfig.getTypeBaseData().getTypeBaseData()]);
+        public ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData) {
+            if (typeBaseData == BaseData.TypeBaseData.ERROR) {
+                return null;
+            }
+            ParametersSql parametersSql = new ParametersSql(fileNameSql[typeBaseData.getTypeBaseData()], typeBaseData);
             parametersSql.load();
             return parametersSql;
         }
@@ -199,8 +204,8 @@ public class MainClass {
         }
         // список доступных БД из тестового соединения
         @Override
-        public String[] getListBdFromTestConnect() {
-            return connBd.getListBdFromTestConnect();
+        public boolean requestListBdFromTestConnect(Consumer<String[]> list) {
+            return connBd.requestListBdFromTestConnect(list);
         }
         // проверка структуры БД
         @Override
@@ -223,7 +228,7 @@ public class MainClass {
             try {
                 listUsers = connBd.getListUsers(actual);
             } catch (Exception e) {
-                return new UserClass[0];
+                listUsers = null;
             }
             return listUsers;
         }

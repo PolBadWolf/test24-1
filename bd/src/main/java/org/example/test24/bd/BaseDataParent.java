@@ -2,6 +2,7 @@ package org.example.test24.bd;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import static org.example.test24.bd.BaseData.*;
 
@@ -20,8 +21,8 @@ class BaseDataParent implements BaseDataInterface {
     }
     // тестовое соединение список доступных баз
     @Override
-    public String[] testConnectListBd() {
-        return new String[0];
+    public boolean requestListBdFrom(Consumer<String[]> list) {
+        return false;
     }
     // тестовое соединение проверка структуры БД
     @Override

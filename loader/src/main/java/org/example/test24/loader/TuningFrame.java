@@ -1,5 +1,6 @@
 package org.example.test24.loader;
 
+import javafx.scene.control.ComboBox;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
@@ -13,26 +14,9 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.SQLException;
 import java.util.Arrays;
 
 class TuningFrame extends TuningFrameVars {
-    public interface CallBackToMainClass {
-        CommPort getCommPort();
-        void saveConfigCommPort(String portName);
-        void saveConfigTypeBaseData(BaseData.TypeBaseData typeBaseData);
-        String loadConfigCommPort();
-        BaseData.TypeBaseData loadConfigTypeBaseData();
-        String[] getFilesNameSql();
-        String getFileNameSql(String typeBd) throws Exception;
-    }
-    public interface CallBackToStartFrame {
-        void messageCloseTuningFrame();
-    }
-    //private CallBackToMainClass callBack MC;
-
-
-    private CallBackToStartFrame callBackTF = null;
 
     private BaseData1 bdSql = null;
     private Thread threadSkeep = null;
@@ -76,10 +60,10 @@ class TuningFrame extends TuningFrameVars {
 
 
 
-    public static TuningFrame createFrame(FrameCallBack callBack) {
+    public static TuningFrame createFrame(FrameCallBack callBack, boolean statMainWork) {
         TuningFrame[] tuningFrames = new TuningFrame[1];
         Thread thread = new Thread(()->{
-            tuningFrames[0] = new TuningFrame(callBack);
+            tuningFrames[0] = new TuningFrame(callBack, statMainWork);
         }, "start tuning frame"
         );
         thread.start();
@@ -91,12 +75,15 @@ class TuningFrame extends TuningFrameVars {
         return tuningFrames[0];
     }
 
-    protected TuningFrame(FrameCallBack callBack) {
+    protected TuningFrame(FrameCallBack callBack, boolean statMainWork) {
         this.callBack = callBack;
+        this.statMainWork = statMainWork;
         // загрузка параметров
         loadBeginerParameters();
         // конструктор окна
         frameConstructor();
+        // установка компонентов в начальное положение
+        setComponentsBegin();
     }
     // загрузка начальных параметров
     private void loadBeginerParameters() {
@@ -105,24 +92,24 @@ class TuningFrame extends TuningFrameVars {
         // загрузка ком порта
         commPortName = callBack.getCommPortNameFromConfig();
         // загрузка списка ком портов
-        comPortNameList = callBack.getComPortNameList();
-        // загрузка параметов соединения с БД
-        if (!beginInitParametersSql()) {
-            // ошибка загрузки параметорв
-        } else {
-
+        commPortNameList = callBack.getComPortNameList();
+        // получение списка пользователей параметры из конфига
+        if (!getListUserFromConfig(p -> {
+            parametersSql = p;
+            flCheckSql = true;
+        })) {
+            flCheckSql = false;
+        }
+        // получение списка баз
+        if (!callBack.requestListBdFromTestConnect(l->{
+            listBaseData = l;
+        })) {
+            listBaseData = new String[0];
         }
     }
+    // установка компонентов в начальное положение
+    private void setComponentsBegin() {
 
-
-    void frameConfig(String[] parameters, CallBackToStartFrame callBackTF) {
-        //this.parameters = parameters;
-        this.callBackTF = callBackTF;
-        frameConstructor();
-        setInitParameters();
-        checkStatusComp();
-        outStatus();
-        setButtonBegin();
     }
 
     private void frameConstructor() {
@@ -234,7 +221,7 @@ class TuningFrame extends TuningFrameVars {
         return label;
     }
     private JComboBox<String> getComboBoxCommPort(String itemDefault, int x, int y, int width, int height) {
-        String[] listCommPortName = comPortNameList;
+        String[] listCommPortName = commPortNameList;
         // sort
         Arrays.sort(listCommPortName);
         JComboBox<String> comboBox = new JComboBox<>(listCommPortName);
@@ -242,7 +229,7 @@ class TuningFrame extends TuningFrameVars {
         comboBox.setBounds(x, y, width, height);
         comboBox.addActionListener(e -> selectCommPort(comboBox));
         return comboBox;
-    }   // ok
+    }
     private JTextField getTextFieldStatus(String text, int x, int y, int width, int height) {
         JTextField textField = new JTextField(text);
         textField.setBounds(x, y, width, height);
@@ -258,7 +245,7 @@ class TuningFrame extends TuningFrameVars {
         comboBox.setSelectedItem(itemDefault);
         comboBox.addActionListener(e -> selectTypeBase(comboBox));
         return comboBox;
-    }     // ok
+    }
     private JTextField getTextTypeBdStatus(String text, int x, int y, int width, int height) {
         JTextField textField = new JTextField(text);
         textField.setBounds(x, y, width, height);
@@ -286,52 +273,57 @@ class TuningFrame extends TuningFrameVars {
         });
         field.addActionListener(e -> selectParametersConnectBd());
         return field;
-    }                    // ok
+    }
     private JTextField getFieldParamServerPort(String text, int x, int y, int width, int height) {
         JTextField field = new JTextField(text);
         field.setBounds(x, y, width, height);
         field.addActionListener(e -> selectParametersConnectBd());
         return field;
-    }     // ok
+    }
     private JTextField getFieldParamServerLogin(String text, int x, int y, int width, int height) {
         JTextField field = new JTextField(text);
         field.setBounds(x, y, width, height);
         field.addActionListener(e -> selectParametersConnectBd());
         return field;
-    }    // ok
+    }
     private JTextField getFieldParamServerPassword(String text, int x, int y, int width, int height) {
-        JTextField field = new JPasswordField(text);
+//        JTextField field = new JPasswordField(text);
+        JTextField field = new JTextField(text);
         field.setBounds(x, y, width, height);
         field.addActionListener(e -> selectParametersConnectBd());
         return field;
-    } // ok
+    }
     private JComboBox<String> getComboBoxListBd(String[] bases, String baseDef, int x, int y, int width, int height) {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
-        comboBox.addActionListener(e -> selectParametersConnectBd());
+        comboBox.addItemListener(e -> {
+            if (e.getStateChange() == 1) return;
+            selectParametersConnectBd();
+        });
+        loadListToCombobox(listBaseData, comboBox);
         return comboBox;
-    }                         // ok
+    }
     private JButton getButtonOk(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> pushButtonOk());
         return button;
-    }                    // ok
+    }
     private JButton getButtonSave(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> pushButtonSave());
         return button;
-    }                  // ok
+    }
     private JButton getButtonTestBd(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> pushButtonTest());
         return button;
-    }                // ok
+    }
 
     private JPanel getPanelSelectEdit(String title, int x, int y, int width, int height) {
         JPanel panel = new JPanel();
@@ -357,7 +349,7 @@ class TuningFrame extends TuningFrameVars {
         return button;
     }
 
-    private boolean getListBdFile(String typeBd) {
+    /*private boolean getListBdFile(String typeBd) {
         // определения файла конфигурации
         String fileNameSql = null;
         try {
@@ -369,7 +361,7 @@ class TuningFrame extends TuningFrameVars {
             return false;
         }
         // чтение параметров из файла конфигурации
-        ParametersSql parametersSqlLocal = new ParametersSql(fileNameSql);
+        ParametersSql parametersSqlLocal = null;// = new ParametersSql(fileNameSql);
         try {
             parametersSqlLocal.load();
         } catch (Exception e) {
@@ -397,7 +389,7 @@ class TuningFrame extends TuningFrameVars {
             flCheckListBd = true;
         }
         return true;
-    }
+    }*/
     /*private void getListBdComp() throws Exception {
         try {
             String typeBd = (String) comboBoxTypeBd.getSelectedItem();
@@ -460,8 +452,24 @@ class TuningFrame extends TuningFrameVars {
         }
     }
     // ==================
+    // загрузка в combobox списка БД
+    private boolean loadListToCombobox(String[] list, JComboBox<String> comboBox) {
+        if (list == null || comboBox == null) {
+            return false;
+        }
+        comboBox.removeAllItems();
+        for (int i = 0; i < list.length; i++) {
+            comboBox.addItem(list[i]);
+        }
+        return true;
+    }
+
+
+
+
     // начальная загрузка параметров
     private void setInitParameters() {
+        /*
         lockBegin = true;
         {
             boolean flSelCommPort = false;
@@ -514,6 +522,7 @@ class TuningFrame extends TuningFrameVars {
             onOffButtonTest();
         }
         lockBegin = false;
+        */
     }
     // загрузка параметров SQL
     private boolean loadParametersSql(String typeBd) {

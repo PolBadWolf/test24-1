@@ -3,6 +3,7 @@ package org.example.test24.bd;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 
 import static org.example.test24.bd.BaseData.*;
 
@@ -49,16 +50,16 @@ class BaseDataMySql extends BaseDataParent {
     }
     // тестовое соединение список доступных баз
     @Override
-    public String[] testConnectListBd() {
+    public boolean requestListBdFrom(Consumer<String[]> list) {
         if (testConnection == null) {
-            return new String[0];
+            return false;
         }
         // запрос на список
         ResultSet resultSet;
         try {
             resultSet = testConnection.createStatement().executeQuery("SHOW DATABASES");
         } catch (SQLException throwables) {
-            return new String[0];
+            return false;
         }
         // отсев системных БД
         ArrayList<String> listBd = new ArrayList<>();
@@ -74,9 +75,12 @@ class BaseDataMySql extends BaseDataParent {
             }
             resultSet.close();
         } catch (SQLException throwables) {
-            return new String[0];
+            return false;
         }
-        return listBd.toArray(new String[0]);
+        if (list != null) {
+            list.accept(listBd.toArray(new String[0]));
+        }
+        return true;
     }
     // тестовое соединение проверка структуры БД
     @Override

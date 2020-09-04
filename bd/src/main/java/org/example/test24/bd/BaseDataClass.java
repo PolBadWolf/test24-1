@@ -1,5 +1,7 @@
 package org.example.test24.bd;
 
+import java.util.function.Consumer;
+
 public class BaseDataClass implements BaseData {
     public static String typeBaseDataString(int codeTypeBaseData) {
         String stroka;
@@ -17,15 +19,19 @@ public class BaseDataClass implements BaseData {
     }
     public static TypeBaseData typeBaseDataCode(String nameTypeBaseData) {
         TypeBaseData typeBaseData;
-        switch (nameTypeBaseData.toUpperCase()) {
-            case "MS_SQL":
-                typeBaseData = TypeBaseData.MS_SQL;
-                break;
-            case "MY_SQL":
-                typeBaseData = TypeBaseData.MY_SQL;
-                break;
-            default:
-                typeBaseData = TypeBaseData.ERROR;
+        if (nameTypeBaseData == null) {
+            typeBaseData = TypeBaseData.ERROR;
+        } else {
+            switch (nameTypeBaseData.toUpperCase()) {
+                case "MS_SQL":
+                    typeBaseData = TypeBaseData.MS_SQL;
+                    break;
+                case "MY_SQL":
+                    typeBaseData = TypeBaseData.MY_SQL;
+                    break;
+                default:
+                    typeBaseData = TypeBaseData.ERROR;
+            }
         }
         return typeBaseData;
     }
@@ -72,8 +78,8 @@ public class BaseDataClass implements BaseData {
     }
     // тестовое соединение список доступных баз
     @Override
-    public String[] getListBdFromTestConnect() {
-        return testConnect.testConnectListBd();
+    public boolean requestListBdFromTestConnect(Consumer<String[]> list) {
+        return testConnect.requestListBdFrom(list);
     }
     // тестовое соединение проверка структуры БД
     @Override

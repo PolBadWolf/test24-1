@@ -10,12 +10,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.function.Consumer;
 
 public class StartFrame extends Parrent_Frame {
-    private boolean statMainWork;
-    private boolean statUserPass;
-
-    private JFrame frame;
     // title
     private JLabel label1;
     private JLabel label2;
@@ -46,16 +43,16 @@ public class StartFrame extends Parrent_Frame {
         final StartFrame[] frame = new StartFrame[1];
         frame[0] = null;
         try {
-//            SwingUtilities.invokeAndWait(() -> {
+            SwingUtilities.invokeAndWait(() -> {
                 frame[0] = new StartFrame(statMainWork, callBack);
-//            });
-            new Thread( ()-> {
-                frame[0].start();
-            }, "start start frame"
-            ).start();
+            });
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
         }
+        new Thread( ()-> {
+            frame[0].start();
+        }, "start start frame"
+        ).start();
         return frame[0];
     }
 
@@ -76,12 +73,12 @@ public class StartFrame extends Parrent_Frame {
                 }
             });
         });
-        // начальная загрузка параметров соединения с БД
-        res =  beginInitParametersSql();
+        // получения списка пользователей параметры из конфига
+        res =  getListUserFromConfig();
         if (res) {
-            int result;
-            // начальная инициация соединения c БД и получение списка пользователей
-            result = initTestConnectBd();
+            flCheckSql = true;
+        } else {
+            flCheckSql = false;
         }
         // задержка на пока начального экрана
         try {
@@ -94,12 +91,12 @@ public class StartFrame extends Parrent_Frame {
         // проверка Comm port
         flCheckCommPort = callBack.checkCommPort(commPortName);
         try {
-            SwingUtilities.invokeAndWait(() -> {
+            //SwingUtilities.invokeAndWait(() -> {
                 offTitleComponents();
                 onInputComponents();
                 // загрузка пользователей в комбо бокс
                 loadUsersToComboBox();
-            });
+            //});
             // --------
             /*TuningFrame tuningFrame;
             tuningFrame = callBack.getTuningFrame();
@@ -124,7 +121,7 @@ public class StartFrame extends Parrent_Frame {
 
     private StartFrame(boolean statMainWork, FrameCallBack callBack) {
         // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
-        this.statUserPass = this.statMainWork = statMainWork;
+        this.statMainWork = statMainWork;
         this.callBack = callBack;
     }
 
@@ -498,7 +495,7 @@ public class StartFrame extends Parrent_Frame {
         buttonEnter.setEnabled(false);
         buttonTuning.setVisible(false);
         // вызов окна
-        TuningFrame.createFrame(new TuningFrameCallBack());
+        TuningFrame.createFrame(new TuningFrameCallBack(), statMainWork);
 
 /*
         TuningFrame tuningFrame;
@@ -517,7 +514,7 @@ public class StartFrame extends Parrent_Frame {
     }
 
     // callBack из TuningFrame
-    private class TuningFrameCallBack_old implements TuningFrame.CallBackToStartFrame {
+    /*private class TuningFrameCallBack_old implements TuningFrame.CallBackToStartFrame {
         @Override
         public void messageCloseTuningFrame() {
             StartFrame startFrame = StartFrame.this;
@@ -534,7 +531,7 @@ public class StartFrame extends Parrent_Frame {
                 System.out.println("StartFrame.StartFrameCallBackTuningFrame ошибка чтения списка пользователей: " + e.getMessage());
             }
         }
-    }
+    }*/
 
     private class TuningFrameCallBack implements FrameCallBack {
         // ================================== работа с БД ====================================
@@ -545,38 +542,33 @@ public class StartFrame extends Parrent_Frame {
         }
         // чтение параметров из конфига
         @Override
-        public ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData)  {
-            return callBack.getParametersSqlFromConfig(typeBaseData);
+        public ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData)  {
+            return callBack.getParametersSql(typeBaseData);
         }
         // создание тестого соединения
         @Override
         public int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
-            int a = 1/0;
-            return 0;
+            return callBack.createTestConnectBd(typeBaseData, parameters);
         }
         // список доступных БД из тестового соединения
         @Override
-        public String[] getListBdFromTestConnect() {
-            int a = 1 /0;
-            return callBack.getListBdFromTestConnect();
+        public boolean requestListBdFromTestConnect(Consumer<String[]> list) {
+            return callBack.requestListBdFromTestConnect(list);
         }
         // проверка структуры БД
         @Override
         public int testConnectCheckStructure(String base) {
-            int a = 1/0;
-            return 0;
+            return callBack.testConnectCheckStructure(base);
         }
         // создание рабочего соединения
         @Override
         public int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
-            int a = 1/0;
-            return 0;
+            return callBack.createWorkConnect(typeBaseData, parameters);
         }
         // прочитать список пользователей
         @Override
         public UserClass[] getListUsers(boolean actual) {
-            int a = 1/0;
-            return new UserClass[0];
+            return callBack.getListUsers(actual);
         }
         // установка нового пароля пользователя
         @Override

@@ -2,16 +2,18 @@ package org.example.test24.loader;
 
 import org.example.test24.bd.*;
 
+import java.util.function.Consumer;
+
 public interface FrameCallBack {
     // ================================== работа с БД ====================================
     // чтение типа БД из конфига
     BaseData.TypeBaseData getTypeBaseDataFromConfig();
-    // чтение параметров из конфига
-    ParametersSql getParametersSqlFromConfig(BaseData.TypeBaseData typeBaseData);
+    // чтение параметров
+    ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData);
     // создание тестого соединения
     int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // список доступных БД из тестового соединения
-    String[] getListBdFromTestConnect();
+    boolean requestListBdFromTestConnect(Consumer<String[]> list);
     // проверка структуры БД
     int testConnectCheckStructure(String base);
     // создание рабочего соединения
