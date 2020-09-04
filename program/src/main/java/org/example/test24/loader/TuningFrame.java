@@ -1,6 +1,5 @@
 package org.example.test24.loader;
 
-import javafx.scene.control.ComboBox;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
@@ -90,7 +89,11 @@ class TuningFrame extends TuningFrameVars {
         // загрузка типа БД
         typeBaseData = callBack.getTypeBaseDataFromConfig();
         // загрузка ком порта
-        commPortName = callBack.getCommPortNameFromConfig();
+        if (!callBack.requestCommPortNameFromConfig(portName -> {
+            commPortName = portName;
+        })) {
+            System.out.println("ошибка получения имени компорта");
+        }
         // загрузка списка ком портов
         commPortNameList = callBack.getComPortNameList();
         // получение списка пользователей параметры из конфига
@@ -109,7 +112,10 @@ class TuningFrame extends TuningFrameVars {
     }
     // установка компонентов в начальное положение
     private void setComponentsBegin() {
+        // ком порт
+        if (!statMainWork) {
 
+        }
     }
 
     private void frameConstructor() {

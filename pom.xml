@@ -14,7 +14,7 @@
         <module>allinterface</module>
         <module>screen</module>
         <module>graphics</module>
-        <module>loader</module>
+        <module>program</module>
         <module>runner</module>
         <module>bd</module>
     </modules>

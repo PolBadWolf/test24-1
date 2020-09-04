@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
-public class StartFrame extends Parrent_Frame {
+public class StartFrame extends StartFrameVars {
     // title
     private JLabel label1;
     private JLabel label2;
@@ -56,6 +56,14 @@ public class StartFrame extends Parrent_Frame {
         return frame[0];
     }
 
+    private StartFrame(boolean statMainWork, FrameCallBack callBack) {
+        // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
+        this.statMainWork = statMainWork;
+        this.callBack = callBack;
+        // =================== загрузка начальных параметров ===================
+    }
+
+
     private void start() {
         boolean res;
         // загрузка компонентов и вывод загаловка
@@ -87,7 +95,13 @@ public class StartFrame extends Parrent_Frame {
             e.printStackTrace();
         }
         // чтение порта из конфига
-        commPortName = callBack.getCommPortNameFromConfig();
+        //commPortName = callBack.getCommPortNameFromConfig();
+        if (!callBack.requestCommPortNameFromConfig(portName -> {
+            commPortName = portName;
+        })) {
+            System.out.println("ошибка получения имени comm port");
+            commPortName = "";
+        }
         // проверка Comm port
         flCheckCommPort = callBack.checkCommPort(commPortName);
         try {
@@ -119,11 +133,6 @@ public class StartFrame extends Parrent_Frame {
         }).forEach (u->comboBoxUser.addItem(u));
     }
 
-    private StartFrame(boolean statMainWork, FrameCallBack callBack) {
-        // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
-        this.statMainWork = statMainWork;
-        this.callBack = callBack;
-    }
 
     private void initComponents() {
         frame = new JFrame();
@@ -534,6 +543,12 @@ public class StartFrame extends Parrent_Frame {
     }*/
 
     private class TuningFrameCallBack implements FrameCallBack {
+        // чтение параметров из конфига
+        @Override
+        public ParametersConfig getParametersConfig() throws Exception {
+            if (workParametersConfig == null) throw new Exception("ошибка получения параметров из конфига");
+            return workParametersConfig;
+        }
         // ================================== работа с БД ====================================
         // чтение типа БД из конфига
         @Override
@@ -579,8 +594,8 @@ public class StartFrame extends Parrent_Frame {
         // ==================================== работа к ком портом ====================================
         // чтение comm port из конфига
         @Override
-        public String getCommPortNameFromConfig() {
-            return callBack.getCommPortNameFromConfig();
+        public boolean requestCommPortNameFromConfig(Consumer<String> portName) {
+            return callBack.requestCommPortNameFromConfig(portName);
         }
         // проверка Comm Port на валидность
         @Override
