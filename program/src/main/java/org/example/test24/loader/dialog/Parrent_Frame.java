@@ -6,6 +6,8 @@ import org.example.test24.bd.ParametersSql;
 import org.example.test24.bd.UserClass;
 
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Consumer;
 
 class Parrent_Frame {
@@ -38,6 +40,27 @@ class Parrent_Frame {
         }
         return null; //callBack.getParametersSql(typeBaseData);
     }
+    // загрузка пользователей в комбо бокс
+    protected void loadUsersToComboBox(UserClass[] list, JComboBox<UserClass> comboBox) throws Exception {
+        if (list == null) throw new Exception("Указатель на список отсутствует");
+        if (comboBox == null) throw new Exception("Указатель на combobox отсутствует");
+        comboBox.removeAllItems();
+        try {
+            Arrays.stream(list).sorted(new Comparator<UserClass>() {
+                @Override
+                public int compare(UserClass a, UserClass b) {
+                    return a.name.compareTo(b.name);
+                }
+            }).forEach(user -> comboBox.addItem(user));
+        } catch (java.lang.Throwable e) {
+            throw new Exception("Загрузка прервана: " + e.getMessage());
+        }
+    }
+
+
+
+
+
 
     // начальная загрузка параметров соединения с БД
     protected boolean beginInitParametersSql() {

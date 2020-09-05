@@ -166,9 +166,9 @@ public class MainClass extends MainClassRequest {
     }
 
     private boolean checkCommPort(String portName) {
-        int ch =  commPort.Open(null, portName, BAUD.baud57600);
+        CommPort.PortStat ch =  commPort.Open(null, portName, BAUD.baud57600);
         commPort.Close();
-        return ch == CommPort.INITCODE_OK;
+        return ch == CommPort.PortStat.INITCODE_OK;
     }
     private class StartFrameCallBack implements FrameCallBack {
         // чтение параметров из конфига
@@ -178,9 +178,10 @@ public class MainClass extends MainClassRequest {
         }
         // запрос параметров соединения с БД
         @Override
-        public ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData, BiConsumer<ParametersSql, ParametersSql.Status> exception) throws Exception {
-            return MainClass.this.requestParametersSql(typeBaseData, exception);
+        public ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+            return MainClass.this.requestParametersSql(typeBaseData);
         }
+        // -----------------------------------------------------------
         // создание тестого соединения
         @Override
         public BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
@@ -191,22 +192,27 @@ public class MainClass extends MainClassRequest {
         public BaseData.Status checkCheckStructureBd(String base) {
             return MainClass.this.checkCheckStructureBd(base);
         }
+        // -----------------------------------------------------------
+        // создание рабочего соединения
+        @Override
+        public BaseData.Status createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+            return MainClass.this.createWorkConnect(typeBaseData, parameters);
+        }
         // чтение списка пользователей
         @Override
-        public UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], BaseData.Status> exception) {
-            return MainClass.this.getListUsers(actual, exception);
+        public UserClass[] getListUsers(boolean actual) throws Exception {
+            return MainClass.this.getListUsers(actual);
+        }
+
+        @Override
+        public boolean isCheckCommPort(boolean statMainWork, String portName) throws Exception {
+            return MainClass.this.isCheckCommPort(statMainWork, portName);
         }
 
 
 
 
-
-
-
-
-
-
-        /*
+/*
         // ================================== работа с БД ====================================
         // чтение параметров
         @Override

@@ -28,20 +28,17 @@ class BaseDataParent implements BaseDataInterface {
     // -----------------------------------------------------------
     // инициализация рабочего соединения
     @Override
-    public BaseData.Status workConnectInit(Parameters parameters) {
+    public BaseData.Status createWorkConnect(Parameters parameters) {
         return BaseData.Status.UNKNOWN_ERROR;
     }
     // чтение списка пользователей
     @Override
-    public UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], BaseData.Status> exception) {
+    public UserClass[] getListUsers(boolean actual) throws Exception {
         if (workConnection == null) {
-            if (exception != null) {
-                UserClass[] listmUsers = null;
-                exception.accept(listmUsers, Status.CONNECT_ERROR);
-                return listmUsers;
-            } else {
-                // throw new Exception("BaseDataParent.getListUsers: CONNECT_ERROR -> workConnection");
-            }
+            throw new Exception("Не инициировано рабочее соединение");
+        }
+        if (workConnection.isClosed()) {
+            throw new Exception("Не активно рабочее соединение");
         }
         ArrayList<UserClass> listUsers = new ArrayList<>();
         Statement statement = null;
@@ -50,15 +47,8 @@ class BaseDataParent implements BaseDataInterface {
         // save auto commit
         try {
             saveAutoCommit = workConnection.getAutoCommit();
-        } catch (SQLException throwables) {
-            if (exception != null) {
-                UserClass[] listmUsers = null;
-                exception.accept(listmUsers, Status.CONNECT_ERROR);
-                return listmUsers;
-            } else {
-                // throw new Exception("BaseDataParent.getListUsers: CONNECT_ERROR -> workConnection");
-            }
-            //throw new Exception("BaseDataParent.getListUsers: getAutoCommit");
+        } catch (SQLException e) {
+            throw new Exception("Ошибка начала транзакции: " + e.getMessage());
         }
         // запрос на список пользователей
         try {
@@ -84,20 +74,15 @@ class BaseDataParent implements BaseDataInterface {
             // завершение транзакции
             workConnection.commit();
             workConnection.setAutoCommit(saveAutoCommit);
-        } catch (SQLException throwables) {
+        } catch (SQLException e) {
             try {
                 // отмена транзакции
                 workConnection.rollback();
                 workConnection.setAutoCommit(saveAutoCommit);
-                if (exception != null) {
-                    UserClass[] listmUsers = null;
-                    exception.accept(listmUsers, Status.QUERY_ERROR);
-                    return listmUsers;
-                } else {
-                    // throw new Exception("BaseDataParent.getListUsers: executeQuery");
-                }
-            } catch (SQLException e) { }
-            // throw new Exception("BaseDataParent.getListUsers: executeQuery");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            throw new Exception("Ошибка выполнения транзакции: " + e.getMessage());
         }
         // создание списка
         try {
@@ -120,30 +105,17 @@ class BaseDataParent implements BaseDataInterface {
                         )
                 );
             }
-        } catch (SQLException throwables) {
-            if (exception != null) {
-                UserClass[] listmUsers = null;
-                exception.accept(listmUsers, Status.QUERY_ERROR);
-                return listmUsers;
-            } else {
-                // throw new Exception("BaseDataParent.getListUsers: executeQuery");
-            }
+        } catch (SQLException e) {
+            throw new Exception("Ошибка выполнения парсинга: " + e.getMessage());
         }
-        // конвертирование в масив
-        UserClass[] listmUsers = listUsers.toArray(new UserClass[0]);
         // закрытие соединения
         try {
             result.close();
             statement.close();
-        } catch (SQLException throwables) {
-            if (exception != null) {
-                exception.accept(listmUsers, Status.UNKNOWN_ERROR);
-                return listmUsers;
-            } else {
-                //throw new Exception("BaseDataParent.getListUsers: close");
-            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return listmUsers;
+        return listUsers.toArray(new UserClass[0]);
     }
 
 

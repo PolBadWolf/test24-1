@@ -119,7 +119,7 @@ public interface BaseData {
     // создание рабочего соединения
     Status createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // чтение списка пользователей
-    UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], Status> exception);
+    UserClass[] getListUsers(boolean actual) throws Exception;
 
 
 

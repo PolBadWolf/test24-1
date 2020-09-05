@@ -21,7 +21,7 @@ class TuningFrame extends TuningFrameVars {
     private Thread threadSkeep = null;
     private boolean threadSkeepOn;
 
-    private int chCheckCommPort = CommPort.INITCODE_NOTEXIST;
+    private CommPort.PortStat chCheckCommPort = CommPort.PortStat.INITCODE_NOTEXIST;
     private boolean flCheckParamSql = false;
     private boolean flCheckListBd = false;
 
@@ -562,8 +562,8 @@ class TuningFrame extends TuningFrameVars {
         {
             String portName = (String) comboBoxCommPort.getSelectedItem();
             CommPort commPort = null; //callBack MC.getCommPort();
-            int ch = commPort.Open(null, portName, BAUD.baud57600);
-            if (ch == CommPort.INITCODE_OK) {
+            CommPort.PortStat ch = commPort.Open(null, portName, BAUD.baud57600);
+            if (ch == CommPort.PortStat.INITCODE_OK) {
                 commPort.Close();
             }
             chCheckCommPort = ch;
@@ -609,8 +609,8 @@ class TuningFrame extends TuningFrameVars {
         {
             String portName = (String) comboBoxCommPort.getSelectedItem();
             CommPort commPort = null; //callBack MC.getCommPort();
-            int ch = commPort.Open(null, portName, BAUD.baud57600);
-            if (ch == CommPort.INITCODE_OK) {
+            CommPort.PortStat ch = commPort.Open(null, portName, BAUD.baud57600);
+            if (ch == CommPort.PortStat.INITCODE_OK) {
                 commPort.Close();
             }
             chCheckCommPort = ch;
@@ -664,7 +664,7 @@ class TuningFrame extends TuningFrameVars {
     private void outStatus() {
         {
             String portName, statusText;
-            switch (chCheckCommPort) {
+            switch (chCheckCommPort.getCodePortStat()) {
                 case CommPort.INITCODE_OK:
                     portName = (String) comboBoxCommPort.getSelectedItem();
                     statusText = "ok";
@@ -719,7 +719,7 @@ class TuningFrame extends TuningFrameVars {
     // >>>>>>>>>>>>>>>>>>>>>>
     // разрешение кнопки ок
     private void onOffButtonOk() {
-        buttonOk.setEnabled((chCheckCommPort == CommPort.INITCODE_OK) && flCheckSql);
+        buttonOk.setEnabled((chCheckCommPort == CommPort.PortStat.INITCODE_OK) && flCheckSql);
     }
     private void onButtonOk() {
         buttonOk.setEnabled(true);
@@ -793,7 +793,7 @@ class TuningFrame extends TuningFrameVars {
         // разрешение кнопки ок
         onOffButtonOk();
         // сохранить
-        if (chCheckCommPort == CommPort.INITCODE_OK) {
+        if (chCheckCommPort == CommPort.PortStat.INITCODE_OK) {
             // callBack MC.saveConfigCommPort((String) comboBoxCommPort.getSelectedItem());
         }
     }

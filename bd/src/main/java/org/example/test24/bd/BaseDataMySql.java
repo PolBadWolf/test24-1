@@ -112,7 +112,7 @@ class BaseDataMySql extends BaseDataParent {
     // -----------------------------------------------------------
     // инициализация рабочего соединения
     @Override
-    public BaseData.Status workConnectInit(Parameters parameters) {
+    public BaseData.Status createWorkConnect(Parameters parameters) {
         workConnection = null;
         // подключение драйвера
         try {

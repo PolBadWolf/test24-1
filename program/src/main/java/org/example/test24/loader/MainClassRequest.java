@@ -1,5 +1,6 @@
 package org.example.test24.loader;
 
+import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseData1;
@@ -40,7 +41,7 @@ class MainClassRequest {
         return parametersConfig;
     }
     // запрос параметров соединения с БД
-    public ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData, BiConsumer<ParametersSql, ParametersSql.Status> exception) throws Exception {
+    protected ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
         String fileNameParameters;
         switch (typeBaseData) {
             case MY_SQL:
@@ -50,28 +51,49 @@ class MainClassRequest {
                 fileNameParameters = fileNameMsSql;
                 break;
             default:
-                // неизвестный тип БД
-                int a = 1 / 0;
-                fileNameParameters = "";
+                throw new Exception("Неизвестный тип БД: " + typeBaseData.toString());
         }
         ParametersSql parametersSql = new ParametersSql(fileNameParameters, typeBaseData);
         ParametersSql.Status status = parametersSql.load();
         if (status != ParametersSql.Status.OK ) {
-            if (exception != null) exception.accept(parametersSql, status);
-            else throw new Exception("ошибка приема параметов соединения с БД: " + status.toString());
+            throw new Exception("ошибка приема параметов соединения с БД: " + status.toString());
         }
         return parametersSql;
     }
+    // -----------------------------------------------------------
     // создание тестого соединения
-    public BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+    protected BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
         return connBd.createTestConnect(typeBaseData, parameters);
     }
     // тестовое соединение проверка структуры БД
-    public BaseData.Status checkCheckStructureBd(String base) {
+    protected BaseData.Status checkCheckStructureBd(String base) {
         return connBd.checkCheckStructureBd(base);
     }
+    // -----------------------------------------------------------
+    // создание рабочего соединения
+    protected BaseData.Status createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        return connBd.createWorkConnect(typeBaseData, parameters);
+    }
     // чтение списка пользователей
-    public UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], BaseData.Status> exception) {
-        return connBd.getListUsers(actual, exception);
+    protected UserClass[] getListUsers(boolean actual) throws Exception {
+        return connBd.getListUsers(actual);
+    }
+    // ************************************************
+    // проверка ком порта
+    protected boolean isCheckCommPort(boolean statMainWork, String portName) throws Exception {
+        String portNameConfig;
+        CommPort port;
+        if (!statMainWork) {
+            if (parametersConfig == null) {
+                throw new Exception("Ошибка доступа к конфигулации");
+            }
+            portNameConfig = parametersConfig.getPortName();
+            if (portName == portNameConfig) return true;
+        }
+        port = CommPort.main(o -> {});
+        CommPort.PortStat portStat = port.Open(null, portName, BAUD.baud57600);
+        port.Close();
+        if (portStat == CommPort.PortStat.INITCODE_OK)  return true;
+        return false;
     }
 }

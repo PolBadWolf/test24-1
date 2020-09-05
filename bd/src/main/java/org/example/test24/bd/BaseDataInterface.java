@@ -10,9 +10,9 @@ interface BaseDataInterface {
     BaseData.Status checkCheckStructureBd(String base);
     // -----------------------------------------------------------
     // инициализация рабочего соединения
-    BaseData.Status workConnectInit(BaseData.Parameters parameters);
+    BaseData.Status createWorkConnect(BaseData.Parameters parameters);
     // чтение списка пользователей
-    UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], BaseData.Status> exception);
+    UserClass[] getListUsers(boolean actual) throws Exception;
 
 
 

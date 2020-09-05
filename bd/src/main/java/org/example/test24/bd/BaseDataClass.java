@@ -1,6 +1,5 @@
 package org.example.test24.bd;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class BaseDataClass implements BaseData {
@@ -101,17 +100,15 @@ public class BaseDataClass implements BaseData {
                 workConnect = null;
                 return Status.UNEXPECTED_TYPE_BD;
         }
-        return workConnect.workConnectInit(parameters);
+        return workConnect.createWorkConnect(parameters);
     }
     // чтение списка пользователей
     @Override
-    public UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], Status> exception) {
+    public UserClass[] getListUsers(boolean actual) throws Exception {
         if (workConnect == null) {
-            UserClass[] listUsers = null;
-            exception.accept(listUsers, BaseData.Status.CONNECT_ERROR);
-            return listUsers;
+            throw new Exception("Не инициировано рабочее соединение");
         }
-        return workConnect.getListUsers(actual, exception);
+        return workConnect.getListUsers(actual);
     }
     // установка нового пароля пользователя
     @Override

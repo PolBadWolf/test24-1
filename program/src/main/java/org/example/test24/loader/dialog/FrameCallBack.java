@@ -11,13 +11,22 @@ public interface FrameCallBack {
     // чтение параметров из конфига
     ParametersConfig getParametersConfig();
     // запрос параметров соединения с БД
-    ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData, BiConsumer<ParametersSql, ParametersSql.Status> exception) throws Exception;
+    ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception;
+    // -----------------------------------------------------------
     // создание тестого соединения
     BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // тестовое соединение проверка структуры БД
     BaseData.Status checkCheckStructureBd(String base);
+    // -----------------------------------------------------------
+    // создание рабочего соединения
+    BaseData.Status createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // чтение списка пользователей
-    UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], BaseData.Status> exception);
+    UserClass[] getListUsers(boolean actual) throws Exception;
+
+    // -----------------------------------------------------------
+    // проверка ком порта
+    boolean isCheckCommPort(boolean statMainWork, String portName) throws Exception;
+
 
 
 
@@ -27,8 +36,6 @@ public interface FrameCallBack {
     // ================================== работа с БД ====================================
     // список доступных БД из тестового соединения
     boolean requestListBdFromTestConnect(Consumer<String[]> list);
-    // создание рабочего соединения
-    int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // загрузка пользователей
     UserClass[] getListUsers(boolean actual);
     // установка нового пароля пользователя
