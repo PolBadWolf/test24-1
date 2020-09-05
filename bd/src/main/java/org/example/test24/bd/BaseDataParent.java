@@ -2,6 +2,7 @@ package org.example.test24.bd;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static org.example.test24.bd.BaseData.*;
@@ -16,38 +17,48 @@ class BaseDataParent implements BaseDataInterface {
     }
     // тестовое соединение
     @Override
-    public int testConnectInit(BaseData.Parameters parameters) {
-        return UNKNOWN_ERROR;
-    }
-    // тестовое соединение список доступных баз
-    @Override
-    public boolean requestListBdFrom(Consumer<String[]> list) {
-        return false;
+    public BaseData.Status createTestConnect(BaseData.Parameters parameters) {
+        return BaseData.Status.UNKNOWN_ERROR;
     }
     // тестовое соединение проверка структуры БД
     @Override
-    public int testConnectCheckStructure(String base) {
-        return UNKNOWN_ERROR;
+    public BaseData.Status checkCheckStructureBd(String base) {
+        return BaseData.Status.UNKNOWN_ERROR;
     }
+    // -----------------------------------------------------------
     // инициализация рабочего соединения
     @Override
-    public int workConnectInit(Parameters parameters) {
-        return UNKNOWN_ERROR;
+    public BaseData.Status workConnectInit(Parameters parameters) {
+        return BaseData.Status.UNKNOWN_ERROR;
     }
     // чтение списка пользователей
     @Override
-    public UserClass[] getListUsers(boolean actual) throws Exception {
+    public UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], BaseData.Status> exception) {
         if (workConnection == null) {
-            throw new Exception("BaseDataParent.getListUsers: CONNECT_ERROR -> workConnection");
+            if (exception != null) {
+                UserClass[] listmUsers = null;
+                exception.accept(listmUsers, Status.CONNECT_ERROR);
+                return listmUsers;
+            } else {
+                // throw new Exception("BaseDataParent.getListUsers: CONNECT_ERROR -> workConnection");
+            }
         }
         ArrayList<UserClass> listUsers = new ArrayList<>();
-        Statement statement;
-        ResultSet result;
-        boolean saveAutoCommit;
+        Statement statement = null;
+        ResultSet result = null;
+        boolean saveAutoCommit = true;
+        // save auto commit
         try {
             saveAutoCommit = workConnection.getAutoCommit();
         } catch (SQLException throwables) {
-            throw new Exception("BaseDataParent.getListUsers: getAutoCommit");
+            if (exception != null) {
+                UserClass[] listmUsers = null;
+                exception.accept(listmUsers, Status.CONNECT_ERROR);
+                return listmUsers;
+            } else {
+                // throw new Exception("BaseDataParent.getListUsers: CONNECT_ERROR -> workConnection");
+            }
+            //throw new Exception("BaseDataParent.getListUsers: getAutoCommit");
         }
         // запрос на список пользователей
         try {
@@ -55,6 +66,7 @@ class BaseDataParent implements BaseDataInterface {
             workConnection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             String tab = "table_users";
             statement = workConnection.createStatement();
+            // запрос
             if (actual) {
                 result = statement.executeQuery(
                         "SELECT id, date_reg, date_unreg, name, password, rang " +
@@ -69,14 +81,23 @@ class BaseDataParent implements BaseDataInterface {
                                 "ORDER BY id "
                 );
             }
+            // завершение транзакции
             workConnection.commit();
             workConnection.setAutoCommit(saveAutoCommit);
         } catch (SQLException throwables) {
             try {
+                // отмена транзакции
                 workConnection.rollback();
                 workConnection.setAutoCommit(saveAutoCommit);
+                if (exception != null) {
+                    UserClass[] listmUsers = null;
+                    exception.accept(listmUsers, Status.QUERY_ERROR);
+                    return listmUsers;
+                } else {
+                    // throw new Exception("BaseDataParent.getListUsers: executeQuery");
+                }
             } catch (SQLException e) { }
-            throw new Exception("BaseDataParent.getListUsers: executeQuery");
+            // throw new Exception("BaseDataParent.getListUsers: executeQuery");
         }
         // создание списка
         try {
@@ -86,6 +107,7 @@ class BaseDataParent implements BaseDataInterface {
                     pass = Password.decoding(result.getString("password"));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    pass = "";
                 }
                 listUsers.add(
                         new UserClass(
@@ -99,16 +121,40 @@ class BaseDataParent implements BaseDataInterface {
                 );
             }
         } catch (SQLException throwables) {
-            throw new Exception("BaseDataParent.getListUsers: parsing list");
+            if (exception != null) {
+                UserClass[] listmUsers = null;
+                exception.accept(listmUsers, Status.QUERY_ERROR);
+                return listmUsers;
+            } else {
+                // throw new Exception("BaseDataParent.getListUsers: executeQuery");
+            }
         }
+        // конвертирование в масив
+        UserClass[] listmUsers = listUsers.toArray(new UserClass[0]);
+        // закрытие соединения
         try {
             result.close();
             statement.close();
         } catch (SQLException throwables) {
-            throw new Exception("BaseDataParent.getListUsers: close");
+            if (exception != null) {
+                exception.accept(listmUsers, Status.UNKNOWN_ERROR);
+                return listmUsers;
+            } else {
+                //throw new Exception("BaseDataParent.getListUsers: close");
+            }
         }
-        //
-        return listUsers.toArray(new UserClass[0]);
+        return listmUsers;
+    }
+
+
+
+
+
+
+    // тестовое соединение список доступных баз
+    @Override
+    public boolean requestListBdFrom(Consumer<String[]> list) {
+        return false;
     }
     // установка нового пароля пользователя
     @Override

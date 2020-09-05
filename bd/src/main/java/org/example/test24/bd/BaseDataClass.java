@@ -1,5 +1,6 @@
 package org.example.test24.bd;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class BaseDataClass implements BaseData {
@@ -50,10 +51,10 @@ public class BaseDataClass implements BaseData {
         return stroka;
     }
     // ==============
-    private CallBack callBack;
+    //private CallBack callBack;
 
-    public BaseDataClass(CallBack callBack) {
-        this.callBack = callBack;
+    public BaseDataClass(/*CallBack callBack*/) {
+        //this.callBack = callBack;
     }
     // ==============================================
     //                 var
@@ -62,7 +63,7 @@ public class BaseDataClass implements BaseData {
     // ----------------------------------------------
     // создание тестового соединения
     @Override
-    public int createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+    public Status createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
         switch (typeBaseData) {
             case MS_SQL:
                 testConnect = new BaseDataMsSql();
@@ -72,9 +73,9 @@ public class BaseDataClass implements BaseData {
                 break;
             default:
                 testConnect = null;
-                return UNEXPECTED_TYPE_BD;
+                return Status.UNEXPECTED_TYPE_BD;
         }
-        return testConnect.testConnectInit(parameters);
+        return testConnect.createTestConnect(parameters);
     }
     // тестовое соединение список доступных баз
     @Override
@@ -83,12 +84,12 @@ public class BaseDataClass implements BaseData {
     }
     // тестовое соединение проверка структуры БД
     @Override
-    public int testConnectCheckStructure(String base) {
-        return testConnect.testConnectCheckStructure(base);
+    public Status checkCheckStructureBd(String base) {
+        return testConnect.checkCheckStructureBd(base);
     }
     // создание рабочего соединения
     @Override
-    public int createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+    public Status createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
         switch (typeBaseData) {
             case MS_SQL:
                 workConnect = new BaseDataMsSql();
@@ -98,14 +99,19 @@ public class BaseDataClass implements BaseData {
                 break;
             default:
                 workConnect = null;
-                return UNEXPECTED_TYPE_BD;
+                return Status.UNEXPECTED_TYPE_BD;
         }
         return workConnect.workConnectInit(parameters);
     }
     // чтение списка пользователей
     @Override
-    public UserClass[] getListUsers(boolean actual) throws Exception {
-        return workConnect.getListUsers(actual);
+    public UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], Status> exception) {
+        if (workConnect == null) {
+            UserClass[] listUsers = null;
+            exception.accept(listUsers, BaseData.Status.CONNECT_ERROR);
+            return listUsers;
+        }
+        return workConnect.getListUsers(actual, exception);
     }
     // установка нового пароля пользователя
     @Override

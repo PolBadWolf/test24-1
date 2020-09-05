@@ -8,92 +8,27 @@ import org.example.test24.loader.dialog.StartFrame;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.ScreenFx;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
-public class MainClass {
-    final public String fileNameConfig = "config.txt";
-    final public String fileNameMsSql = "ms_sql.txt";
-    final public String fileNameMySql = "my_sql.txt";
-    final public String[] fileNameSql = {fileNameMsSql, fileNameMySql};
-    // ===============================================
-    // модули
-    private ScreenFx screenFx;
-    private Runner runner;
-    private CommPort commPort;
-    private BaseData1 bdSql;
-    private StartFrame startFrame;
-    // ===============================================
-    private BaseData connBd;
-    // ===============================================
-    private void close() {
-        if (screenFx != null) {
-            screenFx.exitApp();
-            screenFx = null;
-        }
-        if (commPort != null) {
-            commPort.Close();
-            commPort = null;
-        }
-        if (runner != null) {
-            runner.Close();
-            runner = null;
-        }
-        System.exit(0);
-    }
-    private void screenCloser() {
-        close();
-    }
-    private void runnerCloser() {
-        close();
-    }
-    private void commPortCloser() {
-        close();
-    }
-
-    // ===============================================
-    protected ParametersConfig parametersConfig;
-
+public class MainClass extends MainClassRequest {
     public static void main(String[] args) {
+        Thread.currentThread().setName("Main class thread");
         new MainClass().start();
     }
-
     private void start() {
         // создание объекта для БД
-        connBd = new BaseDataClass(new BaseData.CallBack() {
-        });
+        connBd = new BaseDataClass(/*new BaseData.CallBack() {}*/);
         // создание основных объектов
         screenFx = ScreenFx.init(o->screenCloser());
         runner = Runner.main(o->runnerCloser());
         commPort = CommPort.main(o->commPortCloser());
-        // загрузка начальной конфигурации
-        switch (requestParametersConfig(fileNameConfig, parameters -> {
-            parametersConfig = parameters;
-        })) {
-            case FILE_NOT_FOUND:
-                System.out.println("Файл конфигурации не найден");
-                // параметры по умолчанию
-                parametersConfig.setDefault();
-                break;
-            case FILE_NOT_SPECIFIED:
-                System.out.println("Файл конфигурации не указан");
-                // параметры по умолчанию
-                parametersConfig.setDefault();
-                break;
-            case ERROR_LOAD:
-                System.out.println("Ошибка загрузки файла конфигурации");
-                // параметры по умолчанию
-                parametersConfig.setDefault();
-                break;
-            case ERROR_PARAMETERS:
-                System.out.println("Ошибка параметров файла конфигурации");
-                break;
-        }
 
+        // пуск
         startFrame = StartFrame.main(false, new StartFrameCallBack());
 
 
-        //ParametersConfig.Diagnostic result = parametersConfig.load();
         /*
         int testStat1 = 99, testStat2 = 99, testStat3, testStat4;
         String[] listBd;
@@ -168,13 +103,52 @@ public class MainClass {
         commPort.ReciveStart();*/
     }
 
+
+
+
+
+
+
+
+
+
+    // ===============================================
+    private void close() {
+        if (screenFx != null) {
+            screenFx.exitApp();
+            screenFx = null;
+        }
+        if (commPort != null) {
+            commPort.Close();
+            commPort = null;
+        }
+        if (runner != null) {
+            runner.Close();
+            runner = null;
+        }
+        System.exit(0);
+    }
+    private void screenCloser() {
+        close();
+    }
+    private void runnerCloser() {
+        close();
+    }
+    private void commPortCloser() {
+        close();
+    }
+
+    // ===============================================
+
+
+
     // загрузка конфигурации
-    private ParametersConfig.Diagnostic requestParametersConfig(String fileNameConfig, Consumer<ParametersConfig> parametersConfig) {
+    /*private ParametersConfig.Diagnostic requestParametersConfig(String fileNameConfig, Consumer<ParametersConfig> parametersConfig) {
         ParametersConfig parameters = new ParametersConfig(fileNameConfig);
         ParametersConfig.Diagnostic result = parameters.load();
         if (parametersConfig != null) parametersConfig.accept(parameters);
         return result;
-    }
+    }*/
 
     private void errorCommMessage(int checkComm, CommPort commPort) {
         switch (checkComm) {
@@ -199,40 +173,40 @@ public class MainClass {
     private class StartFrameCallBack implements FrameCallBack {
         // чтение параметров из конфига
         @Override
-        public int requestParametersConfig(Consumer<ParametersConfig> configParameters) {
-            if (parametersConfig == null) {
-                synchronized (parametersConfig) {
-                    if (parametersConfig == null) {
-                        switch (requestParametersConfig(fileNameConfig, parameters -> {
-                            parametersConfig = parameters;
-                        })) {
-                            case ParametersConfig.FILE_NOT_FOUND:
-                                System.out.println("Файл конфигурации не найден");
-                                // параметры по умолчанию
-                                parametersConfig.setDefault();
-                                break;
-                            case ParametersConfig.FILE_NOT_SPECIFIED:
-                                System.out.println("Файл конфигурации не указан");
-                                // параметры по умолчанию
-                                parametersConfig.setDefault();
-                                break;
-                            case ParametersConfig.ERROR_LOAD:
-                                System.out.println("Ошибка загрузки файла конфигурации");
-                                // параметры по умолчанию
-                                parametersConfig.setDefault();
-                                break;
-                            case ParametersConfig.ERROR_PARAMETERS:
-                                System.out.println("Ошибка параметров файла конфигурации");
-                                break;
-                        }
-                    }
-                }
-            }
+        public ParametersConfig getParametersConfig(){
+            return MainClass.this.getParametersConfig();
         }
-        public ParametersConfig getParametersConfig() throws Exception {
-            if (parametersConfig == null) throw new Exception("отсутствуют параметры конфигурации");
-            return parametersConfig;
+        // запрос параметров соединения с БД
+        @Override
+        public ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData, BiConsumer<ParametersSql, ParametersSql.Status> exception) throws Exception {
+            return MainClass.this.requestParametersSql(typeBaseData, exception);
         }
+        // создание тестого соединения
+        @Override
+        public BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+            return MainClass.this.createTestConnectBd(typeBaseData, parameters);
+        }
+        // тестовое соединение проверка структуры БД
+        @Override
+        public BaseData.Status checkCheckStructureBd(String base) {
+            return MainClass.this.checkCheckStructureBd(base);
+        }
+        // чтение списка пользователей
+        @Override
+        public UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], BaseData.Status> exception) {
+            return MainClass.this.getListUsers(actual, exception);
+        }
+
+
+
+
+
+
+
+
+
+
+        /*
         // ================================== работа с БД ====================================
         // чтение параметров
         @Override
@@ -316,6 +290,7 @@ public class MainClass {
         public void closeFrame() {
             MainClass.this.startFrame = null;
         }
+        */
     }
 
     /*private class TuningFrameCallBack implements TuningFrame.CallBackToMainClass {

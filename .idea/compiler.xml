@@ -16,5 +16,8 @@
         <module name="runner" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="loader" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -13,14 +13,16 @@ public class ParametersConfig {
     final public static int FILE_NOT_SPECIFIED = 2;
     final public static int ERROR_LOAD = 3;
     final public static int ERROR_PARAMETERS = 4;
-    final public static int ERROR_SAVE = 9;
+    final public static int ERROR_SAVE = 5;
+    final public static int ERROR = 99;
     public enum Diagnostic {
         OK  (ParametersConfig.OK),
         FILE_NOT_FOUND  (ParametersConfig.FILE_NOT_FOUND),
         FILE_NOT_SPECIFIED  (ParametersConfig.FILE_NOT_SPECIFIED),
         ERROR_LOAD  (ParametersConfig.ERROR_LOAD),
         ERROR_PARAMETERS    (ParametersConfig.ERROR_PARAMETERS),
-        ERROR_SAVE  (ParametersConfig.ERROR_SAVE);
+        ERROR_SAVE  (ParametersConfig.ERROR_SAVE),
+        ERROR  (ParametersConfig.ERROR);
         private int diagnos;
 
         Diagnostic(int diagnos) {
@@ -35,6 +37,7 @@ public class ParametersConfig {
     private String fileNameConfig;
     private String portName;
     private BaseData.TypeBaseData typeBaseData;
+    private Diagnostic status;
 
     public ParametersConfig(String fileNameConfig) {
         this.fileNameConfig = fileNameConfig;
@@ -54,9 +57,11 @@ public class ParametersConfig {
     public void setTypeBaseData(BaseData.TypeBaseData typeBaseData) {
         this.typeBaseData = typeBaseData;
     }
+    public Diagnostic getStatus() {
+        return status;
+    }
 
     public Diagnostic load() {
-        Diagnostic status;
         try {
             Properties properties = new Properties();
             properties.load(new BufferedReader(new FileReader(fileNameConfig)));
@@ -81,13 +86,12 @@ public class ParametersConfig {
     }
 
     public Diagnostic save() {
-        Diagnostic status;
         if (typeBaseData == BaseData.TypeBaseData.ERROR || portName == null || portName == "") {
             status = Diagnostic.ERROR_PARAMETERS;
         } else {
             Properties properties = new Properties();
             properties.setProperty("CommPort", portName);
-            properties.setProperty("DataBase", typeBaseDataString(typeBaseData.getTypeBaseData()));
+            properties.setProperty("DataBase", typeBaseDataString(typeBaseData.getCodeTypeBaseData()));
             try {
                 properties.store(new BufferedWriter(new FileWriter(fileNameConfig)), "config");
                 status = Diagnostic.OK;

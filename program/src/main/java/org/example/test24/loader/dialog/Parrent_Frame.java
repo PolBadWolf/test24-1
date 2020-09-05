@@ -59,9 +59,10 @@ class Parrent_Frame {
         return true;
     }
     // инициация тестового соединения c БД
+    /*
     protected int initTestConnectBd(ParametersSql parametersSql) {
         // проверка паметров на валидность
-        if (parametersSql.getStat() != ParametersSql.OK) {
+        if (parametersSql.getStat() != ParametersSql.Status.OK) {
             return BaseData.ERROR;
         }
         // установка тестового соединения
@@ -74,7 +75,10 @@ class Parrent_Frame {
                         parametersSql.dataBase
                 )
         );
-        /* // установка тестового соединения
+
+
+
+         // установка тестового соединения
         return callBack.createTestConnectBd(typeBaseData,
                 new BaseData.Parameters(
                         parametersSql.urlServer,
@@ -83,8 +87,10 @@ class Parrent_Frame {
                         parametersSql.password,
                         parametersSql.dataBase
                 )
-        );*/
-        /*
+        );
+
+
+
         // проверка структуры БД
         result = callBack.testConnectCheckStructure(parametersSql.dataBase);
         if (result != BaseData.OK) {
@@ -114,9 +120,11 @@ class Parrent_Frame {
             return false;
         }
         return true;
-        */
+
     }
+    */
     // инициация тестового соединения c БД список баз
+    /*
     protected String[] initTestConnectBdGetListBse() {
         int result;
         // установка тестового соединения
@@ -133,7 +141,11 @@ class Parrent_Frame {
             return new String[0];
         }
 
-        /*
+
+
+
+
+
         // проверка структуры БД
         result = callBack.testConnectCheckStructure(parametersSql.dataBase);
         if (result != BaseData.OK) {
@@ -163,9 +175,11 @@ class Parrent_Frame {
             return false;
         }
         return true;
-        */
+
         return new String[0];
     }
+    */
+    /*
     protected boolean testBaseAndInitWorkConnectBd() {
         int result;
         // проверка структуры БД
@@ -193,7 +207,9 @@ class Parrent_Frame {
         flCheckSql = true;
         return true;
     }
+     */
     // получение списка пользователей
+    /*
     protected boolean getListUsersFromBD() {
         listUsers = callBack.getListUsers(true);
         if (listUsers.length == 0) {
@@ -201,6 +217,7 @@ class Parrent_Frame {
         }
         return true;
     }
+     */
     // получения списка пользователей параметры из конфига
     /*protected boolean getListUserFromConfig(Consumer<ParametersSql> setParameters) {
         BaseData.TypeBaseData typeBaseData;

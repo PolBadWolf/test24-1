@@ -434,7 +434,7 @@ class TuningFrame extends TuningFrameVars {
                 System.out.println(e.getMessage());
             }
             //callBackTF.messageCloseTuningFrame();
-            callBack.closeFrame();
+            //callBack.closeFrame();
         }
         if (editUsers != null) {
 

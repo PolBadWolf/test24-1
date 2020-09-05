@@ -3,24 +3,30 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.*;
 import org.example.test24.loader.ParametersConfig;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface FrameCallBack {
     // =================================
     // чтение параметров из конфига
-    int requestParametersConfig(Consumer<ParametersConfig> configParameters);
-
-
-
-    // ================================== работа с БД ====================================
-    // чтение параметров соединения с БД
-    int requestParametersSql(BaseData.TypeBaseData typeBaseData, Consumer<ParametersSql> sql);
+    ParametersConfig getParametersConfig();
+    // запрос параметров соединения с БД
+    ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData, BiConsumer<ParametersSql, ParametersSql.Status> exception) throws Exception;
     // создание тестого соединения
-    int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
+    BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
+    // тестовое соединение проверка структуры БД
+    BaseData.Status checkCheckStructureBd(String base);
+    // чтение списка пользователей
+    UserClass[] getListUsers(boolean actual, BiConsumer<UserClass[], BaseData.Status> exception);
+
+
+
+
+
+/*
+    // ================================== работа с БД ====================================
     // список доступных БД из тестового соединения
     boolean requestListBdFromTestConnect(Consumer<String[]> list);
-    // проверка структуры БД
-    int testConnectCheckStructure(String base);
     // создание рабочего соединения
     int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // загрузка пользователей
@@ -37,4 +43,5 @@ public interface FrameCallBack {
     //---------------------------
     void closeFrame();
     // ---------------
+*/
 }

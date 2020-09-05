@@ -13,13 +13,13 @@ class BaseDataMySql extends BaseDataParent {
     }
     // тестовое соединение
     @Override
-    public int testConnectInit(BaseData.Parameters parameters) {
+    public BaseData.Status createTestConnect(BaseData.Parameters parameters) {
         testConnection = null;
         // подключение драйвера
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            return DRIVER_ERROR;
+            return Status.DRIVER_ERROR;
         }
         // установка параметров соединения
         String connectionUrl = "jdbc:mysql://%1$s:%2$s";
@@ -32,61 +32,27 @@ class BaseDataMySql extends BaseDataParent {
             Connection connection = DriverManager.getConnection(connString, parameters.login, parameters.password);
             testConnection = connection;
         } catch (SQLException e) {
-            int stat;
+            Status stat;
             switch (e.getErrorCode()) {
                 case 1045:
-                    stat = CONNECT_PASS_ERROR;
+                    stat = Status.CONNECT_PASS_ERROR;
                     break;
                 case 1049:
-                    stat = CONNECT_BASE_ERROR;
+                    stat = Status.CONNECT_BASE_ERROR;
                     break;
                 default:
-                    stat = CONNECT_ERROR;
+                    stat = Status.CONNECT_ERROR;
             }
             return stat;
         }
         testParameters = parameters;
-        return OK;
-    }
-    // тестовое соединение список доступных баз
-    @Override
-    public boolean requestListBdFrom(Consumer<String[]> list) {
-        if (testConnection == null) {
-            return false;
-        }
-        // запрос на список
-        ResultSet resultSet;
-        try {
-            resultSet = testConnection.createStatement().executeQuery("SHOW DATABASES");
-        } catch (SQLException throwables) {
-            return false;
-        }
-        // отсев системных БД
-        ArrayList<String> listBd = new ArrayList<>();
-        String s;
-        try {
-            while (resultSet.next()) {
-                s = resultSet.getString(1);
-                if (s.toLowerCase().equals("information_schema")) continue;
-                if (s.toLowerCase().equals("mysql")) continue;
-                if (s.toLowerCase().equals("performance_schema")) continue;
-                if (s.toLowerCase().equals("sys")) continue;
-                listBd.add(s);
-            }
-            resultSet.close();
-        } catch (SQLException throwables) {
-            return false;
-        }
-        if (list != null) {
-            list.accept(listBd.toArray(new String[0]));
-        }
-        return true;
+        return Status.OK;
     }
     // тестовое соединение проверка структуры БД
     @Override
-    public int testConnectCheckStructure(String base) {
+    public BaseData.Status checkCheckStructureBd(String base) {
         if (testConnection == null) {
-            return CONNECT_ERROR;
+            return BaseData.Status.CONNECT_ERROR;
         }
         boolean table1;
         String sample;
@@ -120,7 +86,7 @@ class BaseDataMySql extends BaseDataParent {
                 statement.setString(2, "table_data");
                 resultSet = statement.executeQuery();
             } catch (SQLException throwables) {
-                return QUERY_ERROR;
+                return BaseData.Status.QUERY_ERROR;
             }
             try {
                 while (resultSet.next()) {
@@ -136,22 +102,23 @@ class BaseDataMySql extends BaseDataParent {
                     }
                 }
             } catch (SQLException throwables) {
-                return QUERY_ERROR;
+                return BaseData.Status.QUERY_ERROR;
             }
             table1 = countList == countSql;
-            if (!table1)    return STRUCTURE_ERROR;
+            if (!table1)    return BaseData.Status.STRUCTURE_ERROR;
         } // table_data
-        return OK;
+        return BaseData.Status.OK;
     }
+    // -----------------------------------------------------------
     // инициализация рабочего соединения
     @Override
-    public int workConnectInit(Parameters parameters) {
+    public BaseData.Status workConnectInit(Parameters parameters) {
         workConnection = null;
         // подключение драйвера
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            return DRIVER_ERROR;
+            return BaseData.Status.DRIVER_ERROR;
         }
         // установка параметров соединения
         String connectionUrl = "jdbc:mysql://%1$s:%2$s/%3$s";
@@ -165,20 +132,63 @@ class BaseDataMySql extends BaseDataParent {
             Connection connection = DriverManager.getConnection(connString, parameters.login, parameters.password);
             workConnection = connection;
         } catch (SQLException e) {
-            int stat;
+            BaseData.Status stat;
             switch (e.getErrorCode()) {
                 case 1045:
-                    stat = CONNECT_PASS_ERROR;
+                    stat = BaseData.Status.CONNECT_PASS_ERROR;
                     break;
                 case 1049:
-                    stat = CONNECT_BASE_ERROR;
+                    stat = BaseData.Status.CONNECT_BASE_ERROR;
                     break;
                 default:
-                    stat = CONNECT_ERROR;
+                    stat = BaseData.Status.CONNECT_ERROR;
             }
             return stat;
         }
         workParameters = parameters;
-        return OK;
+        return BaseData.Status.OK;
+    }
+
+
+
+
+
+
+
+
+
+    // тестовое соединение список доступных баз
+    @Override
+    public boolean requestListBdFrom(Consumer<String[]> list) {
+        if (testConnection == null) {
+            return false;
+        }
+        // запрос на список
+        ResultSet resultSet;
+        try {
+            resultSet = testConnection.createStatement().executeQuery("SHOW DATABASES");
+        } catch (SQLException throwables) {
+            return false;
+        }
+        // отсев системных БД
+        ArrayList<String> listBd = new ArrayList<>();
+        String s;
+        try {
+            while (resultSet.next()) {
+                s = resultSet.getString(1);
+                if (s.toLowerCase().equals("information_schema")) continue;
+                if (s.toLowerCase().equals("mysql")) continue;
+                if (s.toLowerCase().equals("performance_schema")) continue;
+                if (s.toLowerCase().equals("sys")) continue;
+                listBd.add(s);
+            }
+            resultSet.close();
+        } catch (SQLException throwables) {
+            return false;
+        }
+        if (list != null) {
+            list.accept(listBd.toArray(new String[0]));
+        }
+        return true;
     }
 }
