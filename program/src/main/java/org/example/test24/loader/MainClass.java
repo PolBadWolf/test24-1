@@ -158,7 +158,7 @@ public class MainClass extends MainClassRequest {
             case CommPort.INITCODE_NOTEXIST:
                 System.out.println("указанный порт отсутствует");
                 System.out.println("имеющиеся порты в системе:");
-                for (String name : commPort.getListPortsName()) {
+                for (String name : CommPort.getListPortsName()) {
                     System.out.println(name);
                 }
                 break;

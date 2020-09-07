@@ -83,10 +83,7 @@ class MainClassRequest {
     protected boolean isCheckCommPort(boolean statMainWork, String portName) throws Exception {
         String portNameConfig;
         CommPort port;
-        if (!statMainWork) {
-            if (parametersConfig == null) {
-                throw new Exception("Ошибка доступа к конфигулации");
-            }
+        if (statMainWork) {
             portNameConfig = parametersConfig.getPortName();
             if (portName == portNameConfig) return true;
         }

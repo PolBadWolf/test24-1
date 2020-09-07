@@ -141,14 +141,20 @@ class TuningFrame extends TuningFrameVars {
                         break;
                 }
             });
+            this.parametersSql = parametersSql;
+        } else {
+            this
         }
         // проверка ком порта
         try {
             flCheckCommPort = callBack.isCheckCommPort(statMainWork, config.getPortName());
             commPortName = config.getPortName();
+            commPortNameList = CommPort.getListPortsName();
         } catch (Exception e) {
             System.out.println("Ошибка поверки ком порта: " + e.getMessage());
             flCheckCommPort = false;
+            commPortName = "";
+            commPortNameList = new String[0];
         }
         // ===================================================================================================
 

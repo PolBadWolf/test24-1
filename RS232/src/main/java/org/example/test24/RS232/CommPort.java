@@ -1,5 +1,7 @@
 package org.example.test24.RS232;
 
+import com.fazecast.jSerialComm.SerialPort;
+
 import java.util.function.Consumer;
 
 public interface CommPort {
@@ -12,7 +14,15 @@ public interface CommPort {
     static CommPort main(Consumer closer) {
         return new CommPortClass(closer);
     }
-    String[] getListPortsName();
+    //String[] getListPortsName();
+    static String[] getListPortsName() {
+        SerialPort[] ports = SerialPort.getCommPorts();
+        String[] namePorts = new String[ports.length];
+        for (int i = 0; i < ports.length; i++) {
+            namePorts[i] = ports[i].getSystemPortName().toUpperCase();
+        }
+        return namePorts;
+    }
     PortStat Open(CallBack callBack, String portName, BAUD baud);
     int INITCODE_OK           = 0;
     int INITCODE_NOTEXIST     = 1;

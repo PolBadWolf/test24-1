@@ -16,7 +16,7 @@ class CommPortClass implements CommPort {
         this.closer = closer;
     }
 
-    @Override
+    /*@Override
     public String[] getListPortsName() {
         SerialPort[] ports = SerialPort.getCommPorts();
         String[] namePorts = new String[ports.length];
@@ -24,7 +24,7 @@ class CommPortClass implements CommPort {
             namePorts[i] = ports[i].getSystemPortName().toUpperCase();
         }
         return namePorts;
-    }
+    }*/
 
     @Override
     public PortStat Open(CallBack callBack, String portName, BAUD baud) {
@@ -33,7 +33,7 @@ class CommPortClass implements CommPort {
         }
 
         boolean flagTmp = false;
-        String[] portsName = getListPortsName();
+        String[] portsName = CommPort.getListPortsName();
         String portNameCase = portName.toUpperCase();
         for (String s : portsName) {
             if (s.equals(portNameCase)) {
