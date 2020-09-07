@@ -1,6 +1,8 @@
 package org.example.test24.loader.dialog;
 
 import org.example.lib.MySwingUtil;
+import org.example.lib.functioninterface.ProcedureBoolean;
+import org.example.lib.functioninterface.ProcedureInteger;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.ParametersSql;
 import org.example.test24.bd.UserClass;
@@ -39,6 +41,59 @@ class Parrent_Frame {
             return null;
         }
         return null; //callBack.getParametersSql(typeBaseData);
+    }
+    // чтение списка пользователей из нового соединения
+    protected UserClass[] getListUsersFromNewConnect(ParametersSql parametersSql, ProcedureInteger integer) {
+        BaseData.Status resultBaseData;
+        // установка тестового соединения
+        resultBaseData = callBack.createTestConnectBd(
+                parametersSql.typeBaseData,
+                new BaseData.Parameters(
+                        parametersSql.urlServer,
+                        parametersSql.portServer,
+                        parametersSql.user,
+                        parametersSql.password,
+                        parametersSql.dataBase
+                )
+        );
+        if (resultBaseData != BaseData.Status.OK) {
+            System.out.println("ошибка установки тестового соединения: " + resultBaseData.toString());
+            integer.procedure(BaseData.CONNECT_ERROR);
+            return new UserClass[0];
+        }
+        // тестовое соединение проверка структуры БД
+        resultBaseData = callBack.checkCheckStructureBd(parametersSql.dataBase);
+        if (resultBaseData != BaseData.Status.OK) {
+            System.out.println("нарушена целостность структуры БД: " + resultBaseData.toString());
+            integer.procedure(BaseData.STRUCTURE_ERROR);
+            return new UserClass[0];
+        }
+        // создание рабочего соединения
+        resultBaseData = callBack.createWorkConnect(
+                parametersSql.typeBaseData,
+                new BaseData.Parameters(
+                        parametersSql.urlServer,
+                        parametersSql.portServer,
+                        parametersSql.user,
+                        parametersSql.password,
+                        parametersSql.dataBase
+                )
+        );
+        if (resultBaseData != BaseData.Status.OK) {
+            System.out.println("ошибка установки рабочего соединения: " + resultBaseData.toString());
+            integer.procedure(BaseData.CONNECT_ERROR);
+            return new UserClass[0];
+        }
+        // чтение списка пользователей
+        try {
+            UserClass[] users = callBack.getListUsers(true);
+            integer.procedure(BaseData.OK);
+            return users;
+        } catch (Exception e) {
+            System.out.println("Ошибка чтения списка пользователей: " + e.getMessage());
+            integer.procedure(BaseData.QUERY_ERROR);
+            return new UserClass[0];
+        }
     }
     // загрузка пользователей в комбо бокс
     protected void loadUsersToComboBox(UserClass[] list, JComboBox<UserClass> comboBox) throws Exception {

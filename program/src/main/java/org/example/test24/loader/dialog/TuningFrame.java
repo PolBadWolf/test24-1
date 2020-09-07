@@ -1,8 +1,10 @@
 package org.example.test24.loader.dialog;
 
+import org.example.lib.functioninterface.FunctionException;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
+import org.example.test24.loader.ParametersConfig;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -14,6 +16,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 class TuningFrame extends TuningFrameVars {
 
@@ -58,23 +62,33 @@ class TuningFrame extends TuningFrameVars {
     // ===============================================
 
 
-
-    public static TuningFrame createFrame(FrameCallBack callBack, boolean statMainWork) throws Exception {
-        TuningFrame[] tuningFrames = new TuningFrame[1];
-        // конструктор
-        try {
-            SwingUtilities.invokeAndWait(()-> {
-                tuningFrames[0] = new TuningFrame(callBack, statMainWork);
+    public static void createFrame(FrameCallBack callBack,
+                                   boolean statMainWork,
+                                   Consumer<TuningFrame> tFrame,
+                                   FunctionException<Exception> fException) {
+        new Thread(()->{
+            TuningFrame[] tuningFrame = new TuningFrame[1];
+            // конструктор
+            SwingUtilities.invokeLater(()-> {
+                tuningFrame[0] = new TuningFrame(callBack, statMainWork);
+                tFrame.accept(tuningFrame[0]);
             });
-        } catch (InterruptedException e) {
-            throw new Exception("Ошибка создание окна настройки");
-        } catch (InvocationTargetException e) {
-            throw new Exception("Ошибка создание окна настройки");
-        }
-        return tuningFrames[0];
+
+            /*catch (InterruptedException e) {
+                if (fException.function(e))
+                    //eventError.accept(new Exception("Ошибка создание окна настройки: " + e.getMessage()));
+                    e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                if (fException.function(e))
+                    //eventError.accept(new Exception("Ошибка создание окна настройки: " + e.getMessage()));
+                    e.printStackTrace();
+            }*/
+        }, "thread start tunning frame").start();
+
     }
 
-    protected TuningFrame(FrameCallBack callBack, boolean statMainWork) {
+    protected TuningFrame(FrameCallBack callBack, boolean statMainWork) //throws Exception
+    {
         this.callBack = callBack;
         this.statMainWork = statMainWork;
         // загрузка параметров
@@ -85,7 +99,60 @@ class TuningFrame extends TuningFrameVars {
         setComponentsBegin();
     }
     // загрузка начальных параметров
-    private void loadBeginerParameters() {
+    private void loadBeginerParameters() //throws Exception
+    {
+        ParametersConfig config;
+        BaseData.TypeBaseData typeBaseData;
+        BaseData.Status resultBaseData; // ***********
+        ParametersSql parametersSql = null;
+        int parametersSqlError = 1;
+        //UserClass[] listUsers = new UserClass[0];
+        //
+        // запрос конфигурации
+        config = callBack.getParametersConfig();
+        // тип БД
+        typeBaseData = config.getTypeBaseData();
+        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
+            System.out.println("ошибка типа базы данных");
+            parametersSqlError = 1;
+        } else parametersSqlError = 0;
+        if (parametersSqlError == 0)
+        {
+            // загрузка параметров БД
+            try {
+                parametersSql = callBack.requestParametersSql(typeBaseData);
+                parametersSqlError = 0;
+            } catch (Exception e) {
+                System.out.println("Ошибка загрузки параметров соединения с БД" + e.getMessage());
+                parametersSqlError = 1;
+            }
+        }
+        if (parametersSqlError == 0) {
+            // чтение списка пользователей из нового соединения
+            listUsers = getListUsersFromNewConnect(parametersSql, i -> {
+                switch (i) {
+                    case BaseData.CONNECT_ERROR:
+                    case BaseData.STRUCTURE_ERROR:
+                    case BaseData.QUERY_ERROR:
+                        flCheckSql = false;
+                        break;
+                    case BaseData.OK:
+                        flCheckSql = true;
+                        break;
+                }
+            });
+        }
+        // проверка ком порта
+        try {
+            flCheckCommPort = callBack.isCheckCommPort(statMainWork, config.getPortName());
+            commPortName = config.getPortName();
+        } catch (Exception e) {
+            System.out.println("Ошибка поверки ком порта: " + e.getMessage());
+            flCheckCommPort = false;
+        }
+        // ===================================================================================================
+
+
         /*// загрузка типа БД
         typeBaseData = callBack.getTypeBaseDataFromConfig();
         // загрузка ком порта

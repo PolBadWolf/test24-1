@@ -44,7 +44,7 @@ public interface BaseData {
         STRUCTURE_ERROR     (BaseData.STRUCTURE_ERROR),
         UNKNOWN_ERROR       (BaseData.UNKNOWN_ERROR);
         private int codeStatus;
-        Status(int status) {
+        Status(int codeStatus) {
             this.codeStatus = codeStatus;
         }
         public int getCodeStatus() {
