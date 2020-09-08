@@ -29,7 +29,7 @@ public interface FrameCallBack {
 
 
 
-
+    String[] getListBd() throws Exception;
 
 
 /*

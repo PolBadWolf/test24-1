@@ -660,6 +660,11 @@ public class StartFrame extends StartFrameVars {
             return callBack.getListUsers(actual);
         }
 
+        @Override
+        public String[] getListBd() throws Exception {
+            return callBack.getListBd();
+        }
+
         // -----------------------------------------------------------
         // проверка ком порта
         @Override

@@ -14,7 +14,7 @@ interface BaseDataInterface {
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
 
-
+    String[] getListBd() throws Exception;
 
 
 

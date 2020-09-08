@@ -2,8 +2,10 @@ package org.example.test24.bd;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.TimeZone;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static org.example.test24.bd.BaseData.*;
 
@@ -190,5 +192,34 @@ class BaseDataMySql extends BaseDataParent {
             list.accept(listBd.toArray(new String[0]));
         }
         return true;
+    }
+    @Override
+    public String[] getListBd() throws Exception {
+        if (testConnection == null) { throw new Exception("Тестового соединение не установлено"); }
+        try {
+            if (testConnection.isClosed()) {
+                throw new Exception("Тестового соединение не установлено");
+            }
+        } catch (SQLException e) {
+            throw new Exception("Тестового соединение не установлено: " + e.getMessage());
+        }
+        // запрос на список
+        ResultSet resultSet;
+        try {
+            resultSet = testConnection.createStatement().executeQuery("SHOW DATABASES");
+        } catch (SQLException e) {
+            throw new Exception("Ошибка выполнения запроса получения списка БД: " + e.getMessage());
+        }
+        ArrayList<String> list = new ArrayList<>();
+        String s;
+        while (resultSet.next()) {
+            s = resultSet.getString(1);
+            if (s.toLowerCase().equals("information_schema")) continue;
+            if (s.toLowerCase().equals("mysql")) continue;
+            if (s.toLowerCase().equals("performance_schema")) continue;
+            if (s.toLowerCase().equals("sys")) continue;
+            list.add(s);
+        }
+        return list.toArray(new String[0]);
     }
 }

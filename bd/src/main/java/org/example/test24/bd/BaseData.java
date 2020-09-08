@@ -120,14 +120,14 @@ public interface BaseData {
     Status createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
-
-
-
-
-
-
     // список доступных БД из тестового соединения
     boolean requestListBdFromTestConnect(Consumer<String[]> list);
+
+
+
+    String[] getListBd() throws Exception;
+
+
 
 
     // -----------------------------------------------------------

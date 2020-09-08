@@ -20,7 +20,7 @@ class Parrent_Frame {
     protected boolean statMainWork;
 
     // тип БД
-    protected BaseData.TypeBaseData typeBaseData;
+    //protected BaseData.TypeBaseData typeBaseData;
     // парамеры подключения к БД
     protected ParametersSql parametersSql;
     // флаг структурной целостности БД

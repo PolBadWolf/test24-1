@@ -119,9 +119,10 @@ class BaseDataParent implements BaseDataInterface {
     }
 
 
-
-
-
+    @Override
+    public String[] getListBd() throws Exception {
+        return new String[0];
+    }
 
     // тестовое соединение список доступных баз
     @Override

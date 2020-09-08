@@ -209,10 +209,13 @@ public class MainClass extends MainClassRequest {
             return MainClass.this.isCheckCommPort(statMainWork, portName);
         }
 
+        @Override
+        public String[] getListBd() throws Exception {
+            return connBd.getListBd();
+        }
 
 
-
-/*
+        /*
         // ================================== работа с БД ====================================
         // чтение параметров
         @Override
