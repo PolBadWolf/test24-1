@@ -176,6 +176,12 @@ public class MainClass extends MainClassRequest {
         public ParametersConfig getParametersConfig(){
             return MainClass.this.getParametersConfig();
         }
+        // создание объекта параметров соединения с БД
+        @Override
+        public ParametersSql createParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+            return MainClass.this.createParametersSql(typeBaseData);
+        }
+
         // запрос параметров соединения с БД
         @Override
         public ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {

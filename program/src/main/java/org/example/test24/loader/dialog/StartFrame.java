@@ -1,5 +1,6 @@
 package org.example.test24.loader.dialog;
 
+import org.example.lib.MyUtil;
 import org.example.test24.bd.BaseData;
 import org.example.lib.MySwingUtil;
 import org.example.test24.bd.ParametersSql;
@@ -193,33 +194,16 @@ public class StartFrame extends StartFrame_Vars {
                 onInputComponents();
                 // загрузка пользователей в комбо бокс
             try {
-                loadUsersToComboBox(listUsers, comboBoxUser);
+                MyUtil.<UserClass>loadToComboBox(listUsers, comboBoxUser);
             } catch (Exception e) {
                 System.out.println("Ошибка загрузки пользователей в comboboxUser: " + e.getMessage());
             }
-            //});
-            // --------
-            /*TuningFrame tuningFrame;
-            tuningFrame = callBack.getTuningFrame();
-            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack_old());*/
             // -------
         } catch (java.lang.Throwable e) {
             e.printStackTrace();
         }
 
     }
-
-    // загрузка пользователей в комбо бокс
-    /*private void loadUsersToComboBox() {
-        comboBoxUser.removeAllItems();
-        Arrays.stream(listUsers).sorted(new Comparator<UserClass>() {
-            @Override
-            public int compare(UserClass a, UserClass b) {
-                return a.name.compareTo(b.name);
-            }
-        }).forEach (u->comboBoxUser.addItem(u));
-    }*/
-
 
     private void initComponents() {
         frame = new JFrame();
@@ -590,6 +574,12 @@ public class StartFrame extends StartFrame_Vars {
     }
     // обработка настройка
     private void callTuning() {
+        if (statMainWork) {
+            // при основной работе нельзя менять параметры БД и порта
+            MySwingUtil.showMessage(frame, "Настройка", "при основной работе нельзя менять параметры БД и порта", 10_000);
+            buttonTuning.setVisible(false);
+            return;
+        }
         // отключение управления
         comboBoxUser.setEnabled(false);
         fieldPassword.setEnabled(false);
@@ -629,6 +619,12 @@ public class StartFrame extends StartFrame_Vars {
         public ParametersConfig getParametersConfig() {
             return callBack.getParametersConfig();
         }
+        // создание объекта параметров соединения с БД
+        @Override
+        public ParametersSql createParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+            return callBack.createParametersSql(typeBaseData);
+        }
+
         // запрос параметров соединения с БД
         @Override
         public ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {

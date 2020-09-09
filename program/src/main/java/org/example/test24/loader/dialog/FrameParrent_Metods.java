@@ -14,83 +14,8 @@ import java.util.function.Consumer;
 
 class FrameParrent_Metods extends FrameParrent_Vars {
     // ================================================
-    // чтение списка пользователей из нового соединения
-    protected UserClass[] getListUsersFromNewConnect(ParametersSql parametersSql, ProcedureInteger integer) {
-        BaseData.Status resultBaseData;
-        // установка тестового соединения
-        resultBaseData = callBack.createTestConnectBd(
-                parametersSql.typeBaseData,
-                new BaseData.Parameters(
-                        parametersSql.urlServer,
-                        parametersSql.portServer,
-                        parametersSql.user,
-                        parametersSql.password,
-                        parametersSql.dataBase
-                )
-        );
-        if (resultBaseData != BaseData.Status.OK) {
-            System.out.println("ошибка установки тестового соединения: " + resultBaseData.toString());
-            integer.procedure(BaseData.CONNECT_ERROR);
-            return new UserClass[0];
-        }
-        // тестовое соединение проверка структуры БД
-        /*resultBaseData = callBack.checkCheckStructureBd(parametersSql.dataBase);
-        if (resultBaseData != BaseData.Status.OK) {
-            System.out.println("нарушена целостность структуры БД: " + resultBaseData.toString());
-            integer.procedure(BaseData.STRUCTURE_ERROR);
-            return new UserClass[0];
-        }*/
-        // создание рабочего соединения
-        resultBaseData = callBack.createWorkConnect(
-                parametersSql.typeBaseData,
-                new BaseData.Parameters(
-                        parametersSql.urlServer,
-                        parametersSql.portServer,
-                        parametersSql.user,
-                        parametersSql.password,
-                        parametersSql.dataBase
-                )
-        );
-        if (resultBaseData != BaseData.Status.OK) {
-            System.out.println("ошибка установки рабочего соединения: " + resultBaseData.toString());
-            integer.procedure(BaseData.CONNECT_ERROR);
-            return new UserClass[0];
-        }
-        // чтение списка пользователей
-        try {
-            UserClass[] users = callBack.getListUsers(true);
-            integer.procedure(BaseData.OK);
-            return users;
-        } catch (Exception e) {
-            System.out.println("Ошибка чтения списка пользователей: " + e.getMessage());
-            integer.procedure(BaseData.QUERY_ERROR);
-            return new UserClass[0];
-        }
-    }
     // ================================================
-    // загрузка параметров соединения с БД
-    protected ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
-        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
-            return null;
-        }
-        return null; //callBack.getParametersSql(typeBaseData);
-    }
-    // загрузка пользователей в комбо бокс
-    protected void loadUsersToComboBox(UserClass[] list, JComboBox<UserClass> comboBox) throws Exception {
-        if (list == null) throw new Exception("Указатель на список отсутствует");
-        if (comboBox == null) throw new Exception("Указатель на combobox отсутствует");
-        comboBox.removeAllItems();
-        try {
-            Arrays.stream(list).sorted(new Comparator<UserClass>() {
-                @Override
-                public int compare(UserClass a, UserClass b) {
-                    return a.name.compareTo(b.name);
-                }
-            }).forEach(user -> comboBox.addItem(user));
-        } catch (java.lang.Throwable e) {
-            throw new Exception("Загрузка прервана: " + e.getMessage());
-        }
-    }
+    // ================================================
 
 
 

@@ -13,7 +13,6 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 class TuningFrame extends TuningFrame_Metods {
 
@@ -25,39 +24,7 @@ class TuningFrame extends TuningFrame_Metods {
     private boolean flCheckParamSql = false;
     private boolean flCheckListBd = false;
 
-    private boolean lockBegin = false;
-
-    // ===== компоненты JFrame =======
-    private JFrame frameTuning = null;
-    private EditUsers editUsers = null;
-
-    private JPanel panelCommPort = null;
-    private JLabel labelPortCurrent = null;
-    private JTextField textCommPortStatus = null;
-    private JComboBox<String> comboBoxCommPort = null;
-
-    private JPanel panelTypeBd = null;
-    private JTextField textTypeBdStatus = null;
-    private JComboBox<String> comboBoxTypeBd = null;
-
-    private JPanel panelParamSQL = null;
-    private JTextField fieldParamServerIP = null;
-    private JTextField fieldParamServerPort = null;
-    private JTextField fieldParamServerLogin = null;
-    private JTextField fieldParamServerPassword = null;
-    private JComboBox<String> comboBoxListBd = null;
-    private JButton buttonOk = null;
-    private JButton buttonSave = null;
-    private JButton buttonTest = null;
-
-    private JPanel panelSelectEdit = null;
-    private JButton buttonEditUsers = null;
-    private JButton buttonEditPushers = null;
-
-
-    // ===============================================
-
-
+    // =============================================================================================================
     public static TuningFrame createFrame(FrameCallBack callBack,
                                        boolean statMainWork) throws InvocationTargetException, InterruptedException {
         TuningFrame[] tuningFrame = new TuningFrame[1];
@@ -72,48 +39,20 @@ class TuningFrame extends TuningFrame_Metods {
     {
         this.callBack = callBack;
         this.statMainWork = statMainWork;
+        lockBegin = true;
         // загрузка параметров
         loadBeginerParameters();
         // конструктор окна
         frameConstructor();
         // установка компонентов в начальное положение
         setComponentsBegin();
+        lockBegin = false;
     }
-
-    private void setComponentCommPort(String[] listCommPort, String defaultCommPort) {
-        comboBoxCommPort.removeAllItems();
-        Arrays.stream(listCommPort).sorted((a, b) -> a.compareTo(b)).forEach(s -> comboBoxCommPort.addItem(s));
-        comboBoxCommPort.setSelectedItem(defaultCommPort);
-    }
-
-    private void setComponentBaseData(ParametersSql parametersSql) {
-        parametersSql.urlServer = "255.255.255";
-        // тип БД
-        comboBoxTypeBd.setSelectedItem(parametersSql.typeBaseData.toString());
-        // параметры подключения
-        fieldParamServerIP.setText(parametersSql.urlServer);
-        fieldParamServerPort.setText(parametersSql.portServer);
-        fieldParamServerLogin.setText(parametersSql.user);
-        fieldParamServerPassword.setText(parametersSql.password);
-    }
+    // =============================================================================================================
 
 
 
-    // установка компонентов в начальное положение
-    private void setComponentsBegin() {
-        // ком порт
-        setComponentCommPort(commPortNameList, commPortName);
-        labelPortCurrent.setText(commPortName);
-        textCommPortStatus.setText("");
-        // БД
-        setComponentBaseData(parametersSql);
-        textTypeBdStatus.setText(parametersSql.typeBaseData.toString());
-        loadListToCombobox(listBaseData, comboBoxListBd);
-        //
-        if (flCheckCommPort && flCheckListBd && flCheckSql) {
 
-        }
-    }
 
     private void frameConstructor() {
         frameTuning = getFrameTuning("настройка", 640, 480);
@@ -227,7 +166,7 @@ class TuningFrame extends TuningFrame_Metods {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
         comboBox.addActionListener(e -> {
-            //selectCommPort(comboBox);
+            selectCommPort(comboBox);
         });
         return comboBox;
     }
@@ -358,71 +297,6 @@ class TuningFrame extends TuningFrame_Metods {
         return button;
     }
 
-    /*private boolean getListBdFile(String typeBd) {
-        // определения файла конфигурации
-        String fileNameSql = null;
-        try {
-            fileNameSql = ""; //callBack MC.getFileNameSql(typeBd);
-        } catch (Exception e) {
-            System.out.println("getListBdFile: " + e.getMessage());
-        }
-        if (fileNameSql == null) {
-            return false;
-        }
-        // чтение параметров из файла конфигурации
-        ParametersSql parametersSqlLocal = null;// = new ParametersSql(fileNameSql);
-        try {
-            parametersSqlLocal.load();
-        } catch (Exception e) {
-            System.out.println("getListBdFile: " + e.getMessage());
-            return false;
-        }
-        // чтение списка БД
-        String[] listBd;
-        try {
-            listBd = BaseData1.getConnectListBd(
-                        typeBd,
-                        parametersSqlLocal.urlServer,
-                        parametersSqlLocal.portServer,
-                        parametersSqlLocal.user,
-                        parametersSqlLocal.password
-                );
-        } catch (Exception e) {
-            System.out.println("getListBdFile: " + e.getMessage());
-            return false;
-        }
-        // загрузка списка в компонент
-        comboBoxListBd.removeAllItems();
-        for (int i = 0; i < listBd.length; i++) {
-            comboBoxListBd.addItem(listBd[i]);
-            flCheckListBd = true;
-        }
-        return true;
-    }*/
-    /*private void getListBdComp() throws Exception {
-        try {
-            String typeBd = (String) comboBoxTypeBd.getSelectedItem();
-            // подключение к БД
-            bdSql = BaseData1.init(typeBd, callBack MC.getFilesNameSql());
-            String[] listBd = bdSql.getConnectListBd(
-                    fieldParamServerIP.getText(),
-                    fieldParamServerPort.getText(),
-                    fieldParamServerLogin.getText(),
-                    fieldParamServerPassword.getText()
-            );
-            comboBoxListBd.removeAllItems();
-            for (int i = 0; i < listBd.length; i++) {
-                comboBoxListBd.addItem(listBd[i]);
-                flCheckListBd = true;
-            }
-        } catch (SQLException e) {
-            flCheckListBd = false;
-            throw new Exception("ошибка инициация подключения к BD");
-        } catch (Exception e) {
-            flCheckListBd = false;
-            throw new Exception("ошибка получения списка баз данных");
-        }
-    }*/
 
     private void closeFrame() {
         threadSkeepOn = false;
@@ -461,17 +335,6 @@ class TuningFrame extends TuningFrame_Metods {
         }
     }
     // ==================
-    // загрузка в combobox списка БД
-    private boolean loadListToCombobox(String[] list, JComboBox<String> comboBox) {
-        if (list == null || comboBox == null) {
-            return false;
-        }
-        comboBox.removeAllItems();
-        for (int i = 0; i < list.length; i++) {
-            comboBox.addItem(list[i]);
-        }
-        return true;
-    }
 
 
 
@@ -644,105 +507,74 @@ class TuningFrame extends TuningFrame_Metods {
             }
         }   // выдача статуса БД
     }
-    // установка начального состояния кнопок по основным параметрам
-    private void setButtonBegin() {
-        buttonSave.setEnabled(false);
-        // если БД в порядке
-        if (flCheckSql) {
-            onButtonEditUsers();
-            onButtonEditPushers();
-        } else {
-            offButtonEditUsers();
-            offButtonEditPushers();
-        }
-        // разрешение кнопки тест
-        onOffButtonTest();
-        // разрешение кнопки ок
-        onOffButtonOk();
-        // запрет кнопки save
-        offButtonSave();
-    }
     // >>>>>>>>>>>>>>>>>>>>>>
     // разрешение кнопки ок
-    private void onOffButtonOk() {
+    protected void onOffButtonOk() {
         buttonOk.setEnabled((chCheckCommPort == CommPort.PortStat.INITCODE_OK) && flCheckSql);
     }
-    private void onButtonOk() {
+    protected void onButtonOk() {
         buttonOk.setEnabled(true);
     }
-    private void offButtonOk() {
+    protected void offButtonOk() {
         buttonOk.setEnabled(false);
     }
     // разрешение кнопки тест
-    private void onOffButtonTest() {
-        if (flCheckListBd) {
+    protected void onOffButtonTest() {
+        /*if (flCheckListBd) {
             buttonTest.setEnabled(true);
         } else {
             buttonTest.setEnabled(false);
-        }
+        }*/
     }
-    private void onButtonTest() {
+    protected void onButtonTest() {
         buttonTest.setEnabled(true);
     }
-    private void offButtonTest() {
+    protected void offButtonTest() {
         buttonTest.setEnabled(false);
     }
     // разрешение кнопки save
-    private void onOffButtonSave() {
+    protected void onOffButtonSave() {
         if (flCheckSql) {
             buttonSave.setEnabled(true);
         } else {
             buttonSave.setEnabled(false);
         }
     }
-    private void onButtonSave() {
+    protected void onButtonSave() {
         buttonSave.setEnabled(true);
     }
-    private void offButtonSave() {
+    protected void offButtonSave() {
         buttonSave.setEnabled(false);
     }
     // разрешение кнопки редактирование пользователей
-    private void onOffButtonEditUsers() {
+    protected void onOffButtonEditUsers() {
         if (flCheckSql) {
             buttonEditUsers.setEnabled(true);
         } else {
             buttonEditUsers.setEnabled(false);
         }
     }
-    private void onButtonEditUsers() {
+    protected void onButtonEditUsers() {
         buttonEditUsers.setEnabled(true);
     }
-    private void offButtonEditUsers() {
+    protected void offButtonEditUsers() {
         buttonEditUsers.setEnabled(false);
     }
     // разрешение кнопки редактирование толкателей
-    private void onOffButtonEditPushers() {
+    protected void onOffButtonEditPushers() {
         if (flCheckSql) {
             buttonEditPushers.setEnabled(true);
         } else {
             buttonEditPushers.setEnabled(false);
         }
     }
-    private void onButtonEditPushers() {
+    protected void onButtonEditPushers() {
         buttonEditPushers.setEnabled(true);
     }
-    private void offButtonEditPushers() {
+    protected void offButtonEditPushers() {
         buttonEditPushers.setEnabled(false);
     }
     // <<<<<<<<<<<<<<<<<<<<<<
-    // выбран comm port
-    private void selectCommPort(JComboBox comboBox) {
-        if (lockBegin)  return;
-        threadSkeepOn = false;
-        checkStatusComp();
-        outStatus();
-        // разрешение кнопки ок
-        onOffButtonOk();
-        // сохранить
-        if (chCheckCommPort == CommPort.PortStat.INITCODE_OK) {
-            // callBack MC.saveConfigCommPort((String) comboBoxCommPort.getSelectedItem());
-        }
-    }
     // выбран тип БД
     private void selectTypeBase(JComboBox comboBox) {
         if (lockBegin)  return;

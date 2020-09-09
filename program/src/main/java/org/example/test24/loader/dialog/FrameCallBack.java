@@ -10,6 +10,8 @@ public interface FrameCallBack {
     // =================================
     // чтение параметров из конфига
     ParametersConfig getParametersConfig();
+    // создание объекта параметров соединения с БД
+    ParametersSql createParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception;
     // запрос параметров соединения с БД
     ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception;
     // -----------------------------------------------------------

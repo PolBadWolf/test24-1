@@ -110,6 +110,14 @@ public class ParametersSql {
         }
     }
 
+    public void setDefault() {
+        urlServer = "255.255.255.255";
+        portServer = "1111";
+        dataBase = "Base";
+        user = "Login";
+        password = "Password";
+    }
+
     public Status getStat() {
         return stat;
     }

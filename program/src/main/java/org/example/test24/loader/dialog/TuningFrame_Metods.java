@@ -1,16 +1,42 @@
 package org.example.test24.loader.dialog;
 
+import org.example.lib.MyUtil;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.ParametersSql;
 import org.example.test24.bd.UserClass;
 import org.example.test24.loader.ParametersConfig;
 
+import javax.swing.*;
+import java.util.Arrays;
+
 class TuningFrame_Metods extends TuningFrame_Vars {
+    // =============================================================================================================
+    protected void onOffButtonOk() { System.out.println("bbbbbbb"); }
+    protected void onButtonOk() { System.out.println("bbbbbbb"); }
+    protected void offButtonOk() { System.out.println("bbbbbbb"); }
+    //
+    protected void onOffButtonTest() { System.out.println("bbbbbbb"); }
+    protected void onButtonTest() { System.out.println("bbbbbbb"); }
+    protected void offButtonTest() { System.out.println("bbbbbbb"); }
+    //
+    protected void onOffButtonSave() { System.out.println("bbbbbbb"); }
+    protected void onButtonSave() { System.out.println("bbbbbbb"); }
+    protected void offButtonSave() { System.out.println("bbbbbbb"); }
+    //
+    protected void onOffButtonEditUsers() { System.out.println("bbbbbbb"); }
+    protected void onButtonEditUsers() { System.out.println("bbbbbbb"); }
+    protected void offButtonEditUsers() { System.out.println("bbbbbbb"); }
+    //
+    protected void onOffButtonEditPushers() { System.out.println("bbbbbbb"); }
+    protected void onButtonEditPushers() { System.out.println("bbbbbbb"); }
+    protected void offButtonEditPushers() { System.out.println("bbbbbbb"); }
+    // =============================================================================================================
     // загрузка начальных параметров
     protected void loadBeginerParameters() {
         ParametersConfig config;
         ParametersSql parametersSql = null;
+        BaseData.Status resultBaseData;
         int parametersSqlError;
         //
         // запрос конфигурации
@@ -22,32 +48,90 @@ class TuningFrame_Metods extends TuningFrame_Vars {
         }
         // загрузка параметров соединения с БД
         try {
-            parametersSql = callBack.requestParametersSql(config.getTypeBaseData());
-            parametersSqlError = 0;
-        } catch (Exception e) {
-            System.out.println("Ошибка загрузки параметров соединения с БД" + e.getMessage());
+            parametersSql = callBack.createParametersSql(config.getTypeBaseData());
+            ParametersSql.Status status = parametersSql.load();
+            if (status == ParametersSql.Status.OK) {
+                parametersSqlError = 0;
+            } else {
+                parametersSql.setDefault();
+                parametersSqlError = 1;
+            }
+        } catch (Exception e) { // ошибка типа базы данных:
+            e.printStackTrace();
             parametersSqlError = 1;
         }
-        // чтение списка пользователей из нового соединения
         if (parametersSqlError == 0) {
-            listUsers = getListUsersFromNewConnect(parametersSql, i -> {
-                switch (i) {
-                    case BaseData.CONNECT_ERROR:
-                    case BaseData.STRUCTURE_ERROR:
-                    case BaseData.QUERY_ERROR:
-                        flCheckSql = false;
-                        break;
-                    case BaseData.OK:
-                        flCheckSql = true;
-                        break;
+            // установка тестового соединения
+            resultBaseData = callBack.createTestConnectBd(
+                    parametersSql.typeBaseData,
+                    new BaseData.Parameters(
+                            parametersSql.urlServer,
+                            parametersSql.portServer,
+                            parametersSql.user,
+                            parametersSql.password,
+                            parametersSql.dataBase
+                    )
+            );
+            if (resultBaseData == BaseData.Status.OK) {
+                // создание рабочего соединения
+                resultBaseData = callBack.createWorkConnect(
+                        parametersSql.typeBaseData,
+                        new BaseData.Parameters(
+                                parametersSql.urlServer,
+                                parametersSql.portServer,
+                                parametersSql.user,
+                                parametersSql.password,
+                                parametersSql.dataBase
+                        )
+                );
+                if (resultBaseData == BaseData.Status.OK) {
+                    // чтение списка пользователей
+                    try {
+                        listUsers = callBack.getListUsers(true);
+                    } catch (Exception e) {
+                        System.out.println("Ошибка чтения списка пользователей: " + e.getMessage());
+                        listUsers = new UserClass[0];
+                    }
+                } else {
+                    System.out.println("ошибка установки рабочего соединения: " + resultBaseData.toString());
+                    listUsers = new UserClass[0];
                 }
-            });
+            } else { // ошибка установки тестового соединения
+                System.out.println("ошибка установки тестового соединения: " + resultBaseData.toString());
+                // пустой список пользователей
+                listUsers = new UserClass[0];
+                // ошибка структкры БД
+                flCheckSql = false;
+                // список доступных БД
+                listBaseData = new String[0];
+            }
+            // проверка структуры БД
+            resultBaseData = callBack.checkCheckStructureBd(parametersSql.dataBase);
+            if (resultBaseData == BaseData.Status.OK) {
+                flCheckSql = true;
+            } else {
+                System.out.println("нарушена целостность структуры БД: " + resultBaseData.toString());
+                flCheckSql = false;
+            }
+            // список доступных БД
+            try {
+                listBaseData = callBack.getListBd();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                listBaseData = new String[0];
+            }
         } else {
-            // нет соединения с БД - создать пустой список пользователей
+            // =============== ошибка параметров соединения с БД
+            // нарушена целостность структуры БД
+            flCheckSql = false;
+            // создать пустой список пользователей
             listUsers = new UserClass[0];
-            this.flCheckSql = false;
+            // пустой список дотупных БД
+            listBaseData = new String[0];
         }
+        // чтение списка пользователей из нового соединения
         this.parametersSql = parametersSql;
+        // ****************************************************************************************
         // проверка ком порта
         try {
             flCheckCommPort = callBack.isCheckCommPort(statMainWork, config.getPortName());
@@ -60,11 +144,77 @@ class TuningFrame_Metods extends TuningFrame_Vars {
             commPortNameList = new String[0];
         }
         // ---
-        try {
-            listBaseData = callBack.getListBd();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            listBaseData = new String[0];
+    }
+    // проверка CommPort
+    protected boolean isValidCommPort(String portName) {
+        CommPort commPort = CommPort.main(
+                (o)->{},
+                portName
+                );
+        return false;
+    }
+    // =============================================================================================================
+    protected void setComponentCommPort(String[] listCommPort, String defaultCommPort) {
+        comboBoxCommPort.removeAllItems();
+        Arrays.stream(listCommPort).sorted((a, b) -> a.compareTo(b)).forEach(s -> comboBoxCommPort.addItem(s));
+        comboBoxCommPort.setSelectedItem(defaultCommPort);
+    }
+    protected void setComponentBaseData(ParametersSql parametersSql) {
+        // тип БД
+        comboBoxTypeBd.setSelectedItem(parametersSql.typeBaseData.toString());
+        // параметры подключения
+        fieldParamServerIP.setText(parametersSql.urlServer);
+        fieldParamServerPort.setText(parametersSql.portServer);
+        fieldParamServerLogin.setText(parametersSql.user);
+        fieldParamServerPassword.setText(parametersSql.password);
+    }
+    // установка компонентов в начальное положение
+    protected void setComponentsBegin() {
+        // ком порт
+        setComponentCommPort(commPortNameList, commPortName);
+        labelPortCurrent.setText(commPortName);
+        textCommPortStatus.setText("");
+        // БД
+        setComponentBaseData(parametersSql);
+        textTypeBdStatus.setText(parametersSql.typeBaseData.toString());
+        // список БД
+        try { MyUtil.<String>loadToComboBox(listBaseData, comboBoxListBd); } catch (Exception e) {
+            System.out.println("Ошибка загрузки списка БД в comboBoxListBd: " + e.getMessage());
+        }
+        //
+        // установка начального состояния кнопок по основным параметрам
+        setButtonBegin();
+    }
+    // установка начального состояния кнопок по основным параметрам
+    private void setButtonBegin() {
+        // если БД в порядке
+        if (flCheckSql && listBaseData.length > 0) {
+            onButtonEditUsers();
+            onButtonEditPushers();
+        } else {
+            offButtonEditUsers();
+            offButtonEditPushers();
+        }
+        // разрешение кнопки тест
+        if (listBaseData.length > 0) onButtonTest();
+        // запрет кнопки save
+        offButtonSave();
+        // разрешение кнопки ок
+        onOffButtonOk();
+    }
+    // =============================================================================================================
+    // выбран comm port
+    protected void selectCommPort(JComboBox comboBox) {
+        if (lockBegin)  return;
+//        threadSkeepOn = false;
+        checkStatusComp();
+        outStatus();
+        // разрешение кнопки ок
+        onOffButtonOk();
+        // сохранить
+        if (chCheckCommPort == CommPort.PortStat.INITCODE_OK) {
+            // callBack MC.saveConfigCommPort((String) comboBoxCommPort.getSelectedItem());
         }
     }
+    // =============================================================================================================
 }

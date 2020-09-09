@@ -40,6 +40,21 @@ class MainClassRequest {
         }
         return parametersConfig;
     }
+    // создание объекта параметров соединения с БД
+    protected ParametersSql createParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+        String fileNameParameters;
+        switch (typeBaseData) {
+            case MY_SQL:
+                fileNameParameters = fileNameMySql;
+                break;
+            case MS_SQL:
+                fileNameParameters = fileNameMsSql;
+                break;
+            default:
+                throw new Exception("Неизвестный тип БД: " + typeBaseData.toString());
+        }
+        return new ParametersSql(fileNameParameters, typeBaseData);
+    }
     // запрос параметров соединения с БД
     protected ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
         String fileNameParameters;
