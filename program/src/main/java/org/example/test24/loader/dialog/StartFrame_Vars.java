@@ -2,6 +2,6 @@ package org.example.test24.loader.dialog;
 
 import org.example.test24.loader.ParametersConfig;
 
-class StartFrameVars extends Parrent_Frame {
+class StartFrame_Vars extends FrameParrent_Metods {
     protected ParametersConfig workParametersConfig;
 }

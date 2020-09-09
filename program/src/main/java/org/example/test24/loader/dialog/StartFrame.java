@@ -1,6 +1,5 @@
 package org.example.test24.loader.dialog;
 
-import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.BaseData;
 import org.example.lib.MySwingUtil;
 import org.example.test24.bd.ParametersSql;
@@ -10,12 +9,11 @@ import org.example.test24.loader.ParametersConfig;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-public class StartFrame extends StartFrameVars {
+public class StartFrame extends StartFrame_Vars {
     // title
     private JLabel label1;
     private JLabel label2;
@@ -598,22 +596,21 @@ public class StartFrame extends StartFrameVars {
         buttonEnter.setEnabled(false);
         buttonTuning.setVisible(false);
         // вызов окна
-        TuningFrame.createFrame(new TuningFrameCallBack(), statMainWork,
-                tFrame -> {
-                    tuningFrame = tFrame;
-                },
-                exception -> {
-                    System.out.println("Ошибка создание окна настройки: " + exception.getMessage());
-                    return true;
-                }
-        );
-
-/*
-        TuningFrame tuningFrame;
-        tuningFrame = callBack.getTuningFrame();
-//            tuningFrame.frameConfig(callBack.getParameters(), new TuningFrameCallBack_old());
-        tuningFrame.frameConfig(null, new TuningFrameCallBack_old());
-        */
+        Thread thread = new Thread(()->{
+            try {
+                tuningFrame = TuningFrame.createFrame(
+                        new TuningFrameCallBack(),
+                        statMainWork
+                );
+            } catch (InterruptedException e) {
+                System.out.println("Ошибка вызова окна \"настройка\": " + e.getMessage());
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                System.out.println("Ошибка вызова окна \"настройка\": " + e.getMessage());
+                e.printStackTrace();
+            }
+        }, "thread for start tunnig frame");
+        thread.start();
     }
     // обработка редактирование пользователей
     private void callEditUsers() {

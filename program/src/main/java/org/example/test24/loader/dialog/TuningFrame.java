@@ -1,10 +1,8 @@
 package org.example.test24.loader.dialog;
 
-import org.example.lib.functioninterface.FunctionException;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
-import org.example.test24.loader.ParametersConfig;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -14,15 +12,14 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.function.Consumer;
 
-class TuningFrame extends TuningFrameVars {
+class TuningFrame extends TuningFrame_Metods {
 
-    private BaseData1 bdSql = null;
-    private Thread threadSkeep = null;
-    private boolean threadSkeepOn;
+    private BaseData1 bdSql = null; // *
+    private Thread threadSkeep = null; // *
+    private boolean threadSkeepOn; // *
 
     private CommPort.PortStat chCheckCommPort = CommPort.PortStat.INITCODE_NOTEXIST;
     private boolean flCheckParamSql = false;
@@ -61,19 +58,14 @@ class TuningFrame extends TuningFrameVars {
     // ===============================================
 
 
-    public static void createFrame(FrameCallBack callBack,
-                                   boolean statMainWork,
-                                   Consumer<TuningFrame> tFrame,
-                                   FunctionException<Exception> fException) {
-        new Thread(()->{
-            TuningFrame[] tuningFrame = new TuningFrame[1];
+    public static TuningFrame createFrame(FrameCallBack callBack,
+                                       boolean statMainWork) throws InvocationTargetException, InterruptedException {
+        TuningFrame[] tuningFrame = new TuningFrame[1];
+        SwingUtilities.invokeAndWait(()-> { // wait - дождаться выполнения конструктора
             // конструктор
-            SwingUtilities.invokeLater(()-> {
-                tuningFrame[0] = new TuningFrame(callBack, statMainWork);
-                tFrame.accept(tuningFrame[0]);
-            });
-        }, "thread start tunning frame").start();
-
+            tuningFrame[0] = new TuningFrame(callBack, statMainWork);
+        });
+        return tuningFrame[0];
     }
 
     protected TuningFrame(FrameCallBack callBack, boolean statMainWork) //throws Exception
@@ -86,66 +78,6 @@ class TuningFrame extends TuningFrameVars {
         frameConstructor();
         // установка компонентов в начальное положение
         setComponentsBegin();
-    }
-    // загрузка начальных параметров
-    private void loadBeginerParameters() //throws Exception
-    {
-        ParametersConfig config;
-        BaseData.Status resultBaseData; // ***********
-        ParametersSql parametersSql = null;
-        int parametersSqlError = 1;
-        //
-        // запрос конфигурации
-        config = callBack.getParametersConfig();
-        // тип БД
-        if (config.getTypeBaseData() == BaseData.TypeBaseData.ERROR) {
-            System.out.println("ошибка типа базы данных: " + config.getTypeBaseData().toString());
-            config.setTypeBaseData(BaseData.TypeBaseData.MY_SQL);
-        }
-        // загрузка параметров БД
-        try {
-            parametersSql = callBack.requestParametersSql(config.getTypeBaseData());
-            parametersSqlError = 0;
-        } catch (Exception e) {
-            System.out.println("Ошибка загрузки параметров соединения с БД" + e.getMessage());
-            parametersSqlError = 1;
-        }
-        if (parametersSqlError == 0) {
-            // чтение списка пользователей из нового соединения
-            listUsers = getListUsersFromNewConnect(parametersSql, i -> {
-                switch (i) {
-                    case BaseData.CONNECT_ERROR:
-                    case BaseData.STRUCTURE_ERROR:
-                    case BaseData.QUERY_ERROR:
-                        flCheckSql = false;
-                        break;
-                    case BaseData.OK:
-                        flCheckSql = true;
-                        break;
-                }
-            });
-        } else {
-            this.flCheckSql = false;
-        }
-        this.parametersSql = parametersSql;
-        // проверка ком порта
-        try {
-            flCheckCommPort = callBack.isCheckCommPort(statMainWork, config.getPortName());
-            commPortName = config.getPortName();
-            commPortNameList = CommPort.getListPortsName();
-        } catch (Exception e) {
-            System.out.println("Ошибка поверки ком порта: " + e.getMessage());
-            flCheckCommPort = false;
-            commPortName = "";
-            commPortNameList = new String[0];
-        }
-        // ---
-        try {
-            listBaseData = callBack.getListBd();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            listBaseData = new String[0];
-        }
     }
 
     private void setComponentCommPort(String[] listCommPort, String defaultCommPort) {

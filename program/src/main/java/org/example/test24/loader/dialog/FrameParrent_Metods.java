@@ -12,36 +12,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
-class Parrent_Frame {
+class FrameParrent_Metods extends FrameParrent_Vars {
     // ================================================
-    // интерфейс обратного вызова
-    protected FrameCallBack callBack;
-    // статус: система в работе
-    protected boolean statMainWork;
-
-    // тип БД
-    //protected BaseData.TypeBaseData typeBaseData;
-    // парамеры подключения к БД
-    protected ParametersSql parametersSql;
-    // флаг структурной целостности БД
-    protected boolean flCheckSql = false;
-    // имя ком порта
-    protected String commPortName;
-    // флаг доступности ком портов
-    protected boolean flCheckCommPort = false;
-
-
-    protected JFrame frame;
-    protected UserClass[] listUsers = null;
-    protected UserClass user = null;
-    // ================================================
-    // загрузка параметров соединения с БД
-    protected ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
-        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
-            return null;
-        }
-        return null; //callBack.getParametersSql(typeBaseData);
-    }
     // чтение списка пользователей из нового соединения
     protected UserClass[] getListUsersFromNewConnect(ParametersSql parametersSql, ProcedureInteger integer) {
         BaseData.Status resultBaseData;
@@ -62,12 +34,12 @@ class Parrent_Frame {
             return new UserClass[0];
         }
         // тестовое соединение проверка структуры БД
-        resultBaseData = callBack.checkCheckStructureBd(parametersSql.dataBase);
+        /*resultBaseData = callBack.checkCheckStructureBd(parametersSql.dataBase);
         if (resultBaseData != BaseData.Status.OK) {
             System.out.println("нарушена целостность структуры БД: " + resultBaseData.toString());
             integer.procedure(BaseData.STRUCTURE_ERROR);
             return new UserClass[0];
-        }
+        }*/
         // создание рабочего соединения
         resultBaseData = callBack.createWorkConnect(
                 parametersSql.typeBaseData,
@@ -94,6 +66,14 @@ class Parrent_Frame {
             integer.procedure(BaseData.QUERY_ERROR);
             return new UserClass[0];
         }
+    }
+    // ================================================
+    // загрузка параметров соединения с БД
+    protected ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
+            return null;
+        }
+        return null; //callBack.getParametersSql(typeBaseData);
     }
     // загрузка пользователей в комбо бокс
     protected void loadUsersToComboBox(UserClass[] list, JComboBox<UserClass> comboBox) throws Exception {

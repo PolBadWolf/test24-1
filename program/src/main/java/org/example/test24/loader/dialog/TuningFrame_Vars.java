@@ -1,6 +1,8 @@
 package org.example.test24.loader.dialog;
 
-class TuningFrameVars extends Parrent_Frame {
+class TuningFrame_Vars extends FrameParrent_Metods {
+
+
     // список доступных портов
     protected String[] commPortNameList;
     // список доступных баз
