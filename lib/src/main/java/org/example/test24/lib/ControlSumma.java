@@ -1,4 +1,4 @@
-package org.example.lib;
+package org.example.test24.lib;
 
 public class ControlSumma {
     public static byte crc8(byte[] buf, int lenght) {

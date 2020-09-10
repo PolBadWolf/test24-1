@@ -1,5 +1,6 @@
 package org.example.test24.loader;
 
+import org.example.test24.lib.MyLogger;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
@@ -8,13 +9,21 @@ import org.example.test24.loader.dialog.StartFrame;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.ScreenFx;
 
+import java.util.logging.Level;
+
+import static org.example.test24.lib.MyLogger.myLog;
+
 
 public class MainClass extends MainClassRequest {
     public static void main(String[] args) {
+        new MyLogger(Level.ALL, Level.OFF);
         Thread.currentThread().setName("Main class thread");
         new MainClass().start();
     }
     private void start() {
+        myLog.log(Level.INFO, "я в Main.start()");
+        myLog.log(Level.WARNING, "ww");
+
         // создание объекта для БД
         connBd = new BaseData2Class(/*new BaseData2.CallBack() {}*/);
         // создание основных объектов
@@ -24,7 +33,7 @@ public class MainClass extends MainClassRequest {
 
         // пуск
         startFrame = StartFrame.main(false, new StartFrameCallBack());
-
+        myLog.log(Level.WARNING, "sdsd", new Exception("bla-bla-bla"));
 
         /*
         int testStat1 = 99, testStat2 = 99, testStat3, testStat4;

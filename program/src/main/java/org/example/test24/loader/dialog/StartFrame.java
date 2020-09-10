@@ -1,8 +1,8 @@
 package org.example.test24.loader.dialog;
 
-import org.example.lib.MyUtil;
+import org.example.test24.lib.MyUtil;
 import org.example.test24.bd.BaseData2;
-import org.example.lib.MySwingUtil;
+import org.example.test24.lib.MySwingUtil;
 import org.example.test24.bd.ParametersSql2;
 import org.example.test24.bd.UserClass;
 import org.example.test24.loader.ParametersConfig;

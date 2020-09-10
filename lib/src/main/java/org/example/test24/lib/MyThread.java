@@ -1,4 +1,4 @@
-package org.example.lib;
+package org.example.test24.lib;
 
 public abstract class MyThread extends Thread {
     private boolean stopped = false;

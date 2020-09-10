@@ -1,4 +1,4 @@
-package org.example.lib;
+package org.example.test24.lib;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -28,29 +28,31 @@ public class MyLogger {
                         + "log_"
                         + formatForNameLogFile.format(Calendar.getInstance().getTime())
                         + ".log"
-                        , 0, 50
+                        , 0, 100
                 );
                 handler.setEncoding("cp1251");
-                handler.setFormatter(new Formatter() {
-                    @Override
-                    public String format(LogRecord record) {
-                        StringBuilder string =
-                                new StringBuilder(formatLogFile.format(record.getMillis())
-                                        + " Class: \"" + record.getSourceClassName() + "\""
-                                        + " Method: \"" + record.getSourceMethodName() + "\""
-                                        + "\n"
-                                        + record.getLevel().getName() + ": \"" + record.getMessage() + "\"");
-                        Object[] parameters = record.getParameters();
-                        if (parameters != null) {
-                            for (Object parameter : parameters) {
-                                StackTraceElement traceElement = (StackTraceElement) parameter;
-                                string.append("\n   ").append(traceElement.toString());
+                handler.setFormatter(
+                        new Formatter() {
+                            @Override
+                            public String format(LogRecord record) {
+                                StringBuilder string =
+                                        new StringBuilder(formatLogFile.format(record.getMillis())
+                                                + " Class: \"" + record.getSourceClassName() + "\""
+                                                + " Method: \"" + record.getSourceMethodName() + "\""
+                                                + "\n"
+                                                + record.getLevel().getName() + ": \"" + record.getMessage() + "\"");
+                                Throwable throwable = record.getThrown();
+                                if (throwable != null) {
+                                    StackTraceElement[] parameters = throwable.getStackTrace();
+                                    for (StackTraceElement traceElement : parameters) {
+                                        string.append("\n   ").append(traceElement.toString());
+                                    }
+                                }
+                                string.append("\n---------------------------------------------------------\n");
+                                return string.toString();
                             }
                         }
-                        string.append("\n---------------------------------------------------------\n");
-                        return string.toString();
-                    }
-                });
+                );
             } catch (IOException e) {
                 System.out.println("Ошибка создания файлово логера: \n" + Arrays.toString(e.getStackTrace()));
                 e.printStackTrace();

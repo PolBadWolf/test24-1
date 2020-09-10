@@ -1,6 +1,6 @@
 package org.example.test24.bd;
 
-import org.example.lib.Converts;
+import org.example.test24.lib.Converts;
 import org.example.test24.allinterface.bd.DistClass;
 
 import javax.sql.rowset.serial.SerialException;

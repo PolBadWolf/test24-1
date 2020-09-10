@@ -1,6 +1,6 @@
 package org.example.test24.loader.dialog;
 
-import org.example.lib.MyUtil;
+import org.example.test24.lib.MyUtil;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.BaseData2;
 import org.example.test24.bd.ParametersSql2;
@@ -147,10 +147,10 @@ class TuningFrame_Metods extends TuningFrame_Vars {
     }
     // проверка CommPort
     protected boolean isValidCommPort(String portName) {
-        CommPort commPort = CommPort.main(
+        /*CommPort commPort = CommPort.main(
                 (o)->{},
                 portName
-                );
+                );*/
         return false;
     }
     // =============================================================================================================
@@ -207,14 +207,14 @@ class TuningFrame_Metods extends TuningFrame_Vars {
     protected void selectCommPort(JComboBox comboBox) {
         if (lockBegin)  return;
 //        threadSkeepOn = false;
-        checkStatusComp();
-        outStatus();
+        //checkStatusComp();
+        //outStatus();
         // разрешение кнопки ок
         onOffButtonOk();
         // сохранить
-        if (chCheckCommPort == CommPort.PortStat.INITCODE_OK) {
+        //if (chCheckCommPort == CommPort.PortStat.INITCODE_OK) {
             // callBack MC.saveConfigCommPort((String) comboBoxCommPort.getSelectedItem());
-        }
+        //}
     }
     // =============================================================================================================
 }
