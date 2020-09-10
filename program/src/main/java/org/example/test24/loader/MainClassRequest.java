@@ -4,7 +4,7 @@ import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.BaseData2;
 import org.example.test24.bd.BaseData1;
-import org.example.test24.bd.ParametersSql;
+import org.example.test24.bd.ParametersSql2;
 import org.example.test24.bd.UserClass;
 import org.example.test24.loader.dialog.StartFrame;
 import org.example.test24.runner.Runner;
@@ -39,7 +39,7 @@ class MainClassRequest {
         return parametersConfig;
     }
     // создание объекта параметров соединения с БД
-    protected ParametersSql createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
+    protected ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
         String fileNameParameters;
         switch (typeBaseData) {
             case MY_SQL:
@@ -51,10 +51,10 @@ class MainClassRequest {
             default:
                 throw new Exception("Неизвестный тип БД: " + typeBaseData.toString());
         }
-        return new ParametersSql(fileNameParameters, typeBaseData);
+        return new ParametersSql2(fileNameParameters, typeBaseData);
     }
     // запрос параметров соединения с БД
-    protected ParametersSql requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
+    protected ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
         String fileNameParameters;
         switch (typeBaseData) {
             case MY_SQL:
@@ -66,9 +66,9 @@ class MainClassRequest {
             default:
                 throw new Exception("Неизвестный тип БД: " + typeBaseData.toString());
         }
-        ParametersSql parametersSql = new ParametersSql(fileNameParameters, typeBaseData);
-        ParametersSql.Status status = parametersSql.load();
-        if (status != ParametersSql.Status.OK ) {
+        ParametersSql2 parametersSql = new ParametersSql2(fileNameParameters, typeBaseData);
+        ParametersSql2.Status status = parametersSql.load();
+        if (status != ParametersSql2.Status.OK ) {
             throw new Exception("ошибка приема параметов соединения с БД: " + status.toString());
         }
         return parametersSql;

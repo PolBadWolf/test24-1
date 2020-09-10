@@ -3,7 +3,7 @@ package org.example.test24.loader.dialog;
 import org.example.lib.MyUtil;
 import org.example.test24.bd.BaseData2;
 import org.example.lib.MySwingUtil;
-import org.example.test24.bd.ParametersSql;
+import org.example.test24.bd.ParametersSql2;
 import org.example.test24.bd.UserClass;
 import org.example.test24.loader.ParametersConfig;
 
@@ -90,7 +90,7 @@ public class StartFrame extends StartFrame_Vars {
         ParametersConfig config;
         BaseData2.TypeBaseData typeBaseData;
         BaseData2.Status resultBaseData;
-        ParametersSql parametersSql = null;
+        ParametersSql2 parametersSql = null;
         int parametersSqlError = 1;
         UserClass[] listUsers = new UserClass[0];
         // ======================================
@@ -621,13 +621,13 @@ public class StartFrame extends StartFrame_Vars {
         }
         // создание объекта параметров соединения с БД
         @Override
-        public ParametersSql createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
+        public ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
             return callBack.createParametersSql(typeBaseData);
         }
 
         // запрос параметров соединения с БД
         @Override
-        public ParametersSql requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
+        public ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
             return callBack.requestParametersSql(typeBaseData);
         }
         // -----------------------------------------------------------

@@ -175,13 +175,13 @@ public class MainClass extends MainClassRequest {
         }
         // создание объекта параметров соединения с БД
         @Override
-        public ParametersSql createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
+        public ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
             return MainClass.this.createParametersSql(typeBaseData);
         }
 
         // запрос параметров соединения с БД
         @Override
-        public ParametersSql requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
+        public ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
             return MainClass.this.requestParametersSql(typeBaseData);
         }
         // -----------------------------------------------------------
@@ -222,14 +222,14 @@ public class MainClass extends MainClassRequest {
         // ================================== работа с БД ====================================
         // чтение параметров
         @Override
-        public int requestParametersSql(BaseData2.TypeBaseData typeBaseData, Consumer<ParametersSql> sql) {
+        public int requestParametersSql(BaseData2.TypeBaseData typeBaseData, Consumer<ParametersSql2> sql) {
             if (typeBaseData == BaseData2.TypeBaseData.ERROR) {
-                return ParametersSql.UNKNOWN_ERROR;
+                return ParametersSql2.UNKNOWN_ERROR;
             }
-            ParametersSql parametersSql = new ParametersSql(fileNameSql[typeBaseData.getTypeBaseData()], typeBaseData);
+            ParametersSql2 parametersSql = new ParametersSql2(fileNameSql[typeBaseData.getTypeBaseData()], typeBaseData);
             parametersSql.load();
             sql.accept(parametersSql);
-            return ParametersSql.OK;
+            return ParametersSql2.OK;
         }
 
 

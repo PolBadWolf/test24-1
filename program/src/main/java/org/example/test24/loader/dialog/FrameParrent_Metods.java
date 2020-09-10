@@ -22,7 +22,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         int result;
         // чтение параметров из конфига
         parametersSql = callBack.getParametersSql(typeBaseData);
-        if (parametersSql.getStat() != ParametersSql.OK) {
+        if (parametersSql.getStat() != ParametersSql2.OK) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
@@ -31,9 +31,9 @@ class FrameParrent_Metods extends FrameParrent_Vars {
     }
     // инициация тестового соединения c БД
     /*
-    protected int initTestConnectBd(ParametersSql parametersSql) {
+    protected int initTestConnectBd(ParametersSql2 parametersSql) {
         // проверка паметров на валидность
-        if (parametersSql.getStat() != ParametersSql.Status.OK) {
+        if (parametersSql.getStat() != ParametersSql2.Status.OK) {
             return BaseData2.ERROR;
         }
         // установка тестового соединения
@@ -190,9 +190,9 @@ class FrameParrent_Metods extends FrameParrent_Vars {
     }
      */
     // получения списка пользователей параметры из конфига
-    /*protected boolean getListUserFromConfig(Consumer<ParametersSql> setParameters) {
+    /*protected boolean getListUserFromConfig(Consumer<ParametersSql2> setParameters) {
         BaseData2.TypeBaseData typeBaseData;
-        ParametersSql parametersSql;
+        ParametersSql2 parametersSql;
         int resultInt;
         // чтение из конфига тип БД
         typeBaseData = callBack.getTypeBaseDataFromConfig();
@@ -204,7 +204,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         // загрузка параметров соединения
         parametersSql = callBack.getParametersSql(typeBaseData);
         // проверка параметров соединения
-        if (parametersSql.getStat() != ParametersSql.OK) {
+        if (parametersSql.getStat() != ParametersSql2.OK) {
             listUsers = new UserClass[0];
             MySwingUtil.showMessage(frame, "загрузка параметров соединения", "ошибка получения параметров соединения с БД", 5_000);
             return false;

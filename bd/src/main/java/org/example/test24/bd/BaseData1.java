@@ -72,7 +72,7 @@ public interface BaseData1 {
     String getTypeBD();
     boolean testStuctBase(String ip, String portServer, String login, String password, String base);
     String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception;
-    ParametersSql getParametrsSql();
+    ParametersSql2 getParametrsSql();
     // запись
     void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception;
     // обновить пароль

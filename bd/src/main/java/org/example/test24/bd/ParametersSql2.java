@@ -3,7 +3,7 @@ package org.example.test24.bd;
 import java.io.*;
 import java.util.Properties;
 
-public class ParametersSql {
+public class ParametersSql2 {
     final public static int OK = 0;
     final public static int FILE_NOT_FOUND = 1;
     final public static int ERROR_LOAD = 2;
@@ -12,13 +12,13 @@ public class ParametersSql {
     final public static int ERROR_SAVE = 9;
     final public static int UNKNOWN_ERROR = 99;
     public enum Status {
-        OK                  (ParametersSql.OK),
-        FILE_NOT_FOUND      (ParametersSql.FILE_NOT_FOUND),
-        ERROR_LOAD          (ParametersSql.ERROR_LOAD),
-        ERROR_PARAMETERS    (ParametersSql.ERROR_PARAMETERS),
-        ERROR_PASSWORD      (ParametersSql.ERROR_PASSWORD),
-        ERROR_SAVE          (ParametersSql.ERROR_SAVE),
-        UNKNOWN_ERROR       (ParametersSql.UNKNOWN_ERROR);
+        OK                  (ParametersSql2.OK),
+        FILE_NOT_FOUND      (ParametersSql2.FILE_NOT_FOUND),
+        ERROR_LOAD          (ParametersSql2.ERROR_LOAD),
+        ERROR_PARAMETERS    (ParametersSql2.ERROR_PARAMETERS),
+        ERROR_PASSWORD      (ParametersSql2.ERROR_PASSWORD),
+        ERROR_SAVE          (ParametersSql2.ERROR_SAVE),
+        UNKNOWN_ERROR       (ParametersSql2.UNKNOWN_ERROR);
         int codeStatus;
         Status(int codeStatus) {this.codeStatus = codeStatus;}
         public int getCodeStatus() {
@@ -28,25 +28,25 @@ public class ParametersSql {
         public String toString() {
             String status = "UNKNOWN_ERROR";
             switch (codeStatus) {
-                case ParametersSql.OK:
+                case ParametersSql2.OK:
                     status = "OK";
                     break;
-                case ParametersSql.FILE_NOT_FOUND:
+                case ParametersSql2.FILE_NOT_FOUND:
                     status = "FILE NOT FOUND";
                     break;
-                case ParametersSql.ERROR_LOAD:
+                case ParametersSql2.ERROR_LOAD:
                     status = "ERROR LOAD";
                     break;
-                case ParametersSql.ERROR_PARAMETERS:
+                case ParametersSql2.ERROR_PARAMETERS:
                     status = "ERROR PARAMETERS";
                     break;
-                case ParametersSql.ERROR_PASSWORD:
+                case ParametersSql2.ERROR_PASSWORD:
                     status = "ERROR PASSWORD";
                     break;
-                case ParametersSql.ERROR_SAVE:
+                case ParametersSql2.ERROR_SAVE:
                     status = "ERROR SAVE";
                     break;
-                case ParametersSql.UNKNOWN_ERROR:
+                case ParametersSql2.UNKNOWN_ERROR:
                     status = "UNKNOWN ERROR";
                     break;
             }
@@ -64,7 +64,7 @@ public class ParametersSql {
     public String user;
     public String password;
 
-    public ParametersSql(String fileNameParameters, BaseData2.TypeBaseData typeBaseData) {
+    public ParametersSql2(String fileNameParameters, BaseData2.TypeBaseData typeBaseData) {
         this.fileNameParameters = fileNameParameters;
         this.typeBaseData = typeBaseData;
         properties = new Properties();

@@ -3,7 +3,7 @@ package org.example.test24.loader.dialog;
 import org.example.lib.MyUtil;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.BaseData2;
-import org.example.test24.bd.ParametersSql;
+import org.example.test24.bd.ParametersSql2;
 import org.example.test24.bd.UserClass;
 import org.example.test24.loader.ParametersConfig;
 
@@ -35,7 +35,7 @@ class TuningFrame_Metods extends TuningFrame_Vars {
     // загрузка начальных параметров
     protected void loadBeginerParameters() {
         ParametersConfig config;
-        ParametersSql parametersSql = null;
+        ParametersSql2 parametersSql = null;
         BaseData2.Status resultBaseData;
         int parametersSqlError;
         //
@@ -49,8 +49,8 @@ class TuningFrame_Metods extends TuningFrame_Vars {
         // загрузка параметров соединения с БД
         try {
             parametersSql = callBack.createParametersSql(config.getTypeBaseData());
-            ParametersSql.Status status = parametersSql.load();
-            if (status == ParametersSql.Status.OK) {
+            ParametersSql2.Status status = parametersSql.load();
+            if (status == ParametersSql2.Status.OK) {
                 parametersSqlError = 0;
             } else {
                 parametersSql.setDefault();
@@ -159,7 +159,7 @@ class TuningFrame_Metods extends TuningFrame_Vars {
         Arrays.stream(listCommPort).sorted((a, b) -> a.compareTo(b)).forEach(s -> comboBoxCommPort.addItem(s));
         comboBoxCommPort.setSelectedItem(defaultCommPort);
     }
-    protected void setComponentBaseData(ParametersSql parametersSql) {
+    protected void setComponentBaseData(ParametersSql2 parametersSql) {
         // тип БД
         comboBoxTypeBd.setSelectedItem(parametersSql.typeBaseData.toString());
         // параметры подключения

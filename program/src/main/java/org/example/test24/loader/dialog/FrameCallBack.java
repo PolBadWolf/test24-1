@@ -8,9 +8,9 @@ public interface FrameCallBack {
     // чтение параметров из конфига
     ParametersConfig getParametersConfig();
     // создание объекта параметров соединения с БД
-    ParametersSql createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception;
+    ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception;
     // запрос параметров соединения с БД
-    ParametersSql requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception;
+    ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception;
     // -----------------------------------------------------------
     // создание тестого соединения
     BaseData2.Status createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters);

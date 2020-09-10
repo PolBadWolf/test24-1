@@ -9,7 +9,7 @@ public class BaseData1ClassMySql extends BaseData1Class {
 
     @Override
     public void setParametersSql(String[] fileNameSql) {
-        parametersSql = new ParametersSql(fileNameSql[1], BaseData2.TypeBaseData.MY_SQL);
+        parametersSql = new ParametersSql2(fileNameSql[1], BaseData2.TypeBaseData.MY_SQL);
     }
 
     @Override
