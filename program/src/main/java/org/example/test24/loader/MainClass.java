@@ -16,7 +16,7 @@ import static org.example.test24.lib.MyLogger.myLog;
 
 public class MainClass extends MainClassRequest {
     public static void main(String[] args) {
-        new MyLogger(Level.ALL, Level.OFF);
+        new MyLogger(Level.ALL, Level.ALL);
         Thread.currentThread().setName("Main class thread");
         new MainClass().start();
     }

@@ -1,6 +1,7 @@
 package org.example.test24.lib;
 
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -53,7 +54,9 @@ public class MyLogger {
                             }
                         }
                 );
-            } catch (IOException e) {
+            } catch (NoSuchFileException e) {
+                e.printStackTrace();
+            }catch (IOException e) {
                 System.out.println("Ошибка создания файлово логера: \n" + Arrays.toString(e.getStackTrace()));
                 e.printStackTrace();
             }
