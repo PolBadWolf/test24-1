@@ -1,7 +1,6 @@
 package org.example.test24.bd;
 
 import java.io.*;
-import java.util.Base64;
 import java.util.Properties;
 
 public class ParametersSql {
@@ -58,14 +57,14 @@ public class ParametersSql {
     private String fileNameParameters;
     private Properties properties;
     private Status stat;
-    final public BaseData.TypeBaseData typeBaseData;
+    final public BaseData2.TypeBaseData typeBaseData;
     public String urlServer;
     public String portServer;
     public String dataBase;
     public String user;
     public String password;
 
-    public ParametersSql(String fileNameParameters, BaseData.TypeBaseData typeBaseData) {
+    public ParametersSql(String fileNameParameters, BaseData2.TypeBaseData typeBaseData) {
         this.fileNameParameters = fileNameParameters;
         this.typeBaseData = typeBaseData;
         properties = new Properties();
@@ -83,12 +82,12 @@ public class ParametersSql {
             portServer = properties.getProperty("Port_Server");
             dataBase = properties.getProperty("DataBase");
             user = properties.getProperty("User");
-            password = BaseData.Password.decoding(properties.getProperty("Password"));
+            password = BaseData2.Password.decoding(properties.getProperty("Password"));
         } catch (java.lang.Throwable ie) {
             //System.out.println(fileNameParameters + " : ошибка декодирования пароля");
             stat = Status.ERROR_PASSWORD;
         }
-        if (typeBaseData == BaseData.TypeBaseData.ERROR || urlServer == null || portServer == null || dataBase == null || user == null) {
+        if (typeBaseData == BaseData2.TypeBaseData.ERROR || urlServer == null || portServer == null || dataBase == null || user == null) {
             //throw new Exception(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
             //System.out.println(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
             stat = Status.ERROR_PARAMETERS;
@@ -102,7 +101,7 @@ public class ParametersSql {
         properties.setProperty("Port_Server", portServer);
         properties.setProperty("DataBase", dataBase);
         properties.setProperty("User", user);
-        properties.setProperty("Password", BaseData.Password.encoding(password));
+        properties.setProperty("Password", BaseData2.Password.encoding(password));
         try {
             properties.store(new BufferedWriter(new FileWriter(fileNameParameters)), "parameters sql");
         } catch (IOException e) {

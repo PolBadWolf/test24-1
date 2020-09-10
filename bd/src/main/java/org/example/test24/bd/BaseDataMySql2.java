@@ -2,20 +2,18 @@ package org.example.test24.bd;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.TimeZone;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
-import static org.example.test24.bd.BaseData.*;
+import static org.example.test24.bd.BaseData2.*;
 
-class BaseDataMySql extends BaseDataParent {
-    public BaseDataMySql() {
+class BaseDataMySql2 extends BaseDataParent2 {
+    public BaseDataMySql2() {
         super();
     }
     // тестовое соединение
     @Override
-    public BaseData.Status createTestConnect(BaseData.Parameters parameters) {
+    public BaseData2.Status createTestConnect(BaseData2.Parameters parameters) {
         testConnection = null;
         // подключение драйвера
         try {
@@ -52,9 +50,9 @@ class BaseDataMySql extends BaseDataParent {
     }
     // тестовое соединение проверка структуры БД
     @Override
-    public BaseData.Status checkCheckStructureBd(String base) {
+    public BaseData2.Status checkCheckStructureBd(String base) {
         if (testConnection == null) {
-            return BaseData.Status.CONNECT_ERROR;
+            return BaseData2.Status.CONNECT_ERROR;
         }
         boolean table1;
         String sample;
@@ -88,7 +86,7 @@ class BaseDataMySql extends BaseDataParent {
                 statement.setString(2, "table_data");
                 resultSet = statement.executeQuery();
             } catch (SQLException throwables) {
-                return BaseData.Status.QUERY_ERROR;
+                return BaseData2.Status.QUERY_ERROR;
             }
             try {
                 while (resultSet.next()) {
@@ -104,23 +102,23 @@ class BaseDataMySql extends BaseDataParent {
                     }
                 }
             } catch (SQLException throwables) {
-                return BaseData.Status.QUERY_ERROR;
+                return BaseData2.Status.QUERY_ERROR;
             }
             table1 = countList == countSql;
-            if (!table1)    return BaseData.Status.STRUCTURE_ERROR;
+            if (!table1)    return BaseData2.Status.STRUCTURE_ERROR;
         } // table_data
-        return BaseData.Status.OK;
+        return BaseData2.Status.OK;
     }
     // -----------------------------------------------------------
     // инициализация рабочего соединения
     @Override
-    public BaseData.Status createWorkConnect(Parameters parameters) {
+    public BaseData2.Status createWorkConnect(Parameters parameters) {
         workConnection = null;
         // подключение драйвера
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            return BaseData.Status.DRIVER_ERROR;
+            return BaseData2.Status.DRIVER_ERROR;
         }
         // установка параметров соединения
         String connectionUrl = "jdbc:mysql://%1$s:%2$s/%3$s";
@@ -134,21 +132,21 @@ class BaseDataMySql extends BaseDataParent {
             Connection connection = DriverManager.getConnection(connString, parameters.login, parameters.password);
             workConnection = connection;
         } catch (SQLException e) {
-            BaseData.Status stat;
+            BaseData2.Status stat;
             switch (e.getErrorCode()) {
                 case 1045:
-                    stat = BaseData.Status.CONNECT_PASS_ERROR;
+                    stat = BaseData2.Status.CONNECT_PASS_ERROR;
                     break;
                 case 1049:
-                    stat = BaseData.Status.CONNECT_BASE_ERROR;
+                    stat = BaseData2.Status.CONNECT_BASE_ERROR;
                     break;
                 default:
-                    stat = BaseData.Status.CONNECT_ERROR;
+                    stat = BaseData2.Status.CONNECT_ERROR;
             }
             return stat;
         }
         workParameters = parameters;
-        return BaseData.Status.OK;
+        return BaseData2.Status.OK;
     }
 
 

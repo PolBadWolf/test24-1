@@ -2,34 +2,33 @@ package org.example.test24.bd;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static org.example.test24.bd.BaseData.*;
+import static org.example.test24.bd.BaseData2.*;
 
-class BaseDataParent implements BaseDataInterface {
-    protected BaseData.Parameters testParameters;
-    protected BaseData.Parameters workParameters;
+class BaseDataParent2 implements BaseDataInterface2 {
+    protected BaseData2.Parameters testParameters;
+    protected BaseData2.Parameters workParameters;
     protected Connection testConnection;
     protected Connection workConnection;
 
-    public BaseDataParent() {
+    public BaseDataParent2() {
     }
     // тестовое соединение
     @Override
-    public BaseData.Status createTestConnect(BaseData.Parameters parameters) {
-        return BaseData.Status.UNKNOWN_ERROR;
+    public BaseData2.Status createTestConnect(BaseData2.Parameters parameters) {
+        return BaseData2.Status.UNKNOWN_ERROR;
     }
     // тестовое соединение проверка структуры БД
     @Override
-    public BaseData.Status checkCheckStructureBd(String base) {
-        return BaseData.Status.UNKNOWN_ERROR;
+    public BaseData2.Status checkCheckStructureBd(String base) {
+        return BaseData2.Status.UNKNOWN_ERROR;
     }
     // -----------------------------------------------------------
     // инициализация рабочего соединения
     @Override
-    public BaseData.Status createWorkConnect(Parameters parameters) {
-        return BaseData.Status.UNKNOWN_ERROR;
+    public BaseData2.Status createWorkConnect(Parameters parameters) {
+        return BaseData2.Status.UNKNOWN_ERROR;
     }
     // чтение списка пользователей
     @Override
@@ -158,7 +157,7 @@ class BaseDataParent implements BaseDataInterface {
             return false;
         }
         try {
-            preparedStatement.setString(1, BaseData.Password.encoding(newPassword));
+            preparedStatement.setString(1, BaseData2.Password.encoding(newPassword));
             preparedStatement.setInt(2, user.id);
             int r  = preparedStatement.executeUpdate();
             System.out.println("pass upd res = " + r);

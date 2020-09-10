@@ -1,17 +1,16 @@
 package org.example.test24.bd;
 
 import java.util.Base64;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public interface BaseData {
+public interface BaseData2 {
     int MS_SQL = 0;
     int MY_SQL = 1;
     int ERROR = 99;
     enum TypeBaseData {
-        MS_SQL  (BaseData.MS_SQL),
-        MY_SQL  (BaseData.MY_SQL),
-        ERROR   (BaseData.ERROR);
+        MS_SQL  (BaseData2.MS_SQL),
+        MY_SQL  (BaseData2.MY_SQL),
+        ERROR   (BaseData2.ERROR);
         private int typeBaseData;
         TypeBaseData(int typeBaseData) {
             this.typeBaseData = typeBaseData;
@@ -20,7 +19,7 @@ public interface BaseData {
             return typeBaseData;
         }
         public String toString() {
-            return BaseDataClass.typeBaseDataString(typeBaseData);
+            return BaseData2Class.typeBaseDataString(typeBaseData);
         }
     }
     // -------------------------
@@ -34,15 +33,15 @@ public interface BaseData {
     int STRUCTURE_ERROR = 7;
     int UNKNOWN_ERROR = 99;
     enum Status {
-        OK                  (BaseData.OK),
-        UNEXPECTED_TYPE_BD  (BaseData.UNEXPECTED_TYPE_BD),
-        DRIVER_ERROR        (BaseData.DRIVER_ERROR),
-        CONNECT_PASS_ERROR  (BaseData.CONNECT_PASS_ERROR),
-        CONNECT_BASE_ERROR  (BaseData.CONNECT_BASE_ERROR),
-        CONNECT_ERROR       (BaseData.CONNECT_ERROR),
-        QUERY_ERROR         (BaseData.QUERY_ERROR),
-        STRUCTURE_ERROR     (BaseData.STRUCTURE_ERROR),
-        UNKNOWN_ERROR       (BaseData.UNKNOWN_ERROR);
+        OK                  (BaseData2.OK),
+        UNEXPECTED_TYPE_BD  (BaseData2.UNEXPECTED_TYPE_BD),
+        DRIVER_ERROR        (BaseData2.DRIVER_ERROR),
+        CONNECT_PASS_ERROR  (BaseData2.CONNECT_PASS_ERROR),
+        CONNECT_BASE_ERROR  (BaseData2.CONNECT_BASE_ERROR),
+        CONNECT_ERROR       (BaseData2.CONNECT_ERROR),
+        QUERY_ERROR         (BaseData2.QUERY_ERROR),
+        STRUCTURE_ERROR     (BaseData2.STRUCTURE_ERROR),
+        UNKNOWN_ERROR       (BaseData2.UNKNOWN_ERROR);
         private int codeStatus;
         Status(int codeStatus) {
             this.codeStatus = codeStatus;
@@ -55,25 +54,25 @@ public interface BaseData {
         public String toString() {
             String status = "";
             switch (codeStatus) {
-                case BaseData.OK:
+                case BaseData2.OK:
                     status = "OK";
                     break;
-                case BaseData.UNEXPECTED_TYPE_BD:
+                case BaseData2.UNEXPECTED_TYPE_BD:
                     status = "UNEXPECTED_TYPE_BD";
                     break;
-                case BaseData.DRIVER_ERROR:
+                case BaseData2.DRIVER_ERROR:
                     status = "DRIVER_ERROR";
                     break;
-                case BaseData.CONNECT_PASS_ERROR:
+                case BaseData2.CONNECT_PASS_ERROR:
                     status = "CONNECT_PASS_ERROR";
                     break;
-                case BaseData.CONNECT_BASE_ERROR:
+                case BaseData2.CONNECT_BASE_ERROR:
                     status = "CONNECT_BASE_ERROR";
                     break;
-                case BaseData.QUERY_ERROR:
+                case BaseData2.QUERY_ERROR:
                     status = "QUERY_ERROR";
                     break;
-                case BaseData.STRUCTURE_ERROR:
+                case BaseData2.STRUCTURE_ERROR:
                     status = "STRUCTURE_ERROR";
                     break;
                 default:
@@ -112,12 +111,12 @@ public interface BaseData {
     }
     // -----------------------------------------------------------
     // создание тестового соединения
-    Status createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
+    Status createTestConnect(TypeBaseData typeBaseData, BaseData2.Parameters parameters);
     // тестовое соединение проверка структуры БД
     Status checkCheckStructureBd(String base);
     // -----------------------------------------------------------
     // создание рабочего соединения
-    Status createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
+    Status createWorkConnect(TypeBaseData typeBaseData, BaseData2.Parameters parameters);
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
     // список доступных БД из тестового соединения

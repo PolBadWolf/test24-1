@@ -1,11 +1,11 @@
 package org.example.test24.loader;
 
-import org.example.test24.bd.BaseData;
+import org.example.test24.bd.BaseData2;
 
 import java.io.*;
 import java.util.Properties;
 
-import static org.example.test24.bd.BaseDataClass.*;
+import static org.example.test24.bd.BaseData2Class.*;
 
 public class ParametersConfig {
     final public static int OK = 0;
@@ -36,12 +36,12 @@ public class ParametersConfig {
 
     private String fileNameConfig;
     private String portName;
-    private BaseData.TypeBaseData typeBaseData;
+    private BaseData2.TypeBaseData typeBaseData;
     private Diagnostic status;
 
     public ParametersConfig(String fileNameConfig) {
         this.fileNameConfig = fileNameConfig;
-        typeBaseData = BaseData.TypeBaseData.ERROR;
+        typeBaseData = BaseData2.TypeBaseData.ERROR;
         portName = "";
     }
 
@@ -51,10 +51,10 @@ public class ParametersConfig {
     public void setPortName(String portName) {
         this.portName = portName;
     }
-    public BaseData.TypeBaseData getTypeBaseData() {
+    public BaseData2.TypeBaseData getTypeBaseData() {
         return typeBaseData;
     }
-    public void setTypeBaseData(BaseData.TypeBaseData typeBaseData) {
+    public void setTypeBaseData(BaseData2.TypeBaseData typeBaseData) {
         this.typeBaseData = typeBaseData;
     }
     public Diagnostic getStatus() {
@@ -75,18 +75,18 @@ public class ParametersConfig {
             portName = "";
             status = Diagnostic.ERROR_LOAD;
         }
-        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
+        if (typeBaseData == BaseData2.TypeBaseData.ERROR) {
             status = Diagnostic.ERROR_PARAMETERS;
         }
         return status;
     }
     public void setDefault() {
         portName = "com2";
-        typeBaseData = BaseData.TypeBaseData.MY_SQL;
+        typeBaseData = BaseData2.TypeBaseData.MY_SQL;
     }
 
     public Diagnostic save() {
-        if (typeBaseData == BaseData.TypeBaseData.ERROR || portName == null || portName == "") {
+        if (typeBaseData == BaseData2.TypeBaseData.ERROR || portName == null || portName == "") {
             status = Diagnostic.ERROR_PARAMETERS;
         } else {
             Properties properties = new Properties();

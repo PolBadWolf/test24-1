@@ -2,7 +2,7 @@ package org.example.test24.loader.dialog;
 
 import org.example.lib.MyUtil;
 import org.example.test24.RS232.CommPort;
-import org.example.test24.bd.BaseData;
+import org.example.test24.bd.BaseData2;
 import org.example.test24.bd.ParametersSql;
 import org.example.test24.bd.UserClass;
 import org.example.test24.loader.ParametersConfig;
@@ -36,15 +36,15 @@ class TuningFrame_Metods extends TuningFrame_Vars {
     protected void loadBeginerParameters() {
         ParametersConfig config;
         ParametersSql parametersSql = null;
-        BaseData.Status resultBaseData;
+        BaseData2.Status resultBaseData;
         int parametersSqlError;
         //
         // запрос конфигурации
         config = callBack.getParametersConfig();
         // тип БД
-        if (config.getTypeBaseData() == BaseData.TypeBaseData.ERROR) {
+        if (config.getTypeBaseData() == BaseData2.TypeBaseData.ERROR) {
             System.out.println("ошибка типа базы данных: " + config.getTypeBaseData().toString());
-            config.setTypeBaseData(BaseData.TypeBaseData.MY_SQL);
+            config.setTypeBaseData(BaseData2.TypeBaseData.MY_SQL);
         }
         // загрузка параметров соединения с БД
         try {
@@ -64,7 +64,7 @@ class TuningFrame_Metods extends TuningFrame_Vars {
             // установка тестового соединения
             resultBaseData = callBack.createTestConnectBd(
                     parametersSql.typeBaseData,
-                    new BaseData.Parameters(
+                    new BaseData2.Parameters(
                             parametersSql.urlServer,
                             parametersSql.portServer,
                             parametersSql.user,
@@ -72,11 +72,11 @@ class TuningFrame_Metods extends TuningFrame_Vars {
                             parametersSql.dataBase
                     )
             );
-            if (resultBaseData == BaseData.Status.OK) {
+            if (resultBaseData == BaseData2.Status.OK) {
                 // создание рабочего соединения
                 resultBaseData = callBack.createWorkConnect(
                         parametersSql.typeBaseData,
-                        new BaseData.Parameters(
+                        new BaseData2.Parameters(
                                 parametersSql.urlServer,
                                 parametersSql.portServer,
                                 parametersSql.user,
@@ -84,7 +84,7 @@ class TuningFrame_Metods extends TuningFrame_Vars {
                                 parametersSql.dataBase
                         )
                 );
-                if (resultBaseData == BaseData.Status.OK) {
+                if (resultBaseData == BaseData2.Status.OK) {
                     // чтение списка пользователей
                     try {
                         listUsers = callBack.getListUsers(true);
@@ -107,7 +107,7 @@ class TuningFrame_Metods extends TuningFrame_Vars {
             }
             // проверка структуры БД
             resultBaseData = callBack.checkCheckStructureBd(parametersSql.dataBase);
-            if (resultBaseData == BaseData.Status.OK) {
+            if (resultBaseData == BaseData2.Status.OK) {
                 flCheckSql = true;
             } else {
                 System.out.println("нарушена целостность структуры БД: " + resultBaseData.toString());

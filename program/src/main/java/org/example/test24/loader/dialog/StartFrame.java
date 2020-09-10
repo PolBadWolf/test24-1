@@ -1,7 +1,7 @@
 package org.example.test24.loader.dialog;
 
 import org.example.lib.MyUtil;
-import org.example.test24.bd.BaseData;
+import org.example.test24.bd.BaseData2;
 import org.example.lib.MySwingUtil;
 import org.example.test24.bd.ParametersSql;
 import org.example.test24.bd.UserClass;
@@ -88,8 +88,8 @@ public class StartFrame extends StartFrame_Vars {
         // =================== загрузка начальных параметров ===================
         // загрузка параметров соединения с БД
         ParametersConfig config;
-        BaseData.TypeBaseData typeBaseData;
-        BaseData.Status resultBaseData;
+        BaseData2.TypeBaseData typeBaseData;
+        BaseData2.Status resultBaseData;
         ParametersSql parametersSql = null;
         int parametersSqlError = 1;
         UserClass[] listUsers = new UserClass[0];
@@ -98,7 +98,7 @@ public class StartFrame extends StartFrame_Vars {
         config = callBack.getParametersConfig();
         // тип БД
         typeBaseData = config.getTypeBaseData();
-        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
+        if (typeBaseData == BaseData2.TypeBaseData.ERROR) {
             throw new Exception("ошибка типа базы данных");
         }
         // загрузка параметров БД
@@ -113,7 +113,7 @@ public class StartFrame extends StartFrame_Vars {
             // установка тестового соединения
             resultBaseData = callBack.createTestConnectBd(
                     parametersSql.typeBaseData,
-                    new BaseData.Parameters(
+                    new BaseData2.Parameters(
                             parametersSql.urlServer,
                             parametersSql.portServer,
                             parametersSql.user,
@@ -121,14 +121,14 @@ public class StartFrame extends StartFrame_Vars {
                             parametersSql.dataBase
                     )
             );
-            if (resultBaseData != BaseData.Status.OK) {
+            if (resultBaseData != BaseData2.Status.OK) {
                 System.out.println("ошибка установки тестового соединения");
                 flCheckSql = false;
                 listUsers = new UserClass[0];
             } else {
                 // тестовое соединение проверка структуры БД
                 resultBaseData = callBack.checkCheckStructureBd(parametersSql.dataBase);
-                if (resultBaseData == BaseData.Status.OK) {
+                if (resultBaseData == BaseData2.Status.OK) {
                     flCheckSql = true;
                 } else {
                     System.out.println("нарушена целостность структуры БД");
@@ -140,7 +140,7 @@ public class StartFrame extends StartFrame_Vars {
                 // создание рабочего соединения
                 resultBaseData = callBack.createWorkConnect(
                         parametersSql.typeBaseData,
-                        new BaseData.Parameters(
+                        new BaseData2.Parameters(
                                 parametersSql.urlServer,
                                 parametersSql.portServer,
                                 parametersSql.user,
@@ -148,7 +148,7 @@ public class StartFrame extends StartFrame_Vars {
                                 parametersSql.dataBase
                         )
                 );
-                if (resultBaseData != BaseData.Status.OK) {
+                if (resultBaseData != BaseData2.Status.OK) {
                     System.out.println("ошибка установки рабочего соединения");
                     listUsers = new UserClass[0];
                 } {
@@ -488,7 +488,7 @@ public class StartFrame extends StartFrame_Vars {
         password = fieldPassword.getText();
         if (askLocalAdmin) {
             String surName = (String) comboBoxUser.getSelectedItem();
-            String pass = BaseData.Password.encoding(password);
+            String pass = BaseData2.Password.encoding(password);
             // проверка на локального админа
             flAdmin = checkIntegratedAdministrator(surName, pass);
             if (!flAdmin) {
@@ -621,30 +621,30 @@ public class StartFrame extends StartFrame_Vars {
         }
         // создание объекта параметров соединения с БД
         @Override
-        public ParametersSql createParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+        public ParametersSql createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
             return callBack.createParametersSql(typeBaseData);
         }
 
         // запрос параметров соединения с БД
         @Override
-        public ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+        public ParametersSql requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
             return callBack.requestParametersSql(typeBaseData);
         }
         // -----------------------------------------------------------
         // создание тестого соединения
         @Override
-        public BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        public BaseData2.Status createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
             return callBack.createTestConnectBd(typeBaseData, parameters);
         }
         // тестовое соединение проверка структуры БД
         @Override
-        public BaseData.Status checkCheckStructureBd(String base) {
+        public BaseData2.Status checkCheckStructureBd(String base) {
             return callBack.checkCheckStructureBd(base);
         }
         // -----------------------------------------------------------
         // создание рабочего соединения
         @Override
-        public BaseData.Status createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        public BaseData2.Status createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
             return callBack.createWorkConnect(typeBaseData, parameters);
         }
         // чтение списка пользователей

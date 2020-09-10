@@ -1,16 +1,15 @@
 package org.example.test24.bd;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-interface BaseDataInterface {
+interface BaseDataInterface2 {
     // создание тестового соединения
-    BaseData.Status createTestConnect(BaseData.Parameters parameters);
+    BaseData2.Status createTestConnect(BaseData2.Parameters parameters);
     // тестовое соединение проверка структуры БД
-    BaseData.Status checkCheckStructureBd(String base);
+    BaseData2.Status checkCheckStructureBd(String base);
     // -----------------------------------------------------------
     // инициализация рабочего соединения
-    BaseData.Status createWorkConnect(BaseData.Parameters parameters);
+    BaseData2.Status createWorkConnect(BaseData2.Parameters parameters);
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
 

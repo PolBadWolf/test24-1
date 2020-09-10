@@ -12,7 +12,7 @@ class FrameParrent_Vars {
     protected boolean statMainWork;
 
     // тип БД
-    //protected BaseData.TypeBaseData typeBaseData;
+    //protected BaseData2.TypeBaseData typeBaseData;
     // парамеры подключения к БД
     protected ParametersSql parametersSql;
     // флаг структурной целостности БД

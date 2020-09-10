@@ -583,7 +583,7 @@ class TuningFrame extends TuningFrame_Metods {
         outStatus();
         //сохранить
         if (flCheckParamSql) {
-            //callBack MC.saveConfigTypeBaseData(BaseData.typeBaseDataCode((String) comboBox.getSelectedItem()));
+            //callBack MC.saveConfigTypeBaseData(BaseData2.typeBaseDataCode((String) comboBox.getSelectedItem()));
         }
     }
     // смена параметров подключения к SQL серверу
