@@ -1,4 +1,4 @@
-package org.example.test24.loader.editUsers;
+package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.BaseData1;
 import org.example.test24.bd.UserClass;

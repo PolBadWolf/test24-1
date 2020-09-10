@@ -1,0 +1,111 @@
+package org.example.test24.loader;
+
+import org.example.test24.RS232.BAUD;
+import org.example.test24.RS232.CommPort;
+import org.example.test24.bd.BaseData;
+import org.example.test24.bd.BaseData1;
+import org.example.test24.bd.ParametersSql;
+import org.example.test24.bd.UserClass;
+import org.example.test24.loader.dialog.StartFrame;
+import org.example.test24.runner.Runner;
+import org.example.test24.screen.ScreenFx;
+
+import java.util.function.BiConsumer;
+
+class MainClassRequest {
+    // глобальные переменные и объекты
+    final public String fileNameMsSql = "ms_sql.txt";
+    final public String fileNameMySql = "my_sql.txt";
+    final public String[] fileNameSql = {fileNameMsSql, fileNameMySql};
+    // ===============================================
+    // модули
+    protected ScreenFx screenFx;
+    protected Runner runner;
+    protected CommPort commPort;
+    protected StartFrame startFrame;
+    protected BaseData1 bdSql;
+    protected BaseData connBd;
+    // =============== недоступные переменные ==============
+    // имя файла конфигурации
+    final private String fileNameConfig = "config.txt";
+    // параметры конфигурации
+    private volatile ParametersConfig parametersConfig = null;
+    // =============== запросы ==================
+    // загрузка начальной конфигурации
+    protected ParametersConfig getParametersConfig() {
+        if (parametersConfig != null) return parametersConfig;
+        parametersConfig = new ParametersConfig(fileNameConfig);
+        if (parametersConfig.load() != ParametersConfig.Diagnostic.OK) {
+                parametersConfig.setDefault();
+        }
+        return parametersConfig;
+    }
+    // создание объекта параметров соединения с БД
+    protected ParametersSql createParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+        String fileNameParameters;
+        switch (typeBaseData) {
+            case MY_SQL:
+                fileNameParameters = fileNameMySql;
+                break;
+            case MS_SQL:
+                fileNameParameters = fileNameMsSql;
+                break;
+            default:
+                throw new Exception("Неизвестный тип БД: " + typeBaseData.toString());
+        }
+        return new ParametersSql(fileNameParameters, typeBaseData);
+    }
+    // запрос параметров соединения с БД
+    protected ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+        String fileNameParameters;
+        switch (typeBaseData) {
+            case MY_SQL:
+                fileNameParameters = fileNameMySql;
+                break;
+            case MS_SQL:
+                fileNameParameters = fileNameMsSql;
+                break;
+            default:
+                throw new Exception("Неизвестный тип БД: " + typeBaseData.toString());
+        }
+        ParametersSql parametersSql = new ParametersSql(fileNameParameters, typeBaseData);
+        ParametersSql.Status status = parametersSql.load();
+        if (status != ParametersSql.Status.OK ) {
+            throw new Exception("ошибка приема параметов соединения с БД: " + status.toString());
+        }
+        return parametersSql;
+    }
+    // -----------------------------------------------------------
+    // создание тестого соединения
+    protected BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        return connBd.createTestConnect(typeBaseData, parameters);
+    }
+    // тестовое соединение проверка структуры БД
+    protected BaseData.Status checkCheckStructureBd(String base) {
+        return connBd.checkCheckStructureBd(base);
+    }
+    // -----------------------------------------------------------
+    // создание рабочего соединения
+    protected BaseData.Status createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        return connBd.createWorkConnect(typeBaseData, parameters);
+    }
+    // чтение списка пользователей
+    protected UserClass[] getListUsers(boolean actual) throws Exception {
+        return connBd.getListUsers(actual);
+    }
+    // ************************************************
+    // проверка ком порта
+    protected boolean isCheckCommPort(boolean statMainWork, String portName) throws Exception {
+        String portNameConfig;
+        CommPort port;
+        if (statMainWork) {
+            portNameConfig = parametersConfig.getPortName();
+            if (portName == portNameConfig) return true;
+        }
+        port = CommPort.main(o -> {});
+        CommPort.PortStat portStat = port.Open(null, portName, BAUD.baud57600);
+        port.Close();
+        if (portStat == CommPort.PortStat.INITCODE_OK)  return true;
+        return false;
+    }
+}

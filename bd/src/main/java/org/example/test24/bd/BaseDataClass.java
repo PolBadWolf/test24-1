@@ -50,10 +50,10 @@ public class BaseDataClass implements BaseData {
         return stroka;
     }
     // ==============
-    private CallBack callBack;
+    //private CallBack callBack;
 
-    public BaseDataClass(CallBack callBack) {
-        this.callBack = callBack;
+    public BaseDataClass(/*CallBack callBack*/) {
+        //this.callBack = callBack;
     }
     // ==============================================
     //                 var
@@ -62,7 +62,7 @@ public class BaseDataClass implements BaseData {
     // ----------------------------------------------
     // создание тестового соединения
     @Override
-    public int createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+    public Status createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
         switch (typeBaseData) {
             case MS_SQL:
                 testConnect = new BaseDataMsSql();
@@ -72,9 +72,9 @@ public class BaseDataClass implements BaseData {
                 break;
             default:
                 testConnect = null;
-                return UNEXPECTED_TYPE_BD;
+                return Status.UNEXPECTED_TYPE_BD;
         }
-        return testConnect.testConnectInit(parameters);
+        return testConnect.createTestConnect(parameters);
     }
     // тестовое соединение список доступных баз
     @Override
@@ -83,12 +83,12 @@ public class BaseDataClass implements BaseData {
     }
     // тестовое соединение проверка структуры БД
     @Override
-    public int testConnectCheckStructure(String base) {
-        return testConnect.testConnectCheckStructure(base);
+    public Status checkCheckStructureBd(String base) {
+        return testConnect.checkCheckStructureBd(base);
     }
     // создание рабочего соединения
     @Override
-    public int createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+    public Status createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
         switch (typeBaseData) {
             case MS_SQL:
                 workConnect = new BaseDataMsSql();
@@ -98,15 +98,25 @@ public class BaseDataClass implements BaseData {
                 break;
             default:
                 workConnect = null;
-                return UNEXPECTED_TYPE_BD;
+                return Status.UNEXPECTED_TYPE_BD;
         }
-        return workConnect.workConnectInit(parameters);
+        return workConnect.createWorkConnect(parameters);
     }
     // чтение списка пользователей
     @Override
     public UserClass[] getListUsers(boolean actual) throws Exception {
+        if (workConnect == null) {
+            throw new Exception("Не инициировано рабочее соединение");
+        }
         return workConnect.getListUsers(actual);
     }
+
+
+    @Override
+    public String[] getListBd() throws Exception {
+        return testConnect.getListBd();
+    }
+
     // установка нового пароля пользователя
     @Override
     public boolean setUserNewPassword(UserClass user, String newPassword) {

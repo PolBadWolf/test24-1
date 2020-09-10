@@ -1,6 +1,7 @@
 package org.example.test24.bd;
 
 import java.util.Base64;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface BaseData {
@@ -8,14 +9,14 @@ public interface BaseData {
     int MY_SQL = 1;
     int ERROR = 99;
     enum TypeBaseData {
-        MS_SQL  (BaseData1.MS_SQL),
-        MY_SQL  (BaseData1.MY_SQL),
-        ERROR   (BaseData1.ERROR);
+        MS_SQL  (BaseData.MS_SQL),
+        MY_SQL  (BaseData.MY_SQL),
+        ERROR   (BaseData.ERROR);
         private int typeBaseData;
         TypeBaseData(int typeBaseData) {
             this.typeBaseData = typeBaseData;
         }
-        public int getTypeBaseData() {
+        public int getCodeTypeBaseData() {
             return typeBaseData;
         }
         public String toString() {
@@ -32,10 +33,56 @@ public interface BaseData {
     int QUERY_ERROR = 6;
     int STRUCTURE_ERROR = 7;
     int UNKNOWN_ERROR = 99;
-    // -------------------------
-    interface CallBack {
+    enum Status {
+        OK                  (BaseData.OK),
+        UNEXPECTED_TYPE_BD  (BaseData.UNEXPECTED_TYPE_BD),
+        DRIVER_ERROR        (BaseData.DRIVER_ERROR),
+        CONNECT_PASS_ERROR  (BaseData.CONNECT_PASS_ERROR),
+        CONNECT_BASE_ERROR  (BaseData.CONNECT_BASE_ERROR),
+        CONNECT_ERROR       (BaseData.CONNECT_ERROR),
+        QUERY_ERROR         (BaseData.QUERY_ERROR),
+        STRUCTURE_ERROR     (BaseData.STRUCTURE_ERROR),
+        UNKNOWN_ERROR       (BaseData.UNKNOWN_ERROR);
+        private int codeStatus;
+        Status(int codeStatus) {
+            this.codeStatus = codeStatus;
+        }
+        public int getCodeStatus() {
+            return codeStatus;
+        }
 
+        @Override
+        public String toString() {
+            String status = "";
+            switch (codeStatus) {
+                case BaseData.OK:
+                    status = "OK";
+                    break;
+                case BaseData.UNEXPECTED_TYPE_BD:
+                    status = "UNEXPECTED_TYPE_BD";
+                    break;
+                case BaseData.DRIVER_ERROR:
+                    status = "DRIVER_ERROR";
+                    break;
+                case BaseData.CONNECT_PASS_ERROR:
+                    status = "CONNECT_PASS_ERROR";
+                    break;
+                case BaseData.CONNECT_BASE_ERROR:
+                    status = "CONNECT_BASE_ERROR";
+                    break;
+                case BaseData.QUERY_ERROR:
+                    status = "QUERY_ERROR";
+                    break;
+                case BaseData.STRUCTURE_ERROR:
+                    status = "STRUCTURE_ERROR";
+                    break;
+                default:
+                    status = "UNKNOWN_ERROR";
+            }
+            return status;
+        }
     }
+    // -------------------------
     class Parameters {
         String  ip;
         String  port;
@@ -65,16 +112,25 @@ public interface BaseData {
     }
     // -----------------------------------------------------------
     // создание тестового соединения
-    int createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
-    // список доступных БД из тестового соединения
-    boolean requestListBdFromTestConnect(Consumer<String[]> list);
+    Status createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // тестовое соединение проверка структуры БД
-    int testConnectCheckStructure(String base);
+    Status checkCheckStructureBd(String base);
     // -----------------------------------------------------------
     // создание рабочего соединения
-    int createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
+    Status createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
+    // список доступных БД из тестового соединения
+    boolean requestListBdFromTestConnect(Consumer<String[]> list);
+
+
+
+    String[] getListBd() throws Exception;
+
+
+
+
+    // -----------------------------------------------------------
     // установка нового пароля пользователя
     boolean setUserNewPassword(UserClass user, String newPassword);
 

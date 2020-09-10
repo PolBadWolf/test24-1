@@ -1,48 +1,31 @@
-package org.example.test24.loader;
+package org.example.test24.loader.dialog;
 
 import org.example.lib.MySwingUtil;
+import org.example.lib.functioninterface.ProcedureBoolean;
+import org.example.lib.functioninterface.ProcedureInteger;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.ParametersSql;
 import org.example.test24.bd.UserClass;
 
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Consumer;
 
-class Parrent_Frame {
+class FrameParrent_Metods extends FrameParrent_Vars {
     // ================================================
-    // интерфейс обратного вызова
-    protected FrameCallBack callBack;
-    // статус: система в работе
-    protected boolean statMainWork;
-
-    // тип БД
-    protected BaseData.TypeBaseData typeBaseData;
-    // парамеры подключения к БД
-    protected ParametersSql parametersSql;
-    // флаг структурной целостности БД
-    protected boolean flCheckSql = false;
-    // имя ком порта
-    protected String commPortName;
-    // флаг доступности ком портов
-    protected boolean flCheckCommPort = false;
-
-
-    protected JFrame frame;
-    protected UserClass[] listUsers = null;
-    protected UserClass user = null;
     // ================================================
-    // загрузка параметров соединения с БД
-    protected ParametersSql getParametersSql(BaseData.TypeBaseData typeBaseData) {
-        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
-            return null;
-        }
-        return callBack.getParametersSql(typeBaseData);
-    }
+    // ================================================
+
+
+
+
+
 
     // начальная загрузка параметров соединения с БД
     protected boolean beginInitParametersSql() {
-        // тип БД
-        typeBaseData = callBack.getTypeBaseDataFromConfig();
+        /*// тип БД
+        typeBaseData = callBack.getTypeBaseDataFromConfig(null);
         if (typeBaseData == BaseData.TypeBaseData.ERROR) {
             listUsers = new UserClass[0];
             flCheckSql = false;
@@ -55,13 +38,14 @@ class Parrent_Frame {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
-        }
+        }*/
         return true;
     }
     // инициация тестового соединения c БД
+    /*
     protected int initTestConnectBd(ParametersSql parametersSql) {
         // проверка паметров на валидность
-        if (parametersSql.getStat() != ParametersSql.OK) {
+        if (parametersSql.getStat() != ParametersSql.Status.OK) {
             return BaseData.ERROR;
         }
         // установка тестового соединения
@@ -74,7 +58,10 @@ class Parrent_Frame {
                         parametersSql.dataBase
                 )
         );
-        /* // установка тестового соединения
+
+
+
+         // установка тестового соединения
         return callBack.createTestConnectBd(typeBaseData,
                 new BaseData.Parameters(
                         parametersSql.urlServer,
@@ -83,8 +70,10 @@ class Parrent_Frame {
                         parametersSql.password,
                         parametersSql.dataBase
                 )
-        );*/
-        /*
+        );
+
+
+
         // проверка структуры БД
         result = callBack.testConnectCheckStructure(parametersSql.dataBase);
         if (result != BaseData.OK) {
@@ -114,9 +103,11 @@ class Parrent_Frame {
             return false;
         }
         return true;
-        */
+
     }
+    */
     // инициация тестового соединения c БД список баз
+    /*
     protected String[] initTestConnectBdGetListBse() {
         int result;
         // установка тестового соединения
@@ -133,7 +124,11 @@ class Parrent_Frame {
             return new String[0];
         }
 
-        /*
+
+
+
+
+
         // проверка структуры БД
         result = callBack.testConnectCheckStructure(parametersSql.dataBase);
         if (result != BaseData.OK) {
@@ -163,9 +158,11 @@ class Parrent_Frame {
             return false;
         }
         return true;
-        */
+
         return new String[0];
     }
+    */
+    /*
     protected boolean testBaseAndInitWorkConnectBd() {
         int result;
         // проверка структуры БД
@@ -193,7 +190,9 @@ class Parrent_Frame {
         flCheckSql = true;
         return true;
     }
+     */
     // получение списка пользователей
+    /*
     protected boolean getListUsersFromBD() {
         listUsers = callBack.getListUsers(true);
         if (listUsers.length == 0) {
@@ -201,8 +200,9 @@ class Parrent_Frame {
         }
         return true;
     }
+     */
     // получения списка пользователей параметры из конфига
-    protected boolean getListUserFromConfig(Consumer<ParametersSql> setParameters) {
+    /*protected boolean getListUserFromConfig(Consumer<ParametersSql> setParameters) {
         BaseData.TypeBaseData typeBaseData;
         ParametersSql parametersSql;
         int resultInt;
@@ -259,8 +259,8 @@ class Parrent_Frame {
             setParameters.accept(parametersSql);
         }
         return true;
-    }
-    protected boolean getListUserFromConfig() {
+    }*/
+    /*protected boolean getListUserFromConfig() {
         return getListUserFromConfig(null);
-    }
+    }*/
 }

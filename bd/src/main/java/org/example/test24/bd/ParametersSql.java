@@ -12,10 +12,52 @@ public class ParametersSql {
     final public static int ERROR_PASSWORD = 4;
     final public static int ERROR_SAVE = 9;
     final public static int UNKNOWN_ERROR = 99;
+    public enum Status {
+        OK                  (ParametersSql.OK),
+        FILE_NOT_FOUND      (ParametersSql.FILE_NOT_FOUND),
+        ERROR_LOAD          (ParametersSql.ERROR_LOAD),
+        ERROR_PARAMETERS    (ParametersSql.ERROR_PARAMETERS),
+        ERROR_PASSWORD      (ParametersSql.ERROR_PASSWORD),
+        ERROR_SAVE          (ParametersSql.ERROR_SAVE),
+        UNKNOWN_ERROR       (ParametersSql.UNKNOWN_ERROR);
+        int codeStatus;
+        Status(int codeStatus) {this.codeStatus = codeStatus;}
+        public int getCodeStatus() {
+            return codeStatus;
+        }
+        @Override
+        public String toString() {
+            String status = "UNKNOWN_ERROR";
+            switch (codeStatus) {
+                case ParametersSql.OK:
+                    status = "OK";
+                    break;
+                case ParametersSql.FILE_NOT_FOUND:
+                    status = "FILE NOT FOUND";
+                    break;
+                case ParametersSql.ERROR_LOAD:
+                    status = "ERROR LOAD";
+                    break;
+                case ParametersSql.ERROR_PARAMETERS:
+                    status = "ERROR PARAMETERS";
+                    break;
+                case ParametersSql.ERROR_PASSWORD:
+                    status = "ERROR PASSWORD";
+                    break;
+                case ParametersSql.ERROR_SAVE:
+                    status = "ERROR SAVE";
+                    break;
+                case ParametersSql.UNKNOWN_ERROR:
+                    status = "UNKNOWN ERROR";
+                    break;
+            }
+            return status;
+        }
+    }
     // --------------------
     private String fileNameParameters;
     private Properties properties;
-    private int stat;
+    private Status stat;
     final public BaseData.TypeBaseData typeBaseData;
     public String urlServer;
     public String portServer;
@@ -29,12 +71,12 @@ public class ParametersSql {
         properties = new Properties();
     }
 
-    public int load() {
-        stat = OK;
+    public Status load() {
+        stat = Status.OK;
         try {
             properties.load(new BufferedReader(new FileReader(fileNameParameters)));
         } catch (IOException e) {
-            return ERROR_LOAD;
+            return Status.ERROR_LOAD;
         }
         try {
             urlServer = properties.getProperty("Url_Server");
@@ -44,12 +86,12 @@ public class ParametersSql {
             password = BaseData.Password.decoding(properties.getProperty("Password"));
         } catch (java.lang.Throwable ie) {
             //System.out.println(fileNameParameters + " : ошибка декодирования пароля");
-            stat = ERROR_PASSWORD;
+            stat = Status.ERROR_PASSWORD;
         }
         if (typeBaseData == BaseData.TypeBaseData.ERROR || urlServer == null || portServer == null || dataBase == null || user == null) {
             //throw new Exception(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
             //System.out.println(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
-            stat = ERROR_PARAMETERS;
+            stat = Status.ERROR_PARAMETERS;
         }
         return stat;
     }
@@ -68,7 +110,15 @@ public class ParametersSql {
         }
     }
 
-    public int getStat() {
+    public void setDefault() {
+        urlServer = "255.255.255.255";
+        portServer = "1111";
+        dataBase = "Base";
+        user = "Login";
+        password = "Password";
+    }
+
+    public Status getStat() {
         return stat;
     }
 }

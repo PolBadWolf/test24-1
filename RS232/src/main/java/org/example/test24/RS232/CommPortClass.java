@@ -12,11 +12,11 @@ class CommPortClass implements CommPort {
     private CallBack callBack = null;
     private Consumer closer;
 
-    public CommPortClass(Consumer closer) {
+    protected CommPortClass(Consumer closer) {
         this.closer = closer;
     }
 
-    @Override
+    /*@Override
     public String[] getListPortsName() {
         SerialPort[] ports = SerialPort.getCommPorts();
         String[] namePorts = new String[ports.length];
@@ -24,16 +24,16 @@ class CommPortClass implements CommPort {
             namePorts[i] = ports[i].getSystemPortName().toUpperCase();
         }
         return namePorts;
-    }
+    }*/
 
     @Override
-    public int Open(CallBack callBack, String portName, BAUD baud) {
+    public PortStat Open(CallBack callBack, String portName, BAUD baud) {
         if (port != null) {
             Close();
         }
 
         boolean flagTmp = false;
-        String[] portsName = getListPortsName();
+        String[] portsName = CommPort.getListPortsName();
         String portNameCase = portName.toUpperCase();
         for (String s : portsName) {
             if (s.equals(portNameCase)) {
@@ -42,7 +42,7 @@ class CommPortClass implements CommPort {
             }
         }
 
-        if (!flagTmp)   return INITCODE_NOTEXIST;
+        if (!flagTmp)   return CommPort.PortStat.INITCODE_NOTEXIST;
 
         port = SerialPort.getCommPort(portNameCase);
         port.setComPortParameters(baud.getBaud(), 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
@@ -51,10 +51,10 @@ class CommPortClass implements CommPort {
 
         if (port.openPort()) {
             this.callBack = callBack;
-            return INITCODE_OK;
+            return CommPort.PortStat.INITCODE_OK;
         }
 
-        return INITCODE_ERROROPEN;
+        return CommPort.PortStat.INITCODE_ERROROPEN;
     }
 
     @Override
