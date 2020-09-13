@@ -16,13 +16,15 @@ import static org.example.test24.lib.MyLogger.myLog;
 
 public class MainClass extends MainClassRequest {
     public static void main(String[] args) {
-        new MyLogger(Level.ALL, Level.ALL);
+        new MyLogger(Level.ALL, Level.INFO);
         Thread.currentThread().setName("Main class thread");
         new MainClass().start();
     }
     private void start() {
-        myLog.log(Level.INFO, "я в Main.start()");
-        myLog.log(Level.WARNING, "ww");
+        //myLog.log(Level.INFO, "я в Main.start()");
+//        myLog.log(Level.WARNING, "ww", new Exception("123"));
+        BaseData.Parameters parameters = BaseData.Parameters.create(BaseData.TypeBaseDate.MYSQL);
+        BaseData.Status result = parameters.load();
 
         // создание объекта для БД
         connBd = new BaseData2Class(/*new BaseData2.CallBack() {}*/);
@@ -33,7 +35,7 @@ public class MainClass extends MainClassRequest {
 
         // пуск
         startFrame = StartFrame.main(false, new StartFrameCallBack());
-        myLog.log(Level.WARNING, "sdsd", new Exception("bla-bla-bla"));
+        //myLog.log(Level.WARNING, "sdsd", new Exception("bla-bla-bla"));
 
         /*
         int testStat1 = 99, testStat2 = 99, testStat3, testStat4;
