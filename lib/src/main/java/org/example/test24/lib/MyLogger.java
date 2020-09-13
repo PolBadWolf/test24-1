@@ -1,6 +1,8 @@
 package org.example.test24.lib;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.NoSuchFileException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -41,15 +43,16 @@ public class MyLogger {
                                                 + " Class: \"" + record.getSourceClassName() + "\""
                                                 + " Method: \"" + record.getSourceMethodName() + "\""
                                                 + "\n"
-                                                + record.getLevel().getName() + ": \"" + record.getMessage() + "\"");
+                                                + record.getLevel().getName() + ": \"" + record.getMessage() + "\"\n");
                                 Throwable throwable = record.getThrown();
                                 if (throwable != null) {
-                                    StackTraceElement[] parameters = throwable.getStackTrace();
-                                    for (StackTraceElement traceElement : parameters) {
-                                        string.append("\n   ").append(traceElement.toString());
-                                    }
+                                    StringWriter sw = new StringWriter();
+                                    PrintWriter pw = new PrintWriter(sw);
+                                    record.getThrown().printStackTrace(pw);
+                                    pw.close();
+                                    string.append(sw.toString());
                                 }
-                                string.append("\n---------------------------------------------------------\n");
+                                string.append("---------------------------------------------------------\n");
                                 return string.toString();
                             }
                         }
