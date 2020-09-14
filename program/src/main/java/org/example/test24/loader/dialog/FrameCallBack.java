@@ -1,7 +1,7 @@
 package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.*;
-import org.example.test24.loader.ParametersConfig;
+import org.example.test24.bd.ParametersConfig;
 
 public interface FrameCallBack {
     // =================================

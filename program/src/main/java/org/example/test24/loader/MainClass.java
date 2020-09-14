@@ -11,8 +11,6 @@ import org.example.test24.screen.ScreenFx;
 
 import java.util.logging.Level;
 
-import static org.example.test24.lib.MyLogger.myLog;
-
 
 public class MainClass extends MainClassRequest {
     public static void main(String[] args) {
@@ -34,7 +32,11 @@ public class MainClass extends MainClassRequest {
         commPort = CommPort.main(o->commPortCloser());
 
         // пуск
-        startFrame = StartFrame.main(false, new StartFrameCallBack());
+        try {
+            startFrame = StartFrame.main(false, new StartFrameCallBack());
+        } catch (Exception exception) {
+            startFrame = null;
+        }
         //myLog.log(Level.WARNING, "sdsd", new Exception("bla-bla-bla"));
 
         /*

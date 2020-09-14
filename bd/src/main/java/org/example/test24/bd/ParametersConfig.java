@@ -1,13 +1,15 @@
-package org.example.test24.loader;
-
-import org.example.test24.bd.BaseData2;
+package org.example.test24.bd;
 
 import java.io.*;
 import java.util.Properties;
 
 import static org.example.test24.bd.BaseData2Class.*;
 
-public class ParametersConfig {
+public class ParametersConfig implements BaseData.Config {
+    final private String fileNameConfig = "config.txt";
+    private BaseData.Status stat = BaseData.Status.OK;
+
+
     final public static int OK = 0;
     final public static int FILE_NOT_FOUND = 1;
     final public static int FILE_NOT_SPECIFIED = 2;
@@ -34,18 +36,26 @@ public class ParametersConfig {
         }
     }
 
-    private String fileNameConfig;
     private String portName;
     private BaseData2.TypeBaseData typeBaseData;
     private Diagnostic status;
 
     public ParametersConfig(String fileNameConfig) {
-        this.fileNameConfig = fileNameConfig;
+        //this.fileNameConfig = fileNameConfig;
         typeBaseData = BaseData2.TypeBaseData.ERROR;
         portName = "";
     }
 
-    public String getPortName() {
+    @Override
+    public BaseData.Status load1() {
+        BaseData.TypeBaseDate typeBaseDate;
+        String portName;
+        Properties properties = new Properties();
+        properties.load(new BufferedReader(new FileReader(fileNameConfig)));
+        typeBaseDate = BaseData.TypeBaseDate.create(properties.getProperty("DataBase").toUpperCase());
+        return null;
+    }
+    /*public String getPortName() {
         return portName;
     }
     public void setPortName(String portName) {
@@ -59,7 +69,7 @@ public class ParametersConfig {
     }
     public Diagnostic getStatus() {
         return status;
-    }
+    }*/
 
     public Diagnostic load() {
         try {
@@ -80,6 +90,8 @@ public class ParametersConfig {
         }
         return status;
     }
+
+
     public void setDefault() {
         portName = "com2";
         typeBaseData = BaseData2.TypeBaseData.MY_SQL;

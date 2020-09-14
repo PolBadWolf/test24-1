@@ -5,7 +5,7 @@ import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.BaseData2;
 import org.example.test24.bd.ParametersSql2;
 import org.example.test24.bd.UserClass;
-import org.example.test24.loader.ParametersConfig;
+import org.example.test24.bd.ParametersConfig;
 
 import javax.swing.*;
 import java.util.Arrays;

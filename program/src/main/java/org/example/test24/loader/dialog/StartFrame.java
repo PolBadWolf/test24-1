@@ -5,7 +5,7 @@ import org.example.test24.bd.BaseData2;
 import org.example.test24.lib.MySwingUtil;
 import org.example.test24.bd.ParametersSql2;
 import org.example.test24.bd.UserClass;
-import org.example.test24.loader.ParametersConfig;
+import org.example.test24.bd.ParametersConfig;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +13,9 @@ import java.awt.event.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.logging.Level;
+
+import static org.example.test24.lib.MyLogger.myLog;
 
 public class StartFrame extends StartFrame_Vars {
     // title
@@ -41,24 +44,22 @@ public class StartFrame extends StartFrame_Vars {
     private TuningFrame tuningFrame;
 
 
-    public static StartFrame main(boolean statMainWork, FrameCallBack callBack) {
+    public static StartFrame main(boolean statMainWork, FrameCallBack callBack) throws Exception {
         final StartFrame[] frame = new StartFrame[1];
-        frame[0] = null;
         try {
-            SwingUtilities.invokeAndWait(() -> {
+            SwingUtilities.invokeAndWait(()->{
                 frame[0] = new StartFrame(statMainWork, callBack);
+                new Thread(()->{
+                    frame[0].start();
+                }, "StartFrame start").start();
             });
-        } catch (java.lang.Throwable e) {
-            e.printStackTrace();
+        } catch (InterruptedException e) {
+            myLog.log(Level.SEVERE, "ошибка создания startFrame", e);
+            throw new Exception(e);
+        } catch (InvocationTargetException e) {
+            myLog.log(Level.SEVERE, "ошибка создания startFrame", e);
+            throw new Exception(e);
         }
-        new Thread( ()-> {
-            try {
-                frame[0].start();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, "start start frame"
-        ).start();
         return frame[0];
     }
 
@@ -69,21 +70,19 @@ public class StartFrame extends StartFrame_Vars {
     }
 
 
-    private void start() throws Exception {
+    private void start() {
         // загрузка компонентов и вывод загаловка
-        SwingUtilities.invokeLater(() -> {
-            initComponents();
-            onTitleComponents();
-            frame.setResizable(false);
-            frame.setLayout(null);
-            frame.setVisible(true);
-            frame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    e.getWindow().removeAll();
-                    System.exit(2);
-                }
-            });
+        initComponents();
+        onTitleComponents();
+        frame.setResizable(false);
+        frame.setLayout(null);
+        frame.setVisible(true);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().removeAll();
+                System.exit(2);
+            }
         });
         // =================== загрузка начальных параметров ===================
         // загрузка параметров соединения с БД

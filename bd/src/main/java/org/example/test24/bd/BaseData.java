@@ -52,6 +52,15 @@ public interface BaseData {
         TypeBaseDate(int codeTypeBaseData) {
             this.codeTypeBaseData = codeTypeBaseData;
         }
+        static TypeBaseDate create(String typeBaseData) {
+            int code;
+            if (typeBaseData == null) code = TYPEBD_ERROR;
+            else {
+                if (typeBaseData)
+            }
+
+            return null;
+        }
     }
     // ==================== PARAMETERS ====================
     interface Parameters {
@@ -73,6 +82,10 @@ public interface BaseData {
         BaseData.Status load();
         BaseData.Status save();
         void setDefault();
+    }
+    // ==================== CONFIG ====================
+    interface Config {
+        Status load1();
     }
     // ==================== PASSWORD ====================
     class Password {
