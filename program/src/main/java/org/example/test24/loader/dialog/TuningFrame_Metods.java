@@ -42,13 +42,13 @@ class TuningFrame_Metods extends TuningFrame_Vars {
         // запрос конфигурации
         config = callBack.getParametersConfig();
         // тип БД
-        if (config.getTypeBaseData() == BaseData2.TypeBaseData.ERROR) {
+        /*if (config.getTypeBaseData() == BaseData2.TypeBaseData.ERROR) {
             System.out.println("ошибка типа базы данных: " + config.getTypeBaseData().toString());
             config.setTypeBaseData(BaseData2.TypeBaseData.MY_SQL);
-        }
+        }*/
         // загрузка параметров соединения с БД
         try {
-            parametersSql = callBack.createParametersSql(config.getTypeBaseData());
+            //parametersSql = callBack.createParametersSql(config.getTypeBaseData());
             ParametersSql2.Status status = parametersSql.load();
             if (status == ParametersSql2.Status.OK) {
                 parametersSqlError = 0;

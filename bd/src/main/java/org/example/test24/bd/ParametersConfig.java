@@ -2,8 +2,10 @@ package org.example.test24.bd;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import static org.example.test24.bd.BaseData2Class.*;
+import static org.example.test24.lib.MyLogger.myLog;
 
 public class ParametersConfig implements BaseData.Config {
     final private String fileNameConfig = "config.txt";
@@ -37,45 +39,64 @@ public class ParametersConfig implements BaseData.Config {
     }
 
     private String portName;
-    private BaseData2.TypeBaseData typeBaseData;
+    private BaseData.TypeBaseDate typeBaseData;
     private Diagnostic status;
 
     public ParametersConfig(String fileNameConfig) {
         //this.fileNameConfig = fileNameConfig;
-        typeBaseData = BaseData2.TypeBaseData.ERROR;
+        typeBaseData = BaseData.TypeBaseDate.ERROR;
         portName = "";
     }
 
     @Override
     public BaseData.Status load1() {
-        BaseData.TypeBaseDate typeBaseDate;
-        String portName;
+        final BaseData.TypeBaseDate[] typeBaseDate = new BaseData.TypeBaseDate[1];
+        BaseData.Status status;
         Properties properties = new Properties();
-        properties.load(new BufferedReader(new FileReader(fileNameConfig)));
-        typeBaseDate = BaseData.TypeBaseDate.create(properties.getProperty("DataBase").toUpperCase());
+        try {
+            properties.load(new BufferedReader(new FileReader(fileNameConfig)));
+        } catch (IOException e) {
+            myLog.log(Level.SEVERE, "ошибка чтения файла конфигурации", e);
+            e.printStackTrace();
+        }
+        portName = properties.getProperty("CommPort", "COM2").toUpperCase();
+        status = BaseData.TypeBaseDate.create(
+                properties.getProperty("DataBase").toUpperCase(),
+                t -> typeBaseDate[0] = t
+        );
+        this.typeBaseData = typeBaseDate[0];
+        return status;
+    }
+    @Override
+    public BaseData.Status save1() {
         return null;
     }
-    /*public String getPortName() {
+    @Override
+    public String getPortName() {
         return portName;
     }
+    @Override
+    public BaseData.TypeBaseDate getTypeBaseData() {
+        return typeBaseData;
+    }
+    @Override
     public void setPortName(String portName) {
         this.portName = portName;
     }
-    public BaseData2.TypeBaseData getTypeBaseData() {
-        return typeBaseData;
-    }
-    public void setTypeBaseData(BaseData2.TypeBaseData typeBaseData) {
+    @Override
+    public void setTypeBaseData(BaseData.TypeBaseDate typeBaseData) {
         this.typeBaseData = typeBaseData;
     }
+
     public Diagnostic getStatus() {
         return status;
-    }*/
+    }
 
     public Diagnostic load() {
         try {
             Properties properties = new Properties();
             properties.load(new BufferedReader(new FileReader(fileNameConfig)));
-            typeBaseData = typeBaseDataCode(properties.getProperty("DataBase").toUpperCase());
+            //typeBaseData = typeBaseDataCode(properties.getProperty("DataBase").toUpperCase());
             portName = properties.getProperty("CommPort").toUpperCase();
             status = Diagnostic.OK;
         } catch (FileNotFoundException e) {
@@ -85,7 +106,7 @@ public class ParametersConfig implements BaseData.Config {
             portName = "";
             status = Diagnostic.ERROR_LOAD;
         }
-        if (typeBaseData == BaseData2.TypeBaseData.ERROR) {
+        if (typeBaseData == BaseData.TypeBaseDate.ERROR) {
             status = Diagnostic.ERROR_PARAMETERS;
         }
         return status;
@@ -94,11 +115,11 @@ public class ParametersConfig implements BaseData.Config {
 
     public void setDefault() {
         portName = "com2";
-        typeBaseData = BaseData2.TypeBaseData.MY_SQL;
+        typeBaseData = BaseData.TypeBaseDate.MY_SQL;
     }
 
     public Diagnostic save() {
-        if (typeBaseData == BaseData2.TypeBaseData.ERROR || portName == null || portName == "") {
+        if (typeBaseData == BaseData.TypeBaseDate.ERROR || portName == null || portName == "") {
             status = Diagnostic.ERROR_PARAMETERS;
         } else {
             Properties properties = new Properties();

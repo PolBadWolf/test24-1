@@ -1,6 +1,7 @@
 package org.example.test24.bd;
 
 import java.util.Base64;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -42,8 +43,8 @@ public interface BaseData {
     int TYPEBD_MSSQL = 1;
     int TYPEBD_ERROR = -1;
     enum TypeBaseDate {
-        MYSQL       (TYPEBD_MYSQL),
-        MSSQL       (TYPEBD_MSSQL),
+        MY_SQL      (TYPEBD_MYSQL),
+        MS_SQL      (TYPEBD_MSSQL),
         ERROR       (TYPEBD_ERROR);
         int codeTypeBaseData;
         int getCodeTypeBaseData() {
@@ -52,14 +53,25 @@ public interface BaseData {
         TypeBaseDate(int codeTypeBaseData) {
             this.codeTypeBaseData = codeTypeBaseData;
         }
-        static TypeBaseDate create(String typeBaseData) {
-            int code;
-            if (typeBaseData == null) code = TYPEBD_ERROR;
-            else {
-                if (typeBaseData)
+        static Status create(String typeBaseData, Consumer<TypeBaseDate> tbd) {
+            if (typeBaseData == null) {
+                myLog.log(Level.WARNING, "ошибка типа БД (typeBaseData = null)");
+                tbd.accept(TypeBaseDate.ERROR);
+                return Status.BASE_TYPE_ERROR;
             }
-
-            return null;
+            switch (typeBaseData.toUpperCase()) {
+                case "MY_SQL":
+                    tbd.accept(TypeBaseDate.MY_SQL);
+                    break;
+                case "MS_SQL":
+                    tbd.accept(TypeBaseDate.MS_SQL);
+                    break;
+                default:
+                    myLog.log(Level.WARNING, "ошибка типа БД (typeBaseData = " + typeBaseData + ")");
+                    tbd.accept(TypeBaseDate.ERROR);
+                    return Status.BASE_TYPE_ERROR;
+            }
+            return Status.OK;
         }
     }
     // ==================== PARAMETERS ====================
@@ -85,7 +97,13 @@ public interface BaseData {
     }
     // ==================== CONFIG ====================
     interface Config {
+        static Config create() { return new ParametersConfig(""); }
         Status load1();
+        Status save1();
+        String getPortName();
+        BaseData.TypeBaseDate getTypeBaseData();
+        void setPortName(String portName);
+        void setTypeBaseData(BaseData.TypeBaseDate typeBaseData);
     }
     // ==================== PASSWORD ====================
     class Password {

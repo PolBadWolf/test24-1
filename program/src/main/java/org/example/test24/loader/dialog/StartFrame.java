@@ -1,11 +1,8 @@
 package org.example.test24.loader.dialog;
 
+import org.example.test24.bd.*;
 import org.example.test24.lib.MyUtil;
-import org.example.test24.bd.BaseData2;
 import org.example.test24.lib.MySwingUtil;
-import org.example.test24.bd.ParametersSql2;
-import org.example.test24.bd.UserClass;
-import org.example.test24.bd.ParametersConfig;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,6 +67,18 @@ public class StartFrame extends StartFrame_Vars {
     }
 
 
+    private BaseData.Parameters loadBaseData(BaseData.TypeBaseDate typeBaseDate) {
+        BaseData.Parameters parameters = BaseData.Parameters.create(typeBaseDate);
+        if (typeBaseDate == BaseData.TypeBaseDate.ERROR) {
+            myLog.log(Level.SEVERE, "ошибка типа базы данных");
+            return parameters;
+        }
+        BaseData.Status result;
+        // загрузка параметров БД
+        result = parameters.load();
+        return parameters;
+    }
+
     private void start() {
         // загрузка компонентов и вывод загаловка
         initComponents();
@@ -86,23 +95,35 @@ public class StartFrame extends StartFrame_Vars {
         });
         // =================== загрузка начальных параметров ===================
         // загрузка параметров соединения с БД
-        ParametersConfig config;
-        BaseData2.TypeBaseData typeBaseData;
+        ParametersConfig config3;
+        BaseData2.TypeBaseData typeBaseData3;
         BaseData2.Status resultBaseData;
-        ParametersSql2 parametersSql = null;
+        ParametersSql2 parametersSql2 = null;
+        //------------------------------
+        BaseData.Status result;
+        BaseData.TypeBaseDate typeBaseDate;
+        BaseData.Parameters parameters;
+        // чтение конфигурации
+        BaseData.Config config = BaseData.Config.create();
+        config.load1();
+        // тип БД
+        typeBaseDate = config.getTypeBaseData();
+        loadBaseData(typeBaseDate);
+
+
         int parametersSqlError = 1;
         UserClass[] listUsers = new UserClass[0];
         // ======================================
         // запрос конфигурации
-        config = callBack.getParametersConfig();
+        config3 = callBack.getParametersConfig();
         // тип БД
-        typeBaseData = config.getTypeBaseData();
-        if (typeBaseData == BaseData2.TypeBaseData.ERROR) {
-            throw new Exception("ошибка типа базы данных");
+        typeBaseData3 = null;//config3.getTypeBaseData();
+        if (typeBaseData3 == BaseData2.TypeBaseData.ERROR) {
+            //throw new Exception("ошибка типа базы данных");
         }
         // загрузка параметров БД
         try {
-            parametersSql = callBack.requestParametersSql(typeBaseData);
+            parametersSql2 = callBack.requestParametersSql(typeBaseData3);
             parametersSqlError = 0;
         } catch (Exception e) {
             System.out.println("Ошибка загрузки параметров соединения с БД" + e.getMessage());
@@ -111,13 +132,13 @@ public class StartFrame extends StartFrame_Vars {
         if (parametersSqlError == 0) {
             // установка тестового соединения
             resultBaseData = callBack.createTestConnectBd(
-                    parametersSql.typeBaseData,
+                    parametersSql2.typeBaseData,
                     new BaseData2.Parameters(
-                            parametersSql.urlServer,
-                            parametersSql.portServer,
-                            parametersSql.user,
-                            parametersSql.password,
-                            parametersSql.dataBase
+                            parametersSql2.urlServer,
+                            parametersSql2.portServer,
+                            parametersSql2.user,
+                            parametersSql2.password,
+                            parametersSql2.dataBase
                     )
             );
             if (resultBaseData != BaseData2.Status.OK) {
@@ -126,7 +147,7 @@ public class StartFrame extends StartFrame_Vars {
                 listUsers = new UserClass[0];
             } else {
                 // тестовое соединение проверка структуры БД
-                resultBaseData = callBack.checkCheckStructureBd(parametersSql.dataBase);
+                resultBaseData = callBack.checkCheckStructureBd(parametersSql2.dataBase);
                 if (resultBaseData == BaseData2.Status.OK) {
                     flCheckSql = true;
                 } else {
@@ -138,13 +159,13 @@ public class StartFrame extends StartFrame_Vars {
             if (flCheckSql) {
                 // создание рабочего соединения
                 resultBaseData = callBack.createWorkConnect(
-                        parametersSql.typeBaseData,
+                        parametersSql2.typeBaseData,
                         new BaseData2.Parameters(
-                                parametersSql.urlServer,
-                                parametersSql.portServer,
-                                parametersSql.user,
-                                parametersSql.password,
-                                parametersSql.dataBase
+                                parametersSql2.urlServer,
+                                parametersSql2.portServer,
+                                parametersSql2.user,
+                                parametersSql2.password,
+                                parametersSql2.dataBase
                         )
                 );
                 if (resultBaseData != BaseData2.Status.OK) {
@@ -172,7 +193,7 @@ public class StartFrame extends StartFrame_Vars {
         // *************************************************************************************
         // проверка ком порта
         try {
-            flCheckCommPort = callBack.isCheckCommPort(statMainWork, config.getPortName());
+            flCheckCommPort = callBack.isCheckCommPort(statMainWork, config3.getPortName());
         } catch (Exception e) {
             System.out.println("Ошибка поверки ком порта: " + e.getMessage());
             flCheckCommPort = false;

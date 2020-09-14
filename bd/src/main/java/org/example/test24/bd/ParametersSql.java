@@ -79,11 +79,12 @@ class ParametersSql implements BaseData.Parameters {
                 break;
             case BaseData.TYPEBD_ERROR:
                 myLog.log(Level.WARNING, "ошибочный тип БД, выбран MySql");
-                typeBaseDate = BaseData.TypeBaseDate.MYSQL;
+                typeBaseDate = BaseData.TypeBaseDate.MY_SQL;
             case BaseData.TYPEBD_MYSQL:
                 fileName = fileNameMySql;
                 break;
         }
+        this.stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
         this.typeBaseDate = typeBaseDate;
         myLog.log(Level.INFO, "выбран \"" + typeBaseDate.toString() + "\" тип БД");
     }
