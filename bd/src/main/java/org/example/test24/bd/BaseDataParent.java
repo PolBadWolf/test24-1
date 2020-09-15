@@ -1,170 +1,159 @@
 package org.example.test24.bd;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import java.util.Arrays;
+import java.util.logging.Level;
 
-import static org.example.test24.bd.BaseData.*;
+import static org.example.test24.lib.MyLogger.myLog;
 
-class BaseDataParent implements BaseDataInterface {
-    protected BaseData.Parameters testParameters;
-    protected BaseData.Parameters workParameters;
-    protected Connection testConnection;
-    protected Connection workConnection;
-
-    public BaseDataParent() {
-    }
-    // тестовое соединение
+class BaseDataParent implements BaseData {
+    protected Connection connection;
+    protected String baseDat;
+    // открытие соединение с БД
     @Override
-    public BaseData.Status createTestConnect(BaseData.Parameters parameters) {
-        return BaseData.Status.UNKNOWN_ERROR;
-    }
-    // тестовое соединение проверка структуры БД
+    public void openConnect(Parameters parameters) throws Exception { }
+    // чтение списка БД
     @Override
-    public BaseData.Status checkCheckStructureBd(String base) {
-        return BaseData.Status.UNKNOWN_ERROR;
-    }
-    // -----------------------------------------------------------
-    // инициализация рабочего соединения
-    @Override
-    public BaseData.Status createWorkConnect(Parameters parameters) {
-        return BaseData.Status.UNKNOWN_ERROR;
+    public String[] getListBase() throws Exception {
+        return new String[0];
     }
     // чтение списка пользователей
     @Override
     public UserClass[] getListUsers(boolean actual) throws Exception {
-        if (workConnection == null) {
-            throw new Exception("Не инициировано рабочее соединение");
+        if (connection == null) {
+            myLog.log(Level.SEVERE, "отсутствует соединение");
+            throw new Exception("отсутствует соединение (connection == null)");
         }
-        if (workConnection.isClosed()) {
-            throw new Exception("Не активно рабочее соединение");
+        boolean flClosed;
+        try {
+            flClosed = connection.isClosed();
+        } catch (SQLException e) {
+            myLog.log(Level.SEVERE, "ошибка проверки соединения: " + e.getMessage());
+            throw new Exception(e);
+        }
+        if (flClosed) {
+            myLog.log(Level.SEVERE, "соединение закрыто");
+            throw new Exception("соединение закрыто");
         }
         ArrayList<UserClass> listUsers = new ArrayList<>();
         Statement statement = null;
         ResultSet result = null;
-        boolean saveAutoCommit = true;
-        // save auto commit
-        try {
-            saveAutoCommit = workConnection.getAutoCommit();
-        } catch (SQLException e) {
-            throw new Exception("Ошибка начала транзакции: " + e.getMessage());
-        }
         // запрос на список пользователей
         try {
-            workConnection.setAutoCommit(false);
-            workConnection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             String tab = "table_users";
-            statement = workConnection.createStatement();
+            statement = connection.createStatement();
             // запрос
             if (actual) {
                 result = statement.executeQuery(
                         "SELECT id, date_reg, date_unreg, name, password, rang " +
-                                "FROM " + tab + " " +
+                                "FROM " + baseDat + "." + tab + " " +
                                 "WHERE (date_unreg IS NULL) " +
                                 "ORDER BY id "
                 );
             } else {
                 result = statement.executeQuery(
                         "SELECT id, date_reg, date_unreg, name, password, rang " +
-                                "FROM " + tab + " " +
+                                "FROM " + baseDat + "." + tab + " " +
                                 "ORDER BY id "
                 );
             }
-            // завершение транзакции
-            workConnection.commit();
-            workConnection.setAutoCommit(saveAutoCommit);
         } catch (SQLException e) {
-            try {
-                // отмена транзакции
-                workConnection.rollback();
-                workConnection.setAutoCommit(saveAutoCommit);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            throw new Exception("Ошибка выполнения транзакции: " + e.getMessage());
+            myLog.log(Level.SEVERE, "ошибка выполнения запроса", e);
+            throw new Exception(e);
         }
         // создание списка
         try {
             while (result.next()) {
-                String pass = null;
+                String pass;
+                // пароль
                 try {
-                    pass = Password.decoding(result.getString("password"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    pass = "";
+                    pass = BaseData.Password.decoding(result.getString("password"));
+                } catch (IllegalArgumentException e) {
+                    myLog.log(Level.SEVERE, "ошибка декодирования пароля", e);
+                    continue;
+                } catch (SQLException e) {
+                    myLog.log(Level.SEVERE, "ошибка парсинга", e);
+                    continue;
                 }
-                listUsers.add(
-                        new UserClass(
-                                result.getInt("id"),
-                                result.getTimestamp("date_reg"),
-                                result.getTimestamp("date_unreg"),
-                                result.getString("name"),
-                                pass,
-                                result.getInt("rang") // user status
-                        )
-                );
+                try {
+                    listUsers.add(
+                            new UserClass(
+                                    result.getInt("id"),
+                                    result.getTimestamp("date_reg"),
+                                    result.getTimestamp("date_unreg"),
+                                    result.getString("name"),
+                                    pass,
+                                    result.getInt("rang") // user status
+                            )
+                    );
+                } catch (SQLException e) {
+                    myLog.log(Level.SEVERE, "ошибка парсинга", e);
+                    continue;
+                }
             }
         } catch (SQLException e) {
-            throw new Exception("Ошибка выполнения парсинга: " + e.getMessage());
+            myLog.log(Level.SEVERE, "ошибка парсинга запроса", e);
+            throw new Exception(e);
         }
         // закрытие соединения
         try {
             result.close();
             statement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            myLog.log(Level.WARNING, "ошибка закрытие соединения", e);
         }
         return listUsers.toArray(new UserClass[0]);
     }
-
-
+    // проверка структуры БД
     @Override
-    public String[] getListBd() throws Exception {
-        return new String[0];
+    public boolean checkCheckStructureBd(String base) throws Exception {
+        if (connection == null) {
+            throw new Exception("соединение не установлено");
+        }
+        boolean fl = connection.isClosed();
+        if (fl) {
+            throw new Exception("соединение закрыто");
+        }
+        boolean tableFl1 = true, tableFl2 = true, tableFl3 = true;
+
+        tableFl1 = checkCheckStructureTable(
+                base,
+                "table_data",
+                new ArrayList(Arrays.asList(
+                        "id",
+                        "dateTime",
+                        "id_spec",
+                        "n_cicle",
+                        "ves",
+                        "tik_shelf",
+                        "tik_back",
+                        "tik_stop",
+                        "dis"
+                ))
+        );
+        // table_users
+        tableFl2 = checkCheckStructureTable(
+                base,
+                "table_users",
+                new ArrayList(Arrays.asList(
+                        "id",
+                        "date_reg",
+                        "date_unreg",
+                        "name",
+                        "password",
+                        "rang"
+                ))
+        );
+        return tableFl1 && tableFl2 && tableFl3;
     }
-
-    // тестовое соединение список доступных баз
-    @Override
-    public boolean requestListBdFrom(Consumer<String[]> list) {
+    // проверка структуры таблицы
+    protected boolean checkCheckStructureTable(String base, String table, ArrayList<String> listColumns) {
+        myLog.log(Level.SEVERE, "ошибка проверки таблицы");
+        System.exit(-2);
         return false;
-    }
-    // установка нового пароля пользователя
-    @Override
-    public boolean setUserNewPassword(UserClass user, String newPassword) {
-        try {
-        if (workConnection.isClosed()) return false;
-        } catch (SQLException e) {
-            return false;
-        }
-        boolean saveAutoCommit;
-        PreparedStatement preparedStatement;
-        ResultSet result;
-        try {
-            saveAutoCommit = workConnection.getAutoCommit();
-            workConnection.setAutoCommit(true);
-        } catch (SQLException throwables) {
-            return false;
-        }
-        try {
-            preparedStatement = workConnection.prepareStatement(
-                    "UPDATE Table_users SET  password = ? WHERE id = ?"
-            );
-        } catch (SQLException throwables) {
-            try {
-                workConnection.setAutoCommit(saveAutoCommit);
-            } catch (SQLException e) {
-            }
-            return false;
-        }
-        try {
-            preparedStatement.setString(1, BaseData.Password.encoding(newPassword));
-            preparedStatement.setInt(2, user.id);
-            int r  = preparedStatement.executeUpdate();
-            System.out.println("pass upd res = " + r);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return true;
     }
 }

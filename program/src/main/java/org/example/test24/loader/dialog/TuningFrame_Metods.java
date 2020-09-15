@@ -1,11 +1,11 @@
 package org.example.test24.loader.dialog;
 
-import org.example.lib.MyUtil;
+import org.example.test24.lib.MyUtil;
 import org.example.test24.RS232.CommPort;
-import org.example.test24.bd.BaseData;
-import org.example.test24.bd.ParametersSql;
+import org.example.test24.bd.BaseData2;
+import org.example.test24.bd.ParametersSql2;
 import org.example.test24.bd.UserClass;
-import org.example.test24.loader.ParametersConfig;
+import org.example.test24.bd.ParametersConfig;
 
 import javax.swing.*;
 import java.util.Arrays;
@@ -35,22 +35,22 @@ class TuningFrame_Metods extends TuningFrame_Vars {
     // загрузка начальных параметров
     protected void loadBeginerParameters() {
         ParametersConfig config;
-        ParametersSql parametersSql = null;
-        BaseData.Status resultBaseData;
+        ParametersSql2 parametersSql = null;
+        BaseData2.Status resultBaseData;
         int parametersSqlError;
         //
         // запрос конфигурации
         config = callBack.getParametersConfig();
         // тип БД
-        if (config.getTypeBaseData() == BaseData.TypeBaseData.ERROR) {
+        /*if (config.getTypeBaseData() == BaseData2.TypeBaseData.ERROR) {
             System.out.println("ошибка типа базы данных: " + config.getTypeBaseData().toString());
-            config.setTypeBaseData(BaseData.TypeBaseData.MY_SQL);
-        }
+            config.setTypeBaseData(BaseData2.TypeBaseData.MY_SQL);
+        }*/
         // загрузка параметров соединения с БД
         try {
-            parametersSql = callBack.createParametersSql(config.getTypeBaseData());
-            ParametersSql.Status status = parametersSql.load();
-            if (status == ParametersSql.Status.OK) {
+            //parametersSql = callBack.createParametersSql(config.getTypeBaseData());
+            ParametersSql2.Status status = parametersSql.load();
+            if (status == ParametersSql2.Status.OK) {
                 parametersSqlError = 0;
             } else {
                 parametersSql.setDefault();
@@ -64,7 +64,7 @@ class TuningFrame_Metods extends TuningFrame_Vars {
             // установка тестового соединения
             resultBaseData = callBack.createTestConnectBd(
                     parametersSql.typeBaseData,
-                    new BaseData.Parameters(
+                    new BaseData2.Parameters(
                             parametersSql.urlServer,
                             parametersSql.portServer,
                             parametersSql.user,
@@ -72,11 +72,11 @@ class TuningFrame_Metods extends TuningFrame_Vars {
                             parametersSql.dataBase
                     )
             );
-            if (resultBaseData == BaseData.Status.OK) {
+            if (resultBaseData == BaseData2.Status.OK) {
                 // создание рабочего соединения
                 resultBaseData = callBack.createWorkConnect(
                         parametersSql.typeBaseData,
-                        new BaseData.Parameters(
+                        new BaseData2.Parameters(
                                 parametersSql.urlServer,
                                 parametersSql.portServer,
                                 parametersSql.user,
@@ -84,7 +84,7 @@ class TuningFrame_Metods extends TuningFrame_Vars {
                                 parametersSql.dataBase
                         )
                 );
-                if (resultBaseData == BaseData.Status.OK) {
+                if (resultBaseData == BaseData2.Status.OK) {
                     // чтение списка пользователей
                     try {
                         listUsers = callBack.getListUsers(true);
@@ -107,7 +107,7 @@ class TuningFrame_Metods extends TuningFrame_Vars {
             }
             // проверка структуры БД
             resultBaseData = callBack.checkCheckStructureBd(parametersSql.dataBase);
-            if (resultBaseData == BaseData.Status.OK) {
+            if (resultBaseData == BaseData2.Status.OK) {
                 flCheckSql = true;
             } else {
                 System.out.println("нарушена целостность структуры БД: " + resultBaseData.toString());
@@ -147,10 +147,10 @@ class TuningFrame_Metods extends TuningFrame_Vars {
     }
     // проверка CommPort
     protected boolean isValidCommPort(String portName) {
-        CommPort commPort = CommPort.main(
+        /*CommPort commPort = CommPort.main(
                 (o)->{},
                 portName
-                );
+                );*/
         return false;
     }
     // =============================================================================================================
@@ -159,7 +159,7 @@ class TuningFrame_Metods extends TuningFrame_Vars {
         Arrays.stream(listCommPort).sorted((a, b) -> a.compareTo(b)).forEach(s -> comboBoxCommPort.addItem(s));
         comboBoxCommPort.setSelectedItem(defaultCommPort);
     }
-    protected void setComponentBaseData(ParametersSql parametersSql) {
+    protected void setComponentBaseData(ParametersSql2 parametersSql) {
         // тип БД
         comboBoxTypeBd.setSelectedItem(parametersSql.typeBaseData.toString());
         // параметры подключения
@@ -207,14 +207,14 @@ class TuningFrame_Metods extends TuningFrame_Vars {
     protected void selectCommPort(JComboBox comboBox) {
         if (lockBegin)  return;
 //        threadSkeepOn = false;
-        checkStatusComp();
-        outStatus();
+        //checkStatusComp();
+        //outStatus();
         // разрешение кнопки ок
         onOffButtonOk();
         // сохранить
-        if (chCheckCommPort == CommPort.PortStat.INITCODE_OK) {
+        //if (chCheckCommPort == CommPort.PortStat.INITCODE_OK) {
             // callBack MC.saveConfigCommPort((String) comboBoxCommPort.getSelectedItem());
-        }
+        //}
     }
     // =============================================================================================================
 }

@@ -1,11 +1,8 @@
 package org.example.test24.loader.dialog;
 
-import org.example.lib.MyUtil;
-import org.example.test24.bd.BaseData;
-import org.example.lib.MySwingUtil;
-import org.example.test24.bd.ParametersSql;
-import org.example.test24.bd.UserClass;
-import org.example.test24.loader.ParametersConfig;
+import org.example.test24.bd.*;
+import org.example.test24.lib.MyUtil;
+import org.example.test24.lib.MySwingUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,8 +10,11 @@ import java.awt.event.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.logging.Level;
 
-public class StartFrame extends StartFrame_Vars {
+import static org.example.test24.lib.MyLogger.myLog;
+
+public class StartFrame {
     // title
     private JLabel label1;
     private JLabel label2;
@@ -40,25 +40,49 @@ public class StartFrame extends StartFrame_Vars {
     //
     private TuningFrame tuningFrame;
 
+    // ===============================================
+    //             флаги
+    // основной модуль запущен
+    boolean statMainWork;
+    // соединение установлено
+    boolean flagConnecting = false;
+    // целостности структуры БД
+    boolean flagStructureIntegrity = false;
+    // список пользователей / = [0] for false
+    private UserClass[] listUsers = new UserClass[0];
+    // доступность ком порта
+    boolean flagAvailabilityCommPort = false;
 
-    public static StartFrame main(boolean statMainWork, FrameCallBack callBack) {
+
+
+    FrameCallBack callBack;
+    JFrame frame;
+    // флаг структурной целостности БД
+    private boolean flCheckSql = false;
+    // флаг доступности ком портов
+    private boolean flCheckCommPort = false;
+
+    BaseData.TypeBaseDate typeBaseDate;
+    BaseData.Parameters parameters;
+    BaseData connBD;
+
+
+    public static StartFrame main(boolean statMainWork, FrameCallBack callBack) throws Exception {
         final StartFrame[] frame = new StartFrame[1];
-        frame[0] = null;
         try {
-            SwingUtilities.invokeAndWait(() -> {
+            SwingUtilities.invokeAndWait(()->{
                 frame[0] = new StartFrame(statMainWork, callBack);
+                new Thread(()->{
+                    frame[0].start();
+                }, "StartFrame start").start();
             });
-        } catch (java.lang.Throwable e) {
-            e.printStackTrace();
+        } catch (InterruptedException e) {
+            myLog.log(Level.SEVERE, "ошибка создания startFrame", e);
+            throw new Exception(e);
+        } catch (InvocationTargetException e) {
+            myLog.log(Level.SEVERE, "ошибка создания startFrame", e);
+            throw new Exception(e);
         }
-        new Thread( ()-> {
-            try {
-                frame[0].start();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, "start start frame"
-        ).start();
         return frame[0];
     }
 
@@ -69,111 +93,117 @@ public class StartFrame extends StartFrame_Vars {
     }
 
 
-    private void start() throws Exception {
+    private BaseData.Parameters getParametersBaseData(BaseData.TypeBaseDate typeBaseDate) throws Exception {
+        if (typeBaseDate == BaseData.TypeBaseDate.ERROR) {
+            throw new Exception("ошибка типа базы данных");
+        }
+        BaseData.Parameters parameters = null;
+        try {
+            parameters = BaseData.Parameters.create(typeBaseDate);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+        BaseData.Status result;
+        // загрузка параметров БД
+        result = parameters.load();
+        if (result != BaseData.Status.OK) {
+            myLog.log(Level.WARNING, "загрузка параметров соединения с БД поумолчанию");
+            parameters.setDefault();
+        }
+        return parameters;
+    }
+
+    private BaseData getConnect(BaseData.Parameters parameters) throws Exception {
+        BaseData bd = null;
+        bd = BaseData.create(parameters);
+        // открытие соединения с БД
+        bd.openConnect(parameters);
+        return bd;
+    }
+
+    private void initBaseData(BaseData.TypeBaseDate typeBaseDate) {
+        // здесь сбросить флаги с БД
+        flagConnecting = false;
+        flagStructureIntegrity = false;
+        listUsers = new UserClass[0];
+        // ----
+        boolean flBoolean;
+        // загрузить параметры
+        parameters = null;
+        try {
+            parameters = getParametersBaseData(typeBaseDate);
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка получения параметров подключения к БД", e);
+            return;
+        }
+        // создание соединения
+        connBD = null;
+        try {
+            connBD = getConnect(parameters);
+            flagConnecting = true;
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка соединения с БД", e);
+            return;
+        }
+        // проверка структуры БД
+        try {
+            flagStructureIntegrity = connBD.checkCheckStructureBd(parameters.getDataBase());
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка соединения с БД", e);
+            return;
+        }
+        if (!flagStructureIntegrity) {
+            myLog.log(Level.WARNING, "ошибка структуры БД");
+            return;
+        }
+        // чтение списка пользователей
+        try {
+            listUsers = connBD.getListUsers(true);
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка соединения с БД", e);
+            return;
+        }
+    }
+
+    private void start() {
         // загрузка компонентов и вывод загаловка
-        SwingUtilities.invokeLater(() -> {
-            initComponents();
-            onTitleComponents();
-            frame.setResizable(false);
-            frame.setLayout(null);
-            frame.setVisible(true);
-            frame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    e.getWindow().removeAll();
-                    System.exit(2);
-                }
-            });
+        initComponents();
+        onTitleComponents();
+        frame.setResizable(false);
+        frame.setLayout(null);
+        frame.setVisible(true);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().removeAll();
+                System.exit(2);
+            }
         });
         // =================== загрузка начальных параметров ===================
         // загрузка параметров соединения с БД
-        ParametersConfig config;
-        BaseData.TypeBaseData typeBaseData;
-        BaseData.Status resultBaseData;
-        ParametersSql parametersSql = null;
-        int parametersSqlError = 1;
-        UserClass[] listUsers = new UserClass[0];
-        // ======================================
-        // запрос конфигурации
-        config = callBack.getParametersConfig();
-        // тип БД
-        typeBaseData = config.getTypeBaseData();
-        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
-            throw new Exception("ошибка типа базы данных");
-        }
-        // загрузка параметров БД
+        ParametersConfig config3;
+        BaseData2.TypeBaseData typeBaseData3;
+        BaseData2.Status resultBaseData;
+        ParametersSql2 parametersSql2 = null;
+        //------------------------------
+        BaseData.Status result;
+        // чтение конфигурации
+        BaseData.Config config = BaseData.Config.create();
         try {
-            parametersSql = callBack.requestParametersSql(typeBaseData);
-            parametersSqlError = 0;
+            config.load1();
         } catch (Exception e) {
-            System.out.println("Ошибка загрузки параметров соединения с БД" + e.getMessage());
-            parametersSqlError = 1;
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
+            config.setDefault();
         }
-        if (parametersSqlError == 0) {
-            // установка тестового соединения
-            resultBaseData = callBack.createTestConnectBd(
-                    parametersSql.typeBaseData,
-                    new BaseData.Parameters(
-                            parametersSql.urlServer,
-                            parametersSql.portServer,
-                            parametersSql.user,
-                            parametersSql.password,
-                            parametersSql.dataBase
-                    )
-            );
-            if (resultBaseData != BaseData.Status.OK) {
-                System.out.println("ошибка установки тестового соединения");
-                flCheckSql = false;
-                listUsers = new UserClass[0];
-            } else {
-                // тестовое соединение проверка структуры БД
-                resultBaseData = callBack.checkCheckStructureBd(parametersSql.dataBase);
-                if (resultBaseData == BaseData.Status.OK) {
-                    flCheckSql = true;
-                } else {
-                    System.out.println("нарушена целостность структуры БД");
-                    flCheckSql = false;
-                    listUsers = new UserClass[0];
-                }
-            }
-            if (flCheckSql) {
-                // создание рабочего соединения
-                resultBaseData = callBack.createWorkConnect(
-                        parametersSql.typeBaseData,
-                        new BaseData.Parameters(
-                                parametersSql.urlServer,
-                                parametersSql.portServer,
-                                parametersSql.user,
-                                parametersSql.password,
-                                parametersSql.dataBase
-                        )
-                );
-                if (resultBaseData != BaseData.Status.OK) {
-                    System.out.println("ошибка установки рабочего соединения");
-                    listUsers = new UserClass[0];
-                } {
-                    // чтение списка пользователей
-                    try {
-                        listUsers = callBack.getListUsers(true);
-                    } catch (Exception e) {
-                        listUsers = new UserClass[0];
-                        System.out.println("Ошибка чтения списка пользователей: " + e.getMessage());
-                    }
-                }
-            }
-            // *************************************************************************************
-            System.out.println("список пользователей, всего " + listUsers.length + " :");
-            Arrays.stream(listUsers).sorted(new Comparator<UserClass>() {
-                @Override
-                public int compare(UserClass a, UserClass b) {
-                    return a.name.compareTo(b.name);
-                }
-            }).forEach(user -> System.out.println(user.toString()));
-        }
+        // тип БД
+        typeBaseDate = config.getTypeBaseData();
+        // инициализация работы с БД и данных с ней связанных
+        initBaseData(typeBaseDate);
         // *************************************************************************************
         // проверка ком порта
         try {
-            flCheckCommPort = callBack.isCheckCommPort(statMainWork, config.getPortName());
+            config3 = null;
+            flCheckCommPort = callBack.isCheckCommPort(statMainWork, config3.getPortName());
         } catch (Exception e) {
             System.out.println("Ошибка поверки ком порта: " + e.getMessage());
             flCheckCommPort = false;
@@ -488,7 +518,7 @@ public class StartFrame extends StartFrame_Vars {
         password = fieldPassword.getText();
         if (askLocalAdmin) {
             String surName = (String) comboBoxUser.getSelectedItem();
-            String pass = BaseData.Password.encoding(password);
+            String pass = BaseData2.Password.encoding(password);
             // проверка на локального админа
             flAdmin = checkIntegratedAdministrator(surName, pass);
             if (!flAdmin) {
@@ -621,30 +651,30 @@ public class StartFrame extends StartFrame_Vars {
         }
         // создание объекта параметров соединения с БД
         @Override
-        public ParametersSql createParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+        public ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
             return callBack.createParametersSql(typeBaseData);
         }
 
         // запрос параметров соединения с БД
         @Override
-        public ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+        public ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
             return callBack.requestParametersSql(typeBaseData);
         }
         // -----------------------------------------------------------
         // создание тестого соединения
         @Override
-        public BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        public BaseData2.Status createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
             return callBack.createTestConnectBd(typeBaseData, parameters);
         }
         // тестовое соединение проверка структуры БД
         @Override
-        public BaseData.Status checkCheckStructureBd(String base) {
+        public BaseData2.Status checkCheckStructureBd(String base) {
             return callBack.checkCheckStructureBd(base);
         }
         // -----------------------------------------------------------
         // создание рабочего соединения
         @Override
-        public BaseData.Status createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        public BaseData2.Status createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
             return callBack.createWorkConnect(typeBaseData, parameters);
         }
         // чтение списка пользователей

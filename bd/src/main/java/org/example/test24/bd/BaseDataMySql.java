@@ -1,179 +1,74 @@
 package org.example.test24.bd;
 
-import java.sql.*;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.TimeZone;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
+import java.util.logging.Level;
 
-import static org.example.test24.bd.BaseData.*;
+import static org.example.test24.lib.MyLogger.myLog;
 
 class BaseDataMySql extends BaseDataParent {
     public BaseDataMySql() {
         super();
     }
-    // тестовое соединение
+    // открытие соединение с БД
     @Override
-    public BaseData.Status createTestConnect(BaseData.Parameters parameters) {
-        testConnection = null;
+    public void openConnect(Parameters parameters) throws Exception {
         // подключение драйвера
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            return Status.DRIVER_ERROR;
+            throw new Exception("ошибка подключения драйвера", e);
         }
         // установка параметров соединения
         String connectionUrl = "jdbc:mysql://%1$s:%2$s";
         String connString = String.format(connectionUrl
-                , parameters.ip
-                , parameters.port
+                , parameters.getIpServer()
+                , parameters.getPortServer()
         ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
         // соединение
         try {
-            Connection connection = DriverManager.getConnection(connString, parameters.login, parameters.password);
-            testConnection = connection;
+            connection = DriverManager.getConnection(
+                    connString,
+                    parameters.getUser(),
+                    parameters.getPassword()
+            );
         } catch (SQLException e) {
-            Status stat;
-            switch (e.getErrorCode()) {
-                case 1045:
-                    stat = Status.CONNECT_PASS_ERROR;
-                    break;
-                case 1049:
-                    stat = Status.CONNECT_BASE_ERROR;
-                    break;
-                default:
-                    stat = Status.CONNECT_ERROR;
-            }
-            return stat;
+            throw new Exception("ошибка соединения с БД", e);
         }
-        testParameters = parameters;
-        return Status.OK;
+        this.baseDat = parameters.getDataBase();
     }
-    // тестовое соединение проверка структуры БД
+    // чтение списка БД
     @Override
-    public BaseData.Status checkCheckStructureBd(String base) {
-        if (testConnection == null) {
-            return BaseData.Status.CONNECT_ERROR;
+    public String[] getListBase() throws Exception {
+        if (connection == null) {
+            myLog.log(Level.SEVERE, "отсутствует соединение");
+            throw new Exception("отсутствует соединение (connection == null)");
         }
-        boolean table1;
-        String sample;
-        PreparedStatement statement;
-        ResultSet resultSet = null;
-        ArrayList<String> listColumns = new ArrayList<>();
-        int len, countList, countSql;
-        {
-            listColumns.clear();
-            listColumns.add("id");
-            listColumns.add("dateTime");
-            listColumns.add("id_spec");
-            listColumns.add("n_cicle");
-            listColumns.add("ves");
-            listColumns.add("tik_shelf");
-            listColumns.add("tik_back");
-            listColumns.add("tik_stop");
-            listColumns.add("dis");
-            // запрос
-            countSql = 0;
-            countList = listColumns.size();
-            try {
-                statement = testConnection.prepareStatement("SELECT\n" +
-                        "COLUMN_NAME\n" +
-                        "FROM information_schema.COLUMNS\n" +
-                        "WHERE\tinformation_schema.COLUMNS.TABLE_SCHEMA = ?\n" +
-                        "AND information_schema.COLUMNS.TABLE_NAME = ?\n" +
-                        "ORDER BY information_schema.COLUMNS.ORDINAL_POSITION ASC"
-                );
-                statement.setString(1, base);
-                statement.setString(2, "table_data");
-                resultSet = statement.executeQuery();
-            } catch (SQLException throwables) {
-                return BaseData.Status.QUERY_ERROR;
-            }
-            try {
-                while (resultSet.next()) {
-                    sample = resultSet.getString(1);
-                    countSql++;
-                    len = listColumns.size();
-                    if (len == 0) break;
-                    for (int i = 0; i < len; i++) {
-                        if (sample.equals(listColumns.get(i))) {
-                            listColumns.remove(i);
-                            break;
-                        }
-                    }
-                }
-            } catch (SQLException throwables) {
-                return BaseData.Status.QUERY_ERROR;
-            }
-            table1 = countList == countSql;
-            if (!table1)    return BaseData.Status.STRUCTURE_ERROR;
-        } // table_data
-        return BaseData.Status.OK;
-    }
-    // -----------------------------------------------------------
-    // инициализация рабочего соединения
-    @Override
-    public BaseData.Status createWorkConnect(Parameters parameters) {
-        workConnection = null;
-        // подключение драйвера
+        boolean flClosed;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            return BaseData.Status.DRIVER_ERROR;
-        }
-        // установка параметров соединения
-        String connectionUrl = "jdbc:mysql://%1$s:%2$s/%3$s";
-        String connString = String.format(connectionUrl
-                , parameters.ip
-                , parameters.port
-                , parameters.base
-        ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
-        // соединение
-        try {
-            Connection connection = DriverManager.getConnection(connString, parameters.login, parameters.password);
-            workConnection = connection;
+            flClosed = connection.isClosed();
         } catch (SQLException e) {
-            BaseData.Status stat;
-            switch (e.getErrorCode()) {
-                case 1045:
-                    stat = BaseData.Status.CONNECT_PASS_ERROR;
-                    break;
-                case 1049:
-                    stat = BaseData.Status.CONNECT_BASE_ERROR;
-                    break;
-                default:
-                    stat = BaseData.Status.CONNECT_ERROR;
-            }
-            return stat;
+            myLog.log(Level.SEVERE, "ошибка проверки соединения: " + e.getMessage());
+            throw new Exception(e);
         }
-        workParameters = parameters;
-        return BaseData.Status.OK;
-    }
-
-
-
-
-
-
-
-
-
-    // тестовое соединение список доступных баз
-    @Override
-    public boolean requestListBdFrom(Consumer<String[]> list) {
-        if (testConnection == null) {
-            return false;
+        if (flClosed) {
+            myLog.log(Level.SEVERE, "соединение закрыто");
+            throw new Exception("соединение закрыто");
         }
         // запрос на список
         ResultSet resultSet;
         try {
-            resultSet = testConnection.createStatement().executeQuery("SHOW DATABASES");
-        } catch (SQLException throwables) {
-            return false;
+            resultSet = connection.createStatement().executeQuery("SHOW DATABASES");
+        } catch (SQLException e) {
+            myLog.log(Level.SEVERE, "ошибка запроса", e);
+            throw new Exception(e);
         }
         // отсев системных БД
-        ArrayList<String> listBd = new ArrayList<>();
+        ArrayList<String> list = new ArrayList<>();
         String s;
         try {
             while (resultSet.next()) {
@@ -182,44 +77,61 @@ class BaseDataMySql extends BaseDataParent {
                 if (s.toLowerCase().equals("mysql")) continue;
                 if (s.toLowerCase().equals("performance_schema")) continue;
                 if (s.toLowerCase().equals("sys")) continue;
-                listBd.add(s);
+                list.add(s);
             }
             resultSet.close();
-        } catch (SQLException throwables) {
-            return false;
-        }
-        if (list != null) {
-            list.accept(listBd.toArray(new String[0]));
-        }
-        return true;
-    }
-    @Override
-    public String[] getListBd() throws Exception {
-        if (testConnection == null) { throw new Exception("Тестового соединение не установлено"); }
-        try {
-            if (testConnection.isClosed()) {
-                throw new Exception("Тестового соединение не установлено");
-            }
         } catch (SQLException e) {
-            throw new Exception("Тестового соединение не установлено: " + e.getMessage());
-        }
-        // запрос на список
-        ResultSet resultSet;
-        try {
-            resultSet = testConnection.createStatement().executeQuery("SHOW DATABASES");
-        } catch (SQLException e) {
-            throw new Exception("Ошибка выполнения запроса получения списка БД: " + e.getMessage());
-        }
-        ArrayList<String> list = new ArrayList<>();
-        String s;
-        while (resultSet.next()) {
-            s = resultSet.getString(1);
-            if (s.toLowerCase().equals("information_schema")) continue;
-            if (s.toLowerCase().equals("mysql")) continue;
-            if (s.toLowerCase().equals("performance_schema")) continue;
-            if (s.toLowerCase().equals("sys")) continue;
-            list.add(s);
+            myLog.log(Level.SEVERE, "ошибка парсинга", e);
+            throw new Exception(e);
         }
         return list.toArray(new String[0]);
+    }
+    // проверка структуры таблицы
+    // проверка структуры таблицы
+    protected boolean checkCheckStructureTable(String base, String table, ArrayList<String> listColumns) {
+        PreparedStatement statement;
+        ResultSet resultSet;
+        String sample;
+        int countColumns = 0, sizeColumns = listColumns.size(), len;
+        try {
+            statement = connection.prepareStatement("SELECT\n" +
+                    "COLUMN_NAME\n" +
+                    "FROM information_schema.COLUMNS\n" +
+                    "WHERE\tinformation_schema.COLUMNS.TABLE_SCHEMA = ?\n" +
+                    "AND information_schema.COLUMNS.TABLE_NAME = ?\n" +
+                    "ORDER BY information_schema.COLUMNS.ORDINAL_POSITION ASC"
+            );
+            statement.setString(1, base);
+            statement.setString(2, table);
+            resultSet = statement.executeQuery();
+        } catch (SQLException e) {
+            myLog.log(Level.SEVERE, "ошибка проверки структуры таблицы", e);
+            return false;
+        }
+        try {
+            while (resultSet.next()) {
+                countColumns++;
+                sample = resultSet.getString(1);
+                len = listColumns.size();
+                if (len == 0) break;
+                for (int i = 0; i < len; i++) {
+                    if (listColumns.get(i).equals(sample)) {
+                        listColumns.remove(i);
+                        break;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            myLog.log(Level.SEVERE, "ошибка проверки структуры таблицы", e);
+            return false;
+        }
+        boolean stat = (countColumns == sizeColumns) && (listColumns.size() == 0);
+        try {
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            myLog.log(Level.WARNING, "ошибка проверки структуры таблицы", e);
+        }
+        return stat;
     }
 }

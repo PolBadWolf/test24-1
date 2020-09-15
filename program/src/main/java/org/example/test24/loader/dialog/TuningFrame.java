@@ -342,7 +342,7 @@ class TuningFrame extends TuningFrame_Metods {
     // загрузка параметров SQL
     private boolean loadParametersSql(String typeBd) {
         boolean stat = false;
-        /*parametersSql = new ParametersSql(
+        /*parametersSql = new ParametersSql2(
                 BaseData1.getNameFileParametrsSql(
                         typeBd,
                         callBack MC.getFilesNameSql()
@@ -381,7 +381,7 @@ class TuningFrame extends TuningFrame_Metods {
             // тип текущей БД
             String typeBd = (String) comboBoxTypeBd.getSelectedItem();
             //загрузка параметров с выбранным типом
-            /*parametersSql = new ParametersSql(
+            /*parametersSql = new ParametersSql2(
                     BaseData1.getNameFileParametrsSql(
                             typeBd,
                             callBack MC.getFilesNameSql()
@@ -430,7 +430,7 @@ class TuningFrame extends TuningFrame_Metods {
 //            String typeBd = parameters[0];
             //String typeBd = callBack MC.loadConfigTypeBaseData().getTypeBaseDataString();
             //загрузка параметров с выбранным типом
-            /*parametersSql = new ParametersSql(
+            /*parametersSql = new ParametersSql2(
                     BaseData1.getNameFileParametrsSql(
                             typeBd,
                             callBack MC.getFilesNameSql()
@@ -583,7 +583,7 @@ class TuningFrame extends TuningFrame_Metods {
         outStatus();
         //сохранить
         if (flCheckParamSql) {
-            //callBack MC.saveConfigTypeBaseData(BaseData.typeBaseDataCode((String) comboBox.getSelectedItem()));
+            //callBack MC.saveConfigTypeBaseData(BaseData2.typeBaseDataCode((String) comboBox.getSelectedItem()));
         }
     }
     // смена параметров подключения к SQL серверу

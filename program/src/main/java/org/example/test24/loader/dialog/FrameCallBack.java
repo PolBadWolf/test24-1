@@ -1,27 +1,24 @@
 package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.*;
-import org.example.test24.loader.ParametersConfig;
-
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import org.example.test24.bd.ParametersConfig;
 
 public interface FrameCallBack {
     // =================================
     // чтение параметров из конфига
     ParametersConfig getParametersConfig();
     // создание объекта параметров соединения с БД
-    ParametersSql createParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception;
+    ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception;
     // запрос параметров соединения с БД
-    ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception;
+    ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception;
     // -----------------------------------------------------------
     // создание тестого соединения
-    BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
+    BaseData2.Status createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters);
     // тестовое соединение проверка структуры БД
-    BaseData.Status checkCheckStructureBd(String base);
+    BaseData2.Status checkCheckStructureBd(String base);
     // -----------------------------------------------------------
     // создание рабочего соединения
-    BaseData.Status createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters);
+    BaseData2.Status createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters);
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
 

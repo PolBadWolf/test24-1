@@ -1,124 +1,141 @@
 package org.example.test24.bd;
 
 import java.io.*;
-import java.util.Base64;
 import java.util.Properties;
+import java.util.logging.Level;
 
-public class ParametersSql {
-    final public static int OK = 0;
-    final public static int FILE_NOT_FOUND = 1;
-    final public static int ERROR_LOAD = 2;
-    final public static int ERROR_PARAMETERS = 3;
-    final public static int ERROR_PASSWORD = 4;
-    final public static int ERROR_SAVE = 9;
-    final public static int UNKNOWN_ERROR = 99;
-    public enum Status {
-        OK                  (ParametersSql.OK),
-        FILE_NOT_FOUND      (ParametersSql.FILE_NOT_FOUND),
-        ERROR_LOAD          (ParametersSql.ERROR_LOAD),
-        ERROR_PARAMETERS    (ParametersSql.ERROR_PARAMETERS),
-        ERROR_PASSWORD      (ParametersSql.ERROR_PASSWORD),
-        ERROR_SAVE          (ParametersSql.ERROR_SAVE),
-        UNKNOWN_ERROR       (ParametersSql.UNKNOWN_ERROR);
-        int codeStatus;
-        Status(int codeStatus) {this.codeStatus = codeStatus;}
-        public int getCodeStatus() {
-            return codeStatus;
-        }
-        @Override
-        public String toString() {
-            String status = "UNKNOWN_ERROR";
-            switch (codeStatus) {
-                case ParametersSql.OK:
-                    status = "OK";
-                    break;
-                case ParametersSql.FILE_NOT_FOUND:
-                    status = "FILE NOT FOUND";
-                    break;
-                case ParametersSql.ERROR_LOAD:
-                    status = "ERROR LOAD";
-                    break;
-                case ParametersSql.ERROR_PARAMETERS:
-                    status = "ERROR PARAMETERS";
-                    break;
-                case ParametersSql.ERROR_PASSWORD:
-                    status = "ERROR PASSWORD";
-                    break;
-                case ParametersSql.ERROR_SAVE:
-                    status = "ERROR SAVE";
-                    break;
-                case ParametersSql.UNKNOWN_ERROR:
-                    status = "UNKNOWN ERROR";
-                    break;
-            }
-            return status;
-        }
+import static org.example.test24.lib.MyLogger.myLog;
+
+class ParametersSql implements BaseData.Parameters {
+    final static String fileNameMySql = "my_sql.txt";
+    final static String fileNameMsSql = "ms_sql.txt";
+    // ------------------------------------------------
+    private String fileName;
+    private BaseData.TypeBaseDate typeBaseDate;
+    private BaseData.Status stat;
+    private String ipServer;
+    private String portServer;
+    private String dataBase;
+    private String user;
+    private String password;
+    // ------------------------------------------------
+    @Override
+    public BaseData.Status getStat() {
+        return stat;
     }
-    // --------------------
-    private String fileNameParameters;
-    private Properties properties;
-    private Status stat;
-    final public BaseData.TypeBaseData typeBaseData;
-    public String urlServer;
-    public String portServer;
-    public String dataBase;
-    public String user;
-    public String password;
-
-    public ParametersSql(String fileNameParameters, BaseData.TypeBaseData typeBaseData) {
-        this.fileNameParameters = fileNameParameters;
-        this.typeBaseData = typeBaseData;
-        properties = new Properties();
+    @Override
+    public BaseData.TypeBaseDate getTypeBaseDate() {
+        return typeBaseDate;
     }
-
-    public Status load() {
-        stat = Status.OK;
+    @Override
+    public String getIpServer() {
+        return ipServer;
+    }
+    @Override
+    public void setIpServer(String ipServer) {
+        this.ipServer = ipServer;
+    }
+    @Override
+    public String getPortServer() {
+        return portServer;
+    }
+    @Override
+    public void setPortServer(String portServer) {
+        this.portServer = portServer;
+    }
+    @Override
+    public String getDataBase() {
+        return dataBase;
+    }
+    @Override
+    public void setDataBase(String dataBase) {
+        this.dataBase = dataBase;
+    }
+    @Override
+    public String getUser() {
+        return user;
+    }
+    @Override
+    public void setUser(String user) {
+        this.user = user;
+    }
+    @Override
+    public String getPassword() {
+        return password;
+    }
+    @Override
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    // ------------------------------------------------
+    ParametersSql(BaseData.TypeBaseDate typeBaseDate) throws Exception {
+        switch (typeBaseDate.codeTypeBaseData) {
+            case BaseData.TYPEBD_MSSQL:
+                fileName = fileNameMsSql;
+                break;
+            case BaseData.TYPEBD_MYSQL:
+                fileName = fileNameMySql;
+                break;
+            case BaseData.TYPEBD_ERROR:
+                this.stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
+                throw new Exception("ошибочный тип БД");
+        }
+        this.typeBaseDate = typeBaseDate;
+        this.stat = BaseData.Status.OK;
+    }
+    // ------------------------------------------------
+    @Override
+    public BaseData.Status load() {
+        Properties properties = new Properties();
         try {
-            properties.load(new BufferedReader(new FileReader(fileNameParameters)));
+            properties.load(new BufferedReader(new FileReader(fileName)));
         } catch (IOException e) {
-            return Status.ERROR_LOAD;
+            myLog.log(Level.SEVERE, "ошибки загрузки параметров из файла конфигурации", e);
+            stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
+            return stat;
         }
+        ipServer = properties.getProperty("Url_Server");
+        portServer = properties.getProperty("Port_Server");
+        dataBase = properties.getProperty("DataBase");
+        user = properties.getProperty("User");
         try {
-            urlServer = properties.getProperty("Url_Server");
-            portServer = properties.getProperty("Port_Server");
-            dataBase = properties.getProperty("DataBase");
-            user = properties.getProperty("User");
+            password = null;
             password = BaseData.Password.decoding(properties.getProperty("Password"));
-        } catch (java.lang.Throwable ie) {
-            //System.out.println(fileNameParameters + " : ошибка декодирования пароля");
-            stat = Status.ERROR_PASSWORD;
-        }
-        if (typeBaseData == BaseData.TypeBaseData.ERROR || urlServer == null || portServer == null || dataBase == null || user == null) {
-            //throw new Exception(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
-            //System.out.println(fileNameParameters + " : один или несколько параметров в файле конфигурации отсутствуют");
-            stat = Status.ERROR_PARAMETERS;
+            if (ipServer == null || portServer == null || dataBase == null || user == null) {
+                myLog.log(Level.SEVERE, "один или несколько параметров в файле конфигурации отсутствуют");
+                stat = BaseData.Status.PARAMETERS_ERROR;
+            } else {
+                stat = BaseData.Status.OK;
+            }
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "ошибка декодирования пароля", e);
+            stat = BaseData.Status.PARAMETERS_PASSWORD_ERROR;
         }
         return stat;
     }
-
-    public void save() {
-        properties.clear();
-        properties.setProperty("Url_Server", urlServer);
+    @Override
+    public BaseData.Status save() {
+        Properties properties = new Properties();
+        properties.setProperty("Url_Server", ipServer);
         properties.setProperty("Port_Server", portServer);
         properties.setProperty("DataBase", dataBase);
         properties.setProperty("User", user);
         properties.setProperty("Password", BaseData.Password.encoding(password));
         try {
-            properties.store(new BufferedWriter(new FileWriter(fileNameParameters)), "parameters sql");
+            properties.store(new BufferedWriter(new FileWriter(fileName)), "parameters sql");
+            stat = BaseData.Status.OK;
         } catch (IOException e) {
-            e.printStackTrace();
+            myLog.log(Level.SEVERE, "ошибка сохранения параметров соединения с БД", e);
+            stat = BaseData.Status.PARAMETERS_SAVE_ERROR;
         }
-    }
-
-    public void setDefault() {
-        urlServer = "255.255.255.255";
-        portServer = "1111";
-        dataBase = "Base";
-        user = "Login";
-        password = "Password";
-    }
-
-    public Status getStat() {
         return stat;
+    }
+    @Override
+    public void setDefault() {
+        ipServer = "255.255.255.255";
+        portServer = "3306";
+        dataBase = "data_base";
+        user = "login";
+        password = "password";
     }
 }

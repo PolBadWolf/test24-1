@@ -18,6 +18,14 @@ public class UserClass {
         this.password = password;
         this.rank = rank;
     }
+    public UserClass() {
+        this.id = 0;
+        this.date_reg = null;
+        this.date_unreg = null;
+        this.name = "";
+        this.password = "";
+        this.rank = 0;
+    }
 
     @Override
     public String toString() {

@@ -2,7 +2,7 @@ package org.example.test24.bd;
 
 import java.util.function.Consumer;
 
-public class BaseDataClass implements BaseData {
+public class BaseData2Class implements BaseData2 {
     public static String typeBaseDataString(int codeTypeBaseData) {
         String stroka;
         switch (codeTypeBaseData) {
@@ -52,23 +52,23 @@ public class BaseDataClass implements BaseData {
     // ==============
     //private CallBack callBack;
 
-    public BaseDataClass(/*CallBack callBack*/) {
+    public BaseData2Class(/*CallBack callBack*/) {
         //this.callBack = callBack;
     }
     // ==============================================
     //                 var
-    private BaseDataInterface testConnect = null;
-    private BaseDataInterface workConnect = null;
+    private BaseDataInterface2 testConnect = null;
+    private BaseDataInterface2 workConnect = null;
     // ----------------------------------------------
     // создание тестового соединения
     @Override
-    public Status createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+    public Status createTestConnect(TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
         switch (typeBaseData) {
             case MS_SQL:
-                testConnect = new BaseDataMsSql();
+                testConnect = new BaseDataMsSql2();
                 break;
             case MY_SQL:
-                testConnect = new BaseDataMySql();
+                testConnect = new BaseDataMySql2();
                 break;
             default:
                 testConnect = null;
@@ -88,13 +88,13 @@ public class BaseDataClass implements BaseData {
     }
     // создание рабочего соединения
     @Override
-    public Status createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+    public Status createWorkConnect(TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
         switch (typeBaseData) {
             case MS_SQL:
-                workConnect = new BaseDataMsSql();
+                workConnect = new BaseDataMsSql2();
                 break;
             case MY_SQL:
-                workConnect = new BaseDataMySql();
+                workConnect = new BaseDataMySql2();
                 break;
             default:
                 workConnect = null;

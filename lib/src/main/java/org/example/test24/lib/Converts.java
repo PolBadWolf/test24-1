@@ -1,4 +1,4 @@
-package org.example.lib;
+package org.example.test24.lib;
 
 public class Converts {
     public static void IntToBytes(int source, byte[] target, int lenghtSource, int offsetTarget) {

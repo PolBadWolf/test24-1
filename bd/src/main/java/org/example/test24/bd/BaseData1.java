@@ -24,17 +24,17 @@ public interface BaseData1 {
             return typeBaseDataString(typeBaseData);
         }
     }
-    static BaseData.TypeBaseData typeBaseDataCode(String nameTypeBaseData) {
-        BaseData.TypeBaseData typeBaseData;
+    static BaseData2.TypeBaseData typeBaseDataCode(String nameTypeBaseData) {
+        BaseData2.TypeBaseData typeBaseData;
         switch (nameTypeBaseData.toUpperCase()) {
             case "MS_SQL":
-                typeBaseData = BaseData.TypeBaseData.MS_SQL;
+                typeBaseData = BaseData2.TypeBaseData.MS_SQL;
                 break;
             case "MY_SQL":
-                typeBaseData = BaseData.TypeBaseData.MY_SQL;
+                typeBaseData = BaseData2.TypeBaseData.MY_SQL;
                 break;
             default:
-                typeBaseData = BaseData.TypeBaseData.ERROR;
+                typeBaseData = BaseData2.TypeBaseData.ERROR;
         }
         return typeBaseData;
     }
@@ -72,7 +72,7 @@ public interface BaseData1 {
     String getTypeBD();
     boolean testStuctBase(String ip, String portServer, String login, String password, String base);
     String[] getConnectListBd(String ip, String portServer, String login, String password) throws Exception;
-    ParametersSql getParametrsSql();
+    ParametersSql2 getParametrsSql();
     // запись
     void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception;
     // обновить пароль

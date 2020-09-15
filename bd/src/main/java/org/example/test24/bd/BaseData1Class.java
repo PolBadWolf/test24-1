@@ -7,7 +7,7 @@ import java.util.Date;
 
 abstract class BaseData1Class implements BaseData1 {
     protected Connection connection = null;
-    protected ParametersSql parametersSql = null;
+    protected ParametersSql2 parametersSql = null;
 
     @Override
     public abstract void setParametersSql(String[] fileNameSql);
@@ -50,7 +50,7 @@ abstract class BaseData1Class implements BaseData1 {
     }
 
     @Override
-    public ParametersSql getParametrsSql() {
+    public ParametersSql2 getParametrsSql() {
         return parametersSql;
     }
 

@@ -1,155 +1,139 @@
 package org.example.test24.bd;
 
 import java.util.Base64;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+
+import static org.example.test24.lib.MyLogger.myLog;
 
 public interface BaseData {
-    int MS_SQL = 0;
-    int MY_SQL = 1;
-    int ERROR = 99;
-    enum TypeBaseData {
-        MS_SQL  (BaseData.MS_SQL),
-        MY_SQL  (BaseData.MY_SQL),
-        ERROR   (BaseData.ERROR);
-        private int typeBaseData;
-        TypeBaseData(int typeBaseData) {
-            this.typeBaseData = typeBaseData;
-        }
-        public int getCodeTypeBaseData() {
-            return typeBaseData;
-        }
-        public String toString() {
-            return BaseDataClass.typeBaseDataString(typeBaseData);
-        }
-    }
-    // -------------------------
-    int OK = 0;
-    int UNEXPECTED_TYPE_BD = 1;
-    int DRIVER_ERROR = 2;
-    int CONNECT_PASS_ERROR = 3;
-    int CONNECT_BASE_ERROR = 4;
-    int CONNECT_ERROR = 5;
-    int QUERY_ERROR = 6;
-    int STRUCTURE_ERROR = 7;
-    int UNKNOWN_ERROR = 99;
+    // ==================== STATUS ====================
+    int STATUS_OK = 0;
+    int STATUS_PARAMETERS_LOAD_ERROR = 1;
+    int STATUS_PARAMETERS_SAVE_ERROR = 2;
+    int STATUS_PARAMETERS_ERROR = 3;
+    int STATUS_PARAMETERS_PASSWORD_ERROR = 4;
+    int STATUS_BASE_TYPE_ERROR = 5;
+    int STATUS_CONNECT_DRIVER_ERROR = 6;
+    int STATUS_CONNECT_PASS_ERROR = 7;
+    int STATUS_CONNECT_BASE_ERROR = 8;
+    int STATUS_CONNECT_ERROR = 9;
     enum Status {
-        OK                  (BaseData.OK),
-        UNEXPECTED_TYPE_BD  (BaseData.UNEXPECTED_TYPE_BD),
-        DRIVER_ERROR        (BaseData.DRIVER_ERROR),
-        CONNECT_PASS_ERROR  (BaseData.CONNECT_PASS_ERROR),
-        CONNECT_BASE_ERROR  (BaseData.CONNECT_BASE_ERROR),
-        CONNECT_ERROR       (BaseData.CONNECT_ERROR),
-        QUERY_ERROR         (BaseData.QUERY_ERROR),
-        STRUCTURE_ERROR     (BaseData.STRUCTURE_ERROR),
-        UNKNOWN_ERROR       (BaseData.UNKNOWN_ERROR);
-        private int codeStatus;
+        OK                          (STATUS_OK),
+        PARAMETERS_LOAD_ERROR       (STATUS_PARAMETERS_LOAD_ERROR),
+        PARAMETERS_SAVE_ERROR       (STATUS_PARAMETERS_SAVE_ERROR),
+        PARAMETERS_ERROR            (STATUS_PARAMETERS_ERROR),
+        PARAMETERS_PASSWORD_ERROR   (STATUS_PARAMETERS_PASSWORD_ERROR),
+        BASE_TYPE_ERROR             (STATUS_BASE_TYPE_ERROR),
+        CONNECT_DRIVER_ERROR        (STATUS_CONNECT_DRIVER_ERROR),
+        CONNECT_PASS_ERROR          (STATUS_CONNECT_PASS_ERROR),
+        CONNECT_BASE_ERROR          (STATUS_CONNECT_BASE_ERROR),
+        CONNECT_ERROR               (STATUS_CONNECT_ERROR);
+
+        int codeStatus;
+        int getCodeStatus() {
+            return codeStatus;
+        }
         Status(int codeStatus) {
             this.codeStatus = codeStatus;
         }
-        public int getCodeStatus() {
-            return codeStatus;
+    }
+    // ==================== TYPE BD ====================
+    int TYPEBD_MYSQL = 0;
+    int TYPEBD_MSSQL = 1;
+    int TYPEBD_ERROR = -1;
+    enum TypeBaseDate {
+        MY_SQL      (TYPEBD_MYSQL),
+        MS_SQL      (TYPEBD_MSSQL),
+        ERROR       (TYPEBD_ERROR);
+        int codeTypeBaseData;
+        int getCodeTypeBaseData() {
+            return codeTypeBaseData;
         }
-
-        @Override
-        public String toString() {
-            String status = "";
-            switch (codeStatus) {
-                case BaseData.OK:
-                    status = "OK";
+        TypeBaseDate(int codeTypeBaseData) {
+            this.codeTypeBaseData = codeTypeBaseData;
+        }
+        static void create(String typeBaseData, Consumer<TypeBaseDate> tbd) throws Exception {
+            if (typeBaseData == null) {
+                tbd.accept(TypeBaseDate.ERROR);
+                throw new Exception("ошибка типа БД (typeBaseData = null)");
+            }
+            switch (typeBaseData.toUpperCase()) {
+                case "MY_SQL":
+                    tbd.accept(TypeBaseDate.MY_SQL);
                     break;
-                case BaseData.UNEXPECTED_TYPE_BD:
-                    status = "UNEXPECTED_TYPE_BD";
-                    break;
-                case BaseData.DRIVER_ERROR:
-                    status = "DRIVER_ERROR";
-                    break;
-                case BaseData.CONNECT_PASS_ERROR:
-                    status = "CONNECT_PASS_ERROR";
-                    break;
-                case BaseData.CONNECT_BASE_ERROR:
-                    status = "CONNECT_BASE_ERROR";
-                    break;
-                case BaseData.QUERY_ERROR:
-                    status = "QUERY_ERROR";
-                    break;
-                case BaseData.STRUCTURE_ERROR:
-                    status = "STRUCTURE_ERROR";
+                case "MS_SQL":
+                    tbd.accept(TypeBaseDate.MS_SQL);
                     break;
                 default:
-                    status = "UNKNOWN_ERROR";
+                    tbd.accept(TypeBaseDate.ERROR);
+                    throw new Exception("ошибка типа БД (typeBaseData = " + typeBaseData + ")");
             }
-            return status;
         }
     }
-    // -------------------------
-    class Parameters {
-        String  ip;
-        String  port;
-        String  login;
-        String  password;
-        String  base;
-
-        public Parameters(String ip, String port, String login, String password, String base) {
-            this.ip = ip;
-            this.port = port;
-            this.login = login;
-            this.password = password;
-            this.base = base;
+    // ==================== PARAMETERS ====================
+    interface Parameters {
+        BaseData.Status getStat();
+        BaseData.TypeBaseDate getTypeBaseDate();
+        String getIpServer();
+        String getPortServer();
+        String getDataBase();
+        String getUser();
+        String getPassword();
+        void setPortServer(String portServer);
+        void setIpServer(String ipServer);
+        void setDataBase(String dataBase);
+        void setUser(String user);
+        void setPassword(String password);
+        static BaseData.Parameters create(BaseData.TypeBaseDate typeBaseDate) throws Exception {
+            return new ParametersSql(typeBaseDate);
         }
+        BaseData.Status load();
+        BaseData.Status save();
+        void setDefault();
     }
+    // ==================== CONFIG ====================
+    interface Config {
+        static Config create() { return new ParametersConfig(""); }
+        Status load1() throws Exception;
+        Status save1();
+        void setDefault();
+        String getPortName();
+        BaseData.TypeBaseDate getTypeBaseData();
+        void setPortName(String portName);
+        void setTypeBaseData(BaseData.TypeBaseDate typeBaseData);
+    }
+    // ==================== PASSWORD ====================
     class Password {
         public static String encoding(String password) {
             return new String(java.util.Base64.getEncoder().encode(password.getBytes()));
         }
-        public static String decoding(String password) throws Exception {
-            try {
-                return new String(Base64.getDecoder().decode(password));
-            } catch (java.lang.Throwable e) {
-                throw new Exception(e.getLocalizedMessage());
-            }
+        public static String decoding(String password) throws IllegalArgumentException {
+            return new String(Base64.getDecoder().decode(password));
         }
     }
-    // -----------------------------------------------------------
-    // создание тестового соединения
-    Status createTestConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
-    // тестовое соединение проверка структуры БД
-    Status checkCheckStructureBd(String base);
-    // -----------------------------------------------------------
-    // создание рабочего соединения
-    Status createWorkConnect(TypeBaseData typeBaseData, BaseData.Parameters parameters);
+    // ==================== SQL ====================
+    static BaseData create(Parameters parameters) throws Exception {
+        BaseData baseData;
+        switch (parameters.getTypeBaseDate().getCodeTypeBaseData()) {
+            case BaseData.TYPEBD_MYSQL:
+                baseData = new BaseDataMySql();
+                break;
+            case BaseData.TYPEBD_MSSQL:
+                baseData = new BaseDataMsSql();
+                break;
+            default:
+                throw new Exception("ошибка открытия БД - не верный тип БД");
+        }
+        return baseData;
+    }
+    // ===================================================
+    // открытие соединение с БД
+    void openConnect(Parameters parameters) throws Exception;
+    // чтение списка БД
+    String[] getListBase() throws Exception;
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
-    // список доступных БД из тестового соединения
-    boolean requestListBdFromTestConnect(Consumer<String[]> list);
-
-
-
-    String[] getListBd() throws Exception;
-
-
-
-
-    // -----------------------------------------------------------
-    // установка нового пароля пользователя
-    boolean setUserNewPassword(UserClass user, String newPassword);
-
-
-
-
-    /*
-    // проверка подключения (логин/пароль)
-    boolean checkConnect(TypeBaseData typeBaseData, Parameters parameters);
-    // проверка подключения (логин/пароль + база)
-    boolean checkConnectBase(TypeBaseData typeBaseData, Parameters parameters);
-    // проверка структуры базы
-    boolean checkStructBase(TypeBaseData typeBaseData, Parameters parameters);
-    // список пользователей в заданом подключении
-    String[] getListUsers(TypeBaseData typeBaseData, Parameters parameters);
-    // список пользовательских БД
-    String[] getListBaseData(TypeBaseData typeBaseData, Parameters parameters);
-    //-----------------
-    // список пользователей в текущем подкдлючении
-    String[] getListUsers();
-    */
+    // проверка структуры БД
+    boolean checkCheckStructureBd(String base) throws Exception;
 }

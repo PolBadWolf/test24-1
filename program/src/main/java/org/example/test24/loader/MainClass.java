@@ -1,5 +1,6 @@
 package org.example.test24.loader;
 
+import org.example.test24.lib.MyLogger;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
@@ -8,44 +9,53 @@ import org.example.test24.loader.dialog.StartFrame;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.ScreenFx;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import java.util.logging.Level;
 
 
 public class MainClass extends MainClassRequest {
     public static void main(String[] args) {
+        new MyLogger(Level.ALL, Level.OFF);
         Thread.currentThread().setName("Main class thread");
         new MainClass().start();
     }
     private void start() {
+        //myLog.log(Level.INFO, "я в Main.start()");
+//        myLog.log(Level.WARNING, "ww", new Exception("123"));
+        //BaseData.Parameters parameters = BaseData.Parameters.create(BaseData.TypeBaseDate.MY_SQL);
+        //BaseData.Status result = parameters.load();
+
         // создание объекта для БД
-        connBd = new BaseDataClass(/*new BaseData.CallBack() {}*/);
+        connBd = new BaseData2Class(/*new BaseData2.CallBack() {}*/);
         // создание основных объектов
         screenFx = ScreenFx.init(o->screenCloser());
         runner = Runner.main(o->runnerCloser());
         commPort = CommPort.main(o->commPortCloser());
 
         // пуск
-        startFrame = StartFrame.main(false, new StartFrameCallBack());
-
+        try {
+            startFrame = StartFrame.main(false, new StartFrameCallBack());
+        } catch (Exception exception) {
+            startFrame = null;
+        }
+        //myLog.log(Level.WARNING, "sdsd", new Exception("bla-bla-bla"));
 
         /*
         int testStat1 = 99, testStat2 = 99, testStat3, testStat4;
         String[] listBd;
         UserClass[] listUsers;
 
-        testStat1 = connBd.createTestConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL,
-                new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas1")
+        testStat1 = connBd.createTestConnect(org.example.test24.bd.BaseData2.TypeBaseData.MY_SQL,
+                new org.example.test24.bd.BaseData2.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas1")
         );
-        if (testStat1 == org.example.test24.bd.BaseData.OK) {
+        if (testStat1 == org.example.test24.bd.BaseData2.OK) {
             listBd = connBd.testConnectListBd();
         } else {
             listBd = null;
         }
-        testStat2 = connBd.createWorkConnect(org.example.test24.bd.BaseData.TypeBaseData.MY_SQL,
-                new org.example.test24.bd.BaseData.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas2")
+        testStat2 = connBd.createWorkConnect(org.example.test24.bd.BaseData2.TypeBaseData.MY_SQL,
+                new org.example.test24.bd.BaseData2.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas2")
         );
-        if (testStat2 == org.example.test24.bd.BaseData.OK) {
+        if (testStat2 == org.example.test24.bd.BaseData2.OK) {
             try {
                 listUsers = connBd.getListUsers(false);
             } catch (Exception e) {
@@ -178,30 +188,30 @@ public class MainClass extends MainClassRequest {
         }
         // создание объекта параметров соединения с БД
         @Override
-        public ParametersSql createParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+        public ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
             return MainClass.this.createParametersSql(typeBaseData);
         }
 
         // запрос параметров соединения с БД
         @Override
-        public ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+        public ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
             return MainClass.this.requestParametersSql(typeBaseData);
         }
         // -----------------------------------------------------------
         // создание тестого соединения
         @Override
-        public BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        public BaseData2.Status createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
             return MainClass.this.createTestConnectBd(typeBaseData, parameters);
         }
         // тестовое соединение проверка структуры БД
         @Override
-        public BaseData.Status checkCheckStructureBd(String base) {
+        public BaseData2.Status checkCheckStructureBd(String base) {
             return MainClass.this.checkCheckStructureBd(base);
         }
         // -----------------------------------------------------------
         // создание рабочего соединения
         @Override
-        public BaseData.Status createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+        public BaseData2.Status createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
             return MainClass.this.createWorkConnect(typeBaseData, parameters);
         }
         // чтение списка пользователей
@@ -225,22 +235,22 @@ public class MainClass extends MainClassRequest {
         // ================================== работа с БД ====================================
         // чтение параметров
         @Override
-        public int requestParametersSql(BaseData.TypeBaseData typeBaseData, Consumer<ParametersSql> sql) {
-            if (typeBaseData == BaseData.TypeBaseData.ERROR) {
-                return ParametersSql.UNKNOWN_ERROR;
+        public int requestParametersSql(BaseData2.TypeBaseData typeBaseData, Consumer<ParametersSql2> sql) {
+            if (typeBaseData == BaseData2.TypeBaseData.ERROR) {
+                return ParametersSql2.UNKNOWN_ERROR;
             }
-            ParametersSql parametersSql = new ParametersSql(fileNameSql[typeBaseData.getTypeBaseData()], typeBaseData);
+            ParametersSql2 parametersSql = new ParametersSql2(fileNameSql[typeBaseData.getTypeBaseData()], typeBaseData);
             parametersSql.load();
             sql.accept(parametersSql);
-            return ParametersSql.OK;
+            return ParametersSql2.OK;
         }
 
 
         // установка тестого соединения
         @Override
-        public int createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
-            if (connBd == null || typeBaseData == BaseData.TypeBaseData.ERROR) {
-                return BaseData.CONNECT_ERROR;
+        public int createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
+            if (connBd == null || typeBaseData == BaseData2.TypeBaseData.ERROR) {
+                return BaseData2.CONNECT_ERROR;
             }
             return connBd.createTestConnect(typeBaseData, parameters);
         }
@@ -256,9 +266,9 @@ public class MainClass extends MainClassRequest {
         }
         // создание рабочего соединения
         @Override
-        public int createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
-            if (connBd == null || typeBaseData == BaseData.TypeBaseData.ERROR) {
-                return BaseData.CONNECT_ERROR;
+        public int createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
+            if (connBd == null || typeBaseData == BaseData2.TypeBaseData.ERROR) {
+                return BaseData2.CONNECT_ERROR;
             }
             return connBd.createWorkConnect(typeBaseData, parameters);
         }
@@ -321,7 +331,7 @@ public class MainClass extends MainClassRequest {
         }
 
         @Override
-        public void saveConfigTypeBaseData(BaseData.TypeBaseData typeBaseData) {
+        public void saveConfigTypeBaseData(BaseData2.TypeBaseData typeBaseData) {
             parametersConfig.setTypeBaseData(typeBaseData);
             parametersConfig.save();
         }
@@ -332,7 +342,7 @@ public class MainClass extends MainClassRequest {
         }
 
         @Override
-        public BaseData.TypeBaseData loadConfigTypeBaseData() {
+        public BaseData2.TypeBaseData loadConfigTypeBaseData() {
             return parametersConfig.getTypeBaseData();
         }
 

@@ -1,17 +1,5 @@
 package org.example.test24.loader.dialog;
 
-import org.example.lib.MySwingUtil;
-import org.example.lib.functioninterface.ProcedureBoolean;
-import org.example.lib.functioninterface.ProcedureInteger;
-import org.example.test24.bd.BaseData;
-import org.example.test24.bd.ParametersSql;
-import org.example.test24.bd.UserClass;
-
-import javax.swing.*;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.function.Consumer;
-
 class FrameParrent_Metods extends FrameParrent_Vars {
     // ================================================
     // ================================================
@@ -26,7 +14,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
     protected boolean beginInitParametersSql() {
         /*// тип БД
         typeBaseData = callBack.getTypeBaseDataFromConfig(null);
-        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
+        if (typeBaseData == BaseData2.TypeBaseData.ERROR) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
@@ -34,7 +22,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         int result;
         // чтение параметров из конфига
         parametersSql = callBack.getParametersSql(typeBaseData);
-        if (parametersSql.getStat() != ParametersSql.OK) {
+        if (parametersSql.getStat() != ParametersSql2.OK) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
@@ -43,14 +31,14 @@ class FrameParrent_Metods extends FrameParrent_Vars {
     }
     // инициация тестового соединения c БД
     /*
-    protected int initTestConnectBd(ParametersSql parametersSql) {
+    protected int initTestConnectBd(ParametersSql2 parametersSql) {
         // проверка паметров на валидность
-        if (parametersSql.getStat() != ParametersSql.Status.OK) {
-            return BaseData.ERROR;
+        if (parametersSql.getStat() != ParametersSql2.Status.OK) {
+            return BaseData2.ERROR;
         }
         // установка тестового соединения
         return callBack.createTestConnectBd(
-                parametersSql.typeBaseData, new BaseData.Parameters(
+                parametersSql.typeBaseData, new BaseData2.Parameters(
                         parametersSql.urlServer,
                         parametersSql.portServer,
                         parametersSql.user,
@@ -63,7 +51,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
 
          // установка тестового соединения
         return callBack.createTestConnectBd(typeBaseData,
-                new BaseData.Parameters(
+                new BaseData2.Parameters(
                         parametersSql.urlServer,
                         parametersSql.portServer,
                         parametersSql.user,
@@ -76,14 +64,14 @@ class FrameParrent_Metods extends FrameParrent_Vars {
 
         // проверка структуры БД
         result = callBack.testConnectCheckStructure(parametersSql.dataBase);
-        if (result != BaseData.OK) {
+        if (result != BaseData2.OK) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
         }
         // установка рабочего соединения
         result = callBack.createWorkConnect(typeBaseData,
-                new BaseData.Parameters(
+                new BaseData2.Parameters(
                         parametersSql.urlServer,
                         parametersSql.portServer,
                         parametersSql.user,
@@ -91,7 +79,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
                         parametersSql.dataBase
                 )
         );
-        if (result != BaseData.OK) {
+        if (result != BaseData2.OK) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
@@ -112,7 +100,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         int result;
         // установка тестового соединения
         result = callBack.createTestConnectBd(typeBaseData,
-                new BaseData.Parameters(
+                new BaseData2.Parameters(
                         parametersSql.urlServer,
                         parametersSql.portServer,
                         parametersSql.user,
@@ -120,7 +108,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
                         parametersSql.dataBase
                 )
         );
-        if (result != BaseData.OK) {
+        if (result != BaseData2.OK) {
             return new String[0];
         }
 
@@ -131,14 +119,14 @@ class FrameParrent_Metods extends FrameParrent_Vars {
 
         // проверка структуры БД
         result = callBack.testConnectCheckStructure(parametersSql.dataBase);
-        if (result != BaseData.OK) {
+        if (result != BaseData2.OK) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
         }
         // установка рабочего соединения
         result = callBack.createWorkConnect(typeBaseData,
-                new BaseData.Parameters(
+                new BaseData2.Parameters(
                         parametersSql.urlServer,
                         parametersSql.portServer,
                         parametersSql.user,
@@ -146,7 +134,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
                         parametersSql.dataBase
                 )
         );
-        if (result != BaseData.OK) {
+        if (result != BaseData2.OK) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
@@ -167,14 +155,14 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         int result;
         // проверка структуры БД
         result = callBack.testConnectCheckStructure(parametersSql.dataBase);
-        if (result != BaseData.OK) {
+        if (result != BaseData2.OK) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
         }
         // установка рабочего соединения
         result = callBack.createWorkConnect(typeBaseData,
-                new BaseData.Parameters(
+                new BaseData2.Parameters(
                         parametersSql.urlServer,
                         parametersSql.portServer,
                         parametersSql.user,
@@ -182,7 +170,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
                         parametersSql.dataBase
                 )
         );
-        if (result != BaseData.OK) {
+        if (result != BaseData2.OK) {
             listUsers = new UserClass[0];
             flCheckSql = false;
             return false;
@@ -202,13 +190,13 @@ class FrameParrent_Metods extends FrameParrent_Vars {
     }
      */
     // получения списка пользователей параметры из конфига
-    /*protected boolean getListUserFromConfig(Consumer<ParametersSql> setParameters) {
-        BaseData.TypeBaseData typeBaseData;
-        ParametersSql parametersSql;
+    /*protected boolean getListUserFromConfig(Consumer<ParametersSql2> setParameters) {
+        BaseData2.TypeBaseData typeBaseData;
+        ParametersSql2 parametersSql;
         int resultInt;
         // чтение из конфига тип БД
         typeBaseData = callBack.getTypeBaseDataFromConfig();
-        if (typeBaseData == BaseData.TypeBaseData.ERROR) {
+        if (typeBaseData == BaseData2.TypeBaseData.ERROR) {
             listUsers = new UserClass[0];
             MySwingUtil.showMessage(frame, "чтение из конфига тип БД", "ошибка чтения типа БД из конфига", 5_000);
             return false;
@@ -216,28 +204,28 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         // загрузка параметров соединения
         parametersSql = callBack.getParametersSql(typeBaseData);
         // проверка параметров соединения
-        if (parametersSql.getStat() != ParametersSql.OK) {
+        if (parametersSql.getStat() != ParametersSql2.OK) {
             listUsers = new UserClass[0];
             MySwingUtil.showMessage(frame, "загрузка параметров соединения", "ошибка получения параметров соединения с БД", 5_000);
             return false;
         }
         // попытка тестового соединения
         resultInt = initTestConnectBd(parametersSql);
-        if (resultInt != BaseData.OK) {
+        if (resultInt != BaseData2.OK) {
             listUsers = new UserClass[0];
             MySwingUtil.showMessage(frame, "попытка тестового соединения", "ошибка соединения с БД", 5_000);
             return false;
         }
         // проверка структуры БД
         resultInt = callBack.testConnectCheckStructure(parametersSql.dataBase);
-        if (resultInt != BaseData.OK) {
+        if (resultInt != BaseData2.OK) {
             listUsers = new UserClass[0];
             MySwingUtil.showMessage(frame, "проверка структуры БД", "структура БД нарушена", 5_000);
             return false;
         }
         // попытка рабочего соединения
         resultInt = callBack.createWorkConnect(parametersSql.typeBaseData,
-                new BaseData.Parameters(
+                new BaseData2.Parameters(
                         parametersSql.urlServer,
                         parametersSql.portServer,
                         parametersSql.user,
@@ -245,7 +233,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
                         parametersSql.dataBase
                 )
         );
-        if (resultInt != BaseData.OK) {
+        if (resultInt != BaseData2.OK) {
             listUsers = new UserClass[0];
             MySwingUtil.showMessage(frame, "попытка рабочего соединения", "ошибка соединения с БД", 5_000);
             return false;

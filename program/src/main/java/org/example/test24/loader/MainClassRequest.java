@@ -2,15 +2,10 @@ package org.example.test24.loader;
 
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
-import org.example.test24.bd.BaseData;
-import org.example.test24.bd.BaseData1;
-import org.example.test24.bd.ParametersSql;
-import org.example.test24.bd.UserClass;
+import org.example.test24.bd.*;
 import org.example.test24.loader.dialog.StartFrame;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.ScreenFx;
-
-import java.util.function.BiConsumer;
 
 class MainClassRequest {
     // глобальные переменные и объекты
@@ -24,7 +19,7 @@ class MainClassRequest {
     protected CommPort commPort;
     protected StartFrame startFrame;
     protected BaseData1 bdSql;
-    protected BaseData connBd;
+    protected BaseData2 connBd;
     // =============== недоступные переменные ==============
     // имя файла конфигурации
     final private String fileNameConfig = "config.txt";
@@ -41,7 +36,7 @@ class MainClassRequest {
         return parametersConfig;
     }
     // создание объекта параметров соединения с БД
-    protected ParametersSql createParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+    protected ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
         String fileNameParameters;
         switch (typeBaseData) {
             case MY_SQL:
@@ -53,10 +48,10 @@ class MainClassRequest {
             default:
                 throw new Exception("Неизвестный тип БД: " + typeBaseData.toString());
         }
-        return new ParametersSql(fileNameParameters, typeBaseData);
+        return new ParametersSql2(fileNameParameters, typeBaseData);
     }
     // запрос параметров соединения с БД
-    protected ParametersSql requestParametersSql(BaseData.TypeBaseData typeBaseData) throws Exception {
+    protected ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
         String fileNameParameters;
         switch (typeBaseData) {
             case MY_SQL:
@@ -68,25 +63,25 @@ class MainClassRequest {
             default:
                 throw new Exception("Неизвестный тип БД: " + typeBaseData.toString());
         }
-        ParametersSql parametersSql = new ParametersSql(fileNameParameters, typeBaseData);
-        ParametersSql.Status status = parametersSql.load();
-        if (status != ParametersSql.Status.OK ) {
+        ParametersSql2 parametersSql = new ParametersSql2(fileNameParameters, typeBaseData);
+        ParametersSql2.Status status = parametersSql.load();
+        if (status != ParametersSql2.Status.OK ) {
             throw new Exception("ошибка приема параметов соединения с БД: " + status.toString());
         }
         return parametersSql;
     }
     // -----------------------------------------------------------
     // создание тестого соединения
-    protected BaseData.Status createTestConnectBd(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+    protected BaseData2.Status createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
         return connBd.createTestConnect(typeBaseData, parameters);
     }
     // тестовое соединение проверка структуры БД
-    protected BaseData.Status checkCheckStructureBd(String base) {
+    protected BaseData2.Status checkCheckStructureBd(String base) {
         return connBd.checkCheckStructureBd(base);
     }
     // -----------------------------------------------------------
     // создание рабочего соединения
-    protected BaseData.Status createWorkConnect(BaseData.TypeBaseData typeBaseData, BaseData.Parameters parameters) {
+    protected BaseData2.Status createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
         return connBd.createWorkConnect(typeBaseData, parameters);
     }
     // чтение списка пользователей
