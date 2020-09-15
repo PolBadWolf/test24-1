@@ -48,6 +48,12 @@ public class StartFrame {
     boolean flagConnecting = false;
     // целостности структуры БД
     boolean flagStructureIntegrity = false;
+    // список пользователей / = [0] for false
+    private UserClass[] listUsers = new UserClass[0];
+    // доступность ком порта
+    boolean flagAvailabilityCommPort = false;
+
+
 
     FrameCallBack callBack;
     JFrame frame;
@@ -59,8 +65,6 @@ public class StartFrame {
     BaseData.TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
     BaseData connBD;
-    // список пользователей
-    private UserClass[] listUsers;
 
 
     public static StartFrame main(boolean statMainWork, FrameCallBack callBack) throws Exception {
@@ -196,17 +200,6 @@ public class StartFrame {
         // инициализация работы с БД и данных с ней связанных
         initBaseData(typeBaseDate);
         // *************************************************************************************
-        System.out.println("список пользователей, всего " + listUsers.length + " :");
-        Arrays.stream(listUsers).sorted(new Comparator<UserClass>() {
-            @Override
-            public int compare(UserClass a, UserClass b) {
-                return a.name.compareTo(b.name);
-            }
-        }).forEach(user -> System.out.println(user.toString()));
-        // *************************************************************************************
-
-
-
         // проверка ком порта
         try {
             config3 = null;
