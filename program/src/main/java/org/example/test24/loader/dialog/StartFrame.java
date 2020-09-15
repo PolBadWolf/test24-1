@@ -40,17 +40,27 @@ public class StartFrame {
     //
     private TuningFrame tuningFrame;
 
+    // ===============================================
+    //             флаги
+    // основной модуль запущен
     boolean statMainWork;
+    // соединение установлено
+    boolean flagConnecting = false;
+    // целостности структуры БД
+    boolean flagStructureIntegrity = false;
+
     FrameCallBack callBack;
     JFrame frame;
     // флаг структурной целостности БД
-    protected boolean flCheckSql = false;
+    private boolean flCheckSql = false;
     // флаг доступности ком портов
-    protected boolean flCheckCommPort = false;
+    private boolean flCheckCommPort = false;
 
     BaseData.TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
     BaseData connBD;
+    // список пользователей
+    private UserClass[] listUsers;
 
 
     public static StartFrame main(boolean statMainWork, FrameCallBack callBack) throws Exception {
@@ -79,8 +89,7 @@ public class StartFrame {
     }
 
 
-    private BaseData.Parameters getParametersBaseData(BaseData.TypeBaseDate typeBaseDate) throws Exception
-    {
+    private BaseData.Parameters getParametersBaseData(BaseData.TypeBaseDate typeBaseDate) throws Exception {
         if (typeBaseDate == BaseData.TypeBaseDate.ERROR) {
             throw new Exception("ошибка типа базы данных");
         }
@@ -110,6 +119,9 @@ public class StartFrame {
 
     private void initBaseData(BaseData.TypeBaseDate typeBaseDate) {
         // здесь сбросить флаги с БД
+        flagConnecting = false;
+        flagStructureIntegrity = false;
+        listUsers = new UserClass[0];
         // ----
         boolean flBoolean;
         // загрузить параметры
@@ -124,19 +136,27 @@ public class StartFrame {
         connBD = null;
         try {
             connBD = getConnect(parameters);
+            flagConnecting = true;
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка соединения с БД", e);
             return;
         }
         // проверка структуры БД
         try {
-            flBoolean = connBD.checkCheckStructureBd(parameters.getDataBase());
+            flagStructureIntegrity = connBD.checkCheckStructureBd(parameters.getDataBase());
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка соединения с БД", e);
             return;
         }
-        if (!flBoolean) {
+        if (!flagStructureIntegrity) {
             myLog.log(Level.WARNING, "ошибка структуры БД");
+            return;
+        }
+        // чтение списка пользователей
+        try {
+            listUsers = connBD.getListUsers(true);
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка соединения с БД", e);
             return;
         }
     }
@@ -173,93 +193,23 @@ public class StartFrame {
         }
         // тип БД
         typeBaseDate = config.getTypeBaseData();
-        //
+        // инициализация работы с БД и данных с ней связанных
         initBaseData(typeBaseDate);
-
-
-
-        int parametersSqlError = 1;
-        UserClass[] listUsers = new UserClass[0];
-        // ======================================
-        // запрос конфигурации
-        config3 = callBack.getParametersConfig();
-        // тип БД
-        typeBaseData3 = null;//config3.getTypeBaseData();
-        if (typeBaseData3 == BaseData2.TypeBaseData.ERROR) {
-            //throw new Exception("ошибка типа базы данных");
-        }
-        // загрузка параметров БД
-        try {
-            parametersSql2 = callBack.requestParametersSql(typeBaseData3);
-            parametersSqlError = 0;
-        } catch (Exception e) {
-            System.out.println("Ошибка загрузки параметров соединения с БД" + e.getMessage());
-            parametersSqlError = 1;
-        }
-        if (parametersSqlError == 0) {
-            // установка тестового соединения
-            resultBaseData = callBack.createTestConnectBd(
-                    parametersSql2.typeBaseData,
-                    new BaseData2.Parameters(
-                            parametersSql2.urlServer,
-                            parametersSql2.portServer,
-                            parametersSql2.user,
-                            parametersSql2.password,
-                            parametersSql2.dataBase
-                    )
-            );
-            if (resultBaseData != BaseData2.Status.OK) {
-                System.out.println("ошибка установки тестового соединения");
-                flCheckSql = false;
-                listUsers = new UserClass[0];
-            } else {
-                // тестовое соединение проверка структуры БД
-                resultBaseData = callBack.checkCheckStructureBd(parametersSql2.dataBase);
-                if (resultBaseData == BaseData2.Status.OK) {
-                    flCheckSql = true;
-                } else {
-                    System.out.println("нарушена целостность структуры БД");
-                    flCheckSql = false;
-                    listUsers = new UserClass[0];
-                }
-            }
-            if (flCheckSql) {
-                // создание рабочего соединения
-                resultBaseData = callBack.createWorkConnect(
-                        parametersSql2.typeBaseData,
-                        new BaseData2.Parameters(
-                                parametersSql2.urlServer,
-                                parametersSql2.portServer,
-                                parametersSql2.user,
-                                parametersSql2.password,
-                                parametersSql2.dataBase
-                        )
-                );
-                if (resultBaseData != BaseData2.Status.OK) {
-                    System.out.println("ошибка установки рабочего соединения");
-                    listUsers = new UserClass[0];
-                } {
-                    // чтение списка пользователей
-                    try {
-                        listUsers = callBack.getListUsers(true);
-                    } catch (Exception e) {
-                        listUsers = new UserClass[0];
-                        System.out.println("Ошибка чтения списка пользователей: " + e.getMessage());
-                    }
-                }
-            }
-            // *************************************************************************************
-            System.out.println("список пользователей, всего " + listUsers.length + " :");
-            Arrays.stream(listUsers).sorted(new Comparator<UserClass>() {
-                @Override
-                public int compare(UserClass a, UserClass b) {
-                    return a.name.compareTo(b.name);
-                }
-            }).forEach(user -> System.out.println(user.toString()));
-        }
         // *************************************************************************************
+        System.out.println("список пользователей, всего " + listUsers.length + " :");
+        Arrays.stream(listUsers).sorted(new Comparator<UserClass>() {
+            @Override
+            public int compare(UserClass a, UserClass b) {
+                return a.name.compareTo(b.name);
+            }
+        }).forEach(user -> System.out.println(user.toString()));
+        // *************************************************************************************
+
+
+
         // проверка ком порта
         try {
+            config3 = null;
             flCheckCommPort = callBack.isCheckCommPort(statMainWork, config3.getPortName());
         } catch (Exception e) {
             System.out.println("Ошибка поверки ком порта: " + e.getMessage());

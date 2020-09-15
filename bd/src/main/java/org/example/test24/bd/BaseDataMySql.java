@@ -92,7 +92,7 @@ class BaseDataMySql extends BaseDataParent {
         PreparedStatement statement;
         ResultSet resultSet;
         String sample;
-        int count = 0, len;
+        int countColumns = 0, sizeColumns = listColumns.size(), len;
         try {
             statement = connection.prepareStatement("SELECT\n" +
                     "COLUMN_NAME\n" +
@@ -110,13 +110,28 @@ class BaseDataMySql extends BaseDataParent {
         }
         try {
             while (resultSet.next()) {
+                countColumns++;
                 sample = resultSet.getString(1);
-                count++;
-
+                len = listColumns.size();
+                if (len == 0) break;
+                for (int i = 0; i < len; i++) {
+                    if (listColumns.get(i).equals(sample)) {
+                        listColumns.remove(i);
+                        break;
+                    }
+                }
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            myLog.log(Level.SEVERE, "ошибка проверки структуры таблицы", e);
+            return false;
         }
-        return false;
+        boolean stat = (countColumns == sizeColumns) && (listColumns.size() == 0);
+        try {
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            myLog.log(Level.WARNING, "ошибка проверки структуры таблицы", e);
+        }
+        return stat;
     }
 }

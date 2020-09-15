@@ -50,14 +50,14 @@ class BaseDataParent implements BaseData {
             if (actual) {
                 result = statement.executeQuery(
                         "SELECT id, date_reg, date_unreg, name, password, rang " +
-                                "FROM " + tab + " " +
+                                "FROM " + baseDat + "." + tab + " " +
                                 "WHERE (date_unreg IS NULL) " +
                                 "ORDER BY id "
                 );
             } else {
                 result = statement.executeQuery(
                         "SELECT id, date_reg, date_unreg, name, password, rang " +
-                                "FROM " + tab + " " +
+                                "FROM " + baseDat + "." + tab + " " +
                                 "ORDER BY id "
                 );
             }
@@ -133,6 +133,19 @@ class BaseDataParent implements BaseData {
                         "tik_back",
                         "tik_stop",
                         "dis"
+                ))
+        );
+        // table_users
+        tableFl2 = checkCheckStructureTable(
+                base,
+                "table_users",
+                new ArrayList(Arrays.asList(
+                        "id",
+                        "date_reg",
+                        "date_unreg",
+                        "name",
+                        "password",
+                        "rang"
                 ))
         );
         return tableFl1 && tableFl2 && tableFl3;
