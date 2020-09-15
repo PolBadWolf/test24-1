@@ -14,15 +14,15 @@ import java.util.logging.Level;
 
 public class MainClass extends MainClassRequest {
     public static void main(String[] args) {
-        new MyLogger(Level.ALL, Level.INFO);
+        new MyLogger(Level.ALL, Level.OFF);
         Thread.currentThread().setName("Main class thread");
         new MainClass().start();
     }
     private void start() {
         //myLog.log(Level.INFO, "я в Main.start()");
 //        myLog.log(Level.WARNING, "ww", new Exception("123"));
-        BaseData.Parameters parameters = BaseData.Parameters.create(BaseData.TypeBaseDate.MY_SQL);
-        BaseData.Status result = parameters.load();
+        //BaseData.Parameters parameters = BaseData.Parameters.create(BaseData.TypeBaseDate.MY_SQL);
+        //BaseData.Status result = parameters.load();
 
         // создание объекта для БД
         connBd = new BaseData2Class(/*new BaseData2.CallBack() {}*/);

@@ -1,6 +1,7 @@
 package org.example.test24.bd;
 
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,16 +16,14 @@ class BaseDataMySql extends BaseDataParent {
     }
     // открытие соединение с БД
     @Override
-    public BaseData.Status createConnect(Parameters parameters) {
+    public void openConnect(Parameters parameters) throws Exception {
         // подключение драйвера
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            myLog.log(Level.SEVERE, "ошибка подключения драйвера", e);
-            return Status.CONNECT_DRIVER_ERROR;
+            throw new Exception("ошибка подключения драйвера", e);
         }
         // установка параметров соединения
-        // подключение без БД
         String connectionUrl = "jdbc:mysql://%1$s:%2$s";
         String connString = String.format(connectionUrl
                 , parameters.getIpServer()
@@ -38,23 +37,9 @@ class BaseDataMySql extends BaseDataParent {
                     parameters.getPassword()
             );
         } catch (SQLException e) {
-            BaseData.Status stat;
-            switch (e.getErrorCode()) {
-                case 1045:
-                    myLog.log(Level.SEVERE, "ошибка пароля при подключении к БД", e);
-                    stat = BaseData.Status.CONNECT_PASS_ERROR;
-                    break;
-                case 1049:
-                    myLog.log(Level.SEVERE, "ошибка подключения к БД", e);
-                    stat = BaseData.Status.CONNECT_BASE_ERROR;
-                    break;
-                default:
-                    myLog.log(Level.SEVERE, "ошибка подключения к БД", e);
-                    stat = BaseData.Status.CONNECT_ERROR;
-            }
-            return stat;
+            throw new Exception("ошибка соединения с БД", e);
         }
-        return Status.OK;
+        this.baseDat = parameters.getDataBase();
     }
     // чтение списка БД
     @Override
@@ -100,5 +85,38 @@ class BaseDataMySql extends BaseDataParent {
             throw new Exception(e);
         }
         return list.toArray(new String[0]);
+    }
+    // проверка структуры таблицы
+    // проверка структуры таблицы
+    protected boolean checkCheckStructureTable(String base, String table, ArrayList<String> listColumns) {
+        PreparedStatement statement;
+        ResultSet resultSet;
+        String sample;
+        int count = 0, len;
+        try {
+            statement = connection.prepareStatement("SELECT\n" +
+                    "COLUMN_NAME\n" +
+                    "FROM information_schema.COLUMNS\n" +
+                    "WHERE\tinformation_schema.COLUMNS.TABLE_SCHEMA = ?\n" +
+                    "AND information_schema.COLUMNS.TABLE_NAME = ?\n" +
+                    "ORDER BY information_schema.COLUMNS.ORDINAL_POSITION ASC"
+            );
+            statement.setString(1, base);
+            statement.setString(2, table);
+            resultSet = statement.executeQuery();
+        } catch (SQLException e) {
+            myLog.log(Level.SEVERE, "ошибка проверки структуры таблицы", e);
+            return false;
+        }
+        try {
+            while (resultSet.next()) {
+                sample = resultSet.getString(1);
+                count++;
+
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
     }
 }

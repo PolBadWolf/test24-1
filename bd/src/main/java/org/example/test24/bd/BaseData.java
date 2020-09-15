@@ -53,11 +53,10 @@ public interface BaseData {
         TypeBaseDate(int codeTypeBaseData) {
             this.codeTypeBaseData = codeTypeBaseData;
         }
-        static Status create(String typeBaseData, Consumer<TypeBaseDate> tbd) {
+        static void create(String typeBaseData, Consumer<TypeBaseDate> tbd) throws Exception {
             if (typeBaseData == null) {
-                myLog.log(Level.WARNING, "ошибка типа БД (typeBaseData = null)");
                 tbd.accept(TypeBaseDate.ERROR);
-                return Status.BASE_TYPE_ERROR;
+                throw new Exception("ошибка типа БД (typeBaseData = null)");
             }
             switch (typeBaseData.toUpperCase()) {
                 case "MY_SQL":
@@ -67,11 +66,9 @@ public interface BaseData {
                     tbd.accept(TypeBaseDate.MS_SQL);
                     break;
                 default:
-                    myLog.log(Level.WARNING, "ошибка типа БД (typeBaseData = " + typeBaseData + ")");
                     tbd.accept(TypeBaseDate.ERROR);
-                    return Status.BASE_TYPE_ERROR;
+                    throw new Exception("ошибка типа БД (typeBaseData = " + typeBaseData + ")");
             }
-            return Status.OK;
         }
     }
     // ==================== PARAMETERS ====================
@@ -88,8 +85,8 @@ public interface BaseData {
         void setDataBase(String dataBase);
         void setUser(String user);
         void setPassword(String password);
-        static BaseData.Parameters create(BaseData.TypeBaseDate typeBaseDate) {
-            return ParametersSql.create(typeBaseDate);
+        static BaseData.Parameters create(BaseData.TypeBaseDate typeBaseDate) throws Exception {
+            return new ParametersSql(typeBaseDate);
         }
         BaseData.Status load();
         BaseData.Status save();
@@ -98,8 +95,9 @@ public interface BaseData {
     // ==================== CONFIG ====================
     interface Config {
         static Config create() { return new ParametersConfig(""); }
-        Status load1();
+        Status load1() throws Exception;
         Status save1();
+        void setDefault();
         String getPortName();
         BaseData.TypeBaseDate getTypeBaseData();
         void setPortName(String portName);
@@ -125,16 +123,17 @@ public interface BaseData {
                 baseData = new BaseDataMsSql();
                 break;
             default:
-                myLog.log(Level.SEVERE, "ошибка открытия БД - не верный тип БД");
                 throw new Exception("ошибка открытия БД - не верный тип БД");
         }
         return baseData;
     }
     // ===================================================
     // открытие соединение с БД
-    BaseData.Status createConnect(Parameters parameters);
+    void openConnect(Parameters parameters) throws Exception;
     // чтение списка БД
     String[] getListBase() throws Exception;
     // чтение списка пользователей
     UserClass[] getListUsers(boolean actual) throws Exception;
+    // проверка структуры БД
+    boolean checkCheckStructureBd(String base) throws Exception;
 }

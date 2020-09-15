@@ -49,21 +49,25 @@ public class ParametersConfig implements BaseData.Config {
     }
 
     @Override
-    public BaseData.Status load1() {
+    public BaseData.Status load1() throws Exception {
         final BaseData.TypeBaseDate[] typeBaseDate = new BaseData.TypeBaseDate[1];
         BaseData.Status status;
         Properties properties = new Properties();
         try {
             properties.load(new BufferedReader(new FileReader(fileNameConfig)));
         } catch (IOException e) {
-            myLog.log(Level.SEVERE, "ошибка чтения файла конфигурации", e);
-            e.printStackTrace();
+            throw (Exception) e;
         }
         portName = properties.getProperty("CommPort", "COM2").toUpperCase();
-        status = BaseData.TypeBaseDate.create(
-                properties.getProperty("DataBase").toUpperCase(),
-                t -> typeBaseDate[0] = t
-        );
+        try {
+            BaseData.TypeBaseDate.create(
+                    properties.getProperty("DataBase").toUpperCase(),
+                    t -> typeBaseDate[0] = t
+            );
+            status = BaseData.Status.OK;
+        } catch (Exception exception) {
+            status = BaseData.Status.BASE_TYPE_ERROR;
+        }
         this.typeBaseData = typeBaseDate[0];
         return status;
     }
@@ -112,7 +116,7 @@ public class ParametersConfig implements BaseData.Config {
         return status;
     }
 
-
+    @Override
     public void setDefault() {
         portName = "com2";
         typeBaseData = BaseData.TypeBaseDate.MY_SQL;

@@ -68,25 +68,20 @@ class ParametersSql implements BaseData.Parameters {
         this.password = password;
     }
     // ------------------------------------------------
-    static BaseData.Parameters create(BaseData.TypeBaseDate typeBaseDate) {
-        return new ParametersSql(typeBaseDate);
-    }
-    ParametersSql(BaseData.TypeBaseDate typeBaseDate) {
-        myLog.log(Level.INFO, "выбор файла конфигурации в зависимости от типа");
+    ParametersSql(BaseData.TypeBaseDate typeBaseDate) throws Exception {
         switch (typeBaseDate.codeTypeBaseData) {
             case BaseData.TYPEBD_MSSQL:
                 fileName = fileNameMsSql;
                 break;
-            case BaseData.TYPEBD_ERROR:
-                myLog.log(Level.WARNING, "ошибочный тип БД, выбран MySql");
-                typeBaseDate = BaseData.TypeBaseDate.MY_SQL;
             case BaseData.TYPEBD_MYSQL:
                 fileName = fileNameMySql;
                 break;
+            case BaseData.TYPEBD_ERROR:
+                this.stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
+                throw new Exception("ошибочный тип БД");
         }
-        this.stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
         this.typeBaseDate = typeBaseDate;
-        myLog.log(Level.INFO, "выбран \"" + typeBaseDate.toString() + "\" тип БД");
+        this.stat = BaseData.Status.OK;
     }
     // ------------------------------------------------
     @Override

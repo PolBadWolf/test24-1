@@ -14,7 +14,7 @@ import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
 
-public class StartFrame extends StartFrame_Vars {
+public class StartFrame {
     // title
     private JLabel label1;
     private JLabel label2;
@@ -39,6 +39,18 @@ public class StartFrame extends StartFrame_Vars {
     private JButton buttonEditPushers;
     //
     private TuningFrame tuningFrame;
+
+    boolean statMainWork;
+    FrameCallBack callBack;
+    JFrame frame;
+    // флаг структурной целостности БД
+    protected boolean flCheckSql = false;
+    // флаг доступности ком портов
+    protected boolean flCheckCommPort = false;
+
+    BaseData.TypeBaseDate typeBaseDate;
+    BaseData.Parameters parameters;
+    BaseData connBD;
 
 
     public static StartFrame main(boolean statMainWork, FrameCallBack callBack) throws Exception {
@@ -67,16 +79,66 @@ public class StartFrame extends StartFrame_Vars {
     }
 
 
-    private BaseData.Parameters loadBaseData(BaseData.TypeBaseDate typeBaseDate) {
-        BaseData.Parameters parameters = BaseData.Parameters.create(typeBaseDate);
+    private BaseData.Parameters getParametersBaseData(BaseData.TypeBaseDate typeBaseDate) throws Exception
+    {
         if (typeBaseDate == BaseData.TypeBaseDate.ERROR) {
-            myLog.log(Level.SEVERE, "ошибка типа базы данных");
-            return parameters;
+            throw new Exception("ошибка типа базы данных");
+        }
+        BaseData.Parameters parameters = null;
+        try {
+            parameters = BaseData.Parameters.create(typeBaseDate);
+        } catch (Exception e) {
+            throw new Exception(e);
         }
         BaseData.Status result;
         // загрузка параметров БД
         result = parameters.load();
+        if (result != BaseData.Status.OK) {
+            myLog.log(Level.WARNING, "загрузка параметров соединения с БД поумолчанию");
+            parameters.setDefault();
+        }
         return parameters;
+    }
+
+    private BaseData getConnect(BaseData.Parameters parameters) throws Exception {
+        BaseData bd = null;
+        bd = BaseData.create(parameters);
+        // открытие соединения с БД
+        bd.openConnect(parameters);
+        return bd;
+    }
+
+    private void initBaseData(BaseData.TypeBaseDate typeBaseDate) {
+        // здесь сбросить флаги с БД
+        // ----
+        boolean flBoolean;
+        // загрузить параметры
+        parameters = null;
+        try {
+            parameters = getParametersBaseData(typeBaseDate);
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка получения параметров подключения к БД", e);
+            return;
+        }
+        // создание соединения
+        connBD = null;
+        try {
+            connBD = getConnect(parameters);
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка соединения с БД", e);
+            return;
+        }
+        // проверка структуры БД
+        try {
+            flBoolean = connBD.checkCheckStructureBd(parameters.getDataBase());
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка соединения с БД", e);
+            return;
+        }
+        if (!flBoolean) {
+            myLog.log(Level.WARNING, "ошибка структуры БД");
+            return;
+        }
     }
 
     private void start() {
@@ -101,14 +163,19 @@ public class StartFrame extends StartFrame_Vars {
         ParametersSql2 parametersSql2 = null;
         //------------------------------
         BaseData.Status result;
-        BaseData.TypeBaseDate typeBaseDate;
-        BaseData.Parameters parameters;
         // чтение конфигурации
         BaseData.Config config = BaseData.Config.create();
-        config.load1();
+        try {
+            config.load1();
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
+            config.setDefault();
+        }
         // тип БД
         typeBaseDate = config.getTypeBaseData();
-        loadBaseData(typeBaseDate);
+        //
+        initBaseData(typeBaseDate);
+
 
 
         int parametersSqlError = 1;

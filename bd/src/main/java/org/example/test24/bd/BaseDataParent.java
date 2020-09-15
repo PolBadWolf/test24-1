@@ -5,17 +5,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
 
 class BaseDataParent implements BaseData {
     protected Connection connection;
+    protected String baseDat;
     // открытие соединение с БД
     @Override
-    public BaseData.Status createConnect(Parameters parameters) {
-        return null;
-    }
+    public void openConnect(Parameters parameters) throws Exception { }
     // чтение списка БД
     @Override
     public String[] getListBase() throws Exception {
@@ -107,5 +107,40 @@ class BaseDataParent implements BaseData {
             myLog.log(Level.WARNING, "ошибка закрытие соединения", e);
         }
         return listUsers.toArray(new UserClass[0]);
+    }
+    // проверка структуры БД
+    @Override
+    public boolean checkCheckStructureBd(String base) throws Exception {
+        if (connection == null) {
+            throw new Exception("соединение не установлено");
+        }
+        boolean fl = connection.isClosed();
+        if (fl) {
+            throw new Exception("соединение закрыто");
+        }
+        boolean tableFl1 = true, tableFl2 = true, tableFl3 = true;
+
+        tableFl1 = checkCheckStructureTable(
+                base,
+                "table_data",
+                new ArrayList(Arrays.asList(
+                        "id",
+                        "dateTime",
+                        "id_spec",
+                        "n_cicle",
+                        "ves",
+                        "tik_shelf",
+                        "tik_back",
+                        "tik_stop",
+                        "dis"
+                ))
+        );
+        return tableFl1 && tableFl2 && tableFl3;
+    }
+    // проверка структуры таблицы
+    protected boolean checkCheckStructureTable(String base, String table, ArrayList<String> listColumns) {
+        myLog.log(Level.SEVERE, "ошибка проверки таблицы");
+        System.exit(-2);
+        return false;
     }
 }

@@ -58,9 +58,10 @@ public class MyLogger {
                         }
                 );
             } catch (NoSuchFileException e) {
+                System.out.println("Ошибка создания файлово логера:");
                 e.printStackTrace();
             }catch (IOException e) {
-                System.out.println("Ошибка создания файлово логера: \n" + Arrays.toString(e.getStackTrace()));
+                System.out.println("Ошибка создания файлово логера:");
                 e.printStackTrace();
             }
             handler.setLevel(fileLevel);
