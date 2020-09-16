@@ -162,11 +162,14 @@ public class StartFrame {
         try {
             listUsers = connBD.getListUsers(true);
         } catch (Exception e) {
-            myLog.log(Level.WARNING, "ошибка соединения с БД", e);
-            return;
+            myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
         }
         // чтение списка толкателей
-        myLog.log(Level.SEVERE, "НЕ РЕАЛИЗОВАНО !!!!", new Exception("нереализована загрузка толкателей"));
+        try {
+            listPushers = connBD.getListPushers(true);
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка чтение списка толкателей с БД", e);
+        }
     }
 
     // проверка ком порта

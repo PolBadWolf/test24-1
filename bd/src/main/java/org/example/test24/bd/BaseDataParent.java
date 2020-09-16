@@ -21,24 +21,13 @@ class BaseDataParent implements BaseData {
     // чтение списка пользователей
     @Override
     public UserClass[] getListUsers(boolean actual) throws Exception {
-        if (connection == null) {
-            myLog.log(Level.SEVERE, "отсутствует соединение");
-            throw new Exception("отсутствует соединение (connection == null)");
-        }
-        boolean flClosed;
-        try {
-            flClosed = connection.isClosed();
-        } catch (SQLException e) {
-            myLog.log(Level.SEVERE, "ошибка проверки соединения: " + e.getMessage());
-            throw new Exception(e);
-        }
-        if (flClosed) {
-            myLog.log(Level.SEVERE, "соединение закрыто");
-            throw new Exception("соединение закрыто");
-        }
+        if (connection == null) throw new Exception("отсутствует соединение (connection == null)");
+        boolean flClosed = connection.isClosed();
+        if (flClosed) throw new Exception("соединение закрыто");
+
         ArrayList<UserClass> listUsers = new ArrayList<>();
-        Statement statement = null;
-        ResultSet result = null;
+        Statement statement;
+        ResultSet result;
         // запрос на список пользователей
         try {
             String tab = "table_users";
@@ -59,42 +48,36 @@ class BaseDataParent implements BaseData {
                 );
             }
         } catch (SQLException e) {
-            myLog.log(Level.SEVERE, "ошибка выполнения запроса", e);
             throw new Exception(e);
         }
         // создание списка
-        try {
-            while (result.next()) {
-                String pass;
-                // пароль
-                try {
-                    pass = BaseData.Password.decoding(result.getString("password"));
-                } catch (IllegalArgumentException e) {
-                    myLog.log(Level.SEVERE, "ошибка декодирования пароля", e);
-                    continue;
-                } catch (SQLException e) {
-                    myLog.log(Level.SEVERE, "ошибка парсинга", e);
-                    continue;
-                }
-                try {
-                    listUsers.add(
-                            new UserClass(
-                                    result.getInt("id"),
-                                    result.getTimestamp("date_reg"),
-                                    result.getTimestamp("date_unreg"),
-                                    result.getString("name"),
-                                    pass,
-                                    result.getInt("rang") // user status
-                            )
-                    );
-                } catch (SQLException e) {
-                    myLog.log(Level.SEVERE, "ошибка парсинга", e);
-                    continue;
-                }
+        while (result.next()) {
+            String pass;
+            // пароль
+            try {
+                pass = BaseData.Password.decoding(result.getString("password"));
+            } catch (IllegalArgumentException e) {
+                myLog.log(Level.SEVERE, "ошибка декодирования пароля", e);
+                continue;
+            } catch (SQLException e) {
+                myLog.log(Level.SEVERE, "ошибка парсинга", e);
+                continue;
             }
-        } catch (SQLException e) {
-            myLog.log(Level.SEVERE, "ошибка парсинга запроса", e);
-            throw new Exception(e);
+            try {
+                listUsers.add(
+                        new UserClass(
+                                result.getInt("id"),
+                                result.getTimestamp("date_reg"),
+                                result.getTimestamp("date_unreg"),
+                                result.getString("name"),
+                                pass,
+                                result.getInt("rang") // user status
+                        )
+                );
+            } catch (SQLException e) {
+                myLog.log(Level.SEVERE, "ошибка парсинга", e);
+                continue;
+            }
         }
         // закрытие соединения
         try {
@@ -108,15 +91,11 @@ class BaseDataParent implements BaseData {
     // проверка структуры БД
     @Override
     public boolean checkCheckStructureBd(String base) throws Exception {
-        if (connection == null) {
-            throw new Exception("соединение не установлено");
-        }
+        if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
-        if (fl) {
-            throw new Exception("соединение закрыто");
-        }
-        boolean table_data = true, table_users = true, table_pushers = true;
+        if (fl) throw new Exception("соединение закрыто");
 
+        boolean table_data, table_users, table_pushers;
         table_data = checkCheckStructureTable(
                 base,
                 "table_data",
@@ -169,6 +148,7 @@ class BaseDataParent implements BaseData {
         boolean fl = connection.isClosed();
         if (fl) { throw new Exception("соединение закрыто"); }
         if (user == null) { throw new Exception("пользователь null"); }
+
         PreparedStatement preparedStatement;
         int result;
         preparedStatement = connection.prepareStatement(
@@ -178,5 +158,54 @@ class BaseDataParent implements BaseData {
         preparedStatement.setInt(2, user.id);
         result  = preparedStatement.executeUpdate();
         preparedStatement.close();
+    }
+    // чтение списка толкателей
+    @Override
+    public Pusher[] getListPushers(boolean actual) throws Exception {
+        if (connection == null) throw new Exception("соединение не установлено");
+        boolean fl = connection.isClosed();
+        if (fl) throw new Exception("соединение закрыто");
+
+        Statement statement;
+        ResultSet result;
+        // запрос на список толкателей
+        try {
+            String tab = "table_pushers";
+            statement = connection.createStatement();
+            // запрос
+            if (actual) {
+                result = statement.executeQuery(
+                        "SELECT id_pusher, date_reg, date_unreg, name\n" +
+                                "FROM " + baseDat + "." + tab + "\n" +
+                                "WHERE (date_unreg IS NULL)\n" +
+                                "ORDER BY id_pusher "
+                );
+            } else {
+                result = statement.executeQuery(
+                        "SELECT id_pusher, date_reg, date_unreg, name\n" +
+                                "FROM " + baseDat + "." + tab + "\n" +
+                                "ORDER BY id_pusher "
+                );
+            }
+        } catch (SQLException e) {
+            throw new Exception(e);
+        }
+        // создание списка
+        ArrayList<Pusher> listPusher = new ArrayList<>();
+        while (result.next()) {
+            listPusher.add(new Pusher(
+                    result.getInt("id_pusher"),
+                    result.getTimestamp("date_reg"),
+                    result.getTimestamp("date_unreg"),
+                    result.getString("name")
+            ));
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException e) {
+            myLog.log(Level.SEVERE, "чтение списка толкателей", e);
+        }
+        return listPusher.toArray(new Pusher[0]);
     }
 }
