@@ -685,12 +685,21 @@ public class StartFrame {
     private void callEditUsers() {
         SaveEnableComponents saveComponents = new SaveEnableComponents();
         saveComponents.offline();
-        EditUsers editUsers = new EditUsers(new EditUsers.CallBack() {
-            @Override
-            public void messageCloseEditUsers() {
-                saveComponents.restore();
-            }
-        });
+        new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
+                new EditUsers(connBD,
+                        new EditUsers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers(boolean newData) {
+                                if (newData) {
+                                    // здесь перезагрузка списка пользователей
+                                    myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!", new Exception("не реализована перезагрузка списка пользователей после редактирования"));
+                                }
+                                saveComponents.restore();
+                            }
+                        });
+            });
+        }, "create edit users").start();
     }
     // обработка редактирование толкателей
     private void callEditPushers() {
