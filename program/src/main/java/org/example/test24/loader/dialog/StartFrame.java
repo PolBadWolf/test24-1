@@ -9,8 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -49,11 +47,12 @@ public class StartFrame {
     boolean flagConnecting = false;
     // целостности структуры БД
     boolean flagStructureIntegrity = false;
-    // список пользователей / = [0] for false
-    private UserClass[] listUsers = new UserClass[0];
     // доступность ком порта
     boolean flagAvailabilityCommPort = false;
-
+    // список пользователей / = [0] for false
+    private UserClass[] listUsers = new UserClass[0];
+    // список толкателей / = [0] for false
+    private String[] listPushers = new String[0];
 
 
     FrameCallBack callBack;
@@ -229,6 +228,8 @@ public class StartFrame {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        } else {
+            // здесь загрузка текущего пользователя и толкателя, если потребуется
         }
         // открытие основного экрана
         offTitleComponents();
@@ -492,21 +493,16 @@ public class StartFrame {
         return  surName.equals("a") && password.equals("");
     }
     // разрешение кнопки работа
-    private boolean permissionButtonWork() {
+    private boolean permissionWork() {
         // флаг целостности структуры БД
-        if (!flCheckSql) {
-            buttonWork.setEnabled(false);
-            return false;
-        }
-        // флаг работы программы ( ком порт занят)
-        if (!statMainWork) {
-            // проверка ком порта
-            if (!flCheckCommPort) {
-                buttonWork.setEnabled(false);
-                return false;
-            }
-        }
-        buttonWork.setEnabled(true);
+        if (!flagStructureIntegrity) return false;
+        // проверка доступности ком порта
+        if (!flagAvailabilityCommPort) return false;
+        // список пользователей / = [0] for false
+        if (listUsers.length == 0) return false;
+        // список толкателей / = [0] for false
+        // if (listPushers.length == 0) return false;
+        myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("толкатели еще не реализованы"));
         return true;
     }
     // ======================================================
@@ -567,12 +563,7 @@ public class StartFrame {
         // разрешение на редактирование толкателей
         buttonEditPushers.setEnabled((user.rank & (1 << 1)) != 0);
         // разрешение кнопки работа
-        if (!
-            permissionButtonWork()
-        ) {
-            MySwingUtil.showMessage(frame, "ошибка", "нет готовности системы", 5_000);
-            return;
-        }
+        buttonWork.setEnabled(true);
     }
     // обработка новый пароль
     private void callSetNewPassword() {
@@ -608,8 +599,15 @@ public class StartFrame {
     }
     // обработка "работа"
     private void callReturnToWork() {
-        frame.removeAll();
-        frame.dispose();
+        if (!permissionWork()) {
+            MySwingUtil.showMessage(frame, "ошибка", "нет готовности системы", 5_000);
+            myLog.log(Level.INFO, "нет готовности системы");
+            return;
+        }
+        // ------------
+        myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("не реализован выход на главную программу"));
+        //frame.removeAll();
+        //frame.dispose();
         //callBack.closeFrame();
     }
     // обработка настройка
