@@ -324,7 +324,7 @@ class TuningFrame extends TuningFrame_Metods {
             editUsers = null;
         }
 
-        @Override
+        /*@Override
         public BaseData1 getBdInterface() {
             if (bdSql == null) {
                 String typeBd = (String) comboBoxTypeBd.getSelectedItem();
@@ -332,7 +332,7 @@ class TuningFrame extends TuningFrame_Metods {
                 //bdSql = BaseData1.init(typeBd, callBack MC.getFilesNameSql());
             }
             return bdSql;
-        }
+        }*/
     }
     // ==================
 
