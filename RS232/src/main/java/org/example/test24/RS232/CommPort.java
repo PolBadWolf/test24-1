@@ -8,22 +8,13 @@ public interface CommPort {
     interface CallBack {
         void reciveRsPush(byte[] bytes, int lenght);
     }
-    interface Closer {
-        void close();
+    static CommPort main() {
+        return new CommPortClass();
     }
-    static CommPort main(Consumer closer) {
-        return new CommPortClass(closer);
-    }
-    //String[] getListPortsName();
-    static String[] getListPortsName() {
-        SerialPort[] ports = SerialPort.getCommPorts();
-        String[] namePorts = new String[ports.length];
-        for (int i = 0; i < ports.length; i++) {
-            namePorts[i] = ports[i].getSystemPortName().toUpperCase();
-        }
-        return namePorts;
-    }
-    PortStat Open(CallBack callBack, String portName, BAUD baud);
+    static String[] getListPortsName() { return CommPortClass.getListPortsName(); }
+    static boolean isCheckCommPort(String portName) throws Exception { return CommPortClass.isCheckCommPort(portName); }
+
+    PortStat open(CallBack callBack, String portName, BAUD baud);
     int INITCODE_OK           = 0;
     int INITCODE_NOTEXIST     = 1;
     int INITCODE_ERROROPEN    = 2;
@@ -60,7 +51,7 @@ public interface CommPort {
         }
     }
 
-    void Close();
+    void close();
     boolean ReciveStart();
     void ReciveStop();
 }

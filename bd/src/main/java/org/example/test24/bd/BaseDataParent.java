@@ -1,9 +1,6 @@
 package org.example.test24.bd;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -155,5 +152,22 @@ class BaseDataParent implements BaseData {
         myLog.log(Level.SEVERE, "ошибка проверки таблицы");
         System.exit(-2);
         return false;
+    }
+    // установка нового пароля пользователю
+    @Override
+    public void setNewUserPassword(UserClass user, String newPassword) throws Exception {
+        if (connection == null) { throw new Exception("соединение не установлено"); }
+        boolean fl = connection.isClosed();
+        if (fl) { throw new Exception("соединение закрыто"); }
+        if (user == null) { throw new Exception("пользователь null"); }
+        PreparedStatement preparedStatement;
+        int result;
+        preparedStatement = connection.prepareStatement(
+                "UPDATE " + baseDat + ".Table_users SET  password = ? WHERE id = ?"
+        );
+        preparedStatement.setString(1, BaseData2.Password.encoding(newPassword));
+        preparedStatement.setInt(2, user.id);
+        result  = preparedStatement.executeUpdate();
+        preparedStatement.close();
     }
 }

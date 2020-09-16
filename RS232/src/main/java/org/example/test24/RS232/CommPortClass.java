@@ -12,24 +12,37 @@ class CommPortClass implements CommPort {
     private CallBack callBack = null;
     private Consumer closer;
 
-    protected CommPortClass(Consumer closer) {
+    /*protected CommPortClass() {
         this.closer = closer;
-    }
+    }*/
 
-    /*@Override
-    public String[] getListPortsName() {
+    static String[] getListPortsName() {
         SerialPort[] ports = SerialPort.getCommPorts();
         String[] namePorts = new String[ports.length];
         for (int i = 0; i < ports.length; i++) {
             namePorts[i] = ports[i].getSystemPortName().toUpperCase();
         }
         return namePorts;
-    }*/
+    }
+    static boolean isCheckCommPort(String portName) throws Exception {
+        if (portName == null) {
+            throw new Exception("имя порта не установлено");
+        }
+        CommPortClass port = new CommPortClass();
+        PortStat stat = port.open(
+                (bytes, lenght) -> { },
+                portName,
+                BAUD.baud57600
+        );
+        port.close();
+        if (stat == PortStat.INITCODE_OK) return true;
+        return false;
+    }
 
     @Override
-    public PortStat Open(CallBack callBack, String portName, BAUD baud) {
+    public PortStat open(CallBack callBack, String portName, BAUD baud) {
         if (port != null) {
-            Close();
+            close();
         }
 
         boolean flagTmp = false;
@@ -58,7 +71,7 @@ class CommPortClass implements CommPort {
     }
 
     @Override
-    public void Close() {
+    public void close() {
         if (port == null)   return;
 
         ReciveStop();

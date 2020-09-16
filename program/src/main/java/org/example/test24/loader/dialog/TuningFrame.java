@@ -371,9 +371,9 @@ class TuningFrame extends TuningFrame_Metods {
         {
             String portName = (String) comboBoxCommPort.getSelectedItem();
             CommPort commPort = null; //callBack MC.getCommPort();
-            CommPort.PortStat ch = commPort.Open(null, portName, BAUD.baud57600);
+            CommPort.PortStat ch = commPort.open(null, portName, BAUD.baud57600);
             if (ch == CommPort.PortStat.INITCODE_OK) {
-                commPort.Close();
+                commPort.close();
             }
             chCheckCommPort = ch;
         }   // статус ком порта
@@ -418,9 +418,9 @@ class TuningFrame extends TuningFrame_Metods {
         {
             String portName = (String) comboBoxCommPort.getSelectedItem();
             CommPort commPort = null; //callBack MC.getCommPort();
-            CommPort.PortStat ch = commPort.Open(null, portName, BAUD.baud57600);
+            CommPort.PortStat ch = commPort.open(null, portName, BAUD.baud57600);
             if (ch == CommPort.PortStat.INITCODE_OK) {
-                commPort.Close();
+                commPort.close();
             }
             chCheckCommPort = ch;
         }   // статус ком порта
