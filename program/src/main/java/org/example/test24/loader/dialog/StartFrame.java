@@ -2,7 +2,6 @@ package org.example.test24.loader.dialog;
 
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
-import org.example.test24.lib.MyLogger;
 import org.example.test24.lib.MyUtil;
 import org.example.test24.lib.MySwingUtil;
 
@@ -27,7 +26,7 @@ public class StartFrame {
     private JButton buttonWork;
     private JButton buttonSetPassword;
     private JTextField fieldPassword;
-    private JComboBox<UserClass> comboBoxUser;
+    private JComboBox<UserClass> comboBoxUsers;
     private JComboBox<Pusher> comboBoxPusher;
     private JLabel jLabel1;
     private JLabel jLabel2;
@@ -251,7 +250,7 @@ public class StartFrame {
         }
         // загрузка пользователей в комбо бокс
         try {
-            MyUtil.<UserClass>loadToComboBox(listUsers, comboBoxUser);
+            MyUtil.<UserClass>loadToComboBox(listUsers, comboBoxUsers);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
         }
@@ -331,9 +330,9 @@ public class StartFrame {
             jLabel3.setVisible(false);
         } // подписи, надписи
         {
-            comboBoxUser = getComboBoxUser("Times New Roman", Font.PLAIN, 14, 190, 190, 350, 24);
-            frame.add(comboBoxUser);
-            comboBoxUser.setVisible(false);
+            comboBoxUsers = getComboBoxUser("Times New Roman", Font.PLAIN, 14, 190, 190, 350, 24);
+            frame.add(comboBoxUsers);
+            comboBoxUsers.setVisible(false);
 
             comboBoxPusher = getComboBoxPusher("Times New Roman", Font.PLAIN, 14, 190, 270, 350, 24);
             frame.add(comboBoxPusher);
@@ -396,7 +395,7 @@ public class StartFrame {
         jLabel1.setVisible(true);
         jLabel2.setVisible(true);
         jLabel3.setVisible(true);
-        comboBoxUser.setVisible(true);
+        comboBoxUsers.setVisible(true);
         comboBoxPusher.setVisible(true);
         fieldPassword.setVisible(true);
         buttonEnter.setVisible(true);
@@ -421,7 +420,7 @@ public class StartFrame {
     private void offInputComponents() {
         jLabel1.setVisible(false);
         jLabel2.setVisible(false);
-        comboBoxUser.setVisible(false);
+        comboBoxUsers.setVisible(false);
         fieldPassword.setVisible(false);
         buttonEnter.setVisible(false);
         buttonWork.setVisible(false);
@@ -535,14 +534,14 @@ public class StartFrame {
         String password;
         boolean askLocalAdmin;
         try {
-            user = (UserClass) comboBoxUser.getSelectedItem();
+            user = (UserClass) comboBoxUsers.getSelectedItem();
             askLocalAdmin = false;
         } catch (ClassCastException e) {
             askLocalAdmin = true;
         }
         password = fieldPassword.getText();
         if (askLocalAdmin) {
-            String surName = (String) comboBoxUser.getSelectedItem();
+            String surName = (String) comboBoxUsers.getSelectedItem();
             String pass = BaseData2.Password.encoding(password);
             // проверка на локального админа
             if (!checkIntegratedAdministrator(surName, pass)) {
@@ -595,7 +594,7 @@ public class StartFrame {
     }
     // обработка новый пароль
     private void callSetNewPassword() {
-        UserClass currentUser = (UserClass) comboBoxUser.getSelectedItem();
+        UserClass currentUser = (UserClass) comboBoxUsers.getSelectedItem();
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
             MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> buttonSetPassword.setEnabled(true));
@@ -606,7 +605,7 @@ public class StartFrame {
         try {
             connBD.setNewUserPassword(currentUser, newPassword);
             currentUser.password = newPassword;
-            if (!newPassword.equals(((UserClass)comboBoxUser.getSelectedItem()).password)) {
+            if (!newPassword.equals(((UserClass) comboBoxUsers.getSelectedItem()).password)) {
                 myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
             }
         } catch (Exception e) {
@@ -661,7 +660,7 @@ public class StartFrame {
             return;
         }
         // отключение управления
-        comboBoxUser.setEnabled(false);
+        comboBoxUsers.setEnabled(false);
         fieldPassword.setEnabled(false);
         buttonEnter.setEnabled(false);
         buttonTuning.setVisible(false);
@@ -684,7 +683,14 @@ public class StartFrame {
     }
     // обработка редактирование пользователей
     private void callEditUsers() {
-
+        SaveEnableComponents saveComponents = new SaveEnableComponents();
+        saveComponents.offline();
+        EditUsers editUsers = new EditUsers(new EditUsers.CallBack() {
+            @Override
+            public void messageCloseEditUsers() {
+                saveComponents.restore();
+            }
+        });
     }
     // обработка редактирование толкателей
     private void callEditPushers() {
@@ -747,5 +753,55 @@ public class StartFrame {
     }
 
     // ===========================================================================
-
+    class SaveEnableComponents {
+        private boolean buttonEnter;
+        private boolean buttonSetPassword;
+        private boolean buttonWork;
+        private boolean buttonTuning;
+        private boolean buttonEditUsers;
+        private boolean buttonEditPushers;
+        private boolean comboBoxUsers;
+        private boolean comboBoxPusher;
+        private boolean fieldPassword;
+        private boolean frame;
+        public SaveEnableComponents() {
+            save();
+        }
+        public void save() {
+            buttonEnter = StartFrame.this.buttonEnter.isEnabled();
+            buttonSetPassword = StartFrame.this.buttonSetPassword.isEnabled();
+            buttonWork = StartFrame.this.buttonWork.isEnabled();
+            buttonTuning = StartFrame.this.buttonTuning.isEnabled();
+            buttonEditUsers = StartFrame.this.buttonEditUsers.isEnabled();
+            buttonEditPushers = StartFrame.this.buttonEditPushers.isEnabled();
+            comboBoxUsers = StartFrame.this.comboBoxUsers.isEnabled();
+            comboBoxPusher = StartFrame.this.comboBoxPusher.isEnabled();
+            fieldPassword = StartFrame.this.fieldPassword.isEnabled();
+            frame = StartFrame.this.frame.isEnabled();
+        }
+        public void restore() {
+            StartFrame.this.buttonEnter.setEnabled(buttonEnter);
+            StartFrame.this.buttonSetPassword.setEnabled(buttonSetPassword);
+            StartFrame.this.buttonWork.setEnabled(buttonWork);
+            StartFrame.this.buttonTuning.setEnabled(buttonTuning);
+            StartFrame.this.buttonEditUsers.setEnabled(buttonEditUsers);
+            StartFrame.this.buttonEditPushers.setEnabled(buttonEditPushers);
+            StartFrame.this.comboBoxUsers.setEnabled(comboBoxUsers);
+            StartFrame.this.comboBoxPusher.setEnabled(comboBoxPusher);
+            StartFrame.this.fieldPassword.setEnabled(fieldPassword);
+            StartFrame.this.frame.setEnabled(frame);
+        }
+        public void offline() {
+            StartFrame.this.buttonEnter.setEnabled(false);
+            StartFrame.this.buttonSetPassword.setEnabled(false);
+            StartFrame.this.buttonWork.setEnabled(false);
+            StartFrame.this.buttonTuning.setEnabled(false);
+            StartFrame.this.buttonEditUsers.setEnabled(false);
+            StartFrame.this.buttonEditPushers.setEnabled(false);
+            StartFrame.this.comboBoxUsers.setEnabled(false);
+            StartFrame.this.comboBoxPusher.setEnabled(false);
+            StartFrame.this.fieldPassword.setEnabled(false);
+            StartFrame.this.frame.setEnabled(false);
+        }
+    }
 }
