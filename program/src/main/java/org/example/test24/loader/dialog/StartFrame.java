@@ -218,20 +218,15 @@ public class StartFrame {
             }
         }
         // открытие основного экрана
+        offTitleComponents();
+        onInputComponents();
+        // загрузка пользователей в комбо бокс
         try {
-            //SwingUtilities.invokeAndWait(() -> {
-                offTitleComponents();
-                onInputComponents();
-                // загрузка пользователей в комбо бокс
-            try {
-                MyUtil.<UserClass>loadToComboBox(listUsers, comboBoxUser);
-            } catch (Exception e) {
-                System.out.println("Ошибка загрузки пользователей в comboboxUser: " + e.getMessage());
-            }
-            // -------
-        } catch (java.lang.Throwable e) {
-            e.printStackTrace();
+            MyUtil.<UserClass>loadToComboBox(listUsers, comboBoxUser);
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
         }
+        // -------
 
     }
 
@@ -507,12 +502,10 @@ public class StartFrame {
         UserClass user = null;
         String password;
         boolean askLocalAdmin;
-        boolean flAdmin;
         try {
             user = (UserClass) comboBoxUser.getSelectedItem();
             askLocalAdmin = false;
         } catch (ClassCastException e) {
-            System.out.println("Local Admin ?");
             askLocalAdmin = true;
         }
         password = fieldPassword.getText();
@@ -520,15 +513,17 @@ public class StartFrame {
             String surName = (String) comboBoxUser.getSelectedItem();
             String pass = BaseData2.Password.encoding(password);
             // проверка на локального админа
-            flAdmin = checkIntegratedAdministrator(surName, pass);
-            if (!flAdmin) {
+            if (!checkIntegratedAdministrator(surName, pass)) {
                 buttonEnter.setEnabled(false);
+                buttonTuning.setVisible(false);
                 MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> buttonEnter.setEnabled(true));
+                myLog.log(Level.WARNING, "попытка входа локальным админом: " + surName + "/" + password);
                 return;
             }
             fieldPassword.setText("");
             // тут разрешение настройки
             buttonTuning.setVisible(true);
+            myLog.log(Level.INFO, "вход локальным админом");
             return;
         }
         // спрятать кнопку настройка
