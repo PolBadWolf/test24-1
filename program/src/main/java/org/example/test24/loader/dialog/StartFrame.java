@@ -540,7 +540,7 @@ public class StartFrame {
         buttonTuning.setVisible(false);
         // проверка пароля у пользователя из списка (БД)
         if (!user.password.equals(password)) {
-            System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
+            //System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
             // отключить кнопки управления
             buttonSetPassword.setEnabled(false);
             buttonEditUsers.setEnabled(false);
@@ -568,27 +568,26 @@ public class StartFrame {
     }
     // обработка новый пароль
     private void callSetNewPassword() {
+        UserClass currentUser = (UserClass) comboBoxUser.getSelectedItem();
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
             MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> buttonSetPassword.setEnabled(true));
             buttonSetPassword.setEnabled(false);
-            myLog.log(Level.WARNING, "попытка установки пустово пароля пользователем " + ((UserClass) comboBoxUser.getSelectedItem()).name );
+            myLog.log(Level.WARNING, "попытка установки пустово пароля пользователем " + currentUser.name );
             return;
         }
-        /*
         try {
-            UserClass currentUser = (UserClass) comboBoxUser.getSelectedItem();
-            // обновление записи в БД
-            boolean result = false;
-            //result = callBack.setUserNewPassword(currentUser, newPassword);
-            // обновление текущей записи в comboBox
+            connBD.setNewUserPassword(currentUser, newPassword);
             currentUser.password = newPassword;
-            System.out.println("логин = " + currentUser.name + " новый пароль = " + newPassword + " статус = " + result);
-        } catch (Throwable ex) {
-            ex.printStackTrace();
+            if (!newPassword.equals(((UserClass)comboBoxUser.getSelectedItem()).password)) {
+                myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
+            }
+        } catch (Exception e) {
+            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка записи в БД", 5_000, o -> buttonSetPassword.setEnabled(true));
+            buttonSetPassword.setEnabled(false);
+            myLog.log(Level.SEVERE, "ошибка сохранения нового пароля", e);
         }
         fieldPassword.setText("");
-        */
     }
     // обработка выбора пользователя
     private void callSelectUser() {

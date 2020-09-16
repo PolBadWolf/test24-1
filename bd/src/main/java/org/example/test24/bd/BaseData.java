@@ -136,4 +136,6 @@ public interface BaseData {
     UserClass[] getListUsers(boolean actual) throws Exception;
     // проверка структуры БД
     boolean checkCheckStructureBd(String base) throws Exception;
+    // установка нового пароля пользователю
+    void setNewUserPassword(UserClass user, String newPassword) throws Exception;
 }
