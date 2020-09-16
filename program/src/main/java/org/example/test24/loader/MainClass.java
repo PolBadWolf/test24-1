@@ -29,7 +29,7 @@ public class MainClass extends MainClassRequest {
         // создание основных объектов
         screenFx = ScreenFx.init(o->screenCloser());
         runner = Runner.main(o->runnerCloser());
-        commPort = CommPort.main(o->commPortCloser());
+        commPort = CommPort.main();
 
         // пуск
         try {
@@ -129,7 +129,7 @@ public class MainClass extends MainClassRequest {
             screenFx = null;
         }
         if (commPort != null) {
-            commPort.Close();
+            commPort.close();
             commPort = null;
         }
         if (runner != null) {
@@ -176,8 +176,8 @@ public class MainClass extends MainClassRequest {
     }
 
     private boolean checkCommPort(String portName) {
-        CommPort.PortStat ch =  commPort.Open(null, portName, BAUD.baud57600);
-        commPort.Close();
+        CommPort.PortStat ch =  commPort.open(null, portName, BAUD.baud57600);
+        commPort.close();
         return ch == CommPort.PortStat.INITCODE_OK;
     }
     private class StartFrameCallBack implements FrameCallBack {

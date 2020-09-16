@@ -97,9 +97,9 @@ class MainClassRequest {
             portNameConfig = parametersConfig.getPortName();
             if (portName == portNameConfig) return true;
         }
-        port = CommPort.main(o -> {});
-        CommPort.PortStat portStat = port.Open(null, portName, BAUD.baud57600);
-        port.Close();
+        port = CommPort.main();
+        CommPort.PortStat portStat = port.open(null, portName, BAUD.baud57600);
+        port.close();
         if (portStat == CommPort.PortStat.INITCODE_OK)  return true;
         return false;
     }

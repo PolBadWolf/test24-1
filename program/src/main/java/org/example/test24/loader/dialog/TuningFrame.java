@@ -320,11 +320,11 @@ class TuningFrame extends TuningFrame_Metods {
     // ======
     private class EditUsersCallBack implements EditUsers.CallBack {
         @Override
-        public void messageCloseEditUsers() {
+        public void messageCloseEditUsers(boolean newData) {
             editUsers = null;
         }
 
-        @Override
+        /*@Override
         public BaseData1 getBdInterface() {
             if (bdSql == null) {
                 String typeBd = (String) comboBoxTypeBd.getSelectedItem();
@@ -332,7 +332,7 @@ class TuningFrame extends TuningFrame_Metods {
                 //bdSql = BaseData1.init(typeBd, callBack MC.getFilesNameSql());
             }
             return bdSql;
-        }
+        }*/
     }
     // ==================
 
@@ -371,9 +371,9 @@ class TuningFrame extends TuningFrame_Metods {
         {
             String portName = (String) comboBoxCommPort.getSelectedItem();
             CommPort commPort = null; //callBack MC.getCommPort();
-            CommPort.PortStat ch = commPort.Open(null, portName, BAUD.baud57600);
+            CommPort.PortStat ch = commPort.open(null, portName, BAUD.baud57600);
             if (ch == CommPort.PortStat.INITCODE_OK) {
-                commPort.Close();
+                commPort.close();
             }
             chCheckCommPort = ch;
         }   // статус ком порта
@@ -418,9 +418,9 @@ class TuningFrame extends TuningFrame_Metods {
         {
             String portName = (String) comboBoxCommPort.getSelectedItem();
             CommPort commPort = null; //callBack MC.getCommPort();
-            CommPort.PortStat ch = commPort.Open(null, portName, BAUD.baud57600);
+            CommPort.PortStat ch = commPort.open(null, portName, BAUD.baud57600);
             if (ch == CommPort.PortStat.INITCODE_OK) {
-                commPort.Close();
+                commPort.close();
             }
             chCheckCommPort = ch;
         }   // статус ком порта
@@ -639,7 +639,7 @@ class TuningFrame extends TuningFrame_Metods {
     // нажатие кнопки редактирование пользователей
     private void pushButtonEditUsers() {
         if (editUsers == null) {
-            editUsers = new EditUsers(new EditUsersCallBack());
+            editUsers = new EditUsers(null, new EditUsersCallBack());
         }
     }
 }

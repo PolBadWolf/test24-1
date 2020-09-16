@@ -1,5 +1,6 @@
 package org.example.test24.loader.dialog;
 
+import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
 import org.example.test24.lib.MyUtil;
 import org.example.test24.lib.MySwingUtil;
@@ -8,8 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -27,8 +26,8 @@ public class StartFrame {
     private JButton buttonWork;
     private JButton buttonSetPassword;
     private JTextField fieldPassword;
-    private JComboBox<UserClass> comboBoxUser;
-    private JComboBox<String> comboBoxPusher;
+    private JComboBox<UserClass> comboBoxUsers;
+    private JComboBox<Pusher> comboBoxPusher;
     private JLabel jLabel1;
     private JLabel jLabel2;
     private JLabel jLabel3;
@@ -48,19 +47,16 @@ public class StartFrame {
     boolean flagConnecting = false;
     // целостности структуры БД
     boolean flagStructureIntegrity = false;
-    // список пользователей / = [0] for false
-    private UserClass[] listUsers = new UserClass[0];
     // доступность ком порта
     boolean flagAvailabilityCommPort = false;
-
+    // список пользователей / = [0] for false
+    private UserClass[] listUsers = new UserClass[0];
+    // список толкателей / = [0] for false
+    private Pusher[] listPushers = new Pusher[0];
 
 
     FrameCallBack callBack;
     JFrame frame;
-    // флаг структурной целостности БД
-    private boolean flCheckSql = false;
-    // флаг доступности ком портов
-    private boolean flCheckCommPort = false;
 
     BaseData.TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
@@ -79,9 +75,6 @@ public class StartFrame {
         } catch (InterruptedException e) {
             myLog.log(Level.SEVERE, "ошибка создания startFrame", e);
             throw new Exception(e);
-        } catch (InvocationTargetException e) {
-            myLog.log(Level.SEVERE, "ошибка создания startFrame", e);
-            throw new Exception(e);
         }
         return frame[0];
     }
@@ -97,7 +90,7 @@ public class StartFrame {
         if (typeBaseDate == BaseData.TypeBaseDate.ERROR) {
             throw new Exception("ошибка типа базы данных");
         }
-        BaseData.Parameters parameters = null;
+        BaseData.Parameters parameters;
         try {
             parameters = BaseData.Parameters.create(typeBaseDate);
         } catch (Exception e) {
@@ -114,7 +107,7 @@ public class StartFrame {
     }
 
     private BaseData getConnect(BaseData.Parameters parameters) throws Exception {
-        BaseData bd = null;
+        BaseData bd;
         bd = BaseData.create(parameters);
         // открытие соединения с БД
         bd.openConnect(parameters);
@@ -126,8 +119,8 @@ public class StartFrame {
         flagConnecting = false;
         flagStructureIntegrity = false;
         listUsers = new UserClass[0];
+        listPushers = new Pusher[0];
         // ----
-        boolean flBoolean;
         // загрузить параметры
         parameters = null;
         try {
@@ -160,9 +153,32 @@ public class StartFrame {
         try {
             listUsers = connBD.getListUsers(true);
         } catch (Exception e) {
-            myLog.log(Level.WARNING, "ошибка соединения с БД", e);
-            return;
+            myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
         }
+        // чтение списка толкателей
+        try {
+            listPushers = connBD.getListPushers(true);
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка чтение списка толкателей с БД", e);
+        }
+    }
+
+    // проверка ком порта
+    private boolean isCheckCommPort(String portName) {
+        boolean flag;
+        if (statMainWork) {
+            // если программа работает, то comm port занят - не чего его проверять
+            flag = true;
+        } else {
+            try {
+                flag = CommPort.isCheckCommPort(portName);
+                if (!flag) myLog.log(Level.INFO, "port \"" + portName + "\" не доступен или занят");
+            } catch (Exception e) {
+                myLog.log(Level.SEVERE, "ошибка проверки comm port", e);
+                flag = false;
+            }
+        }
+        return flag;
     }
 
     private void start() {
@@ -181,12 +197,7 @@ public class StartFrame {
         });
         // =================== загрузка начальных параметров ===================
         // загрузка параметров соединения с БД
-        ParametersConfig config3;
-        BaseData2.TypeBaseData typeBaseData3;
-        BaseData2.Status resultBaseData;
-        ParametersSql2 parametersSql2 = null;
         //------------------------------
-        BaseData.Status result;
         // чтение конфигурации
         BaseData.Config config = BaseData.Config.create();
         try {
@@ -201,13 +212,7 @@ public class StartFrame {
         initBaseData(typeBaseDate);
         // *************************************************************************************
         // проверка ком порта
-        try {
-            config3 = null;
-            flCheckCommPort = callBack.isCheckCommPort(statMainWork, config3.getPortName());
-        } catch (Exception e) {
-            System.out.println("Ошибка поверки ком порта: " + e.getMessage());
-            flCheckCommPort = false;
-        }
+        flagAvailabilityCommPort = isCheckCommPort(config.getPortName());
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -218,20 +223,34 @@ public class StartFrame {
             }
         }
         // открытие основного экрана
-        try {
-            //SwingUtilities.invokeAndWait(() -> {
-                offTitleComponents();
-                onInputComponents();
-                // загрузка пользователей в комбо бокс
-            try {
-                MyUtil.<UserClass>loadToComboBox(listUsers, comboBoxUser);
-            } catch (Exception e) {
-                System.out.println("Ошибка загрузки пользователей в comboboxUser: " + e.getMessage());
-            }
-            // -------
-        } catch (java.lang.Throwable e) {
-            e.printStackTrace();
+        offTitleComponents();
+        if (!flagStructureIntegrity) {
+            MySwingUtil.showMessage(frame,
+                    "запуск начального экрана",
+                    "структура БД нарушена - требуется вмешательство администратора",
+                    30_000,
+                    o -> onInputComponents()
+            );
+            return;
+        } else {
+            onInputComponents();
         }
+        // загрузка пользователей в комбо бокс
+        try {
+            MyUtil.loadToComboBox(listUsers, comboBoxUsers);
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
+        }
+        // загрузка толкателей в комбо бокс
+        try {
+            MyUtil.loadToComboBox(listPushers, comboBoxPusher);
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
+        }
+        if (statMainWork) {
+            // здесь загрузка текущего пользователя и толкателя, если потребуется
+        }
+        // -------
 
     }
 
@@ -298,9 +317,9 @@ public class StartFrame {
             jLabel3.setVisible(false);
         } // подписи, надписи
         {
-            comboBoxUser = getComboBoxUser("Times New Roman", Font.PLAIN, 14, 190, 190, 350, 24);
-            frame.add(comboBoxUser);
-            comboBoxUser.setVisible(false);
+            comboBoxUsers = getComboBoxUser("Times New Roman", Font.PLAIN, 14, 190, 190, 350, 24);
+            frame.add(comboBoxUsers);
+            comboBoxUsers.setVisible(false);
 
             comboBoxPusher = getComboBoxPusher("Times New Roman", Font.PLAIN, 14, 190, 270, 350, 24);
             frame.add(comboBoxPusher);
@@ -363,7 +382,7 @@ public class StartFrame {
         jLabel1.setVisible(true);
         jLabel2.setVisible(true);
         jLabel3.setVisible(true);
-        comboBoxUser.setVisible(true);
+        comboBoxUsers.setVisible(true);
         comboBoxPusher.setVisible(true);
         fieldPassword.setVisible(true);
         buttonEnter.setVisible(true);
@@ -388,7 +407,7 @@ public class StartFrame {
     private void offInputComponents() {
         jLabel1.setVisible(false);
         jLabel2.setVisible(false);
-        comboBoxUser.setVisible(false);
+        comboBoxUsers.setVisible(false);
         fieldPassword.setVisible(false);
         buttonEnter.setVisible(false);
         buttonWork.setVisible(false);
@@ -448,8 +467,8 @@ public class StartFrame {
         });
         return comboBox;
     }
-    private JComboBox<String> getComboBoxPusher(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JComboBox<String> comboBox = new JComboBox<>();
+    private JComboBox<Pusher> getComboBoxPusher(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JComboBox<Pusher> comboBox = new JComboBox<>();
         comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(true);
@@ -484,21 +503,15 @@ public class StartFrame {
         return  surName.equals("a") && password.equals("");
     }
     // разрешение кнопки работа
-    private boolean permissionButtonWork() {
+    private boolean permissionWork() {
         // флаг целостности структуры БД
-        if (!flCheckSql) {
-            buttonWork.setEnabled(false);
-            return false;
-        }
-        // флаг работы программы ( ком порт занят)
-        if (!statMainWork) {
-            // проверка ком порта
-            if (!flCheckCommPort) {
-                buttonWork.setEnabled(false);
-                return false;
-            }
-        }
-        buttonWork.setEnabled(true);
+        if (!flagStructureIntegrity) return false;
+        // проверка доступности ком порта
+        if (!flagAvailabilityCommPort) return false;
+        // список пользователей / = [0] for false
+        if (listUsers.length == 0) return false;
+        // список толкателей / = [0] for false
+        if (listPushers.length == 0) return false;
         return true;
     }
     // ======================================================
@@ -507,28 +520,30 @@ public class StartFrame {
         UserClass user = null;
         String password;
         boolean askLocalAdmin;
-        boolean flAdmin;
         try {
-            user = (UserClass) comboBoxUser.getSelectedItem();
+            user = (UserClass) comboBoxUsers.getSelectedItem();
             askLocalAdmin = false;
         } catch (ClassCastException e) {
-            System.out.println("Local Admin ?");
             askLocalAdmin = true;
         }
         password = fieldPassword.getText();
         if (askLocalAdmin) {
-            String surName = (String) comboBoxUser.getSelectedItem();
+            String surName = (String) comboBoxUsers.getSelectedItem();
             String pass = BaseData2.Password.encoding(password);
             // проверка на локального админа
-            flAdmin = checkIntegratedAdministrator(surName, pass);
-            if (!flAdmin) {
+            if (!checkIntegratedAdministrator(surName, pass)) {
                 buttonEnter.setEnabled(false);
+                buttonTuning.setVisible(false);
                 MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> buttonEnter.setEnabled(true));
+                myLog.log(Level.WARNING, "попытка входа локальным админом: " + surName + "/" + password);
                 return;
             }
             fieldPassword.setText("");
             // тут разрешение настройки
             buttonTuning.setVisible(true);
+            // отключение толкателей
+            comboBoxPusher.setEnabled(false);
+            myLog.log(Level.INFO, "вход локальным админом");
             return;
         }
         // спрятать кнопку настройка
@@ -540,15 +555,18 @@ public class StartFrame {
             buttonSetPassword.setEnabled(false);
             buttonEditUsers.setEnabled(false);
             buttonEditPushers.setEnabled(false);
+            comboBoxPusher.setEnabled(false);
             // отключить органы проверки пароля
             fieldPassword.setEnabled(false);
             buttonEnter.setEnabled(false);
+            myLog.log(Level.INFO, "ошибка ввода пароля: " + user.name + "/" + password);
             MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
                 fieldPassword.setEnabled(true);
                 buttonEnter.setEnabled(true);
             });
             return;
         }
+        myLog.log(Level.INFO, "вход пользователем " + user.name + " с привелегиями " + user.rank);
         // разрешение смены пароля
         fieldPassword.setText("");
         buttonSetPassword.setEnabled(true);
@@ -557,53 +575,71 @@ public class StartFrame {
         // разрешение на редактирование толкателей
         buttonEditPushers.setEnabled((user.rank & (1 << 1)) != 0);
         // разрешение кнопки работа
-        if (!
-            permissionButtonWork()
-        ) {
-            MySwingUtil.showMessage(frame, "ошибка", "нет готовности системы", 5_000);
-            return;
-        }
+        buttonWork.setEnabled(true);
+        // разрешение выбора толкателей
+        comboBoxPusher.setEnabled(true);
     }
     // обработка новый пароль
     private void callSetNewPassword() {
+        UserClass currentUser = (UserClass) comboBoxUsers.getSelectedItem();
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
-            System.out.println("новый пароль пустой!!!");
+            MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> buttonSetPassword.setEnabled(true));
+            buttonSetPassword.setEnabled(false);
+            myLog.log(Level.WARNING, "попытка установки пустово пароля пользователем " + currentUser.name );
             return;
         }
         try {
-            UserClass currentUser = (UserClass) comboBoxUser.getSelectedItem();
-            // обновление записи в БД
-            boolean result = false;
-            //result = callBack.setUserNewPassword(currentUser, newPassword);
-            // обновление текущей записи в comboBox
+            connBD.setNewUserPassword(currentUser, newPassword);
             currentUser.password = newPassword;
-            System.out.println("логин = " + currentUser.name + " новый пароль = " + newPassword + " статус = " + result);
-        } catch (Throwable ex) {
-            ex.printStackTrace();
+            if (!newPassword.equals(((UserClass) comboBoxUsers.getSelectedItem()).password)) {
+                myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
+            }
+        } catch (Exception e) {
+            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка записи в БД", 5_000, o -> buttonSetPassword.setEnabled(true));
+            buttonSetPassword.setEnabled(false);
+            myLog.log(Level.SEVERE, "ошибка сохранения нового пароля", e);
         }
         fieldPassword.setText("");
     }
     // обработка выбора пользователя
     private void callSelectUser() {
+        // разрешение ввода пароля
         fieldPassword.setText("");
         fieldPassword.setEnabled(true);
+        // разрешение ввод
         buttonEnter.setEnabled(true);
+        // отключение работа
         buttonWork.setEnabled(false);
+        // отключение редактирование
         buttonEditUsers.setEnabled(false);
         buttonEditPushers.setEnabled(false);
-        //
+        // отключение установки нового пароля
         buttonSetPassword.setVisible(false);
+        // отключение выбора толкателя
+        comboBoxPusher.setEnabled(false);
+        // отключение настройки
         buttonTuning.setVisible(false);
     }
     // обработка "работа"
     private void callReturnToWork() {
-        frame.removeAll();
-        frame.dispose();
+        if (!permissionWork()) {
+            MySwingUtil.showMessage(frame, "ошибка", "нет готовности системы", 5_000);
+            myLog.log(Level.INFO, "нет готовности системы");
+            return;
+        }
+        // ------------
+        myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("не реализован выход на главную программу"));
+        //frame.removeAll();
+        //frame.dispose();
         //callBack.closeFrame();
     }
     // обработка настройка
     private void callTuning() {
+        if (1 == 1) {
+            myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("не реализовано запуск настройки"));
+            return;
+        }
         if (statMainWork) {
             // при основной работе нельзя менять параметры БД и порта
             MySwingUtil.showMessage(frame, "Настройка", "при основной работе нельзя менять параметры БД и порта", 10_000);
@@ -611,7 +647,7 @@ public class StartFrame {
             return;
         }
         // отключение управления
-        comboBoxUser.setEnabled(false);
+        comboBoxUsers.setEnabled(false);
         fieldPassword.setEnabled(false);
         buttonEnter.setEnabled(false);
         buttonTuning.setVisible(false);
@@ -634,7 +670,23 @@ public class StartFrame {
     }
     // обработка редактирование пользователей
     private void callEditUsers() {
-
+        SaveEnableComponents saveComponents = new SaveEnableComponents();
+        saveComponents.offline();
+        new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
+                new EditUsers(connBD,
+                        new EditUsers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers(boolean newData) {
+                                if (newData) {
+                                    // здесь перезагрузка списка пользователей
+                                    myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!", new Exception("не реализована перезагрузка списка пользователей после редактирования"));
+                                }
+                                saveComponents.restore();
+                            }
+                        });
+            });
+        }, "create edit users").start();
     }
     // обработка редактирование толкателей
     private void callEditPushers() {
@@ -697,5 +749,55 @@ public class StartFrame {
     }
 
     // ===========================================================================
-
+    class SaveEnableComponents {
+        private boolean buttonEnter;
+        private boolean buttonSetPassword;
+        private boolean buttonWork;
+        private boolean buttonTuning;
+        private boolean buttonEditUsers;
+        private boolean buttonEditPushers;
+        private boolean comboBoxUsers;
+        private boolean comboBoxPusher;
+        private boolean fieldPassword;
+        private boolean frame;
+        public SaveEnableComponents() {
+            save();
+        }
+        public void save() {
+            buttonEnter = StartFrame.this.buttonEnter.isEnabled();
+            buttonSetPassword = StartFrame.this.buttonSetPassword.isEnabled();
+            buttonWork = StartFrame.this.buttonWork.isEnabled();
+            buttonTuning = StartFrame.this.buttonTuning.isEnabled();
+            buttonEditUsers = StartFrame.this.buttonEditUsers.isEnabled();
+            buttonEditPushers = StartFrame.this.buttonEditPushers.isEnabled();
+            comboBoxUsers = StartFrame.this.comboBoxUsers.isEnabled();
+            comboBoxPusher = StartFrame.this.comboBoxPusher.isEnabled();
+            fieldPassword = StartFrame.this.fieldPassword.isEnabled();
+            frame = StartFrame.this.frame.isEnabled();
+        }
+        public void restore() {
+            StartFrame.this.buttonEnter.setEnabled(buttonEnter);
+            StartFrame.this.buttonSetPassword.setEnabled(buttonSetPassword);
+            StartFrame.this.buttonWork.setEnabled(buttonWork);
+            StartFrame.this.buttonTuning.setEnabled(buttonTuning);
+            StartFrame.this.buttonEditUsers.setEnabled(buttonEditUsers);
+            StartFrame.this.buttonEditPushers.setEnabled(buttonEditPushers);
+            StartFrame.this.comboBoxUsers.setEnabled(comboBoxUsers);
+            StartFrame.this.comboBoxPusher.setEnabled(comboBoxPusher);
+            StartFrame.this.fieldPassword.setEnabled(fieldPassword);
+            StartFrame.this.frame.setEnabled(frame);
+        }
+        public void offline() {
+            StartFrame.this.buttonEnter.setEnabled(false);
+            StartFrame.this.buttonSetPassword.setEnabled(false);
+            StartFrame.this.buttonWork.setEnabled(false);
+            StartFrame.this.buttonTuning.setEnabled(false);
+            StartFrame.this.buttonEditUsers.setEnabled(false);
+            StartFrame.this.buttonEditPushers.setEnabled(false);
+            StartFrame.this.comboBoxUsers.setEnabled(false);
+            StartFrame.this.comboBoxPusher.setEnabled(false);
+            StartFrame.this.fieldPassword.setEnabled(false);
+            StartFrame.this.frame.setEnabled(false);
+        }
+    }
 }
