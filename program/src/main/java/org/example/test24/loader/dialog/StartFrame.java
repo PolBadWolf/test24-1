@@ -28,7 +28,7 @@ public class StartFrame {
     private JButton buttonSetPassword;
     private JTextField fieldPassword;
     private JComboBox<UserClass> comboBoxUser;
-    private JComboBox<String> comboBoxPusher;
+    private JComboBox<Pusher> comboBoxPusher;
     private JLabel jLabel1;
     private JLabel jLabel2;
     private JLabel jLabel3;
@@ -53,7 +53,7 @@ public class StartFrame {
     // список пользователей / = [0] for false
     private UserClass[] listUsers = new UserClass[0];
     // список толкателей / = [0] for false
-    private String[] listPushers = new String[0];
+    private Pusher[] listPushers = new Pusher[0];
 
 
     FrameCallBack callBack;
@@ -127,6 +127,7 @@ public class StartFrame {
         flagConnecting = false;
         flagStructureIntegrity = false;
         listUsers = new UserClass[0];
+        listPushers = new Pusher[0];
         // ----
         boolean flBoolean;
         // загрузить параметры
@@ -164,6 +165,8 @@ public class StartFrame {
             myLog.log(Level.WARNING, "ошибка соединения с БД", e);
             return;
         }
+        // чтение списка толкателей
+        myLog.log(Level.SEVERE, "НЕ РЕАЛИЗОВАНО !!!!", new Exception("нереализована загрузка толкателей"));
     }
 
     // проверка ком порта
@@ -229,8 +232,6 @@ public class StartFrame {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        } else {
-            // здесь загрузка текущего пользователя и толкателя, если потребуется
         }
         // открытие основного экрана
         offTitleComponents();
@@ -250,6 +251,15 @@ public class StartFrame {
             MyUtil.<UserClass>loadToComboBox(listUsers, comboBoxUser);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
+        }
+        // загрузка толкателей в комбо бокс
+        try {
+            MyUtil.<Pusher>loadToComboBox(listPushers, comboBoxPusher);
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
+        }
+        if (statMainWork) {
+            // здесь загрузка текущего пользователя и толкателя, если потребуется
         }
         // -------
 
@@ -468,8 +478,8 @@ public class StartFrame {
         });
         return comboBox;
     }
-    private JComboBox<String> getComboBoxPusher(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JComboBox<String> comboBox = new JComboBox<>();
+    private JComboBox<Pusher> getComboBoxPusher(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JComboBox<Pusher> comboBox = new JComboBox<>();
         comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(true);
@@ -550,7 +560,7 @@ public class StartFrame {
         buttonTuning.setVisible(false);
         // проверка пароля у пользователя из списка (БД)
         if (!user.password.equals(password)) {
-            //System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
+            System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
             // отключить кнопки управления
             buttonSetPassword.setEnabled(false);
             buttonEditUsers.setEnabled(false);
@@ -626,6 +636,10 @@ public class StartFrame {
     }
     // обработка настройка
     private void callTuning() {
+        if (1 == 1) {
+            myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("не реализовано запуск настройки"));
+            return;
+        }
         if (statMainWork) {
             // при основной работе нельзя менять параметры БД и порта
             MySwingUtil.showMessage(frame, "Настройка", "при основной работе нельзя менять параметры БД и порта", 10_000);
