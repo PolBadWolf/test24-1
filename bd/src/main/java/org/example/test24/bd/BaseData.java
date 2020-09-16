@@ -138,4 +138,6 @@ public interface BaseData {
     boolean checkCheckStructureBd(String base) throws Exception;
     // установка нового пароля пользователю
     void setNewUserPassword(UserClass user, String newPassword) throws Exception;
+    // чтение списка толкателей
+    Pusher[] getListPushers(boolean actual) throws Exception;
 }
