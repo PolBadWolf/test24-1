@@ -115,9 +115,9 @@ class BaseDataParent implements BaseData {
         if (fl) {
             throw new Exception("соединение закрыто");
         }
-        boolean tableFl1 = true, tableFl2 = true, tableFl3 = true;
+        boolean table_data = true, table_users = true, table_pushers = true;
 
-        tableFl1 = checkCheckStructureTable(
+        table_data = checkCheckStructureTable(
                 base,
                 "table_data",
                 new ArrayList(Arrays.asList(
@@ -132,8 +132,7 @@ class BaseDataParent implements BaseData {
                         "dis"
                 ))
         );
-        // table_users
-        tableFl2 = checkCheckStructureTable(
+        table_users = checkCheckStructureTable(
                 base,
                 "table_users",
                 new ArrayList(Arrays.asList(
@@ -145,7 +144,17 @@ class BaseDataParent implements BaseData {
                         "rang"
                 ))
         );
-        return tableFl1 && tableFl2 && tableFl3;
+        table_pushers = checkCheckStructureTable(
+                base,
+                "table_pushers",
+                new ArrayList(Arrays.asList(
+                        "id_pusher",
+                        "date_reg",
+                        "date_unreg",
+                        "name"
+                ))
+        );
+        return table_data && table_users && table_pushers;
     }
     // проверка структуры таблицы
     protected boolean checkCheckStructureTable(String base, String table, ArrayList<String> listColumns) {

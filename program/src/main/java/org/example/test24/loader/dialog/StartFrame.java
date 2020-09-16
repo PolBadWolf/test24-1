@@ -234,7 +234,17 @@ public class StartFrame {
         }
         // открытие основного экрана
         offTitleComponents();
-        onInputComponents();
+        if (!flagStructureIntegrity) {
+            MySwingUtil.showMessage(frame,
+                    "запуск начального экрана",
+                    "структура БД нарушена - требуется вмешательство администратора",
+                    30_000,
+                    o -> onInputComponents()
+            );
+            return;
+        } else {
+            onInputComponents();
+        }
         // загрузка пользователей в комбо бокс
         try {
             MyUtil.<UserClass>loadToComboBox(listUsers, comboBoxUser);
