@@ -2,6 +2,7 @@ package org.example.test24.loader.dialog;
 
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
+import org.example.test24.lib.MyLogger;
 import org.example.test24.lib.MyUtil;
 import org.example.test24.lib.MySwingUtil;
 
@@ -569,9 +570,12 @@ public class StartFrame {
     private void callSetNewPassword() {
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
-            System.out.println("новый пароль пустой!!!");
+            MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> buttonSetPassword.setEnabled(true));
+            buttonSetPassword.setEnabled(false);
+            myLog.log(Level.WARNING, "попытка установки пустово пароля пользователем " + ((UserClass) comboBoxUser.getSelectedItem()).name );
             return;
         }
+        /*
         try {
             UserClass currentUser = (UserClass) comboBoxUser.getSelectedItem();
             // обновление записи в БД
@@ -584,6 +588,7 @@ public class StartFrame {
             ex.printStackTrace();
         }
         fieldPassword.setText("");
+        */
     }
     // обработка выбора пользователя
     private void callSelectUser() {
