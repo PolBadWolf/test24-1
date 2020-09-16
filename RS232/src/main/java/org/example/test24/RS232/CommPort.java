@@ -12,7 +12,7 @@ public interface CommPort {
         return new CommPortClass();
     }
     static String[] getListPortsName() { return CommPortClass.getListPortsName(); }
-    static boolean isCheckCommPort(String portName) { return CommPortClass.isCheckCommPort(portName); }
+    static boolean isCheckCommPort(String portName) throws Exception { return CommPortClass.isCheckCommPort(portName); }
 
     PortStat open(CallBack callBack, String portName, BAUD baud);
     int INITCODE_OK           = 0;

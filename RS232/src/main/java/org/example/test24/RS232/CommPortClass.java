@@ -24,7 +24,10 @@ class CommPortClass implements CommPort {
         }
         return namePorts;
     }
-    static boolean isCheckCommPort(String portName) {
+    static boolean isCheckCommPort(String portName) throws Exception {
+        if (portName == null) {
+            throw new Exception("имя порта не установлено");
+        }
         CommPortClass port = new CommPortClass();
         PortStat stat = port.open(
                 (bytes, lenght) -> { },

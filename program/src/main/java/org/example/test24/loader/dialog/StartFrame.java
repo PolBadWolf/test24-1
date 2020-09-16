@@ -1,5 +1,6 @@
 package org.example.test24.loader.dialog;
 
+import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
 import org.example.test24.lib.MyUtil;
 import org.example.test24.lib.MySwingUtil;
@@ -165,6 +166,24 @@ public class StartFrame {
         }
     }
 
+    // проверка ком порта
+    private boolean isCheckCommPort(String portName) {
+        boolean flag;
+        if (statMainWork) {
+            // если программа работает, то comm port занят - не чего его проверять
+            flag = true;
+        } else {
+            try {
+                flag = CommPort.isCheckCommPort(portName);
+                if (!flag) myLog.log(Level.INFO, "port \"" + portName + "\" не доступен или занят");
+            } catch (Exception e) {
+                myLog.log(Level.SEVERE, "ошибка проверки comm port", e);
+                flag = false;
+            }
+        }
+        return flag;
+    }
+
     private void start() {
         // загрузка компонентов и вывод загаловка
         initComponents();
@@ -201,13 +220,7 @@ public class StartFrame {
         initBaseData(typeBaseDate);
         // *************************************************************************************
         // проверка ком порта
-        try {
-            config3 = null;
-            flCheckCommPort = callBack.isCheckCommPort(statMainWork, config3.getPortName());
-        } catch (Exception e) {
-            System.out.println("Ошибка поверки ком порта: " + e.getMessage());
-            flCheckCommPort = false;
-        }
+        flagAvailabilityCommPort = isCheckCommPort(config.getPortName());
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -538,12 +551,14 @@ public class StartFrame {
             // отключить органы проверки пароля
             fieldPassword.setEnabled(false);
             buttonEnter.setEnabled(false);
+            myLog.log(Level.INFO, "ошибка ввода пароля: " + user.name + "/" + password);
             MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
                 fieldPassword.setEnabled(true);
                 buttonEnter.setEnabled(true);
             });
             return;
         }
+        myLog.log(Level.INFO, "вход пользователем " + user.name + " с привелегиями " + user.rank);
         // разрешение смены пароля
         fieldPassword.setText("");
         buttonSetPassword.setEnabled(true);
