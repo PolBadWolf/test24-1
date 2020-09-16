@@ -525,8 +525,7 @@ public class StartFrame {
         // список пользователей / = [0] for false
         if (listUsers.length == 0) return false;
         // список толкателей / = [0] for false
-        // if (listPushers.length == 0) return false;
-        myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("толкатели еще не реализованы"));
+        if (listPushers.length == 0) return false;
         return true;
     }
     // ======================================================
@@ -556,6 +555,8 @@ public class StartFrame {
             fieldPassword.setText("");
             // тут разрешение настройки
             buttonTuning.setVisible(true);
+            // отключение толкателей
+            comboBoxPusher.setEnabled(false);
             myLog.log(Level.INFO, "вход локальным админом");
             return;
         }
@@ -568,6 +569,7 @@ public class StartFrame {
             buttonSetPassword.setEnabled(false);
             buttonEditUsers.setEnabled(false);
             buttonEditPushers.setEnabled(false);
+            comboBoxPusher.setEnabled(false);
             // отключить органы проверки пароля
             fieldPassword.setEnabled(false);
             buttonEnter.setEnabled(false);
@@ -588,6 +590,8 @@ public class StartFrame {
         buttonEditPushers.setEnabled((user.rank & (1 << 1)) != 0);
         // разрешение кнопки работа
         buttonWork.setEnabled(true);
+        // разрешение выбора толкателей
+        comboBoxPusher.setEnabled(true);
     }
     // обработка новый пароль
     private void callSetNewPassword() {
@@ -614,14 +618,21 @@ public class StartFrame {
     }
     // обработка выбора пользователя
     private void callSelectUser() {
+        // разрешение ввода пароля
         fieldPassword.setText("");
         fieldPassword.setEnabled(true);
+        // разрешение ввод
         buttonEnter.setEnabled(true);
+        // отключение работа
         buttonWork.setEnabled(false);
+        // отключение редактирование
         buttonEditUsers.setEnabled(false);
         buttonEditPushers.setEnabled(false);
-        //
+        // отключение установки нового пароля
         buttonSetPassword.setVisible(false);
+        // отключение выбора толкателя
+        comboBoxPusher.setEnabled(false);
+        // отключение настройки
         buttonTuning.setVisible(false);
     }
     // обработка "работа"
