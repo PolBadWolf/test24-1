@@ -30,59 +30,42 @@ class BaseDataMySql extends BaseDataParent {
                 , parameters.getPortServer()
         ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
         // соединение
-        try {
-            connection = DriverManager.getConnection(
-                    connString,
-                    parameters.getUser(),
-                    parameters.getPassword()
-            );
-        } catch (SQLException e) {
-            throw new Exception("ошибка соединения с БД", e);
-        }
+        connection = DriverManager.getConnection(
+                connString,
+                parameters.getUser(),
+                parameters.getPassword()
+        );
         this.baseDat = parameters.getDataBase();
     }
     // чтение списка БД
     @Override
     public String[] getListBase() throws Exception {
         if (connection == null) {
-            myLog.log(Level.SEVERE, "отсутствует соединение");
             throw new Exception("отсутствует соединение (connection == null)");
         }
         boolean flClosed;
-        try {
-            flClosed = connection.isClosed();
-        } catch (SQLException e) {
-            myLog.log(Level.SEVERE, "ошибка проверки соединения: " + e.getMessage());
-            throw new Exception(e);
-        }
+        flClosed = connection.isClosed();
         if (flClosed) {
-            myLog.log(Level.SEVERE, "соединение закрыто");
             throw new Exception("соединение закрыто");
         }
         // запрос на список
         ResultSet resultSet;
-        try {
-            resultSet = connection.createStatement().executeQuery("SHOW DATABASES");
-        } catch (SQLException e) {
-            myLog.log(Level.SEVERE, "ошибка запроса", e);
-            throw new Exception(e);
-        }
+        resultSet = connection.createStatement().executeQuery("SHOW DATABASES");
         // отсев системных БД
         ArrayList<String> list = new ArrayList<>();
         String s;
+        while (resultSet.next()) {
+            s = resultSet.getString(1);
+            if (s.toLowerCase().equals("information_schema")) continue;
+            if (s.toLowerCase().equals("mysql")) continue;
+            if (s.toLowerCase().equals("performance_schema")) continue;
+            if (s.toLowerCase().equals("sys")) continue;
+            list.add(s);
+        }
         try {
-            while (resultSet.next()) {
-                s = resultSet.getString(1);
-                if (s.toLowerCase().equals("information_schema")) continue;
-                if (s.toLowerCase().equals("mysql")) continue;
-                if (s.toLowerCase().equals("performance_schema")) continue;
-                if (s.toLowerCase().equals("sys")) continue;
-                list.add(s);
-            }
             resultSet.close();
         } catch (SQLException e) {
-            myLog.log(Level.SEVERE, "ошибка парсинга", e);
-            throw new Exception(e);
+            myLog.log(Level.WARNING, "чтение списка БД", e);
         }
         return list.toArray(new String[0]);
     }
