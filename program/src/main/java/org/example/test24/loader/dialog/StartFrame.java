@@ -684,6 +684,11 @@ public class StartFrame {
                                 }
                                 saveComponents.restore();
                             }
+
+                            @Override
+                            public UserClass getCurrentUser() {
+                                return (UserClass) comboBoxUsers.getSelectedItem();
+                            }
                         });
             });
         }, "create edit users").start();

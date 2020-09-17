@@ -23,6 +23,7 @@ public class EditUsers extends JFrame
 {
     public interface CallBack {
         void messageCloseEditUsers(boolean newData);
+        UserClass getCurrentUser();
     }
     // объект обратного вызова
     private CallBack callBack;
