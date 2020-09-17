@@ -232,9 +232,9 @@ class BaseDataParent implements BaseData {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
         preStatement = connection.prepareStatement(
                 "UPDATE " + baseDat + ".Table_users SET " +
-                        "date_unreg = ? " +
-                        "id_unreg = ?" +
-                        "WHERE id = ?"
+                        "date_unreg = ?, " +
+                        "id_unreg = ? " +
+                        "WHERE id = ? "
         );
         preStatement.setTimestamp(1, timestamp);
         preStatement.setInt(2, source_id);
