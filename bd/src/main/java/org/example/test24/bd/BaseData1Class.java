@@ -90,10 +90,10 @@ abstract class BaseData1Class implements BaseData1 {
                     listUsers.add(new UserClass(
                             result.getInt("id"),
                             result.getTimestamp("date_reg"),
-                            result.getTimestamp("date_unreg"),
                             result.getString("name"),
                             pass,
-                            0 // это статус
+                            0, // это статус
+                            result.getInt("date_unreg")
                     ));
                 } catch (java.lang.Throwable throwable) {
                     throwable.printStackTrace();

@@ -34,14 +34,14 @@ class BaseDataParent implements BaseData {
         // запрос
         if (actual) {
             result = statement.executeQuery(
-                    "SELECT id, date_reg, date_unreg, name, password, rang " +
+                    "SELECT id, date_reg, name, password, rang, id_unreg " +
                             "FROM " + baseDat + "." + tab + " " +
-                            "WHERE (date_unreg IS NULL) " +
+                            "WHERE (id_unreg IS NULL) OR (id_unreg < 0) " +
                             "ORDER BY id "
             );
         } else {
             result = statement.executeQuery(
-                    "SELECT id, date_reg, date_unreg, name, password, rang " +
+                    "SELECT id, date_reg, name, password, rang, id_unreg " +
                             "FROM " + baseDat + "." + tab + " " +
                             "ORDER BY id "
             );
@@ -64,10 +64,10 @@ class BaseDataParent implements BaseData {
                         new UserClass(
                                 result.getInt("id"),
                                 result.getTimestamp("date_reg"),
-                                result.getTimestamp("date_unreg"),
                                 result.getString("name"),
                                 pass,
-                                result.getInt("rang") // user status
+                                result.getInt("rang"), // user status
+                                result.getInt("id_unreg")
                         )
                 );
             } catch (SQLException e) {
