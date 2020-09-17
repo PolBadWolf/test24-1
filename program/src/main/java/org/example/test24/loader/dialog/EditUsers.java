@@ -185,17 +185,19 @@ public class EditUsers extends JFrame
     private void deactiveSelectUser() {
         // выбранная строка
         int id = listUsers[table.getSelectedRow()].id;
-        // доступ к базе
-        BaseData1 bdSql = null; //callBack.getBdInterface();
+
         try {
-            // деактивация
-            bdSql.deactiveUser(id);
-            // обновить таблицу
-            readUsersFromBase();
-            table.updateUI();
+            connBD.deativateUser(
+                    callBack.getCurrentUser().id,
+                    id
+            );
         } catch (Exception e) {
-            e.printStackTrace();
+            myLog.log(Level.SEVERE, "деактивация пользователя", e);
+            return;
         }
+        // обновить таблицу
+        readUsersFromBase();
+        table.updateUI();
     }
     // запись нового пользователя в базу
     private void writeNewUserToBase(String surName, String password, int rang) {
