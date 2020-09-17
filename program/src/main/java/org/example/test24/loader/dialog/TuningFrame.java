@@ -324,7 +324,11 @@ class TuningFrame extends TuningFrame_Metods {
             editUsers = null;
         }
 
-        /*@Override
+        @Override
+        public UserClass getCurrentUser() {
+            return null;
+        }
+/*@Override
         public BaseData1 getBdInterface() {
             if (bdSql == null) {
                 String typeBd = (String) comboBoxTypeBd.getSelectedItem();

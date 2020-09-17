@@ -140,4 +140,8 @@ public interface BaseData {
     void setNewUserPassword(UserClass user, String newPassword) throws Exception;
     // чтение списка толкателей
     Pusher[] getListPushers(boolean actual) throws Exception;
+    // запись нового пользователя
+    void writeNewUser(String sunName, String password, int rang) throws Exception;
+    // деактивация пользователя
+    void deativateUser(int source_id, int target_id) throws Exception;
 }

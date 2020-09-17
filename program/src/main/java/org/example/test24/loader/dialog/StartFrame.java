@@ -566,14 +566,14 @@ public class StartFrame {
             });
             return;
         }
-        myLog.log(Level.INFO, "вход пользователем " + user.name + " с привелегиями " + user.rank);
+        myLog.log(Level.INFO, "вход пользователем " + user.name + " с привелегиями " + user.rang);
         // разрешение смены пароля
         fieldPassword.setText("");
         buttonSetPassword.setEnabled(true);
         // разрешение на редактирование пользователей
-        buttonEditUsers.setEnabled((user.rank & (1 << 0)) != 0);
+        buttonEditUsers.setEnabled((user.rang & (1 << UserClass.RANG_USERS)) != 0);
         // разрешение на редактирование толкателей
-        buttonEditPushers.setEnabled((user.rank & (1 << 1)) != 0);
+        buttonEditPushers.setEnabled((user.rang & (1 << UserClass.RANG_PUSHERS)) != 0);
         // разрешение кнопки работа
         buttonWork.setEnabled(true);
         // разрешение выбора толкателей
@@ -683,6 +683,11 @@ public class StartFrame {
                                     myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!", new Exception("не реализована перезагрузка списка пользователей после редактирования"));
                                 }
                                 saveComponents.restore();
+                            }
+
+                            @Override
+                            public UserClass getCurrentUser() {
+                                return (UserClass) comboBoxUsers.getSelectedItem();
                             }
                         });
             });
