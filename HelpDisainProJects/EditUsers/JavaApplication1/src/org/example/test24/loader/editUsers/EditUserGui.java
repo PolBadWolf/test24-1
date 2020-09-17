@@ -48,6 +48,9 @@ public class EditUserGui extends javax.swing.JFrame {
         buttonNewUser = new javax.swing.JButton();
         fieldSurName = new javax.swing.JTextField();
         fieldPassword = new javax.swing.JTextField();
+        checkUsers = new javax.swing.JCheckBox();
+        сheckPushers = new javax.swing.JCheckBox();
+        label_edit = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Редактор пользователей");
@@ -97,6 +100,19 @@ public class EditUserGui extends javax.swing.JFrame {
         getContentPane().add(fieldPassword);
         fieldPassword.setBounds(80, 320, 340, 25);
 
+        checkUsers.setText("пользователей");
+        getContentPane().add(checkUsers);
+        checkUsers.setBounds(311, 350, 110, 23);
+
+        сheckPushers.setText("толкателей");
+        getContentPane().add(сheckPushers);
+        сheckPushers.setBounds(310, 380, 110, 23);
+
+        label_edit.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+        label_edit.setText("Редактирование");
+        getContentPane().add(label_edit);
+        label_edit.setBounds(180, 345, 130, 60);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -138,13 +154,16 @@ public class EditUserGui extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonDeactive;
     private javax.swing.JButton buttonNewUser;
+    private javax.swing.JCheckBox checkUsers;
     private javax.swing.JTextField fieldPassword;
     private javax.swing.JTextField fieldSurName;
+    private javax.swing.JLabel label_edit;
     private javax.swing.JLabel label_password;
     private javax.swing.JLabel label_surName;
     private javax.swing.JLabel label_title;
     private javax.swing.JScrollPane scroll_table;
     private javax.swing.JTable table;
+    private javax.swing.JCheckBox сheckPushers;
     // End of variables declaration//GEN-END:variables
 
     class SimpleModel extends AbstractTableModel {
