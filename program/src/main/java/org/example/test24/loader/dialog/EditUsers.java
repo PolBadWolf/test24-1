@@ -203,22 +203,11 @@ public class EditUsers extends JFrame
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "запись нового пользователя в базу", e);
         }
-
-        // доступ к базе
-        BaseData1 bdSql = null; //callBack.getBdInterface();
-        try {
-            // запись
-            bdSql.writeNewUser(fieldSurName.getText(), fieldPassword.getText());
-            // обновить таблицу
-            readUsersFromBase();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // обновить таблицу
+        readUsersFromBase();
         // очистка полей
         fieldSurName.setText("");
         fieldPassword.setText("");
-        // обновить таблицу
-        readUsersFromBase();
         table.updateUI();
     }
     //  ---
