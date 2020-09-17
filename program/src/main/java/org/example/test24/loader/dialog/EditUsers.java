@@ -209,6 +209,11 @@ public class EditUsers extends JFrame
         final int column_name = 0;
         final int column_datereg = 2;
         final int column_rang = 1;
+        final String[] columnsName = new String[]{
+                "ФИО",
+                "ранг",
+                "регистрация"
+        };
 
         @Override
         public int getRowCount() {
@@ -242,6 +247,11 @@ public class EditUsers extends JFrame
                 }
             }
             return text;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnsName[column];
         }
     }
     // ------------------------------------------
