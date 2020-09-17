@@ -66,6 +66,15 @@ public class EditUsers extends JFrame
         label_password = getLabel_password("Пароль", Font.PLAIN, 16, 20, 318, 60, 30);
         add(label_password);
 
+        label_edit = getLabel_edit("Редактирование", Font.PLAIN, 18, 170, 345, 130, 60);
+        add(label_edit);
+
+        checkUsers = getJCheckBox("пользователей", false, Font.PLAIN, 14, 311, 350, 120, 25);
+        add(checkUsers);
+
+        checkPushers = getJCheckBox("толкателей", false, Font.PLAIN, 14, 311, 380, 120, 25);
+        add(checkPushers);
+
         table = getTable(new SimpleTableModel(), 562, new BiInt[]{
                 new BiInt(0, -1),
                 new BiInt(1, 32),
@@ -98,7 +107,8 @@ public class EditUsers extends JFrame
         String surName = fieldSurName.getText();
         String password = fieldPassword.getText();
         int rang = 0;
-        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!", new Exception("чтения ранга"));
+        if (checkUsers.isSelected()) rang |= 1 << UserClass.RANG_USERS;
+        if (checkPushers.isSelected()) rang |= 1 << UserClass.RANG_PUSHERS;
         // запись нового пользователя в базу
         if (surName.length() == 0) {
             MySwingUtil.showMessage(this,
@@ -232,8 +242,11 @@ public class EditUsers extends JFrame
     // компоненты
     JButton buttonDeactive;
     JButton buttonNewUser;
+    JCheckBox checkUsers;
+    JCheckBox checkPushers;
     JTextField fieldPassword;
     JTextField fieldSurName;
+    JLabel label_edit;
     JLabel label_password;
     JLabel label_surName;
     JLabel label_title;
@@ -276,7 +289,9 @@ public class EditUsers extends JFrame
                         text = dateFormat.format(listUsers[rowIndex].date_reg);
                         break;
                     case column_rang:
-                        text = "rang";
+                        text = "";
+                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_USERS) != 0) text += "U";
+                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_PUSHERS) != 0) text += "P";
                         break;
                     default:
                 }
@@ -304,6 +319,12 @@ public class EditUsers extends JFrame
         return label;
     }
     private JLabel getLabel_password(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Times New Roman", fontStyle, fontSize));
+        label.setBounds(x, y, width, height);
+        return label;
+    }
+    private JLabel getLabel_edit(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Times New Roman", fontStyle, fontSize));
         label.setBounds(x, y, width, height);
@@ -374,6 +395,15 @@ public class EditUsers extends JFrame
         textField.addActionListener(e -> enterTextPassword());
         return textField;
     }
+    private JCheckBox getJCheckBox(String text, boolean stat, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JCheckBox box = new JCheckBox();
+        box.setFont(new Font("Times New Roman", fontStyle, fontSize));
+        box.setText(text);
+        box.setSelected(stat);
+        box.setBounds(x, y, width, height);
+        return box;
+    }
+
     class BiInt {
         public int index;
         public int width;
