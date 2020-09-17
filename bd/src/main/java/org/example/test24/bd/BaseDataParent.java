@@ -211,7 +211,7 @@ class BaseDataParent implements BaseData {
         String pass = new String(java.util.Base64.getEncoder().encode(password.getBytes()));
         java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
         preStatement = connection.prepareStatement(
-                "INSERT INTO Table_users (name, password, rang, date_reg)\n"
+                "INSERT INTO " + baseDat + ".Table_users (name, password, rang, date_reg)\n"
                         + " VALUES (?, ?, ?, ?)"
         );
         preStatement.setString(1, sunName);
