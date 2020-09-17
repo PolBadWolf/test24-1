@@ -28,15 +28,21 @@ public class EditUsers extends JFrame
     // объект обратного вызова
     private CallBack callBack;
     // объект доступа к БД
-    BaseData connBD;
-
+    private BaseData connBD;
+    // активный пользователь
+    private UserClass activetUser;
     private UserClass[] listUsers = null;
+    private UserClass[] tablUsers = null;
+
+
+
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public EditUsers(BaseData connBD, CallBack callBack) {
         this.connBD = connBD;
         this.callBack = callBack;
         // загрузка списка пользователей
+        activetUser = callBack.getCurrentUser();
         readUsersFromBase();
         // инициализация компонентов
         initComponents(); // ****************************************************************
@@ -65,6 +71,15 @@ public class EditUsers extends JFrame
 
         label_password = getLabel_password("Пароль", Font.PLAIN, 16, 20, 318, 60, 30);
         add(label_password);
+
+        label_edit = getLabel_edit("Редактирование", Font.PLAIN, 18, 170, 345, 130, 60);
+        add(label_edit);
+
+        checkUsers = getJCheckBox("пользователей", false, Font.PLAIN, 14, 311, 350, 120, 25);
+        add(checkUsers);
+
+        checkPushers = getJCheckBox("толкателей", false, Font.PLAIN, 14, 311, 380, 120, 25);
+        add(checkPushers);
 
         table = getTable(new SimpleTableModel(), 562, new BiInt[]{
                 new BiInt(0, -1),
@@ -98,7 +113,8 @@ public class EditUsers extends JFrame
         String surName = fieldSurName.getText();
         String password = fieldPassword.getText();
         int rang = 0;
-        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!", new Exception("чтения ранга"));
+        if (checkUsers.isSelected()) rang |= 1 << UserClass.RANG_USERS;
+        if (checkPushers.isSelected()) rang |= 1 << UserClass.RANG_PUSHERS;
         // запись нового пользователя в базу
         if (surName.length() == 0) {
             MySwingUtil.showMessage(this,
@@ -139,6 +155,11 @@ public class EditUsers extends JFrame
             return;
         }
         writeNewUserToBase(surName, password, rang);
+        // очистка полей
+        fieldSurName.setText("");
+        fieldPassword.setText("");
+        checkUsers.setSelected(false);
+        checkPushers.setSelected(false);
     }
     private void enterTextSurName() {
 
@@ -172,14 +193,11 @@ public class EditUsers extends JFrame
             myLog.log(Level.SEVERE, "чтение списка пользователей", e);
             listUsers = new UserClass[0];
         }
-    }
-    // проверка введенных данных о новом пользователе *************************************************************
-    private void checkFieldsNewUser() {
-        if ((fieldSurName.getText().length() > 0) && (fieldPassword.getText().length() > 0)) {
-            //onButtonNewUser();
-        } else {
-            //offButtonNewUser();
+        ArrayList<UserClass> list = new ArrayList<>();
+        for (UserClass user : listUsers) {
+            if (user.id != activetUser.id) list.add(user);
         }
+        tablUsers = list.toArray(new UserClass[0]);
     }
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {
@@ -195,6 +213,8 @@ public class EditUsers extends JFrame
             myLog.log(Level.SEVERE, "деактивация пользователя", e);
             return;
         }
+        // отключить кнопку деактивация
+        offButtonDeactive();
         // обновить таблицу
         readUsersFromBase();
         table.updateUI();
@@ -202,15 +222,12 @@ public class EditUsers extends JFrame
     // запись нового пользователя в базу
     private void writeNewUserToBase(String surName, String password, int rang) {
         try {
-            connBD.writeNewUser(surName, password, rang);
+            connBD.writeNewUser(activetUser.id, surName, password, rang);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "запись нового пользователя в базу", e);
         }
         // обновить таблицу
         readUsersFromBase();
-        // очистка полей
-        fieldSurName.setText("");
-        fieldPassword.setText("");
         table.updateUI();
     }
     //  ---
@@ -232,8 +249,11 @@ public class EditUsers extends JFrame
     // компоненты
     JButton buttonDeactive;
     JButton buttonNewUser;
+    JCheckBox checkUsers;
+    JCheckBox checkPushers;
     JTextField fieldPassword;
     JTextField fieldSurName;
+    JLabel label_edit;
     JLabel label_password;
     JLabel label_surName;
     JLabel label_title;
@@ -253,8 +273,8 @@ public class EditUsers extends JFrame
         @Override
         public int getRowCount() {
             int row = 0;
-            if (listUsers != null) {
-                row = listUsers.length;
+            if (tablUsers != null) {
+                row = tablUsers.length;
             }
             return row;
         }
@@ -267,16 +287,18 @@ public class EditUsers extends JFrame
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             String text = "";
-            if (listUsers != null) {
+            if (tablUsers != null) {
                 switch (columnIndex) {
                     case column_name:
-                        text = listUsers[rowIndex].name;
+                        text = tablUsers[rowIndex].name;
                         break;
                     case column_datereg:
                         text = dateFormat.format(listUsers[rowIndex].date_reg);
                         break;
                     case column_rang:
-                        text = "rang";
+                        text = "";
+                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_USERS) != 0) text += "П";
+                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_PUSHERS) != 0) text += "Т";
                         break;
                     default:
                 }
@@ -309,6 +331,12 @@ public class EditUsers extends JFrame
         label.setBounds(x, y, width, height);
         return label;
     }
+    private JLabel getLabel_edit(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Times New Roman", fontStyle, fontSize));
+        label.setBounds(x, y, width, height);
+        return label;
+    }
     private JTable getTable(TableModel tableModel, int widthLast, BiInt[] widthColumns) {
         JTable table = new JTable();
         ArrayList<Integer> listAutoColumns = new ArrayList<>();
@@ -328,6 +356,7 @@ public class EditUsers extends JFrame
             for (int index : listAutoColumns) {
                 table.getColumnModel().getColumn(index).setPreferredWidth(wth);
             }
+            table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e) {
@@ -374,6 +403,15 @@ public class EditUsers extends JFrame
         textField.addActionListener(e -> enterTextPassword());
         return textField;
     }
+    private JCheckBox getJCheckBox(String text, boolean stat, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JCheckBox box = new JCheckBox();
+        box.setFont(new Font("Times New Roman", fontStyle, fontSize));
+        box.setText(text);
+        box.setSelected(stat);
+        box.setBounds(x, y, width, height);
+        return box;
+    }
+
     class BiInt {
         public int index;
         public int width;
