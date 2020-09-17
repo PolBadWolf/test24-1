@@ -13,6 +13,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -64,7 +66,11 @@ public class EditUsers extends JFrame
         label_password = getLabel_password("Пароль", Font.PLAIN, 16, 20, 318, 60, 30);
         add(label_password);
 
-        table = getTable(new SimpleTableModel(), JTable.AUTO_RESIZE_LAST_COLUMN, 0, 360);
+        table = getTable(new SimpleTableModel(), 562, new BiInt[]{
+                new BiInt(0, -1),
+                new BiInt(1, 32),
+                new BiInt(2, 122)
+        });
         scroll_table = getScroll_table(table, 20,50, 580, 190);
         add(scroll_table);
 
@@ -121,7 +127,7 @@ public class EditUsers extends JFrame
     // чтение из базы в массив
     private void readUsersFromBase() {
         try {
-            tableUserClass = connBD.getListUsers(false);
+            tableUserClass = connBD.getListUsers(true);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "чтение списка пользователей", e);
             tableUserClass = new UserClass[0];
@@ -200,6 +206,9 @@ public class EditUsers extends JFrame
     JTable table;
     // ------------------------------------------
     class SimpleTableModel extends AbstractTableModel {
+        final int column_name = 0;
+        final int column_datereg = 2;
+        final int column_rang = 1;
 
         @Override
         public int getRowCount() {
@@ -220,11 +229,14 @@ public class EditUsers extends JFrame
             String text = "";
             if (tableUserClass != null) {
                 switch (columnIndex) {
-                    case 0:
+                    case column_name:
                         text = tableUserClass[rowIndex].name;
                         break;
-                    case 1:
+                    case column_datereg:
                         text = dateFormat.format(tableUserClass[rowIndex].date_reg);
+                        break;
+                    case column_rang:
+                        text = "rang";
                         break;
                     default:
                 }
@@ -252,13 +264,25 @@ public class EditUsers extends JFrame
         label.setBounds(x, y, width, height);
         return label;
     }
-    private JTable getTable(TableModel tableModel, int auto_resize, int columnIndex, int width) {
+    private JTable getTable(TableModel tableModel, int widthLast, BiInt[] widthColumns) {
         JTable table = new JTable();
+        ArrayList<Integer> listAutoColumns = new ArrayList<>();
         try {
             table.setModel(tableModel);
             table.getTableHeader().setReorderingAllowed(false);
-            table.setAutoResizeMode(auto_resize);
-            table.getColumnModel().getColumn(columnIndex).setPreferredWidth(width);
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            for (BiInt widthColumn : widthColumns) {
+                if (widthColumn.width < 0) {
+                    listAutoColumns.add(widthColumn.index);
+                    continue;
+                }
+                table.getColumnModel().getColumn(widthColumn.index).setPreferredWidth(widthColumn.width);
+                widthLast = widthLast - widthColumn.width;
+            }
+            int wth = widthLast / listAutoColumns.size();
+            for (int index : listAutoColumns) {
+                table.getColumnModel().getColumn(index).setPreferredWidth(wth);
+            }
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e) {
@@ -304,5 +328,13 @@ public class EditUsers extends JFrame
         textField.setBounds(x, y, width, height);
         textField.addActionListener(e -> enterTextPassword());
         return textField;
+    }
+    class BiInt {
+        public int index;
+        public int width;
+        public BiInt(int index, int width) {
+            this.index = index;
+            this.width = width;
+        }
     }
 }
