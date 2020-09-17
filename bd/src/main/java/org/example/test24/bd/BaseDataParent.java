@@ -1,5 +1,7 @@
 package org.example.test24.bd;
 
+import com.mysql.cj.jdbc.ClientPreparedStatement;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -202,24 +204,50 @@ class BaseDataParent implements BaseData {
     }
     // запись нового пользователя
     @Override
-    public void writeNewUser(String sunName, String password, int rang) throws Exception {
+    public void writeNewUser(int id_edit, String sunName, String password, int rang) throws Exception
+    {
         if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");
 
-        PreparedStatement preStatement;
-        String pass = new String(java.util.Base64.getEncoder().encode(password.getBytes()));
-        java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
-        preStatement = connection.prepareStatement(
-                "INSERT INTO " + baseDat + ".Table_users (name, password, rang, date_reg)\n"
-                        + " VALUES (?, ?, ?, ?)"
-        );
-        preStatement.setString(1, sunName);
-        preStatement.setString(2, pass);
-        preStatement.setInt(3, rang);
-        preStatement.setTimestamp(4, timestamp);
-        preStatement.executeUpdate();
-        preStatement.close();
+        boolean saveAutoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+
+        PreparedStatement preStatementUser = null;
+        PreparedStatement preStatementLogger = null;
+        try {
+            String pass = new String(java.util.Base64.getEncoder().encode(password.getBytes()));
+            java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
+            preStatementUser = connection.prepareStatement(
+                    "INSERT INTO " + baseDat + ".Table_users (name, password, rang, date_reg)\n"
+                            + " VALUES (?, ?, ?, ?)"
+            );
+            preStatementUser.setString(1, sunName);
+            preStatementUser.setString(2, pass);
+            preStatementUser.setInt(3, rang);
+            preStatementUser.setTimestamp(4, timestamp);
+            preStatementUser.executeUpdate();
+            preStatementLogger = connection.prepareStatement(
+                    "INSERT INTO " + baseDat + ".logger_users (date, idUser_edit, act, idUser_new, name_new, password_new, rang_new) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?) "
+            );
+            preStatementLogger.setTimestamp(1, timestamp);
+            preStatementLogger.setInt(2, id_edit);
+            preStatementLogger.setInt(3, 1);
+            preStatementLogger.setLong(4, ((ClientPreparedStatement)preStatementUser).getLastInsertID());
+            preStatementLogger.setString(5, sunName);
+            preStatementLogger.setString(6, pass);
+            preStatementLogger.setInt(7, rang);
+            preStatementLogger.executeUpdate();
+            connection.commit();
+        } catch (SQLException throwables) {
+            connection.rollback();
+            throw new Exception(throwables);
+        }
+        connection.setAutoCommit(saveAutoCommit);
+        preStatementUser.close();
+        preStatementLogger.close();
     }
     // деактивация пользователя
     @Override
