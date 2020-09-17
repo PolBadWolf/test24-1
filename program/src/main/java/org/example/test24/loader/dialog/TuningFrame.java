@@ -320,7 +320,7 @@ class TuningFrame extends TuningFrame_Metods {
     // ======
     private class EditUsersCallBack implements EditUsers.CallBack {
         @Override
-        public void messageCloseEditUsers() {
+        public void messageCloseEditUsers(boolean newData) {
             editUsers = null;
         }
 
@@ -639,7 +639,7 @@ class TuningFrame extends TuningFrame_Metods {
     // нажатие кнопки редактирование пользователей
     private void pushButtonEditUsers() {
         if (editUsers == null) {
-            editUsers = new EditUsers(new EditUsersCallBack());
+            editUsers = new EditUsers(null, new EditUsersCallBack());
         }
     }
 }

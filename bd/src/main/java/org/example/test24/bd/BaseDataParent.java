@@ -15,9 +15,7 @@ class BaseDataParent implements BaseData {
     public void openConnect(Parameters parameters) throws Exception { }
     // чтение списка БД
     @Override
-    public String[] getListBase() throws Exception {
-        return new String[0];
-    }
+    public String[] getListBase() throws Exception { return new String[0]; }
     // чтение списка пользователей
     @Override
     public UserClass[] getListUsers(boolean actual) throws Exception {
@@ -29,26 +27,22 @@ class BaseDataParent implements BaseData {
         Statement statement;
         ResultSet result;
         // запрос на список пользователей
-        try {
-            String tab = "table_users";
-            statement = connection.createStatement();
-            // запрос
-            if (actual) {
-                result = statement.executeQuery(
-                        "SELECT id, date_reg, date_unreg, name, password, rang " +
-                                "FROM " + baseDat + "." + tab + " " +
-                                "WHERE (date_unreg IS NULL) " +
-                                "ORDER BY id "
-                );
-            } else {
-                result = statement.executeQuery(
-                        "SELECT id, date_reg, date_unreg, name, password, rang " +
-                                "FROM " + baseDat + "." + tab + " " +
-                                "ORDER BY id "
-                );
-            }
-        } catch (SQLException e) {
-            throw new Exception(e);
+        String tab = "table_users";
+        statement = connection.createStatement();
+        // запрос
+        if (actual) {
+            result = statement.executeQuery(
+                    "SELECT id, date_reg, date_unreg, name, password, rang " +
+                            "FROM " + baseDat + "." + tab + " " +
+                            "WHERE (date_unreg IS NULL) " +
+                            "ORDER BY id "
+            );
+        } else {
+            result = statement.executeQuery(
+                    "SELECT id, date_reg, date_unreg, name, password, rang " +
+                            "FROM " + baseDat + "." + tab + " " +
+                            "ORDER BY id "
+            );
         }
         // создание списка
         while (result.next()) {
@@ -120,7 +114,8 @@ class BaseDataParent implements BaseData {
                         "date_unreg",
                         "name",
                         "password",
-                        "rang"
+                        "rang",
+                        "id_unreg"
                 ))
         );
         table_pushers = checkCheckStructureTable(
@@ -130,7 +125,8 @@ class BaseDataParent implements BaseData {
                         "id_pusher",
                         "date_reg",
                         "date_unreg",
-                        "name"
+                        "name",
+                        "id_unreg"
                 ))
         );
         return table_data && table_users && table_pushers;
@@ -169,26 +165,22 @@ class BaseDataParent implements BaseData {
         Statement statement;
         ResultSet result;
         // запрос на список толкателей
-        try {
-            String tab = "table_pushers";
-            statement = connection.createStatement();
-            // запрос
-            if (actual) {
-                result = statement.executeQuery(
-                        "SELECT id_pusher, date_reg, date_unreg, name\n" +
-                                "FROM " + baseDat + "." + tab + "\n" +
-                                "WHERE (date_unreg IS NULL)\n" +
-                                "ORDER BY id_pusher "
-                );
-            } else {
-                result = statement.executeQuery(
-                        "SELECT id_pusher, date_reg, date_unreg, name\n" +
-                                "FROM " + baseDat + "." + tab + "\n" +
-                                "ORDER BY id_pusher "
-                );
-            }
-        } catch (SQLException e) {
-            throw new Exception(e);
+        String tab = "table_pushers";
+        statement = connection.createStatement();
+        // запрос
+        if (actual) {
+            result = statement.executeQuery(
+                    "SELECT id_pusher, date_reg, date_unreg, name\n" +
+                            "FROM " + baseDat + "." + tab + "\n" +
+                            "WHERE (date_unreg IS NULL)\n" +
+                            "ORDER BY id_pusher "
+            );
+        } else {
+            result = statement.executeQuery(
+                    "SELECT id_pusher, date_reg, date_unreg, name\n" +
+                            "FROM " + baseDat + "." + tab + "\n" +
+                            "ORDER BY id_pusher "
+            );
         }
         // создание списка
         ArrayList<Pusher> listPusher = new ArrayList<>();

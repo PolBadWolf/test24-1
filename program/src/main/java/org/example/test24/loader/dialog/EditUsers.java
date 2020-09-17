@@ -1,5 +1,6 @@
 package org.example.test24.loader.dialog;
 
+import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseData1;
 import org.example.test24.bd.UserClass;
 
@@ -12,23 +13,30 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+
+import static org.example.test24.lib.MyLogger.myLog;
 
 public class EditUsers extends JFrame
 {
     public interface CallBack {
-        void messageCloseEditUsers();
+        void messageCloseEditUsers(boolean newData);
     }
-
+    // объект обратного вызова
     private CallBack callBack;
+    // объект доступа к БД
+    BaseData connBD;
+
     private UserClass[] tableUserClass = null;
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public EditUsers(CallBack callBack) {
+    public EditUsers(BaseData connBD, CallBack callBack) {
+        this.connBD = connBD;
         this.callBack = callBack;
-        // загрузка параметров
-        readUsersFromBase(); //*************
-        // инитциализация компонентов
-        initComponents();
+        // загрузка списка пользователей
+        readUsersFromBase();
+        // инициализация компонентов
+        initComponents(); // ****************************************************************
         // деактивация кнопок
         offButtonDeactive();
         offButtonNewUser();
@@ -112,13 +120,11 @@ public class EditUsers extends JFrame
     // ==========================================
     // чтение из базы в массив
     private void readUsersFromBase() {
-        // доступ к базе
-        BaseData1 bdSql = null; //callBack.getBdInterface();
         try {
-            tableUserClass = bdSql.getListUsers(true);
+            tableUserClass = connBD.getListUsers(false);
         } catch (Exception e) {
-            tableUserClass = null;
-            System.out.println("EditUsers.readUsersFromBase: " + e.getMessage());
+            myLog.log(Level.SEVERE, "чтение списка пользователей", e);
+            tableUserClass = new UserClass[0];
         }
     }
     // проверка введенных данных о новом пользователе
@@ -173,13 +179,13 @@ public class EditUsers extends JFrame
     public void closeFromParent() {
         removeAll();
         dispose();
-        callBack.messageCloseEditUsers();
+        callBack.messageCloseEditUsers(false);
     }
     // закрытие окна по инициативе окна
     private void closeFromLocal() {
         removeAll();
         dispose();
-        callBack.messageCloseEditUsers();
+        callBack.messageCloseEditUsers(false);
     }
     // ==========================================
     // компоненты
@@ -206,7 +212,7 @@ public class EditUsers extends JFrame
 
         @Override
         public int getColumnCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -256,6 +262,7 @@ public class EditUsers extends JFrame
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e) {
+                    if (!e.getValueIsAdjusting()) return;
                     selectTableCell();
                 }
             });

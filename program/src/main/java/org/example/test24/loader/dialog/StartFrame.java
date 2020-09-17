@@ -57,10 +57,6 @@ public class StartFrame {
 
     FrameCallBack callBack;
     JFrame frame;
-    // флаг структурной целостности БД
-    private boolean flCheckSql = false;
-    // флаг доступности ком портов
-    private boolean flCheckCommPort = false;
 
     BaseData.TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
@@ -79,9 +75,6 @@ public class StartFrame {
         } catch (InterruptedException e) {
             myLog.log(Level.SEVERE, "ошибка создания startFrame", e);
             throw new Exception(e);
-        } catch (InvocationTargetException e) {
-            myLog.log(Level.SEVERE, "ошибка создания startFrame", e);
-            throw new Exception(e);
         }
         return frame[0];
     }
@@ -97,7 +90,7 @@ public class StartFrame {
         if (typeBaseDate == BaseData.TypeBaseDate.ERROR) {
             throw new Exception("ошибка типа базы данных");
         }
-        BaseData.Parameters parameters = null;
+        BaseData.Parameters parameters;
         try {
             parameters = BaseData.Parameters.create(typeBaseDate);
         } catch (Exception e) {
@@ -114,7 +107,7 @@ public class StartFrame {
     }
 
     private BaseData getConnect(BaseData.Parameters parameters) throws Exception {
-        BaseData bd = null;
+        BaseData bd;
         bd = BaseData.create(parameters);
         // открытие соединения с БД
         bd.openConnect(parameters);
@@ -128,7 +121,6 @@ public class StartFrame {
         listUsers = new UserClass[0];
         listPushers = new Pusher[0];
         // ----
-        boolean flBoolean;
         // загрузить параметры
         parameters = null;
         try {
@@ -205,12 +197,7 @@ public class StartFrame {
         });
         // =================== загрузка начальных параметров ===================
         // загрузка параметров соединения с БД
-        ParametersConfig config3;
-        BaseData2.TypeBaseData typeBaseData3;
-        BaseData2.Status resultBaseData;
-        ParametersSql2 parametersSql2 = null;
         //------------------------------
-        BaseData.Status result;
         // чтение конфигурации
         BaseData.Config config = BaseData.Config.create();
         try {
@@ -250,13 +237,13 @@ public class StartFrame {
         }
         // загрузка пользователей в комбо бокс
         try {
-            MyUtil.<UserClass>loadToComboBox(listUsers, comboBoxUsers);
+            MyUtil.loadToComboBox(listUsers, comboBoxUsers);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
         }
         // загрузка толкателей в комбо бокс
         try {
-            MyUtil.<Pusher>loadToComboBox(listPushers, comboBoxPusher);
+            MyUtil.loadToComboBox(listPushers, comboBoxPusher);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }
@@ -685,12 +672,21 @@ public class StartFrame {
     private void callEditUsers() {
         SaveEnableComponents saveComponents = new SaveEnableComponents();
         saveComponents.offline();
-        EditUsers editUsers = new EditUsers(new EditUsers.CallBack() {
-            @Override
-            public void messageCloseEditUsers() {
-                saveComponents.restore();
-            }
-        });
+        new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
+                new EditUsers(connBD,
+                        new EditUsers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers(boolean newData) {
+                                if (newData) {
+                                    // здесь перезагрузка списка пользователей
+                                    myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!", new Exception("не реализована перезагрузка списка пользователей после редактирования"));
+                                }
+                                saveComponents.restore();
+                            }
+                        });
+            });
+        }, "create edit users").start();
     }
     // обработка редактирование толкателей
     private void callEditPushers() {
