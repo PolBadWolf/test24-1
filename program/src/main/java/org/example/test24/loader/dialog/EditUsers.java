@@ -149,6 +149,11 @@ public class EditUsers extends JFrame
             return;
         }
         writeNewUserToBase(surName, password, rang);
+        // очистка полей
+        fieldSurName.setText("");
+        fieldPassword.setText("");
+        checkUsers.setSelected(false);
+        checkPushers.setSelected(false);
     }
     private void enterTextSurName() {
 
@@ -183,14 +188,6 @@ public class EditUsers extends JFrame
             listUsers = new UserClass[0];
         }
     }
-    // проверка введенных данных о новом пользователе *************************************************************
-    private void checkFieldsNewUser() {
-        if ((fieldSurName.getText().length() > 0) && (fieldPassword.getText().length() > 0)) {
-            //onButtonNewUser();
-        } else {
-            //offButtonNewUser();
-        }
-    }
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {
         // выбранная строка
@@ -205,6 +202,8 @@ public class EditUsers extends JFrame
             myLog.log(Level.SEVERE, "деактивация пользователя", e);
             return;
         }
+        // отключить кнопку деактивация
+        offButtonDeactive();
         // обновить таблицу
         readUsersFromBase();
         table.updateUI();
@@ -218,9 +217,6 @@ public class EditUsers extends JFrame
         }
         // обновить таблицу
         readUsersFromBase();
-        // очистка полей
-        fieldSurName.setText("");
-        fieldPassword.setText("");
         table.updateUI();
     }
     //  ---
@@ -349,6 +345,7 @@ public class EditUsers extends JFrame
             for (int index : listAutoColumns) {
                 table.getColumnModel().getColumn(index).setPreferredWidth(wth);
             }
+            table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e) {
