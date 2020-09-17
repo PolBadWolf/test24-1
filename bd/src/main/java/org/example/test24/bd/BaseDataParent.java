@@ -114,7 +114,8 @@ class BaseDataParent implements BaseData {
                         "date_unreg",
                         "name",
                         "password",
-                        "rang"
+                        "rang",
+                        "id_unreg"
                 ))
         );
         table_pushers = checkCheckStructureTable(
@@ -124,7 +125,8 @@ class BaseDataParent implements BaseData {
                         "id_pusher",
                         "date_reg",
                         "date_unreg",
-                        "name"
+                        "name",
+                        "id_unreg"
                 ))
         );
         return table_data && table_users && table_pushers;
