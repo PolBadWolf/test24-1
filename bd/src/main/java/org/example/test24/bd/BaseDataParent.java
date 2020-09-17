@@ -221,4 +221,25 @@ class BaseDataParent implements BaseData {
         preStatement.executeUpdate();
         preStatement.close();
     }
+    // деактивация пользователя
+    @Override
+    public void deativateUser(int source_id, int target_id) throws Exception {
+        if (connection == null) throw new Exception("соединение не установлено");
+        boolean fl = connection.isClosed();
+        if (fl) throw new Exception("соединение закрыто");
+
+        PreparedStatement preStatement;
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
+        preStatement = connection.prepareStatement(
+                "UPDATE " + baseDat + ".Table_users SET " +
+                        "date_unreg = ? " +
+                        "id_unreg = ?" +
+                        "WHERE id = ?"
+        );
+        preStatement.setTimestamp(1, timestamp);
+        preStatement.setInt(2, source_id);
+        preStatement.setInt(3, target_id);
+        preStatement.executeUpdate();
+        preStatement.close();
+    }
 }
