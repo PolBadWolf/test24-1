@@ -3,6 +3,7 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseData1;
 import org.example.test24.bd.UserClass;
+import org.example.test24.lib.MySwingUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -13,6 +14,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -27,7 +29,7 @@ public class EditUsers extends JFrame
     // объект доступа к БД
     BaseData connBD;
 
-    private UserClass[] tableUserClass = null;
+    private UserClass[] listUsers = null;
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public EditUsers(BaseData connBD, CallBack callBack) {
@@ -39,7 +41,6 @@ public class EditUsers extends JFrame
         initComponents(); // ****************************************************************
         // деактивация кнопок
         offButtonDeactive();
-        offButtonNewUser();
         setVisible(true);
         // ловушка закрытия окна
         addWindowListener(new WindowAdapter() {
@@ -64,7 +65,11 @@ public class EditUsers extends JFrame
         label_password = getLabel_password("Пароль", Font.PLAIN, 16, 20, 318, 60, 30);
         add(label_password);
 
-        table = getTable(new SimpleTableModel(), JTable.AUTO_RESIZE_LAST_COLUMN, 0, 360);
+        table = getTable(new SimpleTableModel(), 562, new BiInt[]{
+                new BiInt(0, -1),
+                new BiInt(1, 32),
+                new BiInt(2, 122)
+        });
         scroll_table = getScroll_table(table, 20,50, 580, 190);
         add(scroll_table);
 
@@ -89,16 +94,56 @@ public class EditUsers extends JFrame
         deactiveSelectUser();
     }
     private void pushButtonNewUser() {
+        String surName = fieldSurName.getText();
+        String password = fieldPassword.getText();
+        int rang = 0;
+        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!", new Exception("чтения ранга"));
         // запись нового пользователя в базу
-        writeNewUserToBase();
+        if (surName.length() == 0) {
+            MySwingUtil.showMessage(this,
+                    "новый пользователь",
+                    "имя пользователя не задано",
+                    5_000,
+                    o -> buttonNewUser.setEnabled(true)
+            );
+            buttonNewUser.setEnabled(false);
+            return;
+        }
+        if (password.length() == 0) {
+            MySwingUtil.showMessage(this,
+                    "новый пользователь",
+                    "пароль пустой",
+                    5_000,
+                    o -> buttonNewUser.setEnabled(true)
+            );
+            buttonNewUser.setEnabled(false);
+            return;
+        }
+        // проверка на повтор
+        boolean flag = false;
+        for (UserClass user : listUsers) {
+            if (user.name.equals(surName)) {
+                flag = true;
+                break;
+            }
+        }
+        if (flag) {
+            MySwingUtil.showMessage(this,
+                    "новый пользователь",
+                    "такой пользователь уже существует",
+                    5_000,
+                    o -> buttonNewUser.setEnabled(true)
+            );
+            buttonNewUser.setEnabled(false);
+            return;
+        }
+        writeNewUserToBase(surName, password, rang);
     }
     private void enterTextSurName() {
-        // проверка введенных данных о новом пользователе
-        checkFieldsNewUser();
+
    }
     private void enterTextPassword() {
-        // проверка введенных данных о новом пользователе
-        checkFieldsNewUser();
+
     }
     private void selectTableCell() {
         onButtonDeactive();
@@ -111,34 +156,34 @@ public class EditUsers extends JFrame
     private void offButtonDeactive() {
         buttonDeactive.setEnabled(false);
     }
-    private void onButtonNewUser() {
+    /*private void onButtonNewUser() {
         buttonNewUser.setEnabled(true);
-    }
-    private void offButtonNewUser() {
+    }*/
+    /*private void offButtonNewUser() {
         buttonNewUser.setEnabled(false);
-    }
+    }*/
     // ==========================================
     // чтение из базы в массив
     private void readUsersFromBase() {
         try {
-            tableUserClass = connBD.getListUsers(false);
+            listUsers = connBD.getListUsers(true);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "чтение списка пользователей", e);
-            tableUserClass = new UserClass[0];
+            listUsers = new UserClass[0];
         }
     }
-    // проверка введенных данных о новом пользователе
+    // проверка введенных данных о новом пользователе *************************************************************
     private void checkFieldsNewUser() {
         if ((fieldSurName.getText().length() > 0) && (fieldPassword.getText().length() > 0)) {
-            onButtonNewUser();
+            //onButtonNewUser();
         } else {
-            offButtonNewUser();
+            //offButtonNewUser();
         }
     }
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {
         // выбранная строка
-        int id = tableUserClass[table.getSelectedRow()].id;
+        int id = listUsers[table.getSelectedRow()].id;
         // доступ к базе
         BaseData1 bdSql = null; //callBack.getBdInterface();
         try {
@@ -152,7 +197,7 @@ public class EditUsers extends JFrame
         }
     }
     // запись нового пользователя в базу
-    private void writeNewUserToBase() {
+    private void writeNewUserToBase(String surName, String password, int rang) {
         // доступ к базе
         BaseData1 bdSql = null; //callBack.getBdInterface();
         try {
@@ -166,8 +211,6 @@ public class EditUsers extends JFrame
         // очистка полей
         fieldSurName.setText("");
         fieldPassword.setText("");
-        // деактивация кнопки
-        offButtonNewUser();
         // обновить таблицу
         readUsersFromBase();
         table.updateUI();
@@ -200,12 +243,20 @@ public class EditUsers extends JFrame
     JTable table;
     // ------------------------------------------
     class SimpleTableModel extends AbstractTableModel {
+        final int column_name = 0;
+        final int column_datereg = 2;
+        final int column_rang = 1;
+        final String[] columnsName = new String[]{
+                "ФИО",
+                "ранг",
+                "регистрация"
+        };
 
         @Override
         public int getRowCount() {
             int row = 0;
-            if (tableUserClass != null) {
-                row = tableUserClass.length;
+            if (listUsers != null) {
+                row = listUsers.length;
             }
             return row;
         }
@@ -218,18 +269,26 @@ public class EditUsers extends JFrame
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             String text = "";
-            if (tableUserClass != null) {
+            if (listUsers != null) {
                 switch (columnIndex) {
-                    case 0:
-                        text = tableUserClass[rowIndex].name;
+                    case column_name:
+                        text = listUsers[rowIndex].name;
                         break;
-                    case 1:
-                        text = dateFormat.format(tableUserClass[rowIndex].date_reg);
+                    case column_datereg:
+                        text = dateFormat.format(listUsers[rowIndex].date_reg);
+                        break;
+                    case column_rang:
+                        text = "rang";
                         break;
                     default:
                 }
             }
             return text;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnsName[column];
         }
     }
     // ------------------------------------------
@@ -252,13 +311,25 @@ public class EditUsers extends JFrame
         label.setBounds(x, y, width, height);
         return label;
     }
-    private JTable getTable(TableModel tableModel, int auto_resize, int columnIndex, int width) {
+    private JTable getTable(TableModel tableModel, int widthLast, BiInt[] widthColumns) {
         JTable table = new JTable();
+        ArrayList<Integer> listAutoColumns = new ArrayList<>();
         try {
             table.setModel(tableModel);
             table.getTableHeader().setReorderingAllowed(false);
-            table.setAutoResizeMode(auto_resize);
-            table.getColumnModel().getColumn(columnIndex).setPreferredWidth(width);
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            for (BiInt widthColumn : widthColumns) {
+                if (widthColumn.width < 0) {
+                    listAutoColumns.add(widthColumn.index);
+                    continue;
+                }
+                table.getColumnModel().getColumn(widthColumn.index).setPreferredWidth(widthColumn.width);
+                widthLast = widthLast - widthColumn.width;
+            }
+            int wth = widthLast / listAutoColumns.size();
+            for (int index : listAutoColumns) {
+                table.getColumnModel().getColumn(index).setPreferredWidth(wth);
+            }
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e) {
@@ -304,5 +375,13 @@ public class EditUsers extends JFrame
         textField.setBounds(x, y, width, height);
         textField.addActionListener(e -> enterTextPassword());
         return textField;
+    }
+    class BiInt {
+        public int index;
+        public int width;
+        public BiInt(int index, int width) {
+            this.index = index;
+            this.width = width;
+        }
     }
 }
