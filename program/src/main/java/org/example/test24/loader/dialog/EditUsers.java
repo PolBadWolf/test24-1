@@ -31,6 +31,7 @@ public class EditUsers extends JFrame
     private BaseData connBD;
     // активный пользователь
     private UserClass activetUser;
+    private UserClass editUser = null;
     private UserClass[] listUsers = null;
     private UserClass[] tablUsers = null;
 
@@ -47,7 +48,7 @@ public class EditUsers extends JFrame
         // инициализация компонентов
         initComponents(); // ****************************************************************
         // деактивация кнопок
-        offButtonDeactive();
+        offButtonEditUser();
         setVisible(true);
         // ловушка закрытия окна
         addWindowListener(new WindowAdapter() {
@@ -94,6 +95,9 @@ public class EditUsers extends JFrame
 
         buttonNewUser = getButtonNewUser("Новый пользователь", Font.PLAIN, 14, 440, 317, 160, 30);
         add(buttonNewUser);
+
+        buttonEditUser = getButton("Ред. пользователя", Font.PLAIN, 14, 440, 368, 160, 30, e -> pushButtonEditUser());
+        add(buttonEditUser);
 
         fieldSurName = getFieldSurName("", Font.PLAIN, 14, 80, 270, 340, 25);
         add(fieldSurName);
@@ -156,11 +160,79 @@ public class EditUsers extends JFrame
         }
         writeNewUserToBase(surName, password, rang);
         // очистка полей
-        fieldSurName.setText("");
-        fieldPassword.setText("");
-        checkUsers.setSelected(false);
-        checkPushers.setSelected(false);
+        clearFieldEdit();
     }
+    private void pushButtonEditUser() {
+        String surName = fieldSurName.getText();
+        String password = fieldPassword.getText();
+        int rang = 0;
+        if (checkUsers.isSelected()) rang |= 1 << UserClass.RANG_USERS;
+        if (checkPushers.isSelected()) rang |= 1 << UserClass.RANG_PUSHERS;
+        // запись нового пользователя в базу
+        if (surName.length() == 0) {
+            MySwingUtil.showMessage(this,
+                    "редактирование пользователя",
+                    "имя пользователя не задано",
+                    5_000,
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        onButtonEditUser();
+                    }
+            );
+            buttonNewUser.setEnabled(false);
+            offButtonEditUser();
+            return;
+        }
+        if (password.length() == 0) {
+            MySwingUtil.showMessage(this,
+                    "редактирование пользователя",
+                    "пароль пустой",
+                    5_000,
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        onButtonEditUser();
+                    }
+            );
+            buttonNewUser.setEnabled(false);
+            offButtonEditUser();
+            return;
+        }
+        // проверка на повтор
+        boolean flag = false;
+        for (UserClass user : listUsers) {
+            if (user.id == editUser.id) continue;
+            if (user.name.equals(surName)) {
+                flag = true;
+                break;
+            }
+        }
+        if (flag) {
+            myLog.log(Level.WARNING, "редактирование пользователя",
+                    new Exception(callBack.getCurrentUser().name + " : " + editUser.name + " -> " + surName + " - такой пользователь уже существует"));
+            MySwingUtil.showMessage(this,
+                    "редактирование пользователя",
+                    "такой пользователь уже существует",
+                    5_000,
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        onButtonEditUser();
+                    }
+            );
+            buttonNewUser.setEnabled(false);
+            offButtonEditUser();
+            return;
+        }
+        updateDataUser(
+                callBack.getCurrentUser().id,
+                editUser.id,
+                surName,
+                password,
+                rang
+        );
+        // очистка полей
+        clearFieldEdit();
+    }
+
     private void enterTextSurName() {
 
    }
@@ -168,22 +240,24 @@ public class EditUsers extends JFrame
 
     }
     private void selectTableCell() {
-        onButtonDeactive();
+        onButtonEditUser();
+        // выбранный пользователь
+        editUser = tablUsers[table.getSelectedRow()];
+        fieldSurName.setText(editUser.name);
+        fieldPassword.setText(editUser.password);
+        checkUsers.setSelected((editUser.rang & 1 << UserClass.RANG_USERS) != 0);
+        checkPushers.setSelected((editUser.rang & 1 << UserClass.RANG_PUSHERS) != 0);
     }
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //      воздействие на органы управления
-    private void onButtonDeactive() {
+    private void onButtonEditUser() {
         buttonDeactive.setEnabled(true);
+        buttonEditUser.setEnabled(true);
     }
-    private void offButtonDeactive() {
+    private void offButtonEditUser() {
+        buttonEditUser.setEnabled(false);
         buttonDeactive.setEnabled(false);
     }
-    /*private void onButtonNewUser() {
-        buttonNewUser.setEnabled(true);
-    }*/
-    /*private void offButtonNewUser() {
-        buttonNewUser.setEnabled(false);
-    }*/
     // ==========================================
     // чтение из базы в массив
     private void readUsersFromBase() {
@@ -202,22 +276,23 @@ public class EditUsers extends JFrame
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {
         // выбранная строка
-        int id = listUsers[table.getSelectedRow()].id;
-
+        int id = editUser.id;
         try {
             connBD.deativateUser(
                     callBack.getCurrentUser().id,
                     id
             );
+            // обновить таблицу
+            readUsersFromBase();
+            table.updateUI();
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "деактивация пользователя", e);
-            return;
+        } finally {
+            // отключить кнопки редактирования
+            offButtonEditUser();
+            // очистка полей
+            clearFieldEdit();
         }
-        // отключить кнопку деактивация
-        offButtonDeactive();
-        // обновить таблицу
-        readUsersFromBase();
-        table.updateUI();
     }
     // запись нового пользователя в базу
     private void writeNewUserToBase(String surName, String password, int rang) {
@@ -229,6 +304,19 @@ public class EditUsers extends JFrame
         // обновить таблицу
         readUsersFromBase();
         table.updateUI();
+    }
+    // обновление записи о пользователе
+    private void updateDataUser(int sourceId, int targetId, String surName, String password, int rang) {
+        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("обновление записи о пользователе"));
+    }
+    // очистка полей редактирования
+    private void clearFieldEdit() {
+        editUser = null;
+        // очистка полей
+        fieldSurName.setText("");
+        fieldPassword.setText("");
+        checkUsers.setSelected(false);
+        checkPushers.setSelected(false);
     }
     //  ---
     // ==========================================
@@ -249,6 +337,7 @@ public class EditUsers extends JFrame
     // компоненты
     JButton buttonDeactive;
     JButton buttonNewUser;
+    JButton buttonEditUser;
     JCheckBox checkUsers;
     JCheckBox checkPushers;
     JTextField fieldPassword;
@@ -387,6 +476,13 @@ public class EditUsers extends JFrame
         button.setFont(new Font("Times New Roman", fontStyle, fontSize));
         button.setBounds(x, y, width, height);
         button.addActionListener(e -> pushButtonNewUser());
+        return button;
+    }
+    private JButton getButton(String text, int fontStyle, int fontSize, int x, int y, int width, int height, ActionListener listener) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Times New Roman", fontStyle, fontSize));
+        button.setBounds(x, y, width, height);
+        button.addActionListener(listener);
         return button;
     }
     private JTextField getFieldSurName(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {

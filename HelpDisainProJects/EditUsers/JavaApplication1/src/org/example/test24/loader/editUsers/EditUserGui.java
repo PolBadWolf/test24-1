@@ -45,6 +45,7 @@ public class EditUserGui extends javax.swing.JFrame {
         scroll_table = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
         buttonDeactive = new javax.swing.JButton();
+        buttonEditUser = new javax.swing.JButton();
         buttonNewUser = new javax.swing.JButton();
         fieldSurName = new javax.swing.JTextField();
         fieldPassword = new javax.swing.JTextField();
@@ -84,6 +85,11 @@ public class EditUserGui extends javax.swing.JFrame {
         buttonDeactive.setText("деактивация");
         getContentPane().add(buttonDeactive);
         buttonDeactive.setBounds(440, 268, 160, 30);
+
+        buttonEditUser.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonEditUser.setText("Ред. пользователя");
+        getContentPane().add(buttonEditUser);
+        buttonEditUser.setBounds(440, 368, 160, 30);
 
         buttonNewUser.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         buttonNewUser.setText("Новый пользователь");
@@ -153,6 +159,7 @@ public class EditUserGui extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonDeactive;
+    private javax.swing.JButton buttonEditUser;
     private javax.swing.JButton buttonNewUser;
     private javax.swing.JCheckBox checkUsers;
     private javax.swing.JTextField fieldPassword;
