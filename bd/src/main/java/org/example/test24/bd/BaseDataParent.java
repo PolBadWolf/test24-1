@@ -52,18 +52,19 @@ class BaseDataParent implements BaseData {
         } else {
             result = statement.executeQuery(
                     "SELECT " +
-                            "table_users.`id_user`, " +
-                            "logger_users.`date`, " +
-                            "logger_users.`id_userEdit`, " +
-                            "logger_users.`name`, " +
-                            "logger_users.`password`, " +
-                            "logger_users.`rang`, " +
-                            "table_users.`date_unreg` " +
+                            "SELECT " +
+                            "table_users.id_user, " +
+                            "logger_users.date, " +
+                            "logger_users.id_userEdit, " +
+                            "logger_users.name, " +
+                            "logger_users.password, " +
+                            "logger_users.rang, " +
+                            "table_users.date_unreg " +
                             "FROM " + baseDat + ".logger_users " +
-                            "INNER JOIN table_users ON " +
+                            "INNER JOIN " + baseDat + ".table_users ON " +
                             "logger_users.id_loggerUser = table_users.id_loggerUser " +
                             "ORDER BY " +
-                            "name ASC"
+                            "name ASC "
             );
         }
         // создание списка
@@ -72,11 +73,8 @@ class BaseDataParent implements BaseData {
             // пароль
             try {
                 pass = BaseData.Password.decoding(result.getString("password"));
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 myLog.log(Level.SEVERE, "ошибка декодирования пароля", e);
-                continue;
-            } catch (SQLException e) {
-                myLog.log(Level.SEVERE, "ошибка парсинга", e);
                 continue;
             }
             try {
@@ -180,15 +178,45 @@ class BaseDataParent implements BaseData {
         if (fl) { throw new Exception("соединение закрыто"); }
         if (user == null) { throw new Exception("пользователь null"); }
 
-        PreparedStatement preparedStatement;
-        int result;
-        preparedStatement = connection.prepareStatement(
-                "UPDATE " + baseDat + ".Table_users SET  password = ? WHERE id = ?"
-        );
-        preparedStatement.setString(1, BaseData.Password.encoding(newPassword));
-        preparedStatement.setInt(2, user.id_user);
-        result  = preparedStatement.executeUpdate();
-        preparedStatement.close();
+        boolean saveAutoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+
+        PreparedStatement preStatementLogger;
+        PreparedStatement preStatementUser;
+
+        try {
+            java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
+            String pass = BaseData.Password.encoding(newPassword);
+            preStatementLogger = connection.prepareStatement(
+                    "INSERT INTO " +
+                            baseDat + ".logger_users (date, id_userEdit, id_user, name, password, rang) "
+                            + " VALUES (?, ?, ?, ?, ?, ?)"
+            );
+            preStatementLogger.setTimestamp(1, timestamp);
+            preStatementLogger.setInt(2, user.id_user);
+            preStatementLogger.setInt(3, user.id_user);
+            preStatementLogger.setString(4, user.name);
+            preStatementLogger.setString(5, pass);
+            preStatementLogger.executeUpdate();
+            preStatementLogger.setInt(6, user.rang);
+            //
+            preStatementUser = connection.prepareStatement(
+                    "UPDATE " +
+                            baseDat + ".table_users " +
+                            "SET id_loggerUser = ? " +
+                            "WHERE id_user = ? "
+            );
+            preStatementUser.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
+            preStatementUser.setInt(2, user.id_user);
+            preStatementUser.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) {
+            connection.rollback();
+            throw new Exception(e);
+        }
+        preStatementUser.close();
+        preStatementLogger.close();
     }
     // чтение списка толкателей
     @Override
