@@ -109,9 +109,22 @@ public class StartFrame {
     private BaseData getConnect(BaseData.Parameters parameters) throws Exception {
         BaseData bd;
         bd = BaseData.create(parameters);
+        return bd;
+    }
+
+    private void openConnect(BaseData bd, BaseData.Parameters parameters) throws Exception {
         // открытие соединения с БД
         bd.openConnect(parameters);
-        return bd;
+        // проверка наличия БД
+        String pbd = parameters.getDataBase();
+        boolean flag = false;
+        for (String b: bd.getListBase()) {
+            if (pbd.equals(b)) {
+                flag = true;
+                break;
+            }
+        }
+        if (!flag) throw new Exception("отсутствует БД: " + parameters.getDataBase());
     }
 
     private void initBaseData(BaseData.TypeBaseDate typeBaseDate) {
@@ -134,6 +147,8 @@ public class StartFrame {
         try {
             connBD = getConnect(parameters);
             flagConnecting = true;
+            // открытие БД
+            openConnect(connBD, parameters);
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка соединения с БД", e);
             return;
@@ -615,7 +630,7 @@ public class StartFrame {
         buttonEditUsers.setEnabled(false);
         buttonEditPushers.setEnabled(false);
         // отключение установки нового пароля
-        buttonSetPassword.setVisible(false);
+        buttonSetPassword.setEnabled(false);
         // отключение выбора толкателя
         comboBoxPusher.setEnabled(false);
         // отключение настройки

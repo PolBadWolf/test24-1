@@ -93,7 +93,7 @@ class BaseDataParent2 implements BaseDataInterface2 {
                     e.printStackTrace();
                     pass = "";
                 }
-                listUsers.add(
+                /*listUsers.add(
                         new UserClass(
                                 result.getInt("id"),
                                 result.getTimestamp("date_reg"),
@@ -102,7 +102,7 @@ class BaseDataParent2 implements BaseDataInterface2 {
                                 pass,
                                 result.getInt("rang") // user status
                         )
-                );
+                );*/
             }
         } catch (SQLException e) {
             throw new Exception("Ошибка выполнения парсинга: " + e.getMessage());
@@ -158,7 +158,7 @@ class BaseDataParent2 implements BaseDataInterface2 {
         }
         try {
             preparedStatement.setString(1, BaseData2.Password.encoding(newPassword));
-            preparedStatement.setInt(2, user.id);
+            preparedStatement.setInt(2, user.id_user);
             int r  = preparedStatement.executeUpdate();
             System.out.println("pass upd res = " + r);
         } catch (SQLException throwables) {

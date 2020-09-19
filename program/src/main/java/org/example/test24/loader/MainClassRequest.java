@@ -19,7 +19,7 @@ class MainClassRequest {
     protected CommPort commPort;
     protected StartFrame startFrame;
     protected BaseData1 bdSql;
-    protected BaseData2 connBd;
+    //protected BaseData connBd;
     // =============== недоступные переменные ==============
     // имя файла конфигурации
     final private String fileNameConfig = "config.txt";
@@ -73,20 +73,20 @@ class MainClassRequest {
     // -----------------------------------------------------------
     // создание тестого соединения
     protected BaseData2.Status createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
-        return connBd.createTestConnect(typeBaseData, parameters);
+        return null;  //connBd.createTestConnect(typeBaseData, parameters);
     }
     // тестовое соединение проверка структуры БД
     protected BaseData2.Status checkCheckStructureBd(String base) {
-        return connBd.checkCheckStructureBd(base);
+        return null;  //connBd.checkCheckStructureBd(base);
     }
     // -----------------------------------------------------------
     // создание рабочего соединения
     protected BaseData2.Status createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
-        return connBd.createWorkConnect(typeBaseData, parameters);
+        return null;  //connBd.createWorkConnect(typeBaseData, parameters);
     }
     // чтение списка пользователей
     protected UserClass[] getListUsers(boolean actual) throws Exception {
-        return connBd.getListUsers(actual);
+        return null;  //connBd.getListUsers(actual);
     }
     // ************************************************
     // проверка ком порта

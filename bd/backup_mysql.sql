@@ -11,7 +11,7 @@
  Target Server Version : 80020
  File Encoding         : 65001
 
- Date: 17/09/2020 15:43:24
+ Date: 17/09/2020 16:26:29
 */
 
 SET NAMES utf8mb4;
@@ -139,7 +139,7 @@ CREATE TABLE `table_users`  (
 -- Records of table_users
 -- ----------------------------
 INSERT INTO `table_users` VALUES (1, '2020-08-17 18:01:53', 'Ivanov', 'MQ==', 1, NULL, NULL);
-INSERT INTO `table_users` VALUES (2, '2020-08-17 18:02:24', 'Petrov', '', 2, NULL, NULL);
+INSERT INTO `table_users` VALUES (2, '2020-08-17 18:02:24', 'Petrov', '', 2, NULL, -1);
 INSERT INTO `table_users` VALUES (3, '2020-08-17 18:02:54', 'Sidorov', '', 3, NULL, NULL);
 INSERT INTO `table_users` VALUES (4, '2020-08-17 18:03:22', 'Gluv', 'MjMzMg==', 1, NULL, NULL);
 INSERT INTO `table_users` VALUES (5, '2020-08-21 14:04:30', 'Иванов Сидр Несторович', 'MTIz', 0, NULL, NULL);

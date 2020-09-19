@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 
+import static org.example.test24.lib.MyLogger.myLog;
+
 abstract class BaseData1Class implements BaseData1 {
     protected Connection connection = null;
     protected ParametersSql2 parametersSql = null;
@@ -87,14 +89,15 @@ abstract class BaseData1Class implements BaseData1 {
                     System.out.println("ошибка расшифровки пароля для : " + result.getString("name"));
                 }
                 try {
-                    listUsers.add(new UserClass(
+                    /*listUsers.add(new UserClass(
                             result.getInt("id"),
                             result.getTimestamp("date_reg"),
-                            result.getTimestamp("date_unreg"),
                             result.getString("name"),
                             pass,
-                            0 // это статус
-                    ));
+                            0, // это статус
+                            result.getInt("date_unreg")
+                    ));*/
+
                 } catch (java.lang.Throwable throwable) {
                     throwable.printStackTrace();
                 }
