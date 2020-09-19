@@ -160,13 +160,77 @@ public class EditUsers extends JFrame
         }
         writeNewUserToBase(surName, password, rang);
         // очистка полей
-        fieldSurName.setText("");
-        fieldPassword.setText("");
-        checkUsers.setSelected(false);
-        checkPushers.setSelected(false);
+        clearFieldEdit();
     }
     private void pushButtonEditUser() {
-
+        String surName = fieldSurName.getText();
+        String password = fieldPassword.getText();
+        int rang = 0;
+        if (checkUsers.isSelected()) rang |= 1 << UserClass.RANG_USERS;
+        if (checkPushers.isSelected()) rang |= 1 << UserClass.RANG_PUSHERS;
+        // запись нового пользователя в базу
+        if (surName.length() == 0) {
+            MySwingUtil.showMessage(this,
+                    "редактирование пользователя",
+                    "имя пользователя не задано",
+                    5_000,
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        onButtonEditUser();
+                    }
+            );
+            buttonNewUser.setEnabled(false);
+            offButtonEditUser();
+            return;
+        }
+        if (password.length() == 0) {
+            MySwingUtil.showMessage(this,
+                    "редактирование пользователя",
+                    "пароль пустой",
+                    5_000,
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        onButtonEditUser();
+                    }
+            );
+            buttonNewUser.setEnabled(false);
+            offButtonEditUser();
+            return;
+        }
+        // проверка на повтор
+        boolean flag = false;
+        for (UserClass user : listUsers) {
+            if (user.id == editUser.id) continue;
+            if (user.name.equals(surName)) {
+                flag = true;
+                break;
+            }
+        }
+        if (flag) {
+            myLog.log(Level.WARNING, "редактирование пользователя",
+                    new Exception(callBack.getCurrentUser().name + " : " + editUser.name + " -> " + surName + " - такой пользователь уже существует"));
+            MySwingUtil.showMessage(this,
+                    "редактирование пользователя",
+                    "такой пользователь уже существует",
+                    5_000,
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        onButtonEditUser();
+                    }
+            );
+            buttonNewUser.setEnabled(false);
+            offButtonEditUser();
+            return;
+        }
+        updateDataUser(
+                callBack.getCurrentUser().id,
+                editUser.id,
+                surName,
+                password,
+                rang
+        );
+        // очистка полей
+        clearFieldEdit();
     }
 
     private void enterTextSurName() {
@@ -226,13 +290,8 @@ public class EditUsers extends JFrame
         } finally {
             // отключить кнопки редактирования
             offButtonEditUser();
-            // удалить "пользователя"
-            editUser = null;
-            // очистить поля
-            fieldSurName.setText("");
-            fieldPassword.setText("");
-            checkUsers.setSelected(false);
-            checkPushers.setSelected(false);
+            // очистка полей
+            clearFieldEdit();
         }
     }
     // запись нового пользователя в базу
@@ -245,6 +304,19 @@ public class EditUsers extends JFrame
         // обновить таблицу
         readUsersFromBase();
         table.updateUI();
+    }
+    // обновление записи о пользователе
+    private void updateDataUser(int sourceId, int targetId, String surName, String password, int rang) {
+        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("обновление записи о пользователе"));
+    }
+    // очистка полей редактирования
+    private void clearFieldEdit() {
+        editUser = null;
+        // очистка полей
+        fieldSurName.setText("");
+        fieldPassword.setText("");
+        checkUsers.setSelected(false);
+        checkPushers.setSelected(false);
     }
     //  ---
     // ==========================================
