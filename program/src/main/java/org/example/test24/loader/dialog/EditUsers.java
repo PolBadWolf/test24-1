@@ -275,11 +275,10 @@ public class EditUsers extends JFrame
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {
         // выбранная строка
-        int id = editUser.id_user;
         try {
             connBD.deativateUser(
                     callBack.getCurrentUser().id_user,
-                    id
+                    editUser
             );
             // обновить таблицу
             readUsersFromBase();

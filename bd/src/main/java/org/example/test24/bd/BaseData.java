@@ -2,9 +2,6 @@ package org.example.test24.bd;
 
 import java.util.Base64;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-
-import static org.example.test24.lib.MyLogger.myLog;
 
 public interface BaseData {
     // ==================== STATUS ====================
@@ -143,7 +140,7 @@ public interface BaseData {
     // запись нового пользователя
     void writeNewUser(int id_edit, String sunName, String password, int rang) throws Exception;
     // деактивация пользователя
-    void deativateUser(int source_id, int target_id) throws Exception;
+    void deativateUser(int id_edit, UserClass user) throws Exception;
     // обновление данных о пользователе
     void updateDataUser(int sourceId, int targetId, String surName, String password, int rang, UserClass editUser);
 }
