@@ -141,7 +141,7 @@ public interface BaseData {
     // чтение списка толкателей
     Pusher[] getListPushers(boolean actual) throws Exception;
     // запись нового пользователя
-    void writeNewUser(String sunName, String password, int rang) throws Exception;
+    void writeNewUser(int id_edit, String sunName, String password, int rang) throws Exception;
     // деактивация пользователя
     void deativateUser(int source_id, int target_id) throws Exception;
 }
