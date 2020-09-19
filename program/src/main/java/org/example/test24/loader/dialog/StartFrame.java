@@ -109,9 +109,22 @@ public class StartFrame {
     private BaseData getConnect(BaseData.Parameters parameters) throws Exception {
         BaseData bd;
         bd = BaseData.create(parameters);
+        return bd;
+    }
+
+    private void openConnect(BaseData bd, BaseData.Parameters parameters) throws Exception {
         // открытие соединения с БД
         bd.openConnect(parameters);
-        return bd;
+        // проверка наличия БД
+        String pbd = parameters.getDataBase();
+        boolean flag = false;
+        for (String b: bd.getListBase()) {
+            if (pbd.equals(b)) {
+                flag = true;
+                break;
+            }
+        }
+        if (!flag) throw new Exception("отсутствует БД: " + parameters.getDataBase());
     }
 
     private void initBaseData(BaseData.TypeBaseDate typeBaseDate) {
@@ -134,6 +147,8 @@ public class StartFrame {
         try {
             connBD = getConnect(parameters);
             flagConnecting = true;
+            // открытие БД
+            openConnect(connBD, parameters);
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка соединения с БД", e);
             return;
@@ -566,14 +581,14 @@ public class StartFrame {
             });
             return;
         }
-        myLog.log(Level.INFO, "вход пользователем " + user.name + " с привелегиями " + user.rank);
+        myLog.log(Level.INFO, "вход пользователем " + user.name + " с привелегиями " + user.rang);
         // разрешение смены пароля
         fieldPassword.setText("");
         buttonSetPassword.setEnabled(true);
         // разрешение на редактирование пользователей
-        buttonEditUsers.setEnabled((user.rank & (1 << 0)) != 0);
+        buttonEditUsers.setEnabled((user.rang & (1 << UserClass.RANG_USERS)) != 0);
         // разрешение на редактирование толкателей
-        buttonEditPushers.setEnabled((user.rank & (1 << 1)) != 0);
+        buttonEditPushers.setEnabled((user.rang & (1 << UserClass.RANG_PUSHERS)) != 0);
         // разрешение кнопки работа
         buttonWork.setEnabled(true);
         // разрешение выбора толкателей
