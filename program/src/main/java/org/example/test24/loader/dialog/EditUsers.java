@@ -169,6 +169,12 @@ public class EditUsers extends JFrame
     }
     private void selectTableCell() {
         onButtonDeactive();
+        // выбранный пользователь
+        UserClass user = tablUsers[table.getSelectedRow()];
+        fieldSurName.setText(user.name);
+        fieldPassword.setText(user.password);
+        checkUsers.setSelected((user.rang & 1 << UserClass.RANG_USERS) != 0);
+        checkPushers.setSelected((user.rang & 1 << UserClass.RANG_PUSHERS) != 0);
     }
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //      воздействие на органы управления
