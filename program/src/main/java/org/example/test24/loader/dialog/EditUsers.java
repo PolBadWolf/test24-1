@@ -1,7 +1,6 @@
 package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.BaseData;
-import org.example.test24.bd.BaseData1;
 import org.example.test24.bd.UserClass;
 import org.example.test24.lib.MySwingUtil;
 
@@ -200,7 +199,7 @@ public class EditUsers extends JFrame
         // проверка на повтор
         boolean flag = false;
         for (UserClass user : listUsers) {
-            if (user.id == editUser.id) continue;
+            if (user.id_user == editUser.id_user) continue;
             if (user.name.equals(surName)) {
                 flag = true;
                 break;
@@ -223,8 +222,8 @@ public class EditUsers extends JFrame
             return;
         }
         updateDataUser(
-                callBack.getCurrentUser().id,
-                editUser.id,
+                callBack.getCurrentUser().id_user,
+                editUser.id_user,
                 surName,
                 password,
                 rang
@@ -269,17 +268,17 @@ public class EditUsers extends JFrame
         }
         ArrayList<UserClass> list = new ArrayList<>();
         for (UserClass user : listUsers) {
-            if (user.id != activetUser.id) list.add(user);
+            if (user.id_user != activetUser.id_user) list.add(user);
         }
         tablUsers = list.toArray(new UserClass[0]);
     }
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {
         // выбранная строка
-        int id = editUser.id;
+        int id = editUser.id_user;
         try {
             connBD.deativateUser(
-                    callBack.getCurrentUser().id,
+                    callBack.getCurrentUser().id_user,
                     id
             );
             // обновить таблицу
@@ -297,7 +296,7 @@ public class EditUsers extends JFrame
     // запись нового пользователя в базу
     private void writeNewUserToBase(String surName, String password, int rang) {
         try {
-            connBD.writeNewUser(activetUser.id, surName, password, rang);
+            connBD.writeNewUser(activetUser.id_user, surName, password, rang);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "запись нового пользователя в базу", e);
         }
@@ -382,7 +381,7 @@ public class EditUsers extends JFrame
                         text = tablUsers[rowIndex].name;
                         break;
                     case column_datereg:
-                        text = dateFormat.format(listUsers[rowIndex].date_reg);
+                        text = dateFormat.format(listUsers[rowIndex].date);
                         break;
                     case column_rang:
                         text = "";

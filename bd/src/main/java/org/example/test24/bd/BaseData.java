@@ -144,4 +144,6 @@ public interface BaseData {
     void writeNewUser(int id_edit, String sunName, String password, int rang) throws Exception;
     // деактивация пользователя
     void deativateUser(int source_id, int target_id) throws Exception;
+    // обновление данных о пользователе
+    void updateDataUser(int sourceId, int targetId, String surName, String password, int rang, UserClass editUser);
 }

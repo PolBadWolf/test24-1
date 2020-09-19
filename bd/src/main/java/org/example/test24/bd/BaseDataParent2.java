@@ -158,7 +158,7 @@ class BaseDataParent2 implements BaseDataInterface2 {
         }
         try {
             preparedStatement.setString(1, BaseData2.Password.encoding(newPassword));
-            preparedStatement.setInt(2, user.id);
+            preparedStatement.setInt(2, user.id_user);
             int r  = preparedStatement.executeUpdate();
             System.out.println("pass upd res = " + r);
         } catch (SQLException throwables) {
