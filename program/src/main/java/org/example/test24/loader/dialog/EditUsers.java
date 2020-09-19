@@ -31,6 +31,7 @@ public class EditUsers extends JFrame
     private BaseData connBD;
     // активный пользователь
     private UserClass activetUser;
+    private UserClass editUser = null;
     private UserClass[] listUsers = null;
     private UserClass[] tablUsers = null;
 
@@ -47,7 +48,7 @@ public class EditUsers extends JFrame
         // инициализация компонентов
         initComponents(); // ****************************************************************
         // деактивация кнопок
-        offButtonDeactive();
+        offButtonEditUser();
         setVisible(true);
         // ловушка закрытия окна
         addWindowListener(new WindowAdapter() {
@@ -175,28 +176,24 @@ public class EditUsers extends JFrame
 
     }
     private void selectTableCell() {
-        onButtonDeactive();
+        onButtonEditUser();
         // выбранный пользователь
-        UserClass user = tablUsers[table.getSelectedRow()];
-        fieldSurName.setText(user.name);
-        fieldPassword.setText(user.password);
-        checkUsers.setSelected((user.rang & 1 << UserClass.RANG_USERS) != 0);
-        checkPushers.setSelected((user.rang & 1 << UserClass.RANG_PUSHERS) != 0);
+        editUser = tablUsers[table.getSelectedRow()];
+        fieldSurName.setText(editUser.name);
+        fieldPassword.setText(editUser.password);
+        checkUsers.setSelected((editUser.rang & 1 << UserClass.RANG_USERS) != 0);
+        checkPushers.setSelected((editUser.rang & 1 << UserClass.RANG_PUSHERS) != 0);
     }
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //      воздействие на органы управления
-    private void onButtonDeactive() {
+    private void onButtonEditUser() {
         buttonDeactive.setEnabled(true);
+        buttonEditUser.setEnabled(true);
     }
-    private void offButtonDeactive() {
+    private void offButtonEditUser() {
+        buttonEditUser.setEnabled(false);
         buttonDeactive.setEnabled(false);
     }
-    /*private void onButtonNewUser() {
-        buttonNewUser.setEnabled(true);
-    }*/
-    /*private void offButtonNewUser() {
-        buttonNewUser.setEnabled(false);
-    }*/
     // ==========================================
     // чтение из базы в массив
     private void readUsersFromBase() {
@@ -215,22 +212,28 @@ public class EditUsers extends JFrame
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {
         // выбранная строка
-        int id = listUsers[table.getSelectedRow()].id;
-
+        int id = editUser.id;
         try {
             connBD.deativateUser(
                     callBack.getCurrentUser().id,
                     id
             );
+            // обновить таблицу
+            readUsersFromBase();
+            table.updateUI();
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "деактивация пользователя", e);
-            return;
+        } finally {
+            // отключить кнопки редактирования
+            offButtonEditUser();
+            // удалить "пользователя"
+            editUser = null;
+            // очистить поля
+            fieldSurName.setText("");
+            fieldPassword.setText("");
+            checkUsers.setSelected(false);
+            checkPushers.setSelected(false);
         }
-        // отключить кнопку деактивация
-        offButtonDeactive();
-        // обновить таблицу
-        readUsersFromBase();
-        table.updateUI();
     }
     // запись нового пользователя в базу
     private void writeNewUserToBase(String surName, String password, int rang) {
