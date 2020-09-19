@@ -5,28 +5,22 @@ import java.util.Date;
 public class UserClass {
     final public static int RANG_USERS = 0;
     final public static int RANG_PUSHERS = 1;
-    public int id;
-    public Date date_reg;
+    public int id_user;
+    public Date date;
+    public int id_userEdit;
     public String name;
     public String password;
     public int rang;
-    public int id_unreg;
+    public Date date_unreg;
 
-    public UserClass(int id, Date date_reg, String name, String password, int rang, int id_unreg) {
-        this.id = id;
-        this.date_reg = date_reg;
+    public UserClass(int id_user, Date date, int id_userEdit, String name, String password, int rang, Date date_unreg) {
+        this.id_user = id_user;
+        this.date = date;
+        this.id_userEdit = id_userEdit;
         this.name = name;
         this.password = password;
         this.rang = rang;
-        this.id_unreg = id_unreg;
-    }
-    public UserClass() {
-        this.id = 0;
-        this.date_reg = null;
-        this.name = "";
-        this.password = "";
-        this.rang = 0;
-        this.id_unreg = -1;
+        this.date_unreg = date_unreg;
     }
 
     @Override
