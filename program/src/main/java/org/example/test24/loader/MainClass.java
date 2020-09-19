@@ -25,7 +25,8 @@ public class MainClass extends MainClassRequest {
         //BaseData.Status result = parameters.load();
 
         // создание объекта для БД
-        connBd = new BaseData2Class(/*new BaseData2.CallBack() {}*/);
+        //connBd = new BaseData2Class(/*new BaseData2.CallBack() {}*/);
+        //connBd = BaseData.
         // создание основных объектов
         screenFx = ScreenFx.init(o->screenCloser());
         runner = Runner.main(o->runnerCloser());
@@ -227,7 +228,7 @@ public class MainClass extends MainClassRequest {
 
         @Override
         public String[] getListBd() throws Exception {
-            return connBd.getListBd();
+            return null;  //connBd.getListBd();
         }
 
 

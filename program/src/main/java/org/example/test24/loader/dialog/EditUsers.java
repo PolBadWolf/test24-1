@@ -28,15 +28,21 @@ public class EditUsers extends JFrame
     // объект обратного вызова
     private CallBack callBack;
     // объект доступа к БД
-    BaseData connBD;
-
+    private BaseData connBD;
+    // активный пользователь
+    private UserClass activetUser;
     private UserClass[] listUsers = null;
+    private UserClass[] tablUsers = null;
+
+
+
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public EditUsers(BaseData connBD, CallBack callBack) {
         this.connBD = connBD;
         this.callBack = callBack;
         // загрузка списка пользователей
+        activetUser = callBack.getCurrentUser();
         readUsersFromBase();
         // инициализация компонентов
         initComponents(); // ****************************************************************
@@ -187,6 +193,11 @@ public class EditUsers extends JFrame
             myLog.log(Level.SEVERE, "чтение списка пользователей", e);
             listUsers = new UserClass[0];
         }
+        ArrayList<UserClass> list = new ArrayList<>();
+        for (UserClass user : listUsers) {
+            if (user.id != activetUser.id) list.add(user);
+        }
+        tablUsers = list.toArray(new UserClass[0]);
     }
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {
@@ -211,7 +222,7 @@ public class EditUsers extends JFrame
     // запись нового пользователя в базу
     private void writeNewUserToBase(String surName, String password, int rang) {
         try {
-            connBD.writeNewUser(surName, password, rang);
+            connBD.writeNewUser(activetUser.id, surName, password, rang);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "запись нового пользователя в базу", e);
         }
@@ -262,8 +273,8 @@ public class EditUsers extends JFrame
         @Override
         public int getRowCount() {
             int row = 0;
-            if (listUsers != null) {
-                row = listUsers.length;
+            if (tablUsers != null) {
+                row = tablUsers.length;
             }
             return row;
         }
@@ -276,18 +287,18 @@ public class EditUsers extends JFrame
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             String text = "";
-            if (listUsers != null) {
+            if (tablUsers != null) {
                 switch (columnIndex) {
                     case column_name:
-                        text = listUsers[rowIndex].name;
+                        text = tablUsers[rowIndex].name;
                         break;
                     case column_datereg:
                         text = dateFormat.format(listUsers[rowIndex].date_reg);
                         break;
                     case column_rang:
                         text = "";
-                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_USERS) != 0) text += "U";
-                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_PUSHERS) != 0) text += "P";
+                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_USERS) != 0) text += "П";
+                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_PUSHERS) != 0) text += "Т";
                         break;
                     default:
                 }
