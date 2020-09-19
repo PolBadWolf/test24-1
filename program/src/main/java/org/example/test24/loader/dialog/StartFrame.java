@@ -630,7 +630,7 @@ public class StartFrame {
         buttonEditUsers.setEnabled(false);
         buttonEditPushers.setEnabled(false);
         // отключение установки нового пароля
-        buttonSetPassword.setVisible(false);
+        buttonSetPassword.setEnabled(false);
         // отключение выбора толкателя
         comboBoxPusher.setEnabled(false);
         // отключение настройки
