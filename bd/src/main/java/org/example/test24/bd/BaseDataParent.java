@@ -213,8 +213,14 @@ class BaseDataParent implements BaseData {
             connection.commit();
         } catch (SQLException e) {
             connection.rollback();
+            try {
+                connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException se) { }
             throw new Exception(e);
         }
+        try {
+            connection.setAutoCommit(saveAutoCommit);
+        } catch (SQLException se) { }
         preStatementUser.close();
         preStatementLogger.close();
     }
@@ -265,8 +271,7 @@ class BaseDataParent implements BaseData {
     }
     // запись нового пользователя
     @Override
-    public void writeNewUser(int id_edit, String surName, String password, int rang) throws Exception
-    {
+    public void writeNewUser(int id_edit, String surName, String password, int rang) throws Exception {
         if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");
@@ -304,9 +309,14 @@ class BaseDataParent implements BaseData {
             connection.commit();
         } catch (SQLException throwables) {
             connection.rollback();
+            try {
+                connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException se) { }
             throw new Exception(throwables);
         }
-        connection.setAutoCommit(saveAutoCommit);
+        try {
+            connection.setAutoCommit(saveAutoCommit);
+        } catch (SQLException se) { }
         preStatementUser.close();
         preStatementLogger.close();
     }
