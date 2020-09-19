@@ -95,6 +95,9 @@ public class EditUsers extends JFrame
         buttonNewUser = getButtonNewUser("Новый пользователь", Font.PLAIN, 14, 440, 317, 160, 30);
         add(buttonNewUser);
 
+        buttonEditUser = getButton("Ред. пользователя", Font.PLAIN, 14, 440, 368, 160, 30, e -> pushButtonEditUser());
+        add(buttonEditUser);
+
         fieldSurName = getFieldSurName("", Font.PLAIN, 14, 80, 270, 340, 25);
         add(fieldSurName);
 
@@ -161,6 +164,10 @@ public class EditUsers extends JFrame
         checkUsers.setSelected(false);
         checkPushers.setSelected(false);
     }
+    private void pushButtonEditUser() {
+
+    }
+
     private void enterTextSurName() {
 
    }
@@ -255,6 +262,7 @@ public class EditUsers extends JFrame
     // компоненты
     JButton buttonDeactive;
     JButton buttonNewUser;
+    JButton buttonEditUser;
     JCheckBox checkUsers;
     JCheckBox checkPushers;
     JTextField fieldPassword;
@@ -393,6 +401,13 @@ public class EditUsers extends JFrame
         button.setFont(new Font("Times New Roman", fontStyle, fontSize));
         button.setBounds(x, y, width, height);
         button.addActionListener(e -> pushButtonNewUser());
+        return button;
+    }
+    private JButton getButton(String text, int fontStyle, int fontSize, int x, int y, int width, int height, ActionListener listener) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Times New Roman", fontStyle, fontSize));
+        button.setBounds(x, y, width, height);
+        button.addActionListener(listener);
         return button;
     }
     private JTextField getFieldSurName(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
