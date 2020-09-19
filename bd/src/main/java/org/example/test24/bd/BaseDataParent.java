@@ -198,8 +198,8 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setInt(3, user.id_user);
             preStatementLogger.setString(4, user.name);
             preStatementLogger.setString(5, pass);
-            preStatementLogger.executeUpdate();
             preStatementLogger.setInt(6, user.rang);
+            preStatementLogger.executeUpdate();
             //
             preStatementUser = connection.prepareStatement(
                     "UPDATE " +
