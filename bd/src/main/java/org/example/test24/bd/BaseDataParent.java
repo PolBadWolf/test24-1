@@ -34,37 +34,43 @@ class BaseDataParent implements BaseData {
         // запрос
         if (actual) {
             result = statement.executeQuery(
-                    "SELECT " +
-                            "table_users.id_user, " +
-                            "logger_users.date, " +
-                            "logger_users.id_userEdit, " +
-                            "logger_users.name, " +
-                            "logger_users.password, " +
-                            "logger_users.rang, " +
-                            "table_users.date_unreg " +
-                            "FROM " + baseDat + ".logger_users " +
-                            "INNER JOIN " + baseDat + ".table_users ON " +
-                            "logger_users.id_loggerUser = table_users.id_loggerUser " +
-                            "WHERE date_unreg IS NULL " +
-                            "ORDER BY " +
-                            "name ASC "
+                    "SELECT" +
+                            " table_users.id_user, " +
+                            " logger_users.id_loggerUser, " +
+                            " logger_users.date, " +
+                            " logger_users.name, " +
+                            " logger_users.password, " +
+                            " logger_users.rang, " +
+                            " table_users.date_unreg " +
+                            " FROM " +
+                            " " + baseDat + ".logger_users " +
+                            " INNER JOIN " +
+                            " " + baseDat + ".table_users" +
+                            " ON  " +
+                            " logger_users.id_loggerUser = table_users.id_loggerUser " +
+                            " WHERE " +
+                            " table_users.date_unreg IS NULL " +
+                            " ORDER BY " +
+                            " name ASC "
             );
         } else {
             result = statement.executeQuery(
-                    "SELECT " +
-                            "SELECT " +
-                            "table_users.id_user, " +
-                            "logger_users.date, " +
-                            "logger_users.id_userEdit, " +
-                            "logger_users.name, " +
-                            "logger_users.password, " +
-                            "logger_users.rang, " +
-                            "table_users.date_unreg " +
-                            "FROM " + baseDat + ".logger_users " +
-                            "INNER JOIN " + baseDat + ".table_users ON " +
-                            "logger_users.id_loggerUser = table_users.id_loggerUser " +
-                            "ORDER BY " +
-                            "name ASC "
+                    "SELECT" +
+                            " table_users.id_user, " +
+                            " logger_users.id_loggerUser, " +
+                            " logger_users.date, " +
+                            " logger_users.name, " +
+                            " logger_users.password, " +
+                            " logger_users.rang, " +
+                            " table_users.date_unreg " +
+                            " FROM " +
+                            " " + baseDat + ".logger_users " +
+                            " INNER JOIN " +
+                            " " + baseDat + ".table_users" +
+                            " ON  " +
+                            " logger_users.id_loggerUser = table_users.id_loggerUser " +
+                            " ORDER BY " +
+                            " name ASC "
             );
         }
         // создание списка
@@ -82,7 +88,7 @@ class BaseDataParent implements BaseData {
                         new User(
                                 result.getInt("id_user"),
                                 result.getTimestamp("date"),
-                                result.getInt("id_userEdit"),
+                                result.getInt("id_loggerUser"),
                                 result.getString("name"),
                                 pass,
                                 result.getInt("rang"),
@@ -144,7 +150,7 @@ class BaseDataParent implements BaseData {
                 new ArrayList(Arrays.asList(
                         "id_loggerUser",
                         "date",
-                        "id_userEdit",
+                        "id_loggerUserEdit",
                         "id_user",
                         "name",
                         "password",
