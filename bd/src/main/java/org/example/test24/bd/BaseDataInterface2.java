@@ -11,7 +11,7 @@ interface BaseDataInterface2 {
     // инициализация рабочего соединения
     BaseData2.Status createWorkConnect(BaseData2.Parameters parameters);
     // чтение списка пользователей
-    UserClass[] getListUsers(boolean actual) throws Exception;
+    User[] getListUsers(boolean actual) throws Exception;
 
     String[] getListBd() throws Exception;
 
@@ -22,5 +22,5 @@ interface BaseDataInterface2 {
     // тестовое соединение список доступных баз
     boolean requestListBdFrom(Consumer<String[]> list);
     // установка нового пароля пользователя
-    boolean setUserNewPassword(UserClass user, String newPassword);
+    boolean setUserNewPassword(User user, String newPassword);
 }

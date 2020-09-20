@@ -58,8 +58,8 @@ abstract class BaseData1Class implements BaseData1 {
     public abstract String getTypeBD();
 
     @Override
-    public UserClass[] getListUsers(boolean actual) throws Exception {
-        ArrayList<UserClass> listUsers = new ArrayList<>();
+    public User[] getListUsers(boolean actual) throws Exception {
+        ArrayList<User> listUsers = new ArrayList<>();
         Statement statementReadSpec;
         ResultSet result;
         boolean saveAutoCommit;
@@ -87,14 +87,15 @@ abstract class BaseData1Class implements BaseData1 {
                     System.out.println("ошибка расшифровки пароля для : " + result.getString("name"));
                 }
                 try {
-                    listUsers.add(new UserClass(
+                    /*listUsers.add(new User(
                             result.getInt("id"),
                             result.getTimestamp("date_reg"),
                             result.getString("name"),
                             pass,
                             0, // это статус
                             result.getInt("date_unreg")
-                    ));
+                    ));*/
+
                 } catch (java.lang.Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -104,11 +105,11 @@ abstract class BaseData1Class implements BaseData1 {
             //throw new Exception("ошибка чтения списка пользователей");
             System.out.println("ошибка чтения списка пользователей");
         }
-        return listUsers.toArray(new UserClass[0]);
+        return listUsers.toArray(new User[0]);
     }
 
     @Override
-    public abstract void updateUserPassword(UserClass userClass, String newPassword) throws Exception;
+    public abstract void updateUserPassword(User userClass, String newPassword) throws Exception;
 
     @Override
     public void deactiveUser(int id) throws Exception {

@@ -104,7 +104,7 @@ public class BaseData2Class implements BaseData2 {
     }
     // чтение списка пользователей
     @Override
-    public UserClass[] getListUsers(boolean actual) throws Exception {
+    public User[] getListUsers(boolean actual) throws Exception {
         if (workConnect == null) {
             throw new Exception("Не инициировано рабочее соединение");
         }
@@ -119,7 +119,7 @@ public class BaseData2Class implements BaseData2 {
 
     // установка нового пароля пользователя
     @Override
-    public boolean setUserNewPassword(UserClass user, String newPassword) {
+    public boolean setUserNewPassword(User user, String newPassword) {
         if (workConnect == null) return false;
         return workConnect.setUserNewPassword(user, newPassword);
     }

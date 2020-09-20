@@ -85,7 +85,7 @@ class MainClassRequest {
         return null;  //connBd.createWorkConnect(typeBaseData, parameters);
     }
     // чтение списка пользователей
-    protected UserClass[] getListUsers(boolean actual) throws Exception {
+    protected User[] getListUsers(boolean actual) throws Exception {
         return null;  //connBd.getListUsers(actual);
     }
     // ************************************************
