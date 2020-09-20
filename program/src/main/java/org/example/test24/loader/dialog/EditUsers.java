@@ -222,8 +222,8 @@ public class EditUsers extends JFrame
             return;
         }
         updateDataUser(
-                callBack.getCurrentUser().id_user,
-                editUser.id_user,
+                callBack.getCurrentUser().id_loggerUser,
+                editUser,
                 surName,
                 password,
                 rang
@@ -304,8 +304,16 @@ public class EditUsers extends JFrame
         table.updateUI();
     }
     // обновление записи о пользователе
-    private void updateDataUser(long sourceId, long targetId, String surName, String password, int rang) {
-        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("обновление записи о пользователе"));
+    private void updateDataUser(long id_loggerUserEdit, User user, String surName, String password, int rang) {
+//       myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("обновление записи о пользователе"));
+        try {
+            connBD.updateDataUser(id_loggerUserEdit, user, surName, password, rang);
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "обновление записи пользователя в базе", e);
+        }
+        // обновить таблицу
+        readUsersFromBase();
+        table.updateUI();
     }
     // очистка полей редактирования
     private void clearFieldEdit() {
@@ -380,12 +388,12 @@ public class EditUsers extends JFrame
                         text = tablUsers[rowIndex].name;
                         break;
                     case column_datereg:
-                        text = dateFormat.format(listUsers[rowIndex].date);
+                        text = dateFormat.format(tablUsers[rowIndex].date);
                         break;
                     case column_rang:
                         text = "";
-                        if ((listUsers[rowIndex].rang & 1 << User.RANG_USERS) != 0) text += "П";
-                        if ((listUsers[rowIndex].rang & 1 << User.RANG_PUSHERS) != 0) text += "Т";
+                        if ((tablUsers[rowIndex].rang & 1 << User.RANG_USERS) != 0) text += "П";
+                        if ((tablUsers[rowIndex].rang & 1 << User.RANG_PUSHERS) != 0) text += "Т";
                         break;
                     default:
                 }
