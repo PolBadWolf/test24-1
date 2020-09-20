@@ -32,14 +32,14 @@ class BaseDataParent2 implements BaseDataInterface2 {
     }
     // чтение списка пользователей
     @Override
-    public UserClass[] getListUsers(boolean actual) throws Exception {
+    public User[] getListUsers(boolean actual) throws Exception {
         if (workConnection == null) {
             throw new Exception("Не инициировано рабочее соединение");
         }
         if (workConnection.isClosed()) {
             throw new Exception("Не активно рабочее соединение");
         }
-        ArrayList<UserClass> listUsers = new ArrayList<>();
+        ArrayList<User> listUsers = new ArrayList<>();
         Statement statement = null;
         ResultSet result = null;
         boolean saveAutoCommit = true;
@@ -94,7 +94,7 @@ class BaseDataParent2 implements BaseDataInterface2 {
                     pass = "";
                 }
                 /*listUsers.add(
-                        new UserClass(
+                        new User(
                                 result.getInt("id"),
                                 result.getTimestamp("date_reg"),
                                 result.getTimestamp("date_unreg"),
@@ -114,7 +114,7 @@ class BaseDataParent2 implements BaseDataInterface2 {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return listUsers.toArray(new UserClass[0]);
+        return listUsers.toArray(new User[0]);
     }
 
 
@@ -130,7 +130,7 @@ class BaseDataParent2 implements BaseDataInterface2 {
     }
     // установка нового пароля пользователя
     @Override
-    public boolean setUserNewPassword(UserClass user, String newPassword) {
+    public boolean setUserNewPassword(User user, String newPassword) {
         try {
         if (workConnection.isClosed()) return false;
         } catch (SQLException e) {

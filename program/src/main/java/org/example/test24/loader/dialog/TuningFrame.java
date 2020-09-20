@@ -325,7 +325,7 @@ class TuningFrame extends TuningFrame_Metods {
         }
 
         @Override
-        public UserClass getCurrentUser() {
+        public User getCurrentUser() {
             return null;
         }
 /*@Override

@@ -43,7 +43,7 @@ public class MainClass extends MainClassRequest {
         /*
         int testStat1 = 99, testStat2 = 99, testStat3, testStat4;
         String[] listBd;
-        UserClass[] listUsers;
+        User[] listUsers;
 
         testStat1 = connBd.createTestConnect(org.example.test24.bd.BaseData2.TypeBaseData.MY_SQL,
                 new org.example.test24.bd.BaseData2.Parameters("127.0.0.1", "3306", "root", "My!22360", "bas1")
@@ -61,10 +61,10 @@ public class MainClass extends MainClassRequest {
                 listUsers = connBd.getListUsers(false);
             } catch (Exception e) {
                 e.printStackTrace();
-                listUsers = new UserClass[0];
+                listUsers = new User[0];
             }
         } else {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
         }
         System.out.println("test conn: " + testStat1);
         Arrays.stream(listBd).iterator().forEachRemaining(s-> System.out.println(s));
@@ -217,7 +217,7 @@ public class MainClass extends MainClassRequest {
         }
         // чтение списка пользователей
         @Override
-        public UserClass[] getListUsers(boolean actual) throws Exception {
+        public User[] getListUsers(boolean actual) throws Exception {
             return MainClass.this.getListUsers(actual);
         }
 
@@ -275,9 +275,9 @@ public class MainClass extends MainClassRequest {
         }
         // загрузка пользователей
         @Override
-        public UserClass[] getListUsers(boolean actual) {
+        public User[] getListUsers(boolean actual) {
             // получение списка
-            UserClass[] listUsers;
+            User[] listUsers;
             try {
                 listUsers = connBd.getListUsers(actual);
             } catch (Exception e) {
@@ -287,7 +287,7 @@ public class MainClass extends MainClassRequest {
         }
         // установка нового пароля пользователя
         @Override
-        public boolean setUserNewPassword(UserClass user, String newPassword) {
+        public boolean setUserNewPassword(User user, String newPassword) {
             if (connBd == null) return false;
             return connBd.setUserNewPassword(user, newPassword);
         }

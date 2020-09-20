@@ -26,7 +26,7 @@ public class StartFrame {
     private JButton buttonWork;
     private JButton buttonSetPassword;
     private JTextField fieldPassword;
-    private JComboBox<UserClass> comboBoxUsers;
+    private JComboBox<User> comboBoxUsers;
     private JComboBox<Pusher> comboBoxPusher;
     private JLabel jLabel1;
     private JLabel jLabel2;
@@ -50,7 +50,7 @@ public class StartFrame {
     // доступность ком порта
     boolean flagAvailabilityCommPort = false;
     // список пользователей / = [0] for false
-    private UserClass[] listUsers = new UserClass[0];
+    private User[] listUsers = new User[0];
     // список толкателей / = [0] for false
     private Pusher[] listPushers = new Pusher[0];
 
@@ -131,7 +131,7 @@ public class StartFrame {
         // здесь сбросить флаги с БД
         flagConnecting = false;
         flagStructureIntegrity = false;
-        listUsers = new UserClass[0];
+        listUsers = new User[0];
         listPushers = new Pusher[0];
         // ----
         // загрузить параметры
@@ -471,8 +471,8 @@ public class StartFrame {
         button.addActionListener(e -> callSetNewPassword());
         return button;
     }
-    private JComboBox<UserClass> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JComboBox<UserClass> comboBox = new JComboBox<>();
+    private JComboBox<User> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JComboBox<User> comboBox = new JComboBox<>();
         comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(true);
@@ -532,11 +532,11 @@ public class StartFrame {
     // ======================================================
     // обработка ввод
     private void callEnter() {
-        UserClass user = null;
+        User user = null;
         String password;
         boolean askLocalAdmin;
         try {
-            user = (UserClass) comboBoxUsers.getSelectedItem();
+            user = (User) comboBoxUsers.getSelectedItem();
             askLocalAdmin = false;
         } catch (ClassCastException e) {
             askLocalAdmin = true;
@@ -586,9 +586,9 @@ public class StartFrame {
         fieldPassword.setText("");
         buttonSetPassword.setEnabled(true);
         // разрешение на редактирование пользователей
-        buttonEditUsers.setEnabled((user.rang & (1 << UserClass.RANG_USERS)) != 0);
+        buttonEditUsers.setEnabled((user.rang & (1 << User.RANG_USERS)) != 0);
         // разрешение на редактирование толкателей
-        buttonEditPushers.setEnabled((user.rang & (1 << UserClass.RANG_PUSHERS)) != 0);
+        buttonEditPushers.setEnabled((user.rang & (1 << User.RANG_PUSHERS)) != 0);
         // разрешение кнопки работа
         buttonWork.setEnabled(true);
         // разрешение выбора толкателей
@@ -596,7 +596,7 @@ public class StartFrame {
     }
     // обработка новый пароль
     private void callSetNewPassword() {
-        UserClass currentUser = (UserClass) comboBoxUsers.getSelectedItem();
+        User currentUser = (User) comboBoxUsers.getSelectedItem();
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
             MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> buttonSetPassword.setEnabled(true));
@@ -607,7 +607,7 @@ public class StartFrame {
         try {
             connBD.setNewUserPassword(currentUser, newPassword);
             currentUser.password = newPassword;
-            if (!newPassword.equals(((UserClass) comboBoxUsers.getSelectedItem()).password)) {
+            if (!newPassword.equals(((User) comboBoxUsers.getSelectedItem()).password)) {
                 myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
             }
         } catch (Exception e) {
@@ -701,8 +701,8 @@ public class StartFrame {
                             }
 
                             @Override
-                            public UserClass getCurrentUser() {
-                                return (UserClass) comboBoxUsers.getSelectedItem();
+                            public User getCurrentUser() {
+                                return (User) comboBoxUsers.getSelectedItem();
                             }
                         });
             });
@@ -751,7 +751,7 @@ public class StartFrame {
         }
         // чтение списка пользователей
         @Override
-        public UserClass[] getListUsers(boolean actual) throws Exception {
+        public User[] getListUsers(boolean actual) throws Exception {
             return callBack.getListUsers(actual);
         }
 

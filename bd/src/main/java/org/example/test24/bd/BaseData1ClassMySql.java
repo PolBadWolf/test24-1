@@ -219,7 +219,7 @@ public class BaseData1ClassMySql extends BaseData1Class {
     }
 
     @Override
-    public void updateUserPassword(UserClass userClass, String newPassword) throws Exception {
+    public void updateUserPassword(User userClass, String newPassword) throws Exception {
         // проверка связи
         if (getConnect() == null) {
             throw new Exception("нет связи");

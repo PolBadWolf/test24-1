@@ -15,7 +15,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         /*// тип БД
         typeBaseData = callBack.getTypeBaseDataFromConfig(null);
         if (typeBaseData == BaseData2.TypeBaseData.ERROR) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             flCheckSql = false;
             return false;
         }
@@ -23,7 +23,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         // чтение параметров из конфига
         parametersSql = callBack.getParametersSql(typeBaseData);
         if (parametersSql.getStat() != ParametersSql2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             flCheckSql = false;
             return false;
         }*/
@@ -65,7 +65,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         // проверка структуры БД
         result = callBack.testConnectCheckStructure(parametersSql.dataBase);
         if (result != BaseData2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             flCheckSql = false;
             return false;
         }
@@ -80,7 +80,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
                 )
         );
         if (result != BaseData2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             flCheckSql = false;
             return false;
         }
@@ -120,7 +120,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         // проверка структуры БД
         result = callBack.testConnectCheckStructure(parametersSql.dataBase);
         if (result != BaseData2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             flCheckSql = false;
             return false;
         }
@@ -135,7 +135,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
                 )
         );
         if (result != BaseData2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             flCheckSql = false;
             return false;
         }
@@ -156,7 +156,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         // проверка структуры БД
         result = callBack.testConnectCheckStructure(parametersSql.dataBase);
         if (result != BaseData2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             flCheckSql = false;
             return false;
         }
@@ -171,7 +171,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
                 )
         );
         if (result != BaseData2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             flCheckSql = false;
             return false;
         }
@@ -197,7 +197,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         // чтение из конфига тип БД
         typeBaseData = callBack.getTypeBaseDataFromConfig();
         if (typeBaseData == BaseData2.TypeBaseData.ERROR) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             MySwingUtil.showMessage(frame, "чтение из конфига тип БД", "ошибка чтения типа БД из конфига", 5_000);
             return false;
         }
@@ -205,21 +205,21 @@ class FrameParrent_Metods extends FrameParrent_Vars {
         parametersSql = callBack.getParametersSql(typeBaseData);
         // проверка параметров соединения
         if (parametersSql.getStat() != ParametersSql2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             MySwingUtil.showMessage(frame, "загрузка параметров соединения", "ошибка получения параметров соединения с БД", 5_000);
             return false;
         }
         // попытка тестового соединения
         resultInt = initTestConnectBd(parametersSql);
         if (resultInt != BaseData2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             MySwingUtil.showMessage(frame, "попытка тестового соединения", "ошибка соединения с БД", 5_000);
             return false;
         }
         // проверка структуры БД
         resultInt = callBack.testConnectCheckStructure(parametersSql.dataBase);
         if (resultInt != BaseData2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             MySwingUtil.showMessage(frame, "проверка структуры БД", "структура БД нарушена", 5_000);
             return false;
         }
@@ -234,7 +234,7 @@ class FrameParrent_Metods extends FrameParrent_Vars {
                 )
         );
         if (resultInt != BaseData2.OK) {
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             MySwingUtil.showMessage(frame, "попытка рабочего соединения", "ошибка соединения с БД", 5_000);
             return false;
         }

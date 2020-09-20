@@ -1,7 +1,7 @@
 package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.ParametersSql2;
-import org.example.test24.bd.UserClass;
+import org.example.test24.bd.User;
 
 import javax.swing.*;
 
@@ -24,6 +24,6 @@ class FrameParrent_Vars {
 
 
     protected JFrame frame;
-    protected UserClass[] listUsers = null;
-    protected UserClass user = null;
+    protected User[] listUsers = null;
+    protected User user = null;
 }

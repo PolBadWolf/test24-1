@@ -20,7 +20,7 @@ public interface FrameCallBack {
     // создание рабочего соединения
     BaseData2.Status createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters);
     // чтение списка пользователей
-    UserClass[] getListUsers(boolean actual) throws Exception;
+    User[] getListUsers(boolean actual) throws Exception;
 
     // -----------------------------------------------------------
     // проверка ком порта
@@ -36,9 +36,9 @@ public interface FrameCallBack {
     // список доступных БД из тестового соединения
     boolean requestListBdFromTestConnect(Consumer<String[]> list);
     // загрузка пользователей
-    UserClass[] getListUsers(boolean actual);
+    User[] getListUsers(boolean actual);
     // установка нового пароля пользователя
-    boolean setUserNewPassword(UserClass user, String newPassword);
+    boolean setUserNewPassword(User user, String newPassword);
     // ==================================== работа к ком портом ====================================
     // чтение comm port из конфига
     boolean requestCommPortNameFromConfig(Consumer<String> portName);

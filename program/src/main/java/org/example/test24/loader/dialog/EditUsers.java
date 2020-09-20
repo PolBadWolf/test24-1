@@ -1,7 +1,7 @@
 package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.BaseData;
-import org.example.test24.bd.UserClass;
+import org.example.test24.bd.User;
 import org.example.test24.lib.MySwingUtil;
 
 import javax.swing.*;
@@ -22,17 +22,17 @@ public class EditUsers extends JFrame
 {
     public interface CallBack {
         void messageCloseEditUsers(boolean newData);
-        UserClass getCurrentUser();
+        User getCurrentUser();
     }
     // объект обратного вызова
     private CallBack callBack;
     // объект доступа к БД
     private BaseData connBD;
     // активный пользователь
-    private UserClass activetUser;
-    private UserClass editUser = null;
-    private UserClass[] listUsers = null;
-    private UserClass[] tablUsers = null;
+    private User activetUser;
+    private User editUser = null;
+    private User[] listUsers = null;
+    private User[] tablUsers = null;
 
 
 
@@ -116,8 +116,8 @@ public class EditUsers extends JFrame
         String surName = fieldSurName.getText();
         String password = fieldPassword.getText();
         int rang = 0;
-        if (checkUsers.isSelected()) rang |= 1 << UserClass.RANG_USERS;
-        if (checkPushers.isSelected()) rang |= 1 << UserClass.RANG_PUSHERS;
+        if (checkUsers.isSelected()) rang |= 1 << User.RANG_USERS;
+        if (checkPushers.isSelected()) rang |= 1 << User.RANG_PUSHERS;
         // запись нового пользователя в базу
         if (surName.length() == 0) {
             MySwingUtil.showMessage(this,
@@ -141,7 +141,7 @@ public class EditUsers extends JFrame
         }
         // проверка на повтор
         boolean flag = false;
-        for (UserClass user : listUsers) {
+        for (User user : listUsers) {
             if (user.name.equals(surName)) {
                 flag = true;
                 break;
@@ -165,8 +165,8 @@ public class EditUsers extends JFrame
         String surName = fieldSurName.getText();
         String password = fieldPassword.getText();
         int rang = 0;
-        if (checkUsers.isSelected()) rang |= 1 << UserClass.RANG_USERS;
-        if (checkPushers.isSelected()) rang |= 1 << UserClass.RANG_PUSHERS;
+        if (checkUsers.isSelected()) rang |= 1 << User.RANG_USERS;
+        if (checkPushers.isSelected()) rang |= 1 << User.RANG_PUSHERS;
         // запись нового пользователя в базу
         if (surName.length() == 0) {
             MySwingUtil.showMessage(this,
@@ -198,7 +198,7 @@ public class EditUsers extends JFrame
         }
         // проверка на повтор
         boolean flag = false;
-        for (UserClass user : listUsers) {
+        for (User user : listUsers) {
             if (user.id_user == editUser.id_user) continue;
             if (user.name.equals(surName)) {
                 flag = true;
@@ -244,8 +244,8 @@ public class EditUsers extends JFrame
         editUser = tablUsers[table.getSelectedRow()];
         fieldSurName.setText(editUser.name);
         fieldPassword.setText(editUser.password);
-        checkUsers.setSelected((editUser.rang & 1 << UserClass.RANG_USERS) != 0);
-        checkPushers.setSelected((editUser.rang & 1 << UserClass.RANG_PUSHERS) != 0);
+        checkUsers.setSelected((editUser.rang & 1 << User.RANG_USERS) != 0);
+        checkPushers.setSelected((editUser.rang & 1 << User.RANG_PUSHERS) != 0);
     }
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //      воздействие на органы управления
@@ -264,13 +264,13 @@ public class EditUsers extends JFrame
             listUsers = connBD.getListUsers(true);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "чтение списка пользователей", e);
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
         }
-        ArrayList<UserClass> list = new ArrayList<>();
-        for (UserClass user : listUsers) {
+        ArrayList<User> list = new ArrayList<>();
+        for (User user : listUsers) {
             if (user.id_user != activetUser.id_user) list.add(user);
         }
-        tablUsers = list.toArray(new UserClass[0]);
+        tablUsers = list.toArray(new User[0]);
     }
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {
@@ -384,8 +384,8 @@ public class EditUsers extends JFrame
                         break;
                     case column_rang:
                         text = "";
-                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_USERS) != 0) text += "П";
-                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_PUSHERS) != 0) text += "Т";
+                        if ((listUsers[rowIndex].rang & 1 << User.RANG_USERS) != 0) text += "П";
+                        if ((listUsers[rowIndex].rang & 1 << User.RANG_PUSHERS) != 0) text += "Т";
                         break;
                     default:
                 }

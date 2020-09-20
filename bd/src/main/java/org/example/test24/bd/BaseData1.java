@@ -76,9 +76,9 @@ public interface BaseData1 {
     // запись
     void pushDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws Exception;
     // обновить пароль
-    void updateUserPassword(UserClass userClass, String newPassword) throws Exception;
+    void updateUserPassword(User userClass, String newPassword) throws Exception;
     // список пользователей
-    UserClass[] getListUsers(boolean actual) throws Exception;
+    User[] getListUsers(boolean actual) throws Exception;
     // деактивация пользователя
     void deactiveUser(int id) throws Exception;
     // запись нового пользователя

@@ -20,12 +20,12 @@ class BaseDataParent implements BaseData {
     public String[] getListBase() throws Exception { return new String[0]; }
     // чтение списка пользователей
     @Override
-    public UserClass[] getListUsers(boolean actual) throws Exception {
+    public User[] getListUsers(boolean actual) throws Exception {
         if (connection == null) throw new Exception("отсутствует соединение (connection == null)");
         boolean flClosed = connection.isClosed();
         if (flClosed) throw new Exception("соединение закрыто");
 
-        ArrayList<UserClass> listUsers = new ArrayList<>();
+        ArrayList<User> listUsers = new ArrayList<>();
         Statement statement;
         ResultSet result;
         // запрос на список пользователей
@@ -79,7 +79,7 @@ class BaseDataParent implements BaseData {
             }
             try {
                 listUsers.add(
-                        new UserClass(
+                        new User(
                                 result.getInt("id_user"),
                                 result.getTimestamp("date"),
                                 result.getInt("id_userEdit"),
@@ -101,7 +101,7 @@ class BaseDataParent implements BaseData {
         } catch (SQLException e) {
             myLog.log(Level.WARNING, "ошибка закрытие соединения", e);
         }
-        return listUsers.toArray(new UserClass[0]);
+        return listUsers.toArray(new User[0]);
     }
     // проверка структуры БД
     @Override
@@ -172,7 +172,7 @@ class BaseDataParent implements BaseData {
     }
     // установка нового пароля пользователю
     @Override
-    public void setNewUserPassword(UserClass user, String newPassword) throws Exception {
+    public void setNewUserPassword(User user, String newPassword) throws Exception {
         if (connection == null) { throw new Exception("соединение не установлено"); }
         boolean fl = connection.isClosed();
         if (fl) { throw new Exception("соединение закрыто"); }
@@ -332,7 +332,7 @@ class BaseDataParent implements BaseData {
     }
     // деактивация пользователя
     @Override
-    public void deativateUser(int id_edit, UserClass user) throws Exception {
+    public void deativateUser(int id_edit, User user) throws Exception {
         if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");
@@ -388,7 +388,7 @@ class BaseDataParent implements BaseData {
     }
     // обновление данных о пользователе
     @Override
-    public void updateDataUser(int sourceId, int targetId, String surName, String password, int rang, UserClass editUser) {
+    public void updateDataUser(int sourceId, int targetId, String surName, String password, int rang, User editUser) {
         /*if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");

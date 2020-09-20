@@ -118,7 +118,7 @@ public interface BaseData2 {
     // создание рабочего соединения
     Status createWorkConnect(TypeBaseData typeBaseData, BaseData2.Parameters parameters);
     // чтение списка пользователей
-    UserClass[] getListUsers(boolean actual) throws Exception;
+    User[] getListUsers(boolean actual) throws Exception;
     // список доступных БД из тестового соединения
     boolean requestListBdFromTestConnect(Consumer<String[]> list);
 
@@ -131,7 +131,7 @@ public interface BaseData2 {
 
     // -----------------------------------------------------------
     // установка нового пароля пользователя
-    boolean setUserNewPassword(UserClass user, String newPassword);
+    boolean setUserNewPassword(User user, String newPassword);
 
 
 
