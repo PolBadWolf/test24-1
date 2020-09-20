@@ -140,7 +140,7 @@ public interface BaseData {
     // запись нового пользователя
     void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws Exception;
     // деактивация пользователя
-    void deativateUser(long id_edit, User user) throws Exception;
+    void deativateUser(long id_loggerUserEdit, User user) throws Exception;
     // обновление данных о пользователе
     void updateDataUser(int sourceId, int targetId, String surName, String password, int rang, User editUser);
 }

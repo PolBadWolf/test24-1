@@ -277,7 +277,7 @@ public class EditUsers extends JFrame
         // выбранная строка
         try {
             connBD.deativateUser(
-                    callBack.getCurrentUser().id_user,
+                    callBack.getCurrentUser().id_loggerUser,
                     editUser
             );
             // обновить таблицу
