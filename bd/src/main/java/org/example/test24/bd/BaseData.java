@@ -142,5 +142,5 @@ public interface BaseData {
     // деактивация пользователя
     void deativateUser(long id_loggerUserEdit, User user) throws Exception;
     // обновление данных о пользователе
-    void updateDataUser(int sourceId, int targetId, String surName, String password, int rang, User editUser);
+    void updateDataUser(long id_loggerUserEdit, User editUser, String surName, String password, int rang) throws Exception;
 }
