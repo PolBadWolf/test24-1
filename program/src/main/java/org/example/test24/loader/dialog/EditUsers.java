@@ -295,7 +295,7 @@ public class EditUsers extends JFrame
     // запись нового пользователя в базу
     private void writeNewUserToBase(String surName, String password, int rang) {
         try {
-            connBD.writeNewUser(activetUser.id_user, surName, password, rang);
+            connBD.writeNewUser(activetUser.id_loggerUser, surName, password, rang);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "запись нового пользователя в базу", e);
         }
