@@ -388,12 +388,12 @@ public class EditUsers extends JFrame
                         text = tablUsers[rowIndex].name;
                         break;
                     case column_datereg:
-                        text = dateFormat.format(listUsers[rowIndex].date);
+                        text = dateFormat.format(tablUsers[rowIndex].date);
                         break;
                     case column_rang:
                         text = "";
-                        if ((listUsers[rowIndex].rang & 1 << User.RANG_USERS) != 0) text += "П";
-                        if ((listUsers[rowIndex].rang & 1 << User.RANG_PUSHERS) != 0) text += "Т";
+                        if ((tablUsers[rowIndex].rang & 1 << User.RANG_USERS) != 0) text += "П";
+                        if ((tablUsers[rowIndex].rang & 1 << User.RANG_PUSHERS) != 0) text += "Т";
                         break;
                     default:
                 }
