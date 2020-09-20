@@ -12,20 +12,23 @@ import static org.example.test24.lib.MyLogger.myLog;
 class BaseDataParent implements BaseData {
     protected Connection connection;
     protected String baseDat;
+    // ===================================================================================================
     // открытие соединение с БД
     @Override
     public void openConnect(Parameters parameters) throws Exception { }
+    // ===================================================================================================
     // чтение списка БД
     @Override
     public String[] getListBase() throws Exception { return new String[0]; }
+    // ===================================================================================================
     // чтение списка пользователей
     @Override
-    public UserClass[] getListUsers(boolean actual) throws Exception {
+    public User[] getListUsers(boolean actual) throws Exception {
         if (connection == null) throw new Exception("отсутствует соединение (connection == null)");
         boolean flClosed = connection.isClosed();
         if (flClosed) throw new Exception("соединение закрыто");
 
-        ArrayList<UserClass> listUsers = new ArrayList<>();
+        ArrayList<User> listUsers = new ArrayList<>();
         Statement statement;
         ResultSet result;
         // запрос на список пользователей
@@ -34,37 +37,43 @@ class BaseDataParent implements BaseData {
         // запрос
         if (actual) {
             result = statement.executeQuery(
-                    "SELECT " +
-                            "table_users.id_user, " +
-                            "logger_users.date, " +
-                            "logger_users.id_userEdit, " +
-                            "logger_users.name, " +
-                            "logger_users.password, " +
-                            "logger_users.rang, " +
-                            "table_users.date_unreg " +
-                            "FROM " + baseDat + ".logger_users " +
-                            "INNER JOIN " + baseDat + ".table_users ON " +
-                            "logger_users.id_loggerUser = table_users.id_loggerUser " +
-                            "WHERE date_unreg IS NULL " +
-                            "ORDER BY " +
-                            "name ASC "
+                    "SELECT" +
+                            " table_users.id_user, " +
+                            " logger_users.id_loggerUser, " +
+                            " logger_users.date, " +
+                            " logger_users.name, " +
+                            " logger_users.password, " +
+                            " logger_users.rang, " +
+                            " table_users.date_unreg " +
+                            " FROM " +
+                            " " + baseDat + ".logger_users " +
+                            " INNER JOIN " +
+                            " " + baseDat + ".table_users" +
+                            " ON  " +
+                            " logger_users.id_loggerUser = table_users.id_loggerUser " +
+                            " WHERE " +
+                            " table_users.date_unreg IS NULL " +
+                            " ORDER BY " +
+                            " name ASC "
             );
         } else {
             result = statement.executeQuery(
-                    "SELECT " +
-                            "SELECT " +
-                            "table_users.id_user, " +
-                            "logger_users.date, " +
-                            "logger_users.id_userEdit, " +
-                            "logger_users.name, " +
-                            "logger_users.password, " +
-                            "logger_users.rang, " +
-                            "table_users.date_unreg " +
-                            "FROM " + baseDat + ".logger_users " +
-                            "INNER JOIN " + baseDat + ".table_users ON " +
-                            "logger_users.id_loggerUser = table_users.id_loggerUser " +
-                            "ORDER BY " +
-                            "name ASC "
+                    "SELECT" +
+                            " table_users.id_user, " +
+                            " logger_users.id_loggerUser, " +
+                            " logger_users.date, " +
+                            " logger_users.name, " +
+                            " logger_users.password, " +
+                            " logger_users.rang, " +
+                            " table_users.date_unreg " +
+                            " FROM " +
+                            " " + baseDat + ".logger_users " +
+                            " INNER JOIN " +
+                            " " + baseDat + ".table_users" +
+                            " ON  " +
+                            " logger_users.id_loggerUser = table_users.id_loggerUser " +
+                            " ORDER BY " +
+                            " name ASC "
             );
         }
         // создание списка
@@ -79,10 +88,10 @@ class BaseDataParent implements BaseData {
             }
             try {
                 listUsers.add(
-                        new UserClass(
+                        new User(
                                 result.getInt("id_user"),
                                 result.getTimestamp("date"),
-                                result.getInt("id_userEdit"),
+                                result.getInt("id_loggerUser"),
                                 result.getString("name"),
                                 pass,
                                 result.getInt("rang"),
@@ -101,8 +110,9 @@ class BaseDataParent implements BaseData {
         } catch (SQLException e) {
             myLog.log(Level.WARNING, "ошибка закрытие соединения", e);
         }
-        return listUsers.toArray(new UserClass[0]);
+        return listUsers.toArray(new User[0]);
     }
+    // ===================================================================================================
     // проверка структуры БД
     @Override
     public boolean checkCheckStructureBd(String base) throws Exception {
@@ -144,7 +154,7 @@ class BaseDataParent implements BaseData {
                 new ArrayList(Arrays.asList(
                         "id_loggerUser",
                         "date",
-                        "id_userEdit",
+                        "id_loggerUserEdit",
                         "id_user",
                         "name",
                         "password",
@@ -170,9 +180,10 @@ class BaseDataParent implements BaseData {
         System.exit(-2);
         return false;
     }
+    // ===================================================================================================
     // установка нового пароля пользователю
     @Override
-    public void setNewUserPassword(UserClass user, String newPassword) throws Exception {
+    public void setNewUserPassword(User user, String newPassword) throws Exception {
         if (connection == null) { throw new Exception("соединение не установлено"); }
         boolean fl = connection.isClosed();
         if (fl) { throw new Exception("соединение закрыто"); }
@@ -183,34 +194,39 @@ class BaseDataParent implements BaseData {
         connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 
         PreparedStatement preStatementLogger;
-        PreparedStatement preStatementUser;
+        PreparedStatement preStatementUserUpd;
 
         try {
             java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
             String pass = BaseData.Password.encoding(newPassword);
+            //
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
-                            baseDat + ".logger_users (date, id_userEdit, id_user, name, password, rang) "
-                            + " VALUES (?, ?, ?, ?, ?, ?)"
+                            " " + baseDat + ".logger_users " +
+                            " (date, id_loggerUserEdit, id_user, name, password, rang) " +
+                            " VALUES (?, ?, ?, ?, ?, ?)"
             );
             preStatementLogger.setTimestamp(1, timestamp);
-            preStatementLogger.setInt(2, user.id_user);
-            preStatementLogger.setInt(3, user.id_user);
+            preStatementLogger.setLong(2, user.id_loggerUser);
+            preStatementLogger.setLong(3, user.id_user);
             preStatementLogger.setString(4, user.name);
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, user.rang);
             preStatementLogger.executeUpdate();
             //
-            preStatementUser = connection.prepareStatement(
+            preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
-                            baseDat + ".table_users " +
-                            "SET id_loggerUser = ? " +
-                            "WHERE id_user = ? "
+                            " " + baseDat + ".table_users " +
+                            " SET " +
+                            " id_loggerUser = ? " +
+                            " WHERE id_user = ? "
             );
-            preStatementUser.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
-            preStatementUser.setInt(2, user.id_user);
-            preStatementUser.executeUpdate();
+            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
+            preStatementUserUpd.setLong(2, user.id_user);
+            preStatementUserUpd.executeUpdate();
+            //
             connection.commit();
+            user.id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
         } catch (SQLException e) {
             connection.rollback();
             try {
@@ -218,15 +234,18 @@ class BaseDataParent implements BaseData {
             } catch (SQLException se) { }
             throw new Exception(e);
         }
+        //
         try {
             connection.setAutoCommit(saveAutoCommit);
         } catch (SQLException se) { }
-        preStatementUser.close();
+        preStatementUserUpd.close();
         preStatementLogger.close();
     }
+    // ===================================================================================================
     // чтение списка толкателей
     @Override
     public Pusher[] getListPushers(boolean actual) throws Exception {
+        if (1==1) throw new Exception("НЕ РЕАЛИЗОВАНО !!!!!!!!!!!!!!!!!!");
         if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");
@@ -269,9 +288,10 @@ class BaseDataParent implements BaseData {
         }
         return listPusher.toArray(new Pusher[0]);
     }
+    // ===================================================================================================
     // запись нового пользователя
     @Override
-    public void writeNewUser(int id_edit, String surName, String password, int rang) throws Exception {
+    public void writeNewUser(long id_loggerUserEdit, String surName, String password, int rang) throws Exception {
         if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");
@@ -282,30 +302,46 @@ class BaseDataParent implements BaseData {
 
         PreparedStatement preStatementUser = null;
         PreparedStatement preStatementLogger = null;
+        PreparedStatement preStatementUserUpd = null;
         try {
             String pass = new String(java.util.Base64.getEncoder().encode(password.getBytes()));
             java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
+            //
             preStatementUser = connection.prepareStatement(
-                    "INSERT INTO " + baseDat + ".Table_users (name, password, rang, date_reg)\n"
-                            + " VALUES (?, ?, ?, ?)"
+                    "INSERT INTO " +
+                            " " + baseDat + ".table_users " +
+                            " (date_reg, id_loggerUser) " +
+                            " VALUES (?, ?) "
             );
-            preStatementUser.setString(1, surName);
-            preStatementUser.setString(2, pass);
-            preStatementUser.setInt(3, rang);
-            preStatementUser.setTimestamp(4, timestamp);
+            preStatementUser.setTimestamp(1, timestamp);
+            preStatementUser.setInt(2, 0);
             preStatementUser.executeUpdate();
+            //
             preStatementLogger = connection.prepareStatement(
-                    "INSERT INTO " + baseDat + ".logger_users (date, idUser_edit, act, idUser_new, name_new, password_new, rang_new) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?) "
+                    "INSERT INTO " +
+                            " " + baseDat + ".logger_users " +
+                            " (date, id_loggerUserEdit, id_user, name, password, rang) " +
+                            " VALUES (?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);
-            preStatementLogger.setInt(2, id_edit);
-            preStatementLogger.setInt(3, 1);
-            preStatementLogger.setLong(4, ((ClientPreparedStatement)preStatementUser).getLastInsertID());
-            preStatementLogger.setString(5, surName);
-            preStatementLogger.setString(6, pass);
-            preStatementLogger.setInt(7, rang);
+            preStatementLogger.setLong(2, id_loggerUserEdit);
+            preStatementLogger.setLong(3, ((ClientPreparedStatement)preStatementUser).getLastInsertID());
+            preStatementLogger.setString(4, surName);
+            preStatementLogger.setString(5, pass);
+            preStatementLogger.setInt(6, rang);
             preStatementLogger.executeUpdate();
+            //
+            preStatementUserUpd = connection.prepareStatement(
+                    "UPDATE " +
+                            " " + baseDat + ".table_users " +
+                            " SET " +
+                            " id_loggerUser = ? " +
+                            " WHERE id_user = ? "
+            );
+            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID() );
+            preStatementUserUpd.setLong(2, ((ClientPreparedStatement)preStatementUser).getLastInsertID() );
+            preStatementUserUpd.executeUpdate();
+            //
             connection.commit();
         } catch (SQLException throwables) {
             connection.rollback();
@@ -314,15 +350,18 @@ class BaseDataParent implements BaseData {
             } catch (SQLException se) { }
             throw new Exception(throwables);
         }
+        //
         try {
             connection.setAutoCommit(saveAutoCommit);
         } catch (SQLException se) { }
+        preStatementUserUpd.close();
         preStatementUser.close();
         preStatementLogger.close();
     }
+    // ===================================================================================================
     // деактивация пользователя
     @Override
-    public void deativateUser(int id_edit, UserClass user) throws Exception {
+    public void deativateUser(long id_loggerUserEdit, User user) throws Exception {
         if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");
@@ -332,25 +371,26 @@ class BaseDataParent implements BaseData {
         connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 
         PreparedStatement preStatementLogger;
-        PreparedStatement preStatementUser;
+        PreparedStatement preStatementUserUpd;
 
         try {
             java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
             String pass = BaseData.Password.encoding(user.password);
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
-                            baseDat + ".logger_users (date, id_userEdit, id_user, name, password, rang) "
-                            + " VALUES (?, ?, ?, ?, ?, ?)"
+                            " " + baseDat + ".logger_users " +
+                            " (date, id_loggerUserEdit, id_user, name, password, rang) " +
+                            " VALUES (?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);
-            preStatementLogger.setInt(2, id_edit);
-            preStatementLogger.setInt(3, user.id_user);
+            preStatementLogger.setLong(2, id_loggerUserEdit);
+            preStatementLogger.setLong(3, user.id_user);
             preStatementLogger.setString(4, user.name);
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, user.rang);
             preStatementLogger.executeUpdate();
             //
-            preStatementUser = connection.prepareStatement(
+            preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
                             baseDat + ".table_users " +
                             "SET " +
@@ -358,10 +398,10 @@ class BaseDataParent implements BaseData {
                             "date_unreg = ? " +
                             "WHERE id_user = ? "
             );
-            preStatementUser.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
-            preStatementUser.setTimestamp(2, timestamp);
-            preStatementUser.setInt(3, user.id_user);
-            preStatementUser.executeUpdate();
+            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
+            preStatementUserUpd.setTimestamp(2, timestamp);
+            preStatementUserUpd.setLong(3, user.id_user);
+            preStatementUserUpd.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
             connection.rollback();
@@ -373,13 +413,14 @@ class BaseDataParent implements BaseData {
         try {
             connection.setAutoCommit(saveAutoCommit);
         } catch (SQLException se) { }
-        preStatementUser.close();
+        preStatementUserUpd.close();
         preStatementLogger.close();
     }
+    // ===================================================================================================
     // обновление данных о пользователе
     @Override
-    public void updateDataUser(int sourceId, int targetId, String surName, String password, int rang, UserClass editUser) {
-        /*if (connection == null) throw new Exception("соединение не установлено");
+    public void updateDataUser(long id_loggerUserEdit, User user, String surName, String password, int rang) throws Exception {
+        if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");
 
@@ -387,44 +428,49 @@ class BaseDataParent implements BaseData {
         connection.setAutoCommit(false);
         connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 
-        PreparedStatement preStatementUser = null;
         PreparedStatement preStatementLogger = null;
+        PreparedStatement preStatementUserUpd = null;
 
         java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
         try {
             preStatementLogger = connection.prepareStatement(
-                    "INSERT INTO " + baseDat + ".logger_users (date, idUser_edit, act, idUser, " +
-                            "name_old, name_new, " +
-                            "password_old, password_new, " +
-                            "rang_old, rang_new) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                    "INSERT INTO " +
+                            " " + baseDat + ".logger_users " +
+                            " (date, id_loggerUserEdit, id_user, name, password, rang) " +
+                            "VALUES (?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);
-            preStatementLogger.setInt(2, sourceId);
-            preStatementLogger.setInt(3, 3);
-            preStatementLogger.setLong(4,  targetId); // ((ClientPreparedStatement)preStatementUser).getLastInsertID());
-            preStatementLogger.setString(5, editUser.name);
-            preStatementLogger.setString(6, surName);
-            preStatementLogger.setString(7, BaseData.Password.encoding(editUser.password));
-            preStatementLogger.setString(8, BaseData.Password.encoding(password));
-            preStatementLogger.setInt(9, editUser.rang);
-            preStatementLogger.setInt(10, rang);
+            preStatementLogger.setLong(2, id_loggerUserEdit);
+            preStatementLogger.setLong(3,  user.id_user);
+            preStatementLogger.setString(4, surName);
+            preStatementLogger.setString(5, BaseData.Password.encoding(password));
+            preStatementLogger.setInt(6, rang);
             preStatementLogger.executeUpdate();
             //
-            preStatementUser = connection.prepareStatement(
-                    "UPDATE " + baseDat + ".Table_users SET " +
-                            "date_unreg = ?, " +
-                            "id_unreg = ? " +
-                            "WHERE id = ? "
+            preStatementUserUpd = connection.prepareStatement(
+                    "UPDATE " +
+                            " " + baseDat + ".table_users " +
+                            " SET " +
+                            " id_loggerUser = ? " +
+                            " WHERE id_user = ? "
             );
-            preStatementUser.setTimestamp(1, timestamp);
-            //preStatementUser.setInt(2, source_id);
-            //preStatementUser.setInt(3, target_id);
-            preStatementUser.executeUpdate();
+            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID() );
+            preStatementUserUpd.setLong(2, user.id_user );
+            preStatementUserUpd.executeUpdate();
+            //
+            connection.commit();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            connection.rollback();
+            try {
+                connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException se) { }
+            throw new Exception(throwables);
         }
-
-         */
+        //
+        try {
+            connection.setAutoCommit(saveAutoCommit);
+        } catch (SQLException se) { }
+        preStatementUserUpd.close();
+        preStatementLogger.close();
     }
 }

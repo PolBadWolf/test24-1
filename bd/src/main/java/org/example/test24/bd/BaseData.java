@@ -130,17 +130,17 @@ public interface BaseData {
     // чтение списка БД
     String[] getListBase() throws Exception;
     // чтение списка пользователей
-    UserClass[] getListUsers(boolean actual) throws Exception;
+    User[] getListUsers(boolean actual) throws Exception;
     // проверка структуры БД
     boolean checkCheckStructureBd(String base) throws Exception;
     // установка нового пароля пользователю
-    void setNewUserPassword(UserClass user, String newPassword) throws Exception;
+    void setNewUserPassword(User user, String newPassword) throws Exception;
     // чтение списка толкателей
     Pusher[] getListPushers(boolean actual) throws Exception;
     // запись нового пользователя
-    void writeNewUser(int id_edit, String sunName, String password, int rang) throws Exception;
+    void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws Exception;
     // деактивация пользователя
-    void deativateUser(int id_edit, UserClass user) throws Exception;
+    void deativateUser(long id_loggerUserEdit, User user) throws Exception;
     // обновление данных о пользователе
-    void updateDataUser(int sourceId, int targetId, String surName, String password, int rang, UserClass editUser);
+    void updateDataUser(long id_loggerUserEdit, User editUser, String surName, String password, int rang) throws Exception;
 }

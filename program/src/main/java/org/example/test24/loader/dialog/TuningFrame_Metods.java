@@ -1,10 +1,10 @@
 package org.example.test24.loader.dialog;
 
+import org.example.test24.bd.User;
 import org.example.test24.lib.MyUtil;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.BaseData2;
 import org.example.test24.bd.ParametersSql2;
-import org.example.test24.bd.UserClass;
 import org.example.test24.bd.ParametersConfig;
 
 import javax.swing.*;
@@ -90,16 +90,16 @@ class TuningFrame_Metods extends TuningFrame_Vars {
                         listUsers = callBack.getListUsers(true);
                     } catch (Exception e) {
                         System.out.println("Ошибка чтения списка пользователей: " + e.getMessage());
-                        listUsers = new UserClass[0];
+                        listUsers = new User[0];
                     }
                 } else {
                     System.out.println("ошибка установки рабочего соединения: " + resultBaseData.toString());
-                    listUsers = new UserClass[0];
+                    listUsers = new User[0];
                 }
             } else { // ошибка установки тестового соединения
                 System.out.println("ошибка установки тестового соединения: " + resultBaseData.toString());
                 // пустой список пользователей
-                listUsers = new UserClass[0];
+                listUsers = new User[0];
                 // ошибка структкры БД
                 flCheckSql = false;
                 // список доступных БД
@@ -125,7 +125,7 @@ class TuningFrame_Metods extends TuningFrame_Vars {
             // нарушена целостность структуры БД
             flCheckSql = false;
             // создать пустой список пользователей
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
             // пустой список дотупных БД
             listBaseData = new String[0];
         }

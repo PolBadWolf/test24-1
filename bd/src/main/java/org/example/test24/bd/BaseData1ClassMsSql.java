@@ -210,7 +210,7 @@ public class BaseData1ClassMsSql extends BaseData1Class {
     }
 
     @Override
-    public void updateUserPassword(UserClass userClass, String newPassword) throws Exception {
+    public void updateUserPassword(User userClass, String newPassword) throws Exception {
         // проверка связи
         if (getConnect() == null) {
             throw new Exception("нет связи");
@@ -226,7 +226,7 @@ public class BaseData1ClassMsSql extends BaseData1Class {
                     "UPDATE Table_users SET  \"password\" = ? WHERE \"id\" = ?"
             );
             statement.setString(1, pass);
-            statement.setInt(2, userClass.id_user);
+            statement.setLong(2, userClass.id_user);
             statement.executeUpdate();
             statement.close();
         } catch (java.lang.Throwable ex) {
