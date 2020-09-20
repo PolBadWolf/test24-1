@@ -304,7 +304,7 @@ public class EditUsers extends JFrame
         table.updateUI();
     }
     // обновление записи о пользователе
-    private void updateDataUser(int sourceId, int targetId, String surName, String password, int rang) {
+    private void updateDataUser(long sourceId, long targetId, String surName, String password, int rang) {
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("обновление записи о пользователе"));
     }
     // очистка полей редактирования

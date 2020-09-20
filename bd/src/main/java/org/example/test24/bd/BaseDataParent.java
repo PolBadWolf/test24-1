@@ -12,12 +12,15 @@ import static org.example.test24.lib.MyLogger.myLog;
 class BaseDataParent implements BaseData {
     protected Connection connection;
     protected String baseDat;
+    // ===================================================================================================
     // открытие соединение с БД
     @Override
     public void openConnect(Parameters parameters) throws Exception { }
+    // ===================================================================================================
     // чтение списка БД
     @Override
     public String[] getListBase() throws Exception { return new String[0]; }
+    // ===================================================================================================
     // чтение списка пользователей
     @Override
     public User[] getListUsers(boolean actual) throws Exception {
@@ -109,6 +112,7 @@ class BaseDataParent implements BaseData {
         }
         return listUsers.toArray(new User[0]);
     }
+    // ===================================================================================================
     // проверка структуры БД
     @Override
     public boolean checkCheckStructureBd(String base) throws Exception {
@@ -176,6 +180,7 @@ class BaseDataParent implements BaseData {
         System.exit(-2);
         return false;
     }
+    // ===================================================================================================
     // установка нового пароля пользователю
     @Override
     public void setNewUserPassword(User user, String newPassword) throws Exception {
@@ -189,34 +194,38 @@ class BaseDataParent implements BaseData {
         connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 
         PreparedStatement preStatementLogger;
-        PreparedStatement preStatementUser;
+        PreparedStatement preStatementUserUpd;
 
         try {
             java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
             String pass = BaseData.Password.encoding(newPassword);
+            //
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
-                            baseDat + ".logger_users (date, id_userEdit, id_user, name, password, rang) "
-                            + " VALUES (?, ?, ?, ?, ?, ?)"
+                            " " + baseDat + ".logger_users " +
+                            " (date, id_loggerUserEdit, id_user, name, password, rang) " +
+                            " VALUES (?, ?, ?, ?, ?, ?)"
             );
             preStatementLogger.setTimestamp(1, timestamp);
-            preStatementLogger.setInt(2, user.id_user);
-            preStatementLogger.setInt(3, user.id_user);
+            preStatementLogger.setLong(2, user.id_loggerUser);
+            preStatementLogger.setLong(3, user.id_user);
             preStatementLogger.setString(4, user.name);
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, user.rang);
             preStatementLogger.executeUpdate();
             //
-            preStatementUser = connection.prepareStatement(
+            preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
-                            baseDat + ".table_users " +
-                            "SET id_loggerUser = ? " +
-                            "WHERE id_user = ? "
+                            " " + baseDat + ".table_users " +
+                            " SET " +
+                            " id_loggerUser = ? " +
+                            " WHERE id_user = ? "
             );
-            preStatementUser.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
-            preStatementUser.setInt(2, user.id_user);
-            preStatementUser.executeUpdate();
+            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
+            preStatementUserUpd.setLong(2, user.id_user);
+            preStatementUserUpd.executeUpdate();
             connection.commit();
+            user.id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
         } catch (SQLException e) {
             connection.rollback();
             try {
@@ -227,7 +236,7 @@ class BaseDataParent implements BaseData {
         try {
             connection.setAutoCommit(saveAutoCommit);
         } catch (SQLException se) { }
-        preStatementUser.close();
+        preStatementUserUpd.close();
         preStatementLogger.close();
     }
     // чтение списка толкателей
@@ -277,7 +286,7 @@ class BaseDataParent implements BaseData {
     }
     // запись нового пользователя
     @Override
-    public void writeNewUser(int id_edit, String surName, String password, int rang) throws Exception {
+    public void writeNewUser(long id_edit, String surName, String password, int rang) throws Exception {
         if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");
@@ -304,7 +313,7 @@ class BaseDataParent implements BaseData {
                             "VALUES (?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);
-            preStatementLogger.setInt(2, id_edit);
+            preStatementLogger.setLong(2, id_edit);
             preStatementLogger.setLong(3, ((ClientPreparedStatement)preStatementUser).getLastInsertID());
             preStatementLogger.setString(4, surName);
             preStatementLogger.setString(5, pass);
@@ -338,7 +347,7 @@ class BaseDataParent implements BaseData {
     }
     // деактивация пользователя
     @Override
-    public void deativateUser(int id_edit, User user) throws Exception {
+    public void deativateUser(long id_edit, User user) throws Exception {
         if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");
@@ -359,8 +368,8 @@ class BaseDataParent implements BaseData {
                             + " VALUES (?, ?, ?, ?, ?, ?)"
             );
             preStatementLogger.setTimestamp(1, timestamp);
-            preStatementLogger.setInt(2, id_edit);
-            preStatementLogger.setInt(3, user.id_user);
+            preStatementLogger.setLong(2, id_edit);
+            preStatementLogger.setLong(3, user.id_user);
             preStatementLogger.setString(4, user.name);
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, user.rang);
@@ -376,7 +385,7 @@ class BaseDataParent implements BaseData {
             );
             preStatementUser.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
             preStatementUser.setTimestamp(2, timestamp);
-            preStatementUser.setInt(3, user.id_user);
+            preStatementUser.setLong(3, user.id_user);
             preStatementUser.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
