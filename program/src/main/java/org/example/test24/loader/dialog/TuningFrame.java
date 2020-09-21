@@ -16,6 +16,11 @@ import java.lang.reflect.InvocationTargetException;
 
 class TuningFrame extends TuningFrame_Metods {
 
+    interface CallBack {
+        void messageCloseTuning(boolean newData);
+    }
+
+
     private BaseData1 bdSql = null; // *
     private Thread threadSkeep = null; // *
     private boolean threadSkeepOn; // *
@@ -25,16 +30,6 @@ class TuningFrame extends TuningFrame_Metods {
     private boolean flCheckListBd = false;
 
     // =============================================================================================================
-    public static TuningFrame createFrame(FrameCallBack callBack,
-                                       boolean statMainWork) throws InvocationTargetException, InterruptedException {
-        TuningFrame[] tuningFrame = new TuningFrame[1];
-        SwingUtilities.invokeAndWait(()-> { // wait - дождаться выполнения конструктора
-            // конструктор
-            tuningFrame[0] = new TuningFrame(callBack, statMainWork);
-        });
-        return tuningFrame[0];
-    }
-
     protected TuningFrame(FrameCallBack callBack, boolean statMainWork) //throws Exception
     {
         this.callBack = callBack;

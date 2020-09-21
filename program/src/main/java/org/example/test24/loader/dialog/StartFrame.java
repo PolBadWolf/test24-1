@@ -651,10 +651,10 @@ public class StartFrame {
     }
     // обработка настройка
     private void callTuning() {
-        if (1 == 1) {
+        /*if (1 == 1) {
             myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("не реализовано запуск настройки"));
             return;
-        }
+        }*/
         if (statMainWork) {
             // при основной работе нельзя менять параметры БД и порта
             MySwingUtil.showMessage(frame, "Настройка", "при основной работе нельзя менять параметры БД и порта", 10_000);
@@ -662,26 +662,13 @@ public class StartFrame {
             return;
         }
         // отключение управления
-        comboBoxUsers.setEnabled(false);
-        fieldPassword.setEnabled(false);
-        buttonEnter.setEnabled(false);
-        buttonTuning.setVisible(false);
-        // вызов окна
-        Thread thread = new Thread(()->{
-            try {
-                tuningFrame = TuningFrame.createFrame(
-                        new TuningFrameCallBack(),
-                        statMainWork
-                );
-            } catch (InterruptedException e) {
-                System.out.println("Ошибка вызова окна \"настройка\": " + e.getMessage());
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                System.out.println("Ошибка вызова окна \"настройка\": " + e.getMessage());
-                e.printStackTrace();
-            }
-        }, "thread for start tunnig frame");
-        thread.start();
+        SaveEnableComponents saveComponents = new SaveEnableComponents();
+        saveComponents.offline();
+        new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
+                new TuningFrame(null, false);
+            });
+        }, "create tuning").start();
     }
     // обработка редактирование пользователей
     private void callEditUsers() {
@@ -710,7 +697,7 @@ public class StartFrame {
     }
     // обработка редактирование толкателей
     private void callEditPushers() {
-
+        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
     }
 
     // callBack из TuningFrame
