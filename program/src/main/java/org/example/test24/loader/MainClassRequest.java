@@ -29,7 +29,7 @@ class MainClassRequest {
     // загрузка начальной конфигурации
     protected ParametersConfig getParametersConfig() {
         if (parametersConfig != null) return parametersConfig;
-        parametersConfig = new ParametersConfig(fileNameConfig);
+        parametersConfig = new ParametersConfig();
         if (parametersConfig.load() != ParametersConfig.Diagnostic.OK) {
                 parametersConfig.setDefault();
         }

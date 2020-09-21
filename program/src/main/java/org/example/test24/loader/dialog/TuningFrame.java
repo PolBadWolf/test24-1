@@ -12,13 +12,32 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 
-class TuningFrame extends TuningFrame_Metods {
+import static org.example.test24.lib.MyLogger.myLog;
+
+class TuningFrame {
 
     interface CallBack {
-        void messageCloseTuning(boolean newData);
+        void messageCloseTuning();
     }
+
+    CallBack callBack;
+    BaseData.Config configProg;
+    BaseData.Parameters parametersSql;
+    BaseData connBD;
+
+
+    // ************** флаги ************
+    // соединение с БД установлено
+    boolean flagConnectBD;
+    //
+
+    // список доступный баз в БД
+    String[] listBaseBD;
+
+    // блокировка работы компонентов управления при начальной установке
+
 
 
     private BaseData1 bdSql = null; // *
@@ -30,27 +49,135 @@ class TuningFrame extends TuningFrame_Metods {
     private boolean flCheckListBd = false;
 
     // =============================================================================================================
-    protected TuningFrame(FrameCallBack callBack, boolean statMainWork) //throws Exception
+    protected TuningFrame(CallBack callBack)
     {
         this.callBack = callBack;
-        this.statMainWork = statMainWork;
-        lockBegin = true;
+        boolean flInit = true;
         // загрузка параметров
-        loadBeginerParameters();
+        try {
+            parametersSql = loadParameters(loadConfigProg());
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "загрузка параметров", e);
+            flInit = false;
+        }
+        resetFlagsConnect();
+        // установка соединения
+        if (flInit) {
+            try {
+                connBD = initConnect(parametersSql);
+                // флаг установки соединения
+                flagConnectBD = true;
+            } catch (Exception e) {
+                myLog.log(Level.WARNING, "загрузка списка баз", e);
+                flagConnectBD = false;
+            }
+        } else {
+            flagConnectBD = false;
+        }
+        // загрузка списка баз
+        if (flagConnectBD) {
+            try {
+                listBaseBD = connBD.getListBase();
+            } catch (Exception e) {
+                myLog.log(Level.WARNING, "загрузка списка баз", e);
+                listBaseBD = new String[0];
+            }
+        } else {
+            listBaseBD = new String[0];
+        }
+
+
+        //lockBegin = true;
         // конструктор окна
         frameConstructor();
         // установка компонентов в начальное положение
-        setComponentsBegin();
-        lockBegin = false;
+        //setComponentsBegin();
+        //lockBegin = false;
     }
     // =============================================================================================================
-
+    // загрузка параметров конфигурации программы
+    private BaseData.Config loadConfigProg() {
+        BaseData.Config config = BaseData.Config.create();
+        BaseData.Status result = null;
+        try {
+            result = config.load1();
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
+            config.setDefault();
+        }
+        if (result != BaseData.Status.OK) {
+            myLog.log(Level.SEVERE, "загрузка параметров конфигурации программы", new Exception(result.toString()));
+            config.setDefault();
+        }
+        return config;
+    }
+    // =============================================================================================================
+    // загрузка параметров подключения к БД
+    private BaseData.Parameters loadParametersSql(BaseData.TypeBaseDate typeBaseDate) throws Exception
+    {
+        if (typeBaseDate == null) throw new Exception("не задан тип БД");
+        if (typeBaseDate == BaseData.TypeBaseDate.ERROR)  throw new Exception("ошибочный тип БД");
+        //
+        BaseData.Parameters parameters = BaseData.Parameters.create(typeBaseDate);
+        BaseData.Status result;
+        result = parameters.load();
+        if (result != BaseData.Status.OK) {
+            throw new Exception("загрузка параметров соединения с БД", new Exception(result.toString()));
+        }
+        //
+        return parameters;
+    }
+    // =============================================================================================================
+    // подключение к БД
+    private BaseData connectBD(BaseData.Parameters parametersSql) throws Exception {
+        BaseData baseData;
+        try {
+            baseData = BaseData.create(parametersSql);
+        } catch (Exception e) {
+            throw new Exception("соединение с БД", e);
+        }
+        //
+        try {
+            baseData.openConnect(parametersSql);
+        } catch (Exception e) {
+            throw new Exception("соединение с БД", e);
+        }
+        return baseData;
+    }
+    // =============================================================================================================
+    //
+    private BaseData.Parameters loadParameters(BaseData.Config configProg) throws Exception {
+        BaseData.Parameters parametersSql;
+        try {
+            parametersSql = loadParametersSql(configProg.getTypeBaseData());
+        } catch (Exception e) {
+            throw new Exception("инициализация соединение с БД", e);
+        }
+        return parametersSql;
+    }
+    private void resetFlagsConnect() {
+        // флаг соединения с БД
+        flagConnectBD = false;
+        // список доступных баз
+        listBaseBD = new String[0];
+    }
+    //
+    private BaseData initConnect(BaseData.Parameters parametersSql) throws Exception {
+        BaseData baseData;
+        try {
+            baseData = connectBD(parametersSql);
+        } catch (Exception e) {
+            throw new Exception("инициализация соединение с БД", e);
+        }
+        return baseData;
+    }
 
 
 
 
     private void frameConstructor() {
         frameTuning = getFrameTuning("настройка", 640, 480);
+        frameTuning.setResizable(false);
         Container container = frameTuning.getContentPane();
         {
             panelCommPort = getPanelTitle("выбор Comm порта",10, 10, 130, 110);
@@ -161,7 +288,7 @@ class TuningFrame extends TuningFrame_Metods {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
         comboBox.addActionListener(e -> {
-            selectCommPort(comboBox);
+            //selectCommPort(comboBox);
         });
         return comboBox;
     }
@@ -305,8 +432,7 @@ class TuningFrame extends TuningFrame_Metods {
             } catch (java.lang.Throwable e) {
                 System.out.println(e.getMessage());
             }
-            //callBackTF.messageCloseTuningFrame();
-            //callBack.closeFrame();
+            callBack.messageCloseTuning();
         }
         if (editUsers != null) {
 
@@ -339,30 +465,31 @@ class TuningFrame extends TuningFrame_Metods {
 
 
     // загрузка параметров SQL
-    private boolean loadParametersSql(String typeBd) {
+    /*private boolean loadParametersSql(String typeBd) {
         boolean stat = false;
-        /*parametersSql = new ParametersSql2(
+        parametersSql = new ParametersSql2(
                 BaseData1.getNameFileParametrsSql(
                         typeBd,
                         callBack MC.getFilesNameSql()
                 )
-        );*/
+        );
         try {
-            parametersSql.load();
+            //parametersSql.load();
             stat = true;
         } catch (Exception e) {
             System.out.println("ошибка чтения параметров SQL: " + e.getMessage());
         }
         return stat;
     }
+    */
     // сохранение параметров SQL
     private void saveParametersSql() {
-        parametersSql.urlServer = fieldParamServerIP.getText();
+        /*parametersSql.urlServer = fieldParamServerIP.getText();
         parametersSql.portServer = fieldParamServerPort.getText();
         parametersSql.user = fieldParamServerLogin.getText();
         parametersSql.password = fieldParamServerPassword.getText();
         parametersSql.dataBase = (String) comboBoxListBd.getSelectedItem();
-        parametersSql.save();
+        parametersSql.save();*/
         checkStatusComp();
     }
     // статус основных параметров
@@ -387,7 +514,7 @@ class TuningFrame extends TuningFrame_Metods {
                     )
             );*/
             try {
-                parametersSql.load();
+                //parametersSql.load();
                 // параметры БД удачно прочитались
                 flCheckParamSql = true;
             } catch (Exception e) {
@@ -395,21 +522,21 @@ class TuningFrame extends TuningFrame_Metods {
                 // параметры БД плохие
                 flCheckParamSql = false;
                 // структура плохая
-                flCheckSql = false;
+                //flCheckSql = false;
             }
             // доступ к БД
             try {
-                flCheckSql = BaseData1.testStuctBase(
+                /*flCheckSql = BaseData1.testStuctBase(
                         (String) comboBoxTypeBd.getSelectedItem(),
                         fieldParamServerIP.getText(),
                         fieldParamServerPort.getText(),
                         fieldParamServerLogin.getText(),
                         fieldParamServerPassword.getText(),
                         (String) comboBoxListBd.getSelectedItem()
-                );
+                );*/
             } catch (java.lang.Throwable e) {
                 System.out.println("ошибка параметров SQL: " + e.getMessage());
-                flCheckSql = false;
+                //flCheckSql = false;
             }
         }   // структура БД
     }
@@ -437,7 +564,7 @@ class TuningFrame extends TuningFrame_Metods {
             );*/
             boolean flCheckParamSql;
             try {
-                parametersSql.load();
+                //parametersSql.load();
                 // параметры БД удачно прочитались
                 flCheckParamSql = true;
             } catch (Exception e) {
@@ -445,25 +572,25 @@ class TuningFrame extends TuningFrame_Metods {
                 // параметры БД плохие
                 flCheckParamSql = false;
                 // структура плохая
-                flCheckSql = false;
+                //flCheckSql = false;
             }
             // доступ к БД
             if (flCheckParamSql) {
                 try {
-                    flCheckSql = BaseData1.testStuctBase(
+                    /*flCheckSql = BaseData1.testStuctBase(
                             (String) comboBoxTypeBd.getSelectedItem(),
                             fieldParamServerIP.getText(),
                             fieldParamServerPort.getText(),
                             fieldParamServerLogin.getText(),
                             fieldParamServerPassword.getText(),
                             (String) comboBoxListBd.getSelectedItem()
-                    );
+                    );*/
                 } catch (java.lang.Throwable e) {
                     System.out.println("ошибка параметров SQL: " + e.getMessage());
-                    flCheckSql = false;
+                    //flCheckSql = false;
                 }
             } else {
-                flCheckSql = false;
+                //flCheckSql = false;
             }
         }   // структура БД
         return false;
@@ -499,17 +626,17 @@ class TuningFrame extends TuningFrame_Metods {
                 textTypeBdStatus.setText("Error parametrs BD");
                 return;
             }
-            if (flCheckSql) {
+            /*if (flCheckSql) {
                 textTypeBdStatus.setText("BD ok");
             } else {
                 textTypeBdStatus.setText("Error structure BD");
-            }
+            }*/
         }   // выдача статуса БД
     }
     // >>>>>>>>>>>>>>>>>>>>>>
     // разрешение кнопки ок
     protected void onOffButtonOk() {
-        buttonOk.setEnabled((chCheckCommPort == CommPort.PortStat.INITCODE_OK) && flCheckSql);
+        //buttonOk.setEnabled((chCheckCommPort == CommPort.PortStat.INITCODE_OK) && flCheckSql);
     }
     protected void onButtonOk() {
         buttonOk.setEnabled(true);
@@ -533,11 +660,11 @@ class TuningFrame extends TuningFrame_Metods {
     }
     // разрешение кнопки save
     protected void onOffButtonSave() {
-        if (flCheckSql) {
+        /*if (flCheckSql) {
             buttonSave.setEnabled(true);
         } else {
             buttonSave.setEnabled(false);
-        }
+        }*/
     }
     protected void onButtonSave() {
         buttonSave.setEnabled(true);
@@ -547,11 +674,11 @@ class TuningFrame extends TuningFrame_Metods {
     }
     // разрешение кнопки редактирование пользователей
     protected void onOffButtonEditUsers() {
-        if (flCheckSql) {
+        /*if (flCheckSql) {
             buttonEditUsers.setEnabled(true);
         } else {
             buttonEditUsers.setEnabled(false);
-        }
+        }*/
     }
     protected void onButtonEditUsers() {
         buttonEditUsers.setEnabled(true);
@@ -561,11 +688,11 @@ class TuningFrame extends TuningFrame_Metods {
     }
     // разрешение кнопки редактирование толкателей
     protected void onOffButtonEditPushers() {
-        if (flCheckSql) {
+        /*if (flCheckSql) {
             buttonEditPushers.setEnabled(true);
         } else {
             buttonEditPushers.setEnabled(false);
-        }
+        }*/
     }
     protected void onButtonEditPushers() {
         buttonEditPushers.setEnabled(true);
@@ -576,7 +703,7 @@ class TuningFrame extends TuningFrame_Metods {
     // <<<<<<<<<<<<<<<<<<<<<<
     // выбран тип БД
     private void selectTypeBase(JComboBox comboBox) {
-        if (lockBegin)  return;
+        //if (lockBegin)  return;
         threadSkeepOn = false;
         checkStatusComp();
         outStatus();
@@ -587,7 +714,7 @@ class TuningFrame extends TuningFrame_Metods {
     }
     // смена параметров подключения к SQL серверу
     private void selectParametersConnectBd() {
-        if (lockBegin)  return;
+        //if (lockBegin)  return;
         threadSkeepOn = false;
         try {
             String currentItem = (String) comboBoxListBd.getSelectedItem();
@@ -605,12 +732,12 @@ class TuningFrame extends TuningFrame_Metods {
     }
     // нажатие кнопки ок
     private void pushButtonOk() {
-        if (lockBegin)  return;
+        //if (lockBegin)  return;
         closeFrame();
     }
     // нажатие кнопки save
     private void pushButtonSave() {
-        if (lockBegin)  return;
+        //if (lockBegin)  return;
         offButtonSave();
         saveParametersSql();
         // статус основных параметров
@@ -626,7 +753,7 @@ class TuningFrame extends TuningFrame_Metods {
     }
     // нажатие кнопки test
     private void pushButtonTest() {
-        if (lockBegin)  return;
+        //if (lockBegin)  return;
         threadSkeepOn = false;
         // статус основных параметров
         checkStatusComp();
@@ -641,4 +768,32 @@ class TuningFrame extends TuningFrame_Metods {
             editUsers = new EditUsers(null, new EditUsersCallBack());
         }
     }
+    // ========================================================================
+    // ===== компоненты JFrame =======
+    protected JFrame frameTuning = null;
+    protected EditUsers editUsers = null;
+
+    protected JPanel panelCommPort = null;
+    protected JLabel labelPortCurrent = null;
+    protected JTextField textCommPortStatus = null;
+    protected JComboBox<String> comboBoxCommPort = null;
+
+    protected JPanel panelTypeBd = null;
+    protected JTextField textTypeBdStatus = null;
+    protected JComboBox<String> comboBoxTypeBd = null;
+
+    protected JPanel panelParamSQL = null;
+    protected JTextField fieldParamServerIP = null;
+    protected JTextField fieldParamServerPort = null;
+    protected JTextField fieldParamServerLogin = null;
+    protected JTextField fieldParamServerPassword = null;
+    protected JComboBox<String> comboBoxListBd = null;
+    protected JButton buttonOk = null;
+    protected JButton buttonSave = null;
+    protected JButton buttonTest = null;
+
+    protected JPanel panelSelectEdit = null;
+    protected JButton buttonEditUsers = null;
+    protected JButton buttonEditPushers = null;
+    // ========================================================================
 }

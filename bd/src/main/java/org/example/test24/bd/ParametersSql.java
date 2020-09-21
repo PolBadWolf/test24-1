@@ -85,32 +85,34 @@ class ParametersSql implements BaseData.Parameters {
     }
     // ------------------------------------------------
     @Override
-    public BaseData.Status load() {
+    public BaseData.Status load() throws Exception {
         Properties properties = new Properties();
         try {
             properties.load(new BufferedReader(new FileReader(fileName)));
         } catch (IOException e) {
-            myLog.log(Level.SEVERE, "ошибки загрузки параметров из файла конфигурации", e);
             stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
-            return stat;
+            throw new Exception("ошибки загрузки параметров из файла конфигурации", e);
         }
         ipServer = properties.getProperty("Url_Server");
         portServer = properties.getProperty("Port_Server");
         dataBase = properties.getProperty("DataBase");
         user = properties.getProperty("User");
+        //
         try {
-            password = null;
             password = BaseData.Password.decoding(properties.getProperty("Password"));
-            if (ipServer == null || portServer == null || dataBase == null || user == null) {
-                myLog.log(Level.SEVERE, "один или несколько параметров в файле конфигурации отсутствуют");
-                stat = BaseData.Status.PARAMETERS_ERROR;
-            } else {
-                stat = BaseData.Status.OK;
-            }
         } catch (Exception e) {
-            myLog.log(Level.SEVERE, "ошибка декодирования пароля", e);
             stat = BaseData.Status.PARAMETERS_PASSWORD_ERROR;
+            password = null;
+            myLog.log(Level.WARNING, "ошибка декодирования пароля", e);
         }
+        //
+        if (ipServer == null || portServer == null || dataBase == null || user == null) {
+            myLog.log(Level.SEVERE, "один или несколько параметров в файле конфигурации отсутствуют");
+            stat = BaseData.Status.PARAMETERS_ERROR;
+        } else {
+            if (password != null) stat = BaseData.Status.OK;
+        }
+        //
         return stat;
     }
     @Override

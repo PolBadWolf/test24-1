@@ -155,35 +155,35 @@ class TuningFrame_Metods extends TuningFrame_Vars {
     }
     // =============================================================================================================
     protected void setComponentCommPort(String[] listCommPort, String defaultCommPort) {
-        comboBoxCommPort.removeAllItems();
-        Arrays.stream(listCommPort).sorted((a, b) -> a.compareTo(b)).forEach(s -> comboBoxCommPort.addItem(s));
-        comboBoxCommPort.setSelectedItem(defaultCommPort);
+//        comboBoxCommPort.removeAllItems();
+//        Arrays.stream(listCommPort).sorted((a, b) -> a.compareTo(b)).forEach(s -> comboBoxCommPort.addItem(s));
+//        comboBoxCommPort.setSelectedItem(defaultCommPort);
     }
     protected void setComponentBaseData(ParametersSql2 parametersSql) {
         // тип БД
-        comboBoxTypeBd.setSelectedItem(parametersSql.typeBaseData.toString());
-        // параметры подключения
-        fieldParamServerIP.setText(parametersSql.urlServer);
-        fieldParamServerPort.setText(parametersSql.portServer);
-        fieldParamServerLogin.setText(parametersSql.user);
-        fieldParamServerPassword.setText(parametersSql.password);
+//        comboBoxTypeBd.setSelectedItem(parametersSql.typeBaseData.toString());
+//        // параметры подключения
+//        fieldParamServerIP.setText(parametersSql.urlServer);
+//        fieldParamServerPort.setText(parametersSql.portServer);
+//        fieldParamServerLogin.setText(parametersSql.user);
+//        fieldParamServerPassword.setText(parametersSql.password);
     }
     // установка компонентов в начальное положение
     protected void setComponentsBegin() {
         // ком порт
-        setComponentCommPort(commPortNameList, commPortName);
-        labelPortCurrent.setText(commPortName);
-        textCommPortStatus.setText("");
-        // БД
-        setComponentBaseData(parametersSql);
-        textTypeBdStatus.setText(parametersSql.typeBaseData.toString());
-        // список БД
-        try { MyUtil.<String>loadToComboBox(listBaseData, comboBoxListBd); } catch (Exception e) {
-            System.out.println("Ошибка загрузки списка БД в comboBoxListBd: " + e.getMessage());
-        }
-        //
-        // установка начального состояния кнопок по основным параметрам
-        setButtonBegin();
+//        setComponentCommPort(commPortNameList, commPortName);
+//        labelPortCurrent.setText(commPortName);
+//        textCommPortStatus.setText("");
+//        // БД
+//        setComponentBaseData(parametersSql);
+//        textTypeBdStatus.setText(parametersSql.typeBaseData.toString());
+//        // список БД
+//        try { MyUtil.<String>loadToComboBox(listBaseData, comboBoxListBd); } catch (Exception e) {
+//            System.out.println("Ошибка загрузки списка БД в comboBoxListBd: " + e.getMessage());
+//        }
+//        //
+//        // установка начального состояния кнопок по основным параметрам
+//        setButtonBegin();
     }
     // установка начального состояния кнопок по основным параметрам
     private void setButtonBegin() {

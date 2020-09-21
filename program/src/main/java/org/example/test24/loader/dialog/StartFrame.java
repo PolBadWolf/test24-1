@@ -98,9 +98,19 @@ public class StartFrame {
         }
         BaseData.Status result;
         // загрузка параметров БД
-        result = parameters.load();
-        if (result != BaseData.Status.OK) {
-            myLog.log(Level.WARNING, "загрузка параметров соединения с БД поумолчанию");
+        try {
+            result = parameters.load();
+            if (result != BaseData.Status.OK) {
+                myLog.log(Level.WARNING,
+                        "ошибка загрузка параметров соединения с БД\n" +
+                                result.toString() +
+                                "установить параметры поумолчанию");
+                parameters.setDefault();
+            }
+        } catch (Exception e) {
+            myLog.log(Level.WARNING,
+                    "ошибка загрузка параметров соединения с БД\n" +
+                            "установить параметры поумолчанию", e);
             parameters.setDefault();
         }
         return parameters;
@@ -666,7 +676,12 @@ public class StartFrame {
         saveComponents.offline();
         new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
-                new TuningFrame(null, false);
+                new TuningFrame(new TuningFrame.CallBack() {
+                    @Override
+                    public void messageCloseTuning() {
+                        saveComponents.restore();
+                    }
+                });
             });
         }, "create tuning").start();
     }
