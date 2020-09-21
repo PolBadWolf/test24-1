@@ -40,13 +40,13 @@ class TuningFrame {
 
 
 
-    private BaseData1 bdSql = null; // *
-    private Thread threadSkeep = null; // *
-    private boolean threadSkeepOn; // *
+    //private BaseData1 bdSql = null; // *
+    //private Thread threadSkeep = null; // *
+    //private boolean threadSkeepOn; // *
 
     private CommPort.PortStat chCheckCommPort = CommPort.PortStat.INITCODE_NOTEXIST;
     private boolean flCheckParamSql = false;
-    private boolean flCheckListBd = false;
+    //private boolean flCheckListBd = false;
 
     // =============================================================================================================
     protected TuningFrame(CallBack callBack)
@@ -325,7 +325,7 @@ class TuningFrame {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
         comboBox.addActionListener(e -> {
-            //selectCommPort(comboBox);
+            callSelectCommPort(comboBox);
         });
         return comboBox;
     }
@@ -335,7 +335,6 @@ class TuningFrame {
         textField.setEditable(false);
         return textField;
     }
-
     private JComboBox<BaseData.TypeBaseDate> getComboBoxTypeBd(int x, int y, int width, int height) {
         JComboBox<BaseData.TypeBaseDate> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
@@ -365,14 +364,13 @@ class TuningFrame {
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
                 if (text.length() == 1) {
-                    threadSkeepOn = false;
                     if (!text.equals(".") && !text.matches("\\d")) return;
                 }
                 super.replace(fb, offset, length, text, attrs);
             }
         });
         field.addActionListener(e -> {
-            //selectParametersConnectBd();
+            myLog.log(Level.WARNING, "field server ip", new Exception("action listener"));
         });
         return field;
     }
@@ -380,7 +378,7 @@ class TuningFrame {
         JTextField field = new JTextField(text);
         field.setBounds(x, y, width, height);
         field.addActionListener(e -> {
-            //selectParametersConnectBd();
+            myLog.log(Level.WARNING, "field server port", new Exception("action listener"));
         });
         return field;
     }
@@ -388,7 +386,7 @@ class TuningFrame {
         JTextField field = new JTextField(text);
         field.setBounds(x, y, width, height);
         field.addActionListener(e -> {
-            //selectParametersConnectBd();
+            myLog.log(Level.WARNING, "field server user", new Exception("action listener"));
         });
         return field;
     }
@@ -397,7 +395,7 @@ class TuningFrame {
         JTextField field = new JTextField(text);
         field.setBounds(x, y, width, height);
         field.addActionListener(e -> {
-            //selectParametersConnectBd();
+            myLog.log(Level.WARNING, "field server password", new Exception("action listener"));
         });
         return field;
     }
@@ -405,8 +403,8 @@ class TuningFrame {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
         comboBox.addItemListener(e -> {
-            //if (e.getStateChange() == 1) return;
-            //selectParametersConnectBd();
+            if (e.getStateChange() == 1) return;
+            callSelectBaseData(comboBox);
         });
         return comboBox;
     }
@@ -414,21 +412,30 @@ class TuningFrame {
         JButton button = new JButton(text);
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
-        button.addActionListener(e -> pushButtonOk());
+        button.addActionListener(e -> {
+            //pushButtonOk();
+            myLog.log(Level.WARNING, "push button ok", new Exception("action listener"));
+        });
         return button;
     }
     private JButton getButtonSave(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
-        button.addActionListener(e -> pushButtonSave());
+        button.addActionListener(e -> {
+            //pushButtonSave();
+            myLog.log(Level.WARNING, "push button save", new Exception("action listener"));
+        });
         return button;
     }
     private JButton getButtonTestBd(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
-        button.addActionListener(e -> pushButtonTest());
+        button.addActionListener(e -> {
+            //pushButtonTest();
+            myLog.log(Level.WARNING, "push button test", new Exception("action listener"));
+        });
         return button;
     }
 
@@ -443,7 +450,10 @@ class TuningFrame {
         JButton button = new JButton(text);
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
-        button.addActionListener(e -> pushButtonEditUsers());
+        button.addActionListener(e -> {
+            //pushButtonEditUsers();
+            myLog.log(Level.WARNING, "push button edit users", new Exception("action listener"));
+        });
         return button;
     }
     private JButton getButtonEditPushers(String text, int x, int y, int width, int height) {
@@ -452,13 +462,13 @@ class TuningFrame {
         button.setEnabled(false);
         button.addActionListener(e -> {
             //closeFrame();
+            myLog.log(Level.WARNING, "push button edit pushers", new Exception("action listener"));
         });
         return button;
     }
 
-
+    // закрытие окна
     private void closeFrame() {
-        threadSkeepOn = false;
         if (frameTuning != null) {
             try {
                 frameTuning.getContentPane().removeAll();
@@ -589,7 +599,7 @@ class TuningFrame {
         }   // статус ком порта
         {
             // тип текущей БД
-            String typeBd = "";
+            //String typeBd = "";
 //            String typeBd = parameters[0];
             //String typeBd = callBack MC.loadConfigTypeBaseData().getTypeBaseDataString();
             //загрузка параметров с выбранным типом
@@ -741,7 +751,6 @@ class TuningFrame {
     // выбран тип БД
     private void selectTypeBase(JComboBox comboBox) {
         //if (lockBegin)  return;
-        threadSkeepOn = false;
         checkStatusComp();
         outStatus();
         //сохранить
@@ -752,7 +761,6 @@ class TuningFrame {
     // смена параметров подключения к SQL серверу
     private void selectParametersConnectBd() {
         //if (lockBegin)  return;
-        threadSkeepOn = false;
         try {
             String currentItem = (String) comboBoxListBd.getSelectedItem();
             //getListBdComp();
@@ -791,7 +799,6 @@ class TuningFrame {
     // нажатие кнопки test
     private void pushButtonTest() {
         //if (lockBegin)  return;
-        threadSkeepOn = false;
         // статус основных параметров
         checkStatusComp();
         // выдача статуса основных параметров
@@ -801,9 +808,9 @@ class TuningFrame {
     }
     // нажатие кнопки редактирование пользователей
     private void pushButtonEditUsers() {
-        if (editUsers == null) {
+        /*if (editUsers == null) {
             editUsers = new EditUsers(null, new EditUsersCallBack());
-        }
+        }*/
     }
     // ========================================================================
     // ===== компоненты JFrame =======
@@ -834,9 +841,17 @@ class TuningFrame {
     protected JButton buttonEditPushers = null;
     // ========================================================================
     // ********************* Actions ******************************************
+    private void callSelectCommPort(JComboBox comboBox) {
+        if (flagLockActions) return;
+        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор comm port"));
+    }
     private void callSelectTypeBase(JComboBox comboBox) {
         if (flagLockActions) return;
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор типа БД"));
+    }
+    private void callSelectBaseData(JComboBox comboBox) {
+        if (flagLockActions) return;
+        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор базы БД"));
     }
     // ========================================================================
 }
