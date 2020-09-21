@@ -682,7 +682,19 @@ public class StartFrame {
                             public void messageCloseEditUsers(boolean newData) {
                                 if (newData) {
                                     // здесь перезагрузка списка пользователей
-                                    myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!", new Exception("не реализована перезагрузка списка пользователей после редактирования"));
+                                    // чтение списка пользователей
+                                    try {
+                                        listUsers = connBD.getListUsers(true);
+                                    } catch (Exception e) {
+                                        myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
+                                        listUsers = new User[0];
+                                        MySwingUtil.showMessage(
+                                                frame,
+                                                "обновление списка пользователей",
+                                                "ошибка обновления - требуется вмешательство администратора",
+                                                60_000
+                                        );
+                                    }
                                 }
                                 saveComponents.restore();
                             }

@@ -26,6 +26,8 @@ public class EditUsers extends JFrame
     }
     // объект обратного вызова
     private CallBack callBack;
+    // события изменения
+    private boolean flagEventEdit;
     // объект доступа к БД
     private BaseData connBD;
     // активный пользователь
@@ -41,6 +43,7 @@ public class EditUsers extends JFrame
     public EditUsers(BaseData connBD, CallBack callBack) {
         this.connBD = connBD;
         this.callBack = callBack;
+        flagEventEdit = false;
         // загрузка списка пользователей
         activetUser = callBack.getCurrentUser();
         readUsersFromBase();
@@ -283,6 +286,7 @@ public class EditUsers extends JFrame
             // обновить таблицу
             readUsersFromBase();
             table.updateUI();
+            flagEventEdit = true;
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "деактивация пользователя", e);
         } finally {
@@ -298,6 +302,7 @@ public class EditUsers extends JFrame
     private void writeNewUserToBase(String surName, String password, int rang) {
         try {
             connBD.writeNewUser(activetUser.id_loggerUser, surName, password, rang);
+            flagEventEdit = true;
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "запись нового пользователя в базу", e);
         }
@@ -307,9 +312,9 @@ public class EditUsers extends JFrame
     }
     // обновление записи о пользователе
     private void updateDataUser(long id_loggerUserEdit, User user, String surName, String password, int rang) {
-//       myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("обновление записи о пользователе"));
         try {
             connBD.updateDataUser(id_loggerUserEdit, user, surName, password, rang);
+            flagEventEdit = true;
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "обновление записи пользователя в базе", e);
         }
@@ -339,7 +344,7 @@ public class EditUsers extends JFrame
     private void closeFromLocal() {
         removeAll();
         dispose();
-        callBack.messageCloseEditUsers(false);
+        callBack.messageCloseEditUsers(flagEventEdit);
     }
     // ==========================================
     // компоненты
