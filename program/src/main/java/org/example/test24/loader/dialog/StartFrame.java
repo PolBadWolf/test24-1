@@ -262,13 +262,13 @@ public class StartFrame {
         }
         // загрузка пользователей в комбо бокс
         try {
-            MyUtil.loadToComboBox(listUsers, comboBoxUsers);
+            MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
         }
         // загрузка толкателей в комбо бокс
         try {
-            MyUtil.loadToComboBox(listPushers, comboBoxPusher);
+            MyUtil.loadToComboBox(listPushers, comboBoxPusher, null);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }

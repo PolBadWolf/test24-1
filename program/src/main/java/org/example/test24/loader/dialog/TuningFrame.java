@@ -3,6 +3,7 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
+import org.example.test24.lib.MyUtil;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -12,6 +13,7 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -31,12 +33,10 @@ class TuningFrame {
     // ************** флаги ************
     // соединение с БД установлено
     boolean flagConnectBD;
-    //
-
     // список доступный баз в БД
     String[] listBaseBD;
-
     // блокировка работы компонентов управления при начальной установке
+    boolean flagLockActions = false;
 
 
 
@@ -54,8 +54,9 @@ class TuningFrame {
         this.callBack = callBack;
         boolean flInit = true;
         // загрузка параметров
+        configProg = loadConfigProg();
         try {
-            parametersSql = loadParameters(loadConfigProg());
+            parametersSql = loadParameters(configProg);
         } catch (Exception e) {
             myLog.log(Level.WARNING, "загрузка параметров", e);
             flInit = false;
@@ -85,13 +86,12 @@ class TuningFrame {
         } else {
             listBaseBD = new String[0];
         }
-
-
         //lockBegin = true;
         // конструктор окна
         frameConstructor();
+
         // установка компонентов в начальное положение
-        //setComponentsBegin();
+        setComponentsBegin();
         //lockBegin = false;
     }
     // =============================================================================================================
@@ -171,6 +171,43 @@ class TuningFrame {
         }
         return baseData;
     }
+    // =============================================================================================================
+    // установка компонентов в начальное положение
+    private void setComponentsBegin() {
+        flagLockActions = true;
+        // ком порт
+        setComponentCommPort(CommPort.getListPortsName(), configProg.getPortName());
+        //labelPortCurrent.setText(commPortName);
+        textCommPortStatus.setText("");
+//        // БД
+        setComponentBaseData(parametersSql);
+        textTypeBdStatus.setText(parametersSql.getTypeBaseDate().toString());
+//        // список БД
+        try { MyUtil.<String>loadToComboBox(listBaseBD, comboBoxListBd, parametersSql.getDataBase()); } catch (Exception e) {
+            myLog.log(Level.WARNING, "начальная инициализация компонентов", e);
+        }
+//        //
+//        // установка начального состояния кнопок по основным параметрам
+//        setButtonBegin();
+        flagLockActions = false;
+    }
+    private void setComponentCommPort(String[] listCommPort, String defaultCommPort) {
+        comboBoxCommPort.removeAllItems();
+        Arrays.stream(listCommPort).sorted((a, b) -> a.compareTo(b)).forEach(s -> comboBoxCommPort.addItem(s));
+        comboBoxCommPort.setSelectedItem(defaultCommPort);
+    }
+    private void setComponentBaseData(BaseData.Parameters parametersSql) {
+        // тип БД
+        comboBoxTypeBd.setSelectedItem(parametersSql.getTypeBaseDate());
+//        // параметры подключения
+        fieldParamServerIP.setText(parametersSql.getIpServer());
+        fieldParamServerPort.setText(parametersSql.getPortServer());
+        fieldParamServerLogin.setText(parametersSql.getUser());
+        fieldParamServerPassword.setText(parametersSql.getPassword());
+    }
+
+
+
 
 
 
@@ -299,13 +336,13 @@ class TuningFrame {
         return textField;
     }
 
-    private JComboBox<String> getComboBoxTypeBd(int x, int y, int width, int height) {
-        JComboBox<String> comboBox = new JComboBox<>();
+    private JComboBox<BaseData.TypeBaseDate> getComboBoxTypeBd(int x, int y, int width, int height) {
+        JComboBox<BaseData.TypeBaseDate> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
-        comboBox.addItem("MS_SQL");
-        comboBox.addItem("MY_SQL");
+        comboBox.addItem(BaseData.TypeBaseDate.MS_SQL);
+        comboBox.addItem(BaseData.TypeBaseDate.MY_SQL);
         comboBox.addActionListener(e -> {
-            //selectTypeBase(comboBox);
+            callSelectTypeBase(comboBox);
         });
         return comboBox;
     }
@@ -780,7 +817,7 @@ class TuningFrame {
 
     protected JPanel panelTypeBd = null;
     protected JTextField textTypeBdStatus = null;
-    protected JComboBox<String> comboBoxTypeBd = null;
+    protected JComboBox<BaseData.TypeBaseDate> comboBoxTypeBd = null;
 
     protected JPanel panelParamSQL = null;
     protected JTextField fieldParamServerIP = null;
@@ -795,5 +832,11 @@ class TuningFrame {
     protected JPanel panelSelectEdit = null;
     protected JButton buttonEditUsers = null;
     protected JButton buttonEditPushers = null;
+    // ========================================================================
+    // ********************* Actions ******************************************
+    private void callSelectTypeBase(JComboBox comboBox) {
+        if (flagLockActions) return;
+        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор типа БД"));
+    }
     // ========================================================================
 }
