@@ -290,6 +290,8 @@ public class EditUsers extends JFrame
             offButtonEditUser();
             // очистка полей
             clearFieldEdit();
+            //
+            table.getSelectionModel().clearSelection();
         }
     }
     // запись нового пользователя в базу
