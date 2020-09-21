@@ -3,6 +3,7 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
+import org.example.test24.lib.MySwingUtil;
 import org.example.test24.lib.MyUtil;
 
 import javax.swing.*;
@@ -433,8 +434,7 @@ class TuningFrame {
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> {
-            //pushButtonTest();
-            myLog.log(Level.WARNING, "push button test", new Exception("action listener"));
+            callPushButtonTest();
         });
         return button;
     }
@@ -852,6 +852,44 @@ class TuningFrame {
     private void callSelectBaseData(JComboBox comboBox) {
         if (flagLockActions) return;
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор базы БД"));
+    }
+    // ========================================================================
+    private void callPushButtonTest() {
+        BaseData.Parameters parameters;
+        BaseData conn;
+        try {
+            parameters = BaseData.Parameters.create((BaseData.TypeBaseDate) comboBoxTypeBd.getSelectedItem());
+            parameters.setIpServer(fieldParamServerIP.getText());
+            parameters.setPortServer(fieldParamServerPort.getText());
+            parameters.setUser(fieldParamServerLogin.getText());
+            parameters.setPassword(fieldParamServerPassword.getText());
+            conn = connectBD(parameters);
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "нажатие кнопки тест", e);
+            return;
+        }
+        if (comboBoxListBd.getItemCount() == 0) {
+            MySwingUtil.showMessage(frameTuning, "тест соединения с БД", "выберите базу", 8_000);
+            flagLockActions = true;
+            try { MyUtil.<String>loadToComboBox(
+                    conn.getListBase(),
+                    comboBoxListBd,
+                    parameters.getDataBase()
+            ); } catch (Exception e) {
+                myLog.log(Level.WARNING, "нажатие кнопки тест", e);
+                comboBoxListBd.removeAllItems();
+            }
+            flagLockActions = false;
+            return;
+        }
+        // проверка структуры
+        try {
+            if (!conn.checkCheckStructureBd((String) comboBoxListBd.getSelectedItem()))
+                throw new Exception("структура БД нарушена");
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "нажатие кнопки тест", new Exception("тест структуры БД", e));
+            return;
+        }
     }
     // ========================================================================
 }
