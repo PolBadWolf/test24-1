@@ -34,6 +34,46 @@ public interface BaseData {
         Status(int codeStatus) {
             this.codeStatus = codeStatus;
         }
+
+        @Override
+        public String toString() {
+            String text;
+            switch (codeStatus) {
+                case STATUS_OK:
+                    text = "ок";
+                    break;
+                case STATUS_PARAMETERS_LOAD_ERROR:
+                    text = "параметры: ошибка загрузки";
+                    break;
+                case STATUS_PARAMETERS_SAVE_ERROR:
+                    text = "параметры: ошибка сохранения";
+                    break;
+                case STATUS_PARAMETERS_ERROR:
+                    text = "параметры: ошибка";
+                    break;
+                case STATUS_PARAMETERS_PASSWORD_ERROR:
+                    text = "параметры: ошибка пароля";
+                    break;
+                case STATUS_BASE_TYPE_ERROR:
+                    text = "тип БД: ошибка";
+                    break;
+                case STATUS_CONNECT_DRIVER_ERROR:
+                    text = "соединение с БД: ошибка драйвера";
+                    break;
+                case STATUS_CONNECT_PASS_ERROR:
+                    text = "соединение с БД: ошибка пароля";
+                    break;
+                case STATUS_CONNECT_BASE_ERROR:
+                    text = "соединение с БД: ошибка соединения с БД";
+                    break;
+                case STATUS_CONNECT_ERROR:
+                    text = "соединение с БД: ошибка";
+                    break;
+                default:
+                    text = "неизвестный код статуса";
+            }
+            return text;
+        }
     }
     // ==================== TYPE BD ====================
     int TYPEBD_MYSQL = 0;
@@ -85,13 +125,13 @@ public interface BaseData {
         static BaseData.Parameters create(BaseData.TypeBaseDate typeBaseDate) throws Exception {
             return new ParametersSql(typeBaseDate);
         }
-        BaseData.Status load();
+        BaseData.Status load() throws Exception;
         BaseData.Status save();
         void setDefault();
     }
     // ==================== CONFIG ====================
     interface Config {
-        static Config create() { return new ParametersConfig(""); }
+        static Config create() { return new ParametersConfig(); }
         Status load1() throws Exception;
         Status save1();
         void setDefault();
