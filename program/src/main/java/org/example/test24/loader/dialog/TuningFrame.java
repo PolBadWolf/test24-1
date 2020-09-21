@@ -188,7 +188,7 @@ class TuningFrame {
         }
 //        //
 //        // установка начального состояния кнопок по основным параметрам
-//        setButtonBegin();
+        buttonTest.setEnabled(true);
         flagLockActions = false;
     }
     private void setComponentCommPort(String[] listCommPort, String defaultCommPort) {
