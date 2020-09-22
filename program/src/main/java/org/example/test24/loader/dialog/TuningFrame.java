@@ -182,7 +182,7 @@ class TuningFrame {
         textCommPortStatus.setText("");
 //        // БД
         setComponentBaseData(parametersSql);
-        textTypeBdStatus.setText(parametersSql.getTypeBaseDate().toString());
+        //textTypeBdStatus.setText(parametersSql.getTypeBaseDate().toString());
 //        // список БД
         try { MyUtil.<String>loadToComboBox(listBaseBD, comboBoxListBd, parametersSql.getDataBase()); } catch (Exception e) {
             myLog.log(Level.WARNING, "начальная инициализация компонентов", e);
@@ -866,6 +866,7 @@ class TuningFrame {
             conn = connectBD(parameters);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "нажатие кнопки тест", e);
+            textTypeBdStatus.setText("bad parameters");
             return;
         }
         if (comboBoxListBd.getItemCount() == 0) {
