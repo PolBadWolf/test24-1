@@ -37,6 +37,8 @@ class TuningFrame {
     String[] listBaseBD;
     // блокировка работы компонентов управления при начальной установке
     boolean flagLockActions = false;
+    boolean flagTestBaseData;
+    boolean flagTestCommPort;
 
 
 
@@ -53,6 +55,8 @@ class TuningFrame {
     {
         this.callBack = callBack;
         boolean flInit = true;
+        flagTestBaseData = false;
+        flagTestCommPort = false;
         // загрузка параметров
         configProg = loadConfigProg();
         try {
@@ -835,11 +839,14 @@ class TuningFrame {
     private void callSelectCommPort(JComboBox comboBox) {
         if (flagLockActions) return;
         textCommPortStatus.setText("");
+        flagTestCommPort = false;
+        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор comm port"));
     }
     private void callSelectTypeBase(JComboBox comboBox) {
         if (flagLockActions) return;
         textTypeBdStatus.setText("");
         comboBoxListBd.removeAllItems();
+        flagTestBaseData = false;
         //============================
         BaseData.Parameters parameters;
         try {
@@ -854,6 +861,7 @@ class TuningFrame {
     private void callSelectBaseData(JComboBox comboBox) {
         if (flagLockActions) return;
         textTypeBdStatus.setText("");
+        flagTestBaseData = false;
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор базы БД"));
     }
     // ========================================================================
@@ -864,6 +872,7 @@ class TuningFrame {
     private void callPushButtonTestBaseData() {
         BaseData.Parameters parameters;
         BaseData conn;
+        flagTestBaseData = false;
         try {
             parameters = BaseData.Parameters.create((BaseData.TypeBaseDate) comboBoxTypeBd.getSelectedItem());
             parameters.setIpServer(fieldParamServerIP.getText());
@@ -915,10 +924,12 @@ class TuningFrame {
             return;
         }
         textTypeBdStatus.setText("соединение установлено");
+        flagTestBaseData = true;
     }
     private void callPushButtonTestCommPort() {
         CommPort port;
         CommPort.PortStat stat;
+        flagTestCommPort = false;
         port = CommPort.main();
         stat = port.open(null, (String) comboBoxCommPort.getSelectedItem(), BAUD.baud9600);
         port.close();
@@ -934,6 +945,11 @@ class TuningFrame {
                 break;
             default:
                 textCommPortStatus.setText("неизвестная ошибка");
+        }
+        if (stat.getCodePortStat() == CommPort.INITCODE_OK) {
+            flagTestCommPort = true;
+        } else {
+            flagTestCommPort = false;
         }
     }
     // ========================================================================
