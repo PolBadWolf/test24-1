@@ -8,7 +8,6 @@ import org.example.test24.lib.MySwingUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;

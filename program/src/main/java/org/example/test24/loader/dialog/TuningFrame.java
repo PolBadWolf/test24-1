@@ -3,7 +3,6 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
-import org.example.test24.lib.MySwingUtil;
 import org.example.test24.lib.MyUtil;
 
 import javax.swing.*;
@@ -57,7 +56,7 @@ class TuningFrame {
         // загрузка параметров
         configProg = loadConfigProg();
         try {
-            parametersSql = loadParameters(configProg);
+            parametersSql = loadParametersSql(configProg.getTypeBaseData());
         } catch (Exception e) {
             myLog.log(Level.WARNING, "загрузка параметров", e);
             flInit = false;
@@ -114,48 +113,39 @@ class TuningFrame {
     }
     // =============================================================================================================
     // загрузка параметров подключения к БД
-    private BaseData.Parameters loadParametersSql(BaseData.TypeBaseDate typeBaseDate) throws Exception
+    private BaseData.Parameters loadParametersSql(BaseData.TypeBaseDate typeBaseDate) throws BaseDataException
     {
-        if (typeBaseDate == null) throw new Exception("не задан тип БД");
-        if (typeBaseDate == BaseData.TypeBaseDate.ERROR)  throw new Exception("ошибочный тип БД");
+        if (typeBaseDate == null) throw new BaseDataException("не задан тип БД", BaseData.Status.BASE_TYPE_NO_SELECT);
+        if (typeBaseDate == BaseData.TypeBaseDate.ERROR)  throw new BaseDataException("ошибочный тип БД", BaseData.Status.BASE_TYPE_ERROR);
         //
         BaseData.Parameters parameters = BaseData.Parameters.create(typeBaseDate);
         BaseData.Status result;
         result = parameters.load();
         if (result != BaseData.Status.OK) {
-            throw new Exception("загрузка параметров соединения с БД", new Exception(result.toString()));
+            throw new BaseDataException("загрузка параметров соединения с БД", new Exception(result.toString()), BaseData.Status.PARAMETERS_ERROR);
         }
         //
         return parameters;
     }
     // =============================================================================================================
     // подключение к БД
-    private BaseData connectBD(BaseData.Parameters parametersSql) throws Exception {
+    private BaseData connectBD(BaseData.Parameters parametersSql) throws BaseDataException {
         BaseData baseData;
         try {
             baseData = BaseData.create(parametersSql);
-        } catch (Exception e) {
-            throw new Exception("соединение с БД", e);
+        } catch (BaseDataException e) {
+            throw new BaseDataException("соединение с БД", e, e.getStatus());
         }
         //
         try {
             baseData.openConnect(parametersSql);
-        } catch (Exception e) {
-            throw new Exception("соединение с БД", e);
+        } catch (BaseDataException e) {
+            throw new BaseDataException("соединение с БД", e, e.getStatus());
         }
         return baseData;
     }
     // =============================================================================================================
     //
-    private BaseData.Parameters loadParameters(BaseData.Config configProg) throws Exception {
-        BaseData.Parameters parametersSql;
-        try {
-            parametersSql = loadParametersSql(configProg.getTypeBaseData());
-        } catch (Exception e) {
-            throw new Exception("инициализация соединение с БД", e);
-        }
-        return parametersSql;
-    }
     private void resetFlagsConnect() {
         // флаг соединения с БД
         flagConnectBD = false;
@@ -190,6 +180,7 @@ class TuningFrame {
 //        //
 //        // установка начального состояния кнопок по основным параметрам
         buttonTest.setEnabled(true);
+        buttonSave.setEnabled(true);
         flagLockActions = false;
     }
     private void setComponentCommPort(String[] listCommPort, String defaultCommPort) {
@@ -218,7 +209,7 @@ class TuningFrame {
         frameTuning.setResizable(false);
         Container container = frameTuning.getContentPane();
         {
-            panelCommPort = getPanelTitle("выбор Comm порта",10, 10, 130, 110);
+            panelCommPort = getPanelTitle("выбор Comm порта",10, 10, 170, 110);
             container.add(panelCommPort);
             //
             panelCommPort.add(getLabel("текщий порт: ", 6, 15, 100, 30));
@@ -226,22 +217,22 @@ class TuningFrame {
             labelPortCurrent = getLabel("", 80, 15, 100, 30);
             panelCommPort.add(labelPortCurrent);
             //
-            comboBoxCommPort = getComboBoxCommPort(6, 50, 110, 20);
+            comboBoxCommPort = getComboBoxCommPort(6, 50, 150, 20);
             panelCommPort.add(comboBoxCommPort);
             //
-            textCommPortStatus = getTextFieldStatus("", 6, 80, 110, 20);
+            textCommPortStatus = getTextFieldStatus("", 6, 80, 150, 20);
             panelCommPort.add(textCommPortStatus);
         } // Comm Port
         {
-            panelTypeBd = getPanelTitle("выбор Базы данных ", 140, 10, 230, 110);
+            panelTypeBd = getPanelTitle("выбор Базы данных ", 180, 10, 190, 110);
             container.add(panelTypeBd);
 
             panelTypeBd.add(getLabel("тип базы данных: ", 10, 10, 140, 30));
 
-            comboBoxTypeBd = getComboBoxTypeBd(6, 50, 110, 20);
+            comboBoxTypeBd = getComboBoxTypeBd(6, 50, 150, 20);
             panelTypeBd.add(comboBoxTypeBd);
 
-            textTypeBdStatus = getTextTypeBdStatus("", 6, 80, 110, 20);
+            textTypeBdStatus = getTextTypeBdStatus("", 6, 80, 150, 20);
             panelTypeBd.add(textTypeBdStatus);
         } // Type Base
         {
@@ -847,10 +838,22 @@ class TuningFrame {
     }
     private void callSelectTypeBase(JComboBox comboBox) {
         if (flagLockActions) return;
-        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор типа БД"));
+        textTypeBdStatus.setText("");
+        comboBoxListBd.removeAllItems();
+        //============================
+        BaseData.Parameters parameters;
+        try {
+            parameters = loadParametersSql((BaseData.TypeBaseDate) comboBox.getSelectedItem());
+        } catch (BaseDataException e) {
+            myLog.log(Level.SEVERE, "выбор типа БД: " + e.getStatus().toString(), e);
+            textTypeBdStatus.setText("ошибка!!!!");
+            return;
+        }
+        setComponentBaseData(parameters);
     }
     private void callSelectBaseData(JComboBox comboBox) {
         if (flagLockActions) return;
+        textTypeBdStatus.setText("");
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор базы БД"));
     }
     // ========================================================================
@@ -864,18 +867,31 @@ class TuningFrame {
             parameters.setUser(fieldParamServerLogin.getText());
             parameters.setPassword(fieldParamServerPassword.getText());
             conn = connectBD(parameters);
-        } catch (Exception e) {
-            myLog.log(Level.SEVERE, "нажатие кнопки тест", e);
-            textTypeBdStatus.setText("bad parameters");
+        } catch (BaseDataException e) {
+            myLog.log(Level.SEVERE, "нажатие кнопки тест: " + e.getStatus().toString(), e);
+            switch (e.getStatus()) {
+                case CONNECT_BASE_TYPE_ERROR:
+                textTypeBdStatus.setText("bad parameters");
+                break;
+                case CONNECT_ERROR:
+                    textTypeBdStatus.setText("ошибка соединения");
+                    break;
+                case CONNECT_PASS_ERROR:
+                    textTypeBdStatus.setText("ошибка пароля");
+                    break;
+                default:
+                    textTypeBdStatus.setText("не известная ошибка");
+            }
             return;
         }
         if (comboBoxListBd.getItemCount() == 0) {
-            MySwingUtil.showMessage(frameTuning, "тест соединения с БД", "выберите базу", 8_000);
+            //MySwingUtil.showMessage(frameTuning, "тест соединения с БД", "выберите базу", 8_000);
+            textTypeBdStatus.setText("выберите базу");
             flagLockActions = true;
             try { MyUtil.<String>loadToComboBox(
                     conn.getListBase(),
                     comboBoxListBd,
-                    parameters.getDataBase()
+                    parametersSql.getDataBase()
             ); } catch (Exception e) {
                 myLog.log(Level.WARNING, "нажатие кнопки тест", e);
                 comboBoxListBd.removeAllItems();
@@ -885,12 +901,16 @@ class TuningFrame {
         }
         // проверка структуры
         try {
-            if (!conn.checkCheckStructureBd((String) comboBoxListBd.getSelectedItem()))
+            if (!conn.checkCheckStructureBd((String) comboBoxListBd.getSelectedItem())) {
+                textTypeBdStatus.setText("ошибка базы");
                 throw new Exception("структура БД нарушена");
+            }
         } catch (Exception e) {
+            textTypeBdStatus.setText("ошибка базы");
             myLog.log(Level.WARNING, "нажатие кнопки тест", new Exception("тест структуры БД", e));
             return;
         }
+        textTypeBdStatus.setText("соединение установлено");
     }
     // ========================================================================
 }

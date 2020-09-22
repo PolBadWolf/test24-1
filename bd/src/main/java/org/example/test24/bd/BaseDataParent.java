@@ -15,7 +15,7 @@ class BaseDataParent implements BaseData {
     // ===================================================================================================
     // открытие соединение с БД
     @Override
-    public void openConnect(Parameters parameters) throws Exception { }
+    public void openConnect(Parameters parameters) throws BaseDataException { }
     // ===================================================================================================
     // чтение списка БД
     @Override
