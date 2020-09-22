@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import static org.example.test24.bd.BaseData2Class.*;
+//import static org.example.test24.bd.BaseData2Class.*;
 import static org.example.test24.lib.MyLogger.myLog;
 
 public class ParametersConfig implements BaseData.Config {
@@ -71,8 +71,19 @@ public class ParametersConfig implements BaseData.Config {
         return status;
     }
     @Override
-    public BaseData.Status save1() {
-        return null;
+    public BaseData.Status save() throws BaseDataException {
+        Properties properties = new Properties();
+        BaseData.Status result = BaseData.Status.PARAMETERS_SAVE_ERROR;
+        properties.setProperty("CommPort", portName);
+        properties.setProperty("DataBase", typeBaseData.codeToString());
+        try {
+            properties.store(new BufferedWriter(new FileWriter(fileNameConfig)), "config");
+            result = BaseData.Status.OK;
+        } catch (IOException e) {
+            result = BaseData.Status.PARAMETERS_PASSWORD_ERROR;
+            throw new BaseDataException("сохранение сонфигурации", e, result);
+        }
+        return result;
     }
     @Override
     public String getPortName() {
@@ -121,7 +132,7 @@ public class ParametersConfig implements BaseData.Config {
         typeBaseData = BaseData.TypeBaseDate.MY_SQL;
     }
 
-    public Diagnostic save() {
+    /*public Diagnostic save() {
         if (typeBaseData == BaseData.TypeBaseDate.ERROR || portName == null || portName == "") {
             status = Diagnostic.ERROR_PARAMETERS;
         } else {
@@ -136,5 +147,5 @@ public class ParametersConfig implements BaseData.Config {
             }
         }
         return status;
-    }
+    }*/
 }

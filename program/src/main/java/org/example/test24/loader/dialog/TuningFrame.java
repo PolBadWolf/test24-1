@@ -184,7 +184,6 @@ class TuningFrame {
 //        //
 //        // установка начального состояния кнопок по основным параметрам
         buttonTest.setEnabled(true);
-        buttonSave.setEnabled(true);
         flagLockActions = false;
     }
     private void setComponentCommPort(String[] listCommPort, String defaultCommPort) {
@@ -419,8 +418,7 @@ class TuningFrame {
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> {
-            //pushButtonSave();
-            myLog.log(Level.WARNING, "push button save", new Exception("action listener"));
+            callPushButtonSave();
         });
         return button;
     }
@@ -840,6 +838,7 @@ class TuningFrame {
         if (flagLockActions) return;
         textCommPortStatus.setText("");
         flagTestCommPort = false;
+        buttonSave.setEnabled(false);
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор comm port"));
     }
     private void callSelectTypeBase(JComboBox comboBox) {
@@ -847,6 +846,7 @@ class TuningFrame {
         textTypeBdStatus.setText("");
         comboBoxListBd.removeAllItems();
         flagTestBaseData = false;
+        buttonSave.setEnabled(false);
         //============================
         BaseData.Parameters parameters;
         try {
@@ -862,12 +862,14 @@ class TuningFrame {
         if (flagLockActions) return;
         textTypeBdStatus.setText("");
         flagTestBaseData = false;
+        buttonSave.setEnabled(false);
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор базы БД"));
     }
     // ========================================================================
     private void callPushButtonTest() {
         callPushButtonTestBaseData();
         callPushButtonTestCommPort();
+        buttonSave.setEnabled(true);
     }
     private void callPushButtonTestBaseData() {
         BaseData.Parameters parameters;
@@ -950,6 +952,48 @@ class TuningFrame {
             flagTestCommPort = true;
         } else {
             flagTestCommPort = false;
+        }
+    }
+    // ========================================================================
+    private void callPushButtonSave() {
+        buttonSave.setEnabled(false);
+        if (!flagTestBaseData || !flagTestCommPort) {
+            int result;
+            String textMess;
+            if (!flagTestBaseData && !flagTestCommPort) textMess = "ошибки порта и БД - сохранить ?";
+            else if (!flagTestBaseData) textMess = "ошибка БД - сохранить ?";
+            else textMess = "ошибка порта - сохранить ?";
+            result = javax.swing.JOptionPane.showConfirmDialog(null, textMess, "сохранение параметров", JOptionPane.OK_CANCEL_OPTION);
+            if (result != 0) return;
+        }
+        BaseData.Status result;
+        // сохранения конфига
+        BaseData.Config config;
+        try {
+            config = BaseData.Config.create();
+            config.setPortName((String) comboBoxCommPort.getSelectedItem());
+            config.setTypeBaseData((BaseData.TypeBaseDate) comboBoxTypeBd.getSelectedItem());
+            result = config.save();
+            if (result != BaseData.Status.OK) {
+                throw new BaseDataException("ошибка сохранения конфигурации", result);
+            }
+            configProg = config;
+        } catch (BaseDataException e) {
+            myLog.log(Level.WARNING, "сохранение конфигурации", e.getStatus());
+        }
+        // сохранение параметров БД
+        BaseData.Parameters parameters;
+        try {
+            parameters = BaseData.Parameters.create((BaseData.TypeBaseDate) comboBoxTypeBd.getSelectedItem());
+            parameters.setIpServer(fieldParamServerIP.getText());
+            parameters.setPortServer(fieldParamServerPort.getText());
+            parameters.setUser(fieldParamServerLogin.getText());
+            parameters.setPassword(fieldParamServerPassword.getText());
+            if (comboBoxListBd.getItemCount() > 0) parameters.setDataBase((String) comboBoxListBd.getSelectedItem());
+            parameters.save();
+            parametersSql = parameters;
+        } catch (BaseDataException e) {
+            myLog.log(Level.WARNING, "сохранение параметров соединения", e);
         }
     }
     // ========================================================================
