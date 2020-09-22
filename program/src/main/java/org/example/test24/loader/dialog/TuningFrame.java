@@ -858,6 +858,10 @@ class TuningFrame {
     }
     // ========================================================================
     private void callPushButtonTest() {
+        callPushButtonTestBaseData();
+        callPushButtonTestCommPort();
+    }
+    private void callPushButtonTestBaseData() {
         BaseData.Parameters parameters;
         BaseData conn;
         try {
@@ -871,8 +875,8 @@ class TuningFrame {
             myLog.log(Level.SEVERE, "нажатие кнопки тест: " + e.getStatus().toString(), e);
             switch (e.getStatus()) {
                 case CONNECT_BASE_TYPE_ERROR:
-                textTypeBdStatus.setText("bad parameters");
-                break;
+                    textTypeBdStatus.setText("bad parameters");
+                    break;
                 case CONNECT_ERROR:
                     textTypeBdStatus.setText("ошибка соединения");
                     break;
@@ -911,6 +915,9 @@ class TuningFrame {
             return;
         }
         textTypeBdStatus.setText("соединение установлено");
+    }
+    private void callPushButtonTestCommPort() {
+
     }
     // ========================================================================
 }
