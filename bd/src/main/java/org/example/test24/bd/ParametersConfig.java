@@ -42,8 +42,7 @@ public class ParametersConfig implements BaseData.Config {
     private BaseData.TypeBaseDate typeBaseData;
     private Diagnostic status;
 
-    public ParametersConfig(String fileNameConfig) {
-        //this.fileNameConfig = fileNameConfig;
+    public ParametersConfig() {
         typeBaseData = BaseData.TypeBaseDate.ERROR;
         portName = "";
     }

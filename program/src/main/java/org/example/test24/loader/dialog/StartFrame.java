@@ -98,9 +98,19 @@ public class StartFrame {
         }
         BaseData.Status result;
         // загрузка параметров БД
-        result = parameters.load();
-        if (result != BaseData.Status.OK) {
-            myLog.log(Level.WARNING, "загрузка параметров соединения с БД поумолчанию");
+        try {
+            result = parameters.load();
+            if (result != BaseData.Status.OK) {
+                myLog.log(Level.WARNING,
+                        "ошибка загрузка параметров соединения с БД\n" +
+                                result.toString() +
+                                "установить параметры поумолчанию");
+                parameters.setDefault();
+            }
+        } catch (Exception e) {
+            myLog.log(Level.WARNING,
+                    "ошибка загрузка параметров соединения с БД\n" +
+                            "установить параметры поумолчанию", e);
             parameters.setDefault();
         }
         return parameters;
@@ -252,13 +262,13 @@ public class StartFrame {
         }
         // загрузка пользователей в комбо бокс
         try {
-            MyUtil.loadToComboBox(listUsers, comboBoxUsers);
+            MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
         }
         // загрузка толкателей в комбо бокс
         try {
-            MyUtil.loadToComboBox(listPushers, comboBoxPusher);
+            MyUtil.loadToComboBox(listPushers, comboBoxPusher, null);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }
@@ -651,10 +661,10 @@ public class StartFrame {
     }
     // обработка настройка
     private void callTuning() {
-        if (1 == 1) {
+        /*if (1 == 1) {
             myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("не реализовано запуск настройки"));
             return;
-        }
+        }*/
         if (statMainWork) {
             // при основной работе нельзя менять параметры БД и порта
             MySwingUtil.showMessage(frame, "Настройка", "при основной работе нельзя менять параметры БД и порта", 10_000);
@@ -662,26 +672,18 @@ public class StartFrame {
             return;
         }
         // отключение управления
-        comboBoxUsers.setEnabled(false);
-        fieldPassword.setEnabled(false);
-        buttonEnter.setEnabled(false);
-        buttonTuning.setVisible(false);
-        // вызов окна
-        Thread thread = new Thread(()->{
-            try {
-                tuningFrame = TuningFrame.createFrame(
-                        new TuningFrameCallBack(),
-                        statMainWork
-                );
-            } catch (InterruptedException e) {
-                System.out.println("Ошибка вызова окна \"настройка\": " + e.getMessage());
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                System.out.println("Ошибка вызова окна \"настройка\": " + e.getMessage());
-                e.printStackTrace();
-            }
-        }, "thread for start tunnig frame");
-        thread.start();
+        SaveEnableComponents saveComponents = new SaveEnableComponents();
+        saveComponents.offline();
+        new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
+                new TuningFrame(new TuningFrame.CallBack() {
+                    @Override
+                    public void messageCloseTuning() {
+                        saveComponents.restore();
+                    }
+                });
+            });
+        }, "create tuning").start();
     }
     // обработка редактирование пользователей
     private void callEditUsers() {
@@ -695,7 +697,19 @@ public class StartFrame {
                             public void messageCloseEditUsers(boolean newData) {
                                 if (newData) {
                                     // здесь перезагрузка списка пользователей
-                                    myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!", new Exception("не реализована перезагрузка списка пользователей после редактирования"));
+                                    // чтение списка пользователей
+                                    try {
+                                        listUsers = connBD.getListUsers(true);
+                                    } catch (Exception e) {
+                                        myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
+                                        listUsers = new User[0];
+                                        MySwingUtil.showMessage(
+                                                frame,
+                                                "обновление списка пользователей",
+                                                "ошибка обновления - требуется вмешательство администратора",
+                                                60_000
+                                        );
+                                    }
                                 }
                                 saveComponents.restore();
                             }
@@ -710,7 +724,7 @@ public class StartFrame {
     }
     // обработка редактирование толкателей
     private void callEditPushers() {
-
+        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
     }
 
     // callBack из TuningFrame
