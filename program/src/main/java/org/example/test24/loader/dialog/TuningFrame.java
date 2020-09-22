@@ -21,7 +21,7 @@ import static org.example.test24.lib.MyLogger.myLog;
 class TuningFrame {
 
     interface CallBack {
-        void messageCloseTuning();
+        void messageCloseTuning(boolean newData);
     }
 
     CallBack callBack;
@@ -39,6 +39,7 @@ class TuningFrame {
     boolean flagLockActions = false;
     boolean flagTestBaseData;
     boolean flagTestCommPort;
+    boolean flagNewCorrectData = false;
 
 
 
@@ -57,6 +58,7 @@ class TuningFrame {
         boolean flInit = true;
         flagTestBaseData = false;
         flagTestCommPort = false;
+        flagNewCorrectData = false;
         // загрузка параметров
         configProg = loadConfigProg();
         try {
@@ -472,7 +474,7 @@ class TuningFrame {
             } catch (java.lang.Throwable e) {
                 System.out.println(e.getMessage());
             }
-            callBack.messageCloseTuning();
+            callBack.messageCloseTuning(flagNewCorrectData);
         }
         if (editUsers != null) {
 
@@ -992,6 +994,7 @@ class TuningFrame {
             if (comboBoxListBd.getItemCount() > 0) parameters.setDataBase((String) comboBoxListBd.getSelectedItem());
             parameters.save();
             parametersSql = parameters;
+            flagNewCorrectData = true;
         } catch (BaseDataException e) {
             myLog.log(Level.WARNING, "сохранение параметров соединения", e);
         }

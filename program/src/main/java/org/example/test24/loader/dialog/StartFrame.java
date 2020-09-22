@@ -220,23 +220,7 @@ public class StartFrame {
             }
         });
         // =================== загрузка начальных параметров ===================
-        // загрузка параметров соединения с БД
-        //------------------------------
-        // чтение конфигурации
-        BaseData.Config config = BaseData.Config.create();
-        try {
-            config.load1();
-        } catch (Exception e) {
-            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
-            config.setDefault();
-        }
-        // тип БД
-        typeBaseDate = config.getTypeBaseData();
-        // инициализация работы с БД и данных с ней связанных
-        initBaseData(typeBaseDate);
-        // *************************************************************************************
-        // проверка ком порта
-        flagAvailabilityCommPort = isCheckCommPort(config.getPortName());
+        loadAndSetBeginParameters();
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -259,6 +243,28 @@ public class StartFrame {
         } else {
             onInputComponents();
         }
+        loadAndSetBeginParameters2();
+    }
+    private void loadAndSetBeginParameters() {
+        // загрузка параметров соединения с БД
+        //------------------------------
+        // чтение конфигурации
+        BaseData.Config config = BaseData.Config.create();
+        try {
+            config.load1();
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
+            config.setDefault();
+        }
+        // тип БД
+        typeBaseDate = config.getTypeBaseData();
+        // инициализация работы с БД и данных с ней связанных
+        initBaseData(typeBaseDate);
+        // *************************************************************************************
+        // проверка ком порта
+        flagAvailabilityCommPort = isCheckCommPort(config.getPortName());
+    }
+    private void loadAndSetBeginParameters2() {
         // загрузка пользователей в комбо бокс
         try {
             MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
@@ -275,7 +281,6 @@ public class StartFrame {
             // здесь загрузка текущего пользователя и толкателя, если потребуется
         }
         // -------
-
     }
 
     private void initComponents() {
@@ -677,8 +682,10 @@ public class StartFrame {
             SwingUtilities.invokeLater(() -> {
                 new TuningFrame(new TuningFrame.CallBack() {
                     @Override
-                    public void messageCloseTuning() {
+                    public void messageCloseTuning(boolean newData) {
                         saveComponents.restore();
+                        loadAndSetBeginParameters();
+                        loadAndSetBeginParameters2();
                     }
                 });
             });
