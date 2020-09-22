@@ -834,7 +834,7 @@ class TuningFrame {
     // ********************* Actions ******************************************
     private void callSelectCommPort(JComboBox comboBox) {
         if (flagLockActions) return;
-        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор comm port"));
+        textCommPortStatus.setText("");
     }
     private void callSelectTypeBase(JComboBox comboBox) {
         if (flagLockActions) return;
@@ -917,7 +917,24 @@ class TuningFrame {
         textTypeBdStatus.setText("соединение установлено");
     }
     private void callPushButtonTestCommPort() {
-
+        CommPort port;
+        CommPort.PortStat stat;
+        port = CommPort.main();
+        stat = port.open(null, (String) comboBoxCommPort.getSelectedItem(), BAUD.baud9600);
+        port.close();
+        switch (stat) {
+            case INITCODE_OK:
+                textCommPortStatus.setText("порт открыт");
+                break;
+            case INITCODE_NOTEXIST:
+                textCommPortStatus.setText("порт не обнаружен");
+                break;
+            case INITCODE_ERROROPEN:
+                textCommPortStatus.setText("ошибка открытия");
+                break;
+            default:
+                textCommPortStatus.setText("неизвестная ошибка");
+        }
     }
     // ========================================================================
 }
