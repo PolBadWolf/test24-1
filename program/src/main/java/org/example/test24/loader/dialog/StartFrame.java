@@ -733,61 +733,6 @@ public class StartFrame {
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
     }
 
-    // callBack из TuningFrame
-    private class TuningFrameCallBack implements FrameCallBack {
-        // =================================
-        // чтение параметров из конфига
-        @Override
-        public ParametersConfig getParametersConfig() {
-            return callBack.getParametersConfig();
-        }
-        // создание объекта параметров соединения с БД
-        @Override
-        public ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
-            return callBack.createParametersSql(typeBaseData);
-        }
-
-        // запрос параметров соединения с БД
-        @Override
-        public ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
-            return callBack.requestParametersSql(typeBaseData);
-        }
-        // -----------------------------------------------------------
-        // создание тестого соединения
-        @Override
-        public BaseData2.Status createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
-            return callBack.createTestConnectBd(typeBaseData, parameters);
-        }
-        // тестовое соединение проверка структуры БД
-        @Override
-        public BaseData2.Status checkCheckStructureBd(String base) {
-            return callBack.checkCheckStructureBd(base);
-        }
-        // -----------------------------------------------------------
-        // создание рабочего соединения
-        @Override
-        public BaseData2.Status createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
-            return callBack.createWorkConnect(typeBaseData, parameters);
-        }
-        // чтение списка пользователей
-        @Override
-        public User[] getListUsers(boolean actual) throws Exception {
-            return callBack.getListUsers(actual);
-        }
-
-        @Override
-        public String[] getListBd() throws Exception {
-            return callBack.getListBd();
-        }
-
-        // -----------------------------------------------------------
-        // проверка ком порта
-        @Override
-        public boolean isCheckCommPort(boolean statMainWork, String portName) throws Exception {
-            return callBack.isCheckCommPort(statMainWork, portName);
-        }
-    }
-
     // ===========================================================================
     class SaveEnableComponents {
         private boolean buttonEnter;
