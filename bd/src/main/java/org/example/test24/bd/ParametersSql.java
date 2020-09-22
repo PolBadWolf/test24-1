@@ -68,7 +68,7 @@ class ParametersSql implements BaseData.Parameters {
         this.password = password;
     }
     // ------------------------------------------------
-    ParametersSql(BaseData.TypeBaseDate typeBaseDate) throws Exception {
+    ParametersSql(BaseData.TypeBaseDate typeBaseDate) throws BaseDataException {
         switch (typeBaseDate.codeTypeBaseData) {
             case BaseData.TYPEBD_MSSQL:
                 fileName = fileNameMsSql;
@@ -78,20 +78,20 @@ class ParametersSql implements BaseData.Parameters {
                 break;
             case BaseData.TYPEBD_ERROR:
                 this.stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
-                throw new Exception("ошибочный тип БД");
+                throw new BaseDataException("ошибочный тип БД", BaseData.Status.BASE_TYPE_ERROR);
         }
         this.typeBaseDate = typeBaseDate;
         this.stat = BaseData.Status.OK;
     }
     // ------------------------------------------------
     @Override
-    public BaseData.Status load() throws Exception {
+    public BaseData.Status load() throws BaseDataException {
         Properties properties = new Properties();
         try {
             properties.load(new BufferedReader(new FileReader(fileName)));
         } catch (IOException e) {
             stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
-            throw new Exception("ошибки загрузки параметров из файла конфигурации", e);
+            throw new BaseDataException("ошибки загрузки параметров из файла конфигурации", e, BaseData.Status.PARAMETERS_LOAD_ERROR);
         }
         ipServer = properties.getProperty("Url_Server");
         portServer = properties.getProperty("Port_Server");

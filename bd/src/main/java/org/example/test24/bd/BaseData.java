@@ -11,10 +11,12 @@ public interface BaseData {
     int STATUS_PARAMETERS_ERROR = 3;
     int STATUS_PARAMETERS_PASSWORD_ERROR = 4;
     int STATUS_BASE_TYPE_ERROR = 5;
-    int STATUS_CONNECT_DRIVER_ERROR = 6;
-    int STATUS_CONNECT_PASS_ERROR = 7;
-    int STATUS_CONNECT_BASE_ERROR = 8;
-    int STATUS_CONNECT_ERROR = 9;
+    int STATUS_BASE_TYPE_NO_SELECT = 6;
+    int STATUS_CONNECT_BASE_TYPE_ERROR = 7;
+    int STATUS_CONNECT_DRIVER_ERROR = 8;
+    int STATUS_CONNECT_PASS_ERROR = 9;
+    int STATUS_CONNECT_BASE_ERROR = 10;
+    int STATUS_CONNECT_ERROR = 11;
     enum Status {
         OK                          (STATUS_OK),
         PARAMETERS_LOAD_ERROR       (STATUS_PARAMETERS_LOAD_ERROR),
@@ -22,6 +24,8 @@ public interface BaseData {
         PARAMETERS_ERROR            (STATUS_PARAMETERS_ERROR),
         PARAMETERS_PASSWORD_ERROR   (STATUS_PARAMETERS_PASSWORD_ERROR),
         BASE_TYPE_ERROR             (STATUS_BASE_TYPE_ERROR),
+        BASE_TYPE_NO_SELECT         (STATUS_BASE_TYPE_NO_SELECT),
+        CONNECT_BASE_TYPE_ERROR     (STATUS_CONNECT_BASE_TYPE_ERROR),
         CONNECT_DRIVER_ERROR        (STATUS_CONNECT_DRIVER_ERROR),
         CONNECT_PASS_ERROR          (STATUS_CONNECT_PASS_ERROR),
         CONNECT_BASE_ERROR          (STATUS_CONNECT_BASE_ERROR),
@@ -43,31 +47,31 @@ public interface BaseData {
                     text = "ок";
                     break;
                 case STATUS_PARAMETERS_LOAD_ERROR:
-                    text = "параметры: ошибка загрузки";
+                    text = "ошибка загрузки";
                     break;
                 case STATUS_PARAMETERS_SAVE_ERROR:
-                    text = "параметры: ошибка сохранения";
+                    text = "ошибка сохранения";
                     break;
                 case STATUS_PARAMETERS_ERROR:
-                    text = "параметры: ошибка";
+                    text = "ошибка параметров";
                     break;
                 case STATUS_PARAMETERS_PASSWORD_ERROR:
-                    text = "параметры: ошибка пароля";
+                    text = "ошибка пароля в параметрах";
                     break;
                 case STATUS_BASE_TYPE_ERROR:
-                    text = "тип БД: ошибка";
+                    text = "ошибка типа БД";
                     break;
                 case STATUS_CONNECT_DRIVER_ERROR:
-                    text = "соединение с БД: ошибка драйвера";
+                    text = "ошибка драйвера";
                     break;
                 case STATUS_CONNECT_PASS_ERROR:
-                    text = "соединение с БД: ошибка пароля";
+                    text = "ошибка пароля при соединении";
                     break;
                 case STATUS_CONNECT_BASE_ERROR:
-                    text = "соединение с БД: ошибка соединения с БД";
+                    text = "ошибка соединения с базой БД";
                     break;
                 case STATUS_CONNECT_ERROR:
-                    text = "соединение с БД: ошибка";
+                    text = "ошибка соединения с БД";
                     break;
                 default:
                     text = "неизвестный код статуса";
@@ -93,7 +97,7 @@ public interface BaseData {
         static void create(String typeBaseData, Consumer<TypeBaseDate> tbd) throws Exception {
             if (typeBaseData == null) {
                 tbd.accept(TypeBaseDate.ERROR);
-                throw new Exception("ошибка типа БД (typeBaseData = null)");
+                throw new BaseDataException("ошибка типа БД (typeBaseData = null)", Status.BASE_TYPE_ERROR);
             }
             switch (typeBaseData.toUpperCase()) {
                 case "MY_SQL":
@@ -104,7 +108,7 @@ public interface BaseData {
                     break;
                 default:
                     tbd.accept(TypeBaseDate.ERROR);
-                    throw new Exception("ошибка типа БД (typeBaseData = " + typeBaseData + ")");
+                    throw new BaseDataException("ошибка типа БД (typeBaseData = " + typeBaseData + ")", Status.BASE_TYPE_ERROR);
             }
         }
     }
@@ -122,10 +126,10 @@ public interface BaseData {
         void setDataBase(String dataBase);
         void setUser(String user);
         void setPassword(String password);
-        static BaseData.Parameters create(BaseData.TypeBaseDate typeBaseDate) throws Exception {
+        static BaseData.Parameters create(BaseData.TypeBaseDate typeBaseDate) throws BaseDataException {
             return new ParametersSql(typeBaseDate);
         }
-        BaseData.Status load() throws Exception;
+        BaseData.Status load() throws BaseDataException;
         BaseData.Status save();
         void setDefault();
     }
@@ -150,7 +154,7 @@ public interface BaseData {
         }
     }
     // ==================== SQL ====================
-    static BaseData create(Parameters parameters) throws Exception {
+    static BaseData create(Parameters parameters) throws BaseDataException {
         BaseData baseData;
         switch (parameters.getTypeBaseDate().getCodeTypeBaseData()) {
             case BaseData.TYPEBD_MYSQL:
@@ -160,13 +164,13 @@ public interface BaseData {
                 baseData = new BaseDataMsSql();
                 break;
             default:
-                throw new Exception("ошибка открытия БД - не верный тип БД");
+                throw new BaseDataException("ошибка открытия БД - не верный тип БД", Status.CONNECT_BASE_TYPE_ERROR);
         }
         return baseData;
     }
     // ===================================================
     // открытие соединение с БД
-    void openConnect(Parameters parameters) throws Exception;
+    void openConnect(Parameters parameters) throws BaseDataException;
     // чтение списка БД
     String[] getListBase() throws Exception;
     // чтение списка пользователей
