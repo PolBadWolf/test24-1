@@ -13,6 +13,10 @@ import java.util.logging.Level;
 import static org.example.test24.lib.MyLogger.myLog;
 
 public class StartFrame {
+    public interface CallBack {
+
+    }
+    // ----------------------------------
     // title
     private JLabel label1;
     private JLabel label2;
@@ -54,7 +58,7 @@ public class StartFrame {
     private Pusher[] listPushers = new Pusher[0];
 
 
-    FrameCallBack callBack;
+    CallBack callBack;
     JFrame frame;
 
     BaseData.TypeBaseDate typeBaseDate;
@@ -62,7 +66,7 @@ public class StartFrame {
     BaseData connBD;
 
 
-    public static StartFrame main(boolean statMainWork, FrameCallBack callBack) throws Exception {
+    public static StartFrame main(boolean statMainWork, CallBack callBack) throws Exception {
         final StartFrame[] frame = new StartFrame[1];
         try {
             SwingUtilities.invokeAndWait(()->{
@@ -78,10 +82,10 @@ public class StartFrame {
         return frame[0];
     }
 
-    protected StartFrame(boolean statMainWork, FrameCallBack callBack) {
+    protected StartFrame(boolean statMainWork, CallBack callBack) {
         // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
         this.statMainWork = statMainWork;
-        this.callBack = callBack;
+        //this.callBack = callBack;
     }
 
 
@@ -220,23 +224,7 @@ public class StartFrame {
             }
         });
         // =================== загрузка начальных параметров ===================
-        // загрузка параметров соединения с БД
-        //------------------------------
-        // чтение конфигурации
-        BaseData.Config config = BaseData.Config.create();
-        try {
-            config.load1();
-        } catch (Exception e) {
-            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
-            config.setDefault();
-        }
-        // тип БД
-        typeBaseDate = config.getTypeBaseData();
-        // инициализация работы с БД и данных с ней связанных
-        initBaseData(typeBaseDate);
-        // *************************************************************************************
-        // проверка ком порта
-        flagAvailabilityCommPort = isCheckCommPort(config.getPortName());
+        loadAndSetBeginParameters();
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -259,6 +247,28 @@ public class StartFrame {
         } else {
             onInputComponents();
         }
+        loadAndSetBeginParameters2();
+    }
+    private void loadAndSetBeginParameters() {
+        // загрузка параметров соединения с БД
+        //------------------------------
+        // чтение конфигурации
+        BaseData.Config config = BaseData.Config.create();
+        try {
+            config.load1();
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
+            config.setDefault();
+        }
+        // тип БД
+        typeBaseDate = config.getTypeBaseData();
+        // инициализация работы с БД и данных с ней связанных
+        initBaseData(typeBaseDate);
+        // *************************************************************************************
+        // проверка ком порта
+        flagAvailabilityCommPort = isCheckCommPort(config.getPortName());
+    }
+    private void loadAndSetBeginParameters2() {
         // загрузка пользователей в комбо бокс
         try {
             MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
@@ -275,7 +285,6 @@ public class StartFrame {
             // здесь загрузка текущего пользователя и толкателя, если потребуется
         }
         // -------
-
     }
 
     private void initComponents() {
@@ -677,8 +686,10 @@ public class StartFrame {
             SwingUtilities.invokeLater(() -> {
                 new TuningFrame(new TuningFrame.CallBack() {
                     @Override
-                    public void messageCloseTuning() {
+                    public void messageCloseTuning(boolean newData) {
                         saveComponents.restore();
+                        loadAndSetBeginParameters();
+                        loadAndSetBeginParameters2();
                     }
                 });
             });
@@ -724,61 +735,6 @@ public class StartFrame {
     // обработка редактирование толкателей
     private void callEditPushers() {
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
-    }
-
-    // callBack из TuningFrame
-    private class TuningFrameCallBack implements FrameCallBack {
-        // =================================
-        // чтение параметров из конфига
-        @Override
-        public ParametersConfig getParametersConfig() {
-            return callBack.getParametersConfig();
-        }
-        // создание объекта параметров соединения с БД
-        @Override
-        public ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
-            return callBack.createParametersSql(typeBaseData);
-        }
-
-        // запрос параметров соединения с БД
-        @Override
-        public ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
-            return callBack.requestParametersSql(typeBaseData);
-        }
-        // -----------------------------------------------------------
-        // создание тестого соединения
-        @Override
-        public BaseData2.Status createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
-            return callBack.createTestConnectBd(typeBaseData, parameters);
-        }
-        // тестовое соединение проверка структуры БД
-        @Override
-        public BaseData2.Status checkCheckStructureBd(String base) {
-            return callBack.checkCheckStructureBd(base);
-        }
-        // -----------------------------------------------------------
-        // создание рабочего соединения
-        @Override
-        public BaseData2.Status createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
-            return callBack.createWorkConnect(typeBaseData, parameters);
-        }
-        // чтение списка пользователей
-        @Override
-        public User[] getListUsers(boolean actual) throws Exception {
-            return callBack.getListUsers(actual);
-        }
-
-        @Override
-        public String[] getListBd() throws Exception {
-            return callBack.getListBd();
-        }
-
-        // -----------------------------------------------------------
-        // проверка ком порта
-        @Override
-        public boolean isCheckCommPort(boolean statMainWork, String portName) throws Exception {
-            return callBack.isCheckCommPort(statMainWork, portName);
-        }
     }
 
     // ===========================================================================

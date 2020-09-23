@@ -111,6 +111,21 @@ public interface BaseData {
                     throw new BaseDataException("ошибка типа БД (typeBaseData = " + typeBaseData + ")", Status.BASE_TYPE_ERROR);
             }
         }
+
+        public String codeToString() throws BaseDataException {
+            String text;
+            switch (codeTypeBaseData) {
+                case TYPEBD_MYSQL:
+                    text = "MY_SQL";
+                    break;
+                case TYPEBD_MSSQL:
+                    text = "MS_SQL";
+                    break;
+                default:
+                    throw new BaseDataException("не известный код типа БД", Status.BASE_TYPE_NO_SELECT);
+            }
+            return text;
+        }
     }
     // ==================== PARAMETERS ====================
     interface Parameters {
@@ -137,7 +152,7 @@ public interface BaseData {
     interface Config {
         static Config create() { return new ParametersConfig(); }
         Status load1() throws Exception;
-        Status save1();
+        Status save() throws BaseDataException;
         void setDefault();
         String getPortName();
         BaseData.TypeBaseDate getTypeBaseData();
