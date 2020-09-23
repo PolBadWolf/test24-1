@@ -11,9 +11,6 @@ import ru.yandex.fixcolor.my_lib.graphics.Plot;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-
-import static org.example.test24.lib.MyLogger.myLog;
 
 class RunningClass implements Runner {
     private Consumer closer;
@@ -91,7 +88,7 @@ class RunningClass implements Runner {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     mainFrame.label1_txt("MANUAL_STOP");
                     System.out.println("count = " + distanceOut.size());
-                    bdSql.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                    bdSql.writeDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
                 } catch (java.lang.Throwable e) {
                     e = null;
                 }
@@ -123,7 +120,7 @@ class RunningClass implements Runner {
                 try {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     System.out.println("count = " + distanceOut.size());
-                    bdSql.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                    bdSql.writeDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
                 } catch (java.lang.Throwable e) {
                     e = null;
                 }

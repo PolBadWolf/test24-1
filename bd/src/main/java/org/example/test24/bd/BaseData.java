@@ -1,6 +1,8 @@
 package org.example.test24.bd;
 
+import java.sql.Blob;
 import java.util.Base64;
+import java.util.Date;
 import java.util.function.Consumer;
 
 public interface BaseData {
@@ -189,4 +191,6 @@ public interface BaseData {
     void deativateUser(long id_loggerUserEdit, User user) throws Exception;
     // обновление данных о пользователе
     void updateDataUser(long id_loggerUserEdit, User editUser, String surName, String password, int rang) throws Exception;
+    // запись замера
+    void writeDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
 }

@@ -5,6 +5,7 @@ import com.mysql.cj.jdbc.ClientPreparedStatement;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -487,5 +488,11 @@ class BaseDataParent implements BaseData {
         } catch (SQLException se) { }
         preStatementUserUpd.close();
         preStatementLogger.close();
+    }
+    // запись измерений
+    @Override
+    public void writeDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException {
+
+        myLog.log(Level.SEVERE, "сохранение данных замера", new Exception("СДЕЛАТЬ !!!!!!!!!!!"));
     }
 }
