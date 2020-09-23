@@ -1,21 +1,33 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 11
+ Source Server         : 12
  Source Server Type    : MySQL
- Source Server Version : 80021
+ Source Server Version : 80020
  Source Host           : localhost:3306
- Source Schema         : spc1
+ Source Schema         : spc3
 
  Target Server Type    : MySQL
- Target Server Version : 80021
+ Target Server Version : 80020
  File Encoding         : 65001
 
- Date: 20/09/2020 20:18:29
+ Date: 23/09/2020 16:31:52
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for logger_pushers
+-- ----------------------------
+DROP TABLE IF EXISTS `logger_pushers`;
+CREATE TABLE `logger_pushers`  (
+  `id_loggerPushers` int NOT NULL AUTO_INCREMENT,
+  `date` datetime(0) NULL DEFAULT NULL,
+  `id_loggerUserEdit` int NOT NULL,
+  `id_pusher` int NOT NULL,
+  PRIMARY KEY (`id_loggerPushers`, `id_pusher`, `id_loggerUserEdit`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for logger_users
@@ -24,12 +36,12 @@ DROP TABLE IF EXISTS `logger_users`;
 CREATE TABLE `logger_users`  (
   `id_loggerUser` int NOT NULL AUTO_INCREMENT,
   `date` datetime(0) NULL DEFAULT NULL,
-  `id_loggerUserEdit` int NULL DEFAULT NULL,
-  `id_user` int NULL DEFAULT NULL,
+  `id_loggerUserEdit` int NOT NULL,
+  `id_user` int NOT NULL,
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
   `rang` int NULL DEFAULT NULL,
-  PRIMARY KEY (`id_loggerUser`) USING BTREE
+  PRIMARY KEY (`id_loggerUser`, `id_user`, `id_loggerUserEdit`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
@@ -81,7 +93,7 @@ CREATE TABLE `table_users`  (
   `date_reg` datetime(0) NOT NULL,
   `id_loggerUser` int NOT NULL,
   `date_unreg` datetime(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_user`) USING BTREE
+  PRIMARY KEY (`id_user`, `id_loggerUser`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;
