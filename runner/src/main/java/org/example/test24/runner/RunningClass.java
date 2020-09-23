@@ -1,6 +1,7 @@
 package org.example.test24.runner;
 
 import javafx.scene.paint.Color;
+import org.example.test24.bd.BaseData;
 import org.example.test24.bd.MyBlob;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.bd.DistClass;
@@ -17,7 +18,7 @@ class RunningClass implements Runner {
     private MainFrame_interface mainFrame = null;
     private Plot plot = null;
 
-    private BaseData1 bdSql = null;
+    private BaseData bdSql = null;
     private ArrayList<DistClass>  distanceOut = null;
     private int ves;
     private int tik_shelf;
@@ -33,7 +34,7 @@ class RunningClass implements Runner {
     }
 
     @Override
-    public void init(BaseData1 bdSql, CommPort commPort, MainFrame_interface mainFrame) {
+    public void init(BaseData bdSql, CommPort commPort, MainFrame_interface mainFrame) {
         this.commPort = commPort;
         this.mainFrame = mainFrame;
         this.bdSql = bdSql;
@@ -87,7 +88,7 @@ class RunningClass implements Runner {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     mainFrame.label1_txt("MANUAL_STOP");
                     System.out.println("count = " + distanceOut.size());
-                    bdSql.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                    bdSql.writeDataDist(new Date(), n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
                 } catch (java.lang.Throwable e) {
                     e = null;
                 }
@@ -119,7 +120,7 @@ class RunningClass implements Runner {
                 try {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     System.out.println("count = " + distanceOut.size());
-                    bdSql.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                    bdSql.writeDataDist(new Date(), n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
                 } catch (java.lang.Throwable e) {
                     e = null;
                 }

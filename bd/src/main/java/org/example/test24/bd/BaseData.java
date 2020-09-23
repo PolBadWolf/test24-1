@@ -1,6 +1,8 @@
 package org.example.test24.bd;
 
+import java.sql.Blob;
 import java.util.Base64;
+import java.util.Date;
 import java.util.function.Consumer;
 
 public interface BaseData {
@@ -17,6 +19,9 @@ public interface BaseData {
     int STATUS_CONNECT_PASS_ERROR = 9;
     int STATUS_CONNECT_BASE_ERROR = 10;
     int STATUS_CONNECT_ERROR = 11;
+    int STATUS_CONNECT_NO_CONNECTION = 12;
+    int STATUS_CONNECT_CLOSE = 13;
+    int STATUS_SQL_TRANSACTION_ERROR = 14;
     enum Status {
         OK                          (STATUS_OK),
         PARAMETERS_LOAD_ERROR       (STATUS_PARAMETERS_LOAD_ERROR),
@@ -29,7 +34,10 @@ public interface BaseData {
         CONNECT_DRIVER_ERROR        (STATUS_CONNECT_DRIVER_ERROR),
         CONNECT_PASS_ERROR          (STATUS_CONNECT_PASS_ERROR),
         CONNECT_BASE_ERROR          (STATUS_CONNECT_BASE_ERROR),
-        CONNECT_ERROR               (STATUS_CONNECT_ERROR);
+        CONNECT_ERROR               (STATUS_CONNECT_ERROR),
+        CONNECT_NO_CONNECTION       (STATUS_CONNECT_NO_CONNECTION),
+        CONNECT_CLOSE               (STATUS_CONNECT_CLOSE),
+        SQL_TRANSACTION_ERROR       (STATUS_SQL_TRANSACTION_ERROR);
 
         int codeStatus;
         int getCodeStatus() {
@@ -169,37 +177,26 @@ public interface BaseData {
         }
     }
     // ==================== SQL ====================
-    static BaseData create(Parameters parameters) throws BaseDataException {
-        BaseData baseData;
-        switch (parameters.getTypeBaseDate().getCodeTypeBaseData()) {
-            case BaseData.TYPEBD_MYSQL:
-                baseData = new BaseDataMySql();
-                break;
-            case BaseData.TYPEBD_MSSQL:
-                baseData = new BaseDataMsSql();
-                break;
-            default:
-                throw new BaseDataException("ошибка открытия БД - не верный тип БД", Status.CONNECT_BASE_TYPE_ERROR);
-        }
-        return baseData;
-    }
+    static BaseData create(Parameters parameters) throws BaseDataException { return BaseDataParent.create(parameters); }
     // ===================================================
     // открытие соединение с БД
     void openConnect(Parameters parameters) throws BaseDataException;
     // чтение списка БД
-    String[] getListBase() throws Exception;
+    String[] getListBase() throws BaseDataException;
     // чтение списка пользователей
-    User[] getListUsers(boolean actual) throws Exception;
+    User[] getListUsers(boolean actual) throws BaseDataException;
     // проверка структуры БД
-    boolean checkCheckStructureBd(String base) throws Exception;
+    boolean checkStructureBd(String base) throws BaseDataException;
     // установка нового пароля пользователю
-    void setNewUserPassword(User user, String newPassword) throws Exception;
+    void setNewUserPassword(User user, String newPassword) throws BaseDataException;
     // чтение списка толкателей
     Pusher[] getListPushers(boolean actual) throws Exception;
     // запись нового пользователя
-    void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws Exception;
+    void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws BaseDataException;
     // деактивация пользователя
-    void deativateUser(long id_loggerUserEdit, User user) throws Exception;
+    void deativateUser(long id_loggerUserEdit, User user) throws BaseDataException;
     // обновление данных о пользователе
-    void updateDataUser(long id_loggerUserEdit, User editUser, String surName, String password, int rang) throws Exception;
+    void updateDataUser(long id_loggerUserEdit, User editUser, String surName, String password, int rang) throws BaseDataException;
+    // запись замера
+    void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
 }
