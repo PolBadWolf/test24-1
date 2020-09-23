@@ -91,8 +91,7 @@ class RunningClass implements Runner {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     mainFrame.label1_txt("MANUAL_STOP");
                     System.out.println("count = " + distanceOut.size());
-                    myLog.log(Level.SEVERE, "сохранение данных замера", new Exception("СДЕЛАТЬ !!!!!!!!!!!"));
-                    //bdSql.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                    bdSql.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
                 } catch (java.lang.Throwable e) {
                     e = null;
                 }
@@ -124,8 +123,7 @@ class RunningClass implements Runner {
                 try {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     System.out.println("count = " + distanceOut.size());
-                    myLog.log(Level.SEVERE, "сохранение данных замера", new Exception("СДЕЛАТЬ !!!!!!!!!!!"));
-                    //bdSql.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                    bdSql.pushDataDist(new Date(), 0, n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
                 } catch (java.lang.Throwable e) {
                     e = null;
                 }
