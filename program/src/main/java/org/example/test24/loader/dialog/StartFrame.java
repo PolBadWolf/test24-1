@@ -13,6 +13,10 @@ import java.util.logging.Level;
 import static org.example.test24.lib.MyLogger.myLog;
 
 public class StartFrame {
+    public interface CallBack {
+
+    }
+    // ----------------------------------
     // title
     private JLabel label1;
     private JLabel label2;
@@ -54,7 +58,7 @@ public class StartFrame {
     private Pusher[] listPushers = new Pusher[0];
 
 
-    FrameCallBack callBack;
+    CallBack callBack;
     JFrame frame;
 
     BaseData.TypeBaseDate typeBaseDate;
@@ -62,7 +66,7 @@ public class StartFrame {
     BaseData connBD;
 
 
-    public static StartFrame main(boolean statMainWork, FrameCallBack callBack) throws Exception {
+    public static StartFrame main(boolean statMainWork, CallBack callBack) throws Exception {
         final StartFrame[] frame = new StartFrame[1];
         try {
             SwingUtilities.invokeAndWait(()->{
@@ -78,10 +82,10 @@ public class StartFrame {
         return frame[0];
     }
 
-    protected StartFrame(boolean statMainWork, FrameCallBack callBack) {
+    protected StartFrame(boolean statMainWork, CallBack callBack) {
         // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
         this.statMainWork = statMainWork;
-        this.callBack = callBack;
+        //this.callBack = callBack;
     }
 
 
