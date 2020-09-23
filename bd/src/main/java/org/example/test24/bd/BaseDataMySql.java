@@ -16,12 +16,12 @@ class BaseDataMySql extends BaseDataParent {
     }
     // открытие соединение с БД
     @Override
-    public void openConnect(Parameters parameters) throws Exception {
+    public void openConnect(Parameters parameters) throws BaseDataException {
         // подключение драйвера
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            throw new Exception("ошибка подключения драйвера", e);
+            throw new BaseDataException("ошибка подключения драйвера", e, Status.CONNECT_DRIVER_ERROR);
         }
         // установка параметров соединения
         String connectionUrl = "jdbc:mysql://%1$s:%2$s";
@@ -30,11 +30,26 @@ class BaseDataMySql extends BaseDataParent {
                 , parameters.getPortServer()
         ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
         // соединение
-        connection = DriverManager.getConnection(
-                connString,
-                parameters.getUser(),
-                parameters.getPassword()
-        );
+        try {
+            connection = DriverManager.getConnection(
+                    connString,
+                    parameters.getUser(),
+                    parameters.getPassword()
+            );
+        } catch (SQLException e) {
+            Status status;
+            switch (e.getErrorCode()) {
+                case 1045:
+                    status = Status.CONNECT_PASS_ERROR;
+                    break;
+                case 1049:
+                    status = Status.CONNECT_BASE_ERROR;
+                    break;
+                default:
+                    status = Status.CONNECT_ERROR;
+            }
+            throw new BaseDataException("установка соединения", e, status);
+        }
         this.baseDat = parameters.getDataBase();
     }
     // чтение списка БД
