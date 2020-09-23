@@ -564,8 +564,71 @@ class BaseDataParent implements BaseData {
     }
     // запись измерений
     @Override
-    public void writeDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException {
+    public void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException {
+        if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
+        boolean fl = false;
+        try {
+            fl = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
+        //
+        PreparedStatement statement = null;
+        Statement statementReadSpec = null;
+        boolean saveAutoCommit = false;
+        long id_spec;
+        //
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        //
+        try {
+            // чтение последнего id spec
+            ResultSet resultSpec = statementReadSpec.executeQuery(
+                    "SELECT table_spec.id " +
+                            " FROM " + baseDat + ".table_spec " +
+                            " ORDER BY table_spec.id DESC " +
+                            " LIMIT 1 "
+            );
+            resultSpec.next();
+            id_spec = resultSpec.getLong(1);
+            // запись
+            statement = connection.prepareStatement(
+                    "INSERT INTO " + baseDat + ".table_Data " +
+                            " (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, dis) " +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+            );
+            statement.setTimestamp(1, new java.sql.Timestamp(date.getTime()) );
+            statement.setLong(2, id_spec);
+            statement.setInt(3, n_cicle);
+            statement.setInt(4, ves);
+            statement.setInt(5, tik_shelf);
+            statement.setInt(6, tik_back);
+            statement.setInt(7, tik_stop);
+            statement.setBlob(8, distance);
 
-        myLog.log(Level.SEVERE, "сохранение данных замера", new Exception("СДЕЛАТЬ !!!!!!!!!!!"));
+            statement.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException se) {
+                e = new SQLException("ошибка закрытия транзакции", se);
+            }
+            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        //
+        try { connection.setAutoCommit(saveAutoCommit);
+        } catch (SQLException se) { }
+        //
+        try {
+            statementReadSpec.close();
+            statement.close();
+        } catch (SQLException e) { }
     }
 }

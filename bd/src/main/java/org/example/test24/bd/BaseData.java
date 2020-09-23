@@ -198,5 +198,5 @@ public interface BaseData {
     // обновление данных о пользователе
     void updateDataUser(long id_loggerUserEdit, User editUser, String surName, String password, int rang) throws BaseDataException;
     // запись замера
-    void writeDataDist(Date date, long id_spec, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
+    void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
 }
