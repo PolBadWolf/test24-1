@@ -13,6 +13,21 @@ class BaseDataParent implements BaseData {
     protected Connection connection;
     protected String baseDat;
     // ===================================================================================================
+    static BaseData create(Parameters parameters) throws BaseDataException {
+        BaseData baseData;
+        switch (parameters.getTypeBaseDate().getCodeTypeBaseData()) {
+            case BaseData.TYPEBD_MYSQL:
+                baseData = new BaseDataMySql();
+                break;
+            case BaseData.TYPEBD_MSSQL:
+                baseData = new BaseDataMsSql();
+                break;
+            default:
+                throw new BaseDataException("ошибка открытия БД - не верный тип БД", Status.CONNECT_BASE_TYPE_ERROR);
+        }
+        return baseData;
+    }
+    // ===================================================================================================
     // открытие соединение с БД
     @Override
     public void openConnect(Parameters parameters) throws BaseDataException { }

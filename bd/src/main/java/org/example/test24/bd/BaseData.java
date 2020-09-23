@@ -169,20 +169,7 @@ public interface BaseData {
         }
     }
     // ==================== SQL ====================
-    static BaseData create(Parameters parameters) throws BaseDataException {
-        BaseData baseData;
-        switch (parameters.getTypeBaseDate().getCodeTypeBaseData()) {
-            case BaseData.TYPEBD_MYSQL:
-                baseData = new BaseDataMySql();
-                break;
-            case BaseData.TYPEBD_MSSQL:
-                baseData = new BaseDataMsSql();
-                break;
-            default:
-                throw new BaseDataException("ошибка открытия БД - не верный тип БД", Status.CONNECT_BASE_TYPE_ERROR);
-        }
-        return baseData;
-    }
+    static BaseData create(Parameters parameters) throws BaseDataException { return BaseDataParent.create(parameters); }
     // ===================================================
     // открытие соединение с БД
     void openConnect(Parameters parameters) throws BaseDataException;
