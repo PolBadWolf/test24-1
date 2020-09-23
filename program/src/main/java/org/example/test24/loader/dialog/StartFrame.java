@@ -168,7 +168,7 @@ public class StartFrame {
         }
         // проверка структуры БД
         try {
-            flagStructureIntegrity = connBD.checkCheckStructureBd(parameters.getDataBase());
+            flagStructureIntegrity = connBD.checkStructureBd(parameters.getDataBase());
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка соединения с БД", e);
             return;

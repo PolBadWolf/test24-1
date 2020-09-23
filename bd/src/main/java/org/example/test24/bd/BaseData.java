@@ -184,7 +184,7 @@ public interface BaseData {
     // чтение списка пользователей
     User[] getListUsers(boolean actual) throws Exception;
     // проверка структуры БД
-    boolean checkCheckStructureBd(String base) throws Exception;
+    boolean checkStructureBd(String base) throws Exception;
     // установка нового пароля пользователю
     void setNewUserPassword(User user, String newPassword) throws Exception;
     // чтение списка толкателей

@@ -144,15 +144,20 @@ class BaseDataParent implements BaseData {
     // ===================================================================================================
     // проверка структуры БД
     @Override
-    public boolean checkCheckStructureBd(String base) throws Exception {
-        if (connection == null) throw new Exception("соединение не установлено");
-        boolean fl = connection.isClosed();
-        if (fl) throw new Exception("соединение закрыто");
+    public boolean checkStructureBd(String base) throws BaseDataException {
+        if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
+        boolean fl = false;
+        try {
+            fl = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
 
         boolean table_data, table_spec;
         boolean table_users, logger_users;
         boolean table_pushers, logger_pushers;
-        table_data = checkCheckStructureTable(
+        table_data = checkStructureTable(
                 base,
                 "table_data",
                 new ArrayList(Arrays.asList(
@@ -167,7 +172,7 @@ class BaseDataParent implements BaseData {
                         "dis"
                 ))
         );
-        table_users = checkCheckStructureTable(
+        table_users = checkStructureTable(
                 base,
                 "table_users",
                 new ArrayList(Arrays.asList(
@@ -177,7 +182,7 @@ class BaseDataParent implements BaseData {
                         "date_unreg"
                 ))
         );
-        logger_users = checkCheckStructureTable(
+        logger_users = checkStructureTable(
                 base,
                 "logger_users",
                 new ArrayList(Arrays.asList(
@@ -190,7 +195,7 @@ class BaseDataParent implements BaseData {
                         "rang"
                 ))
         );
-        table_pushers = checkCheckStructureTable(
+        table_pushers = checkStructureTable(
                 base,
                 "table_pushers",
                 new ArrayList(Arrays.asList(
@@ -204,7 +209,7 @@ class BaseDataParent implements BaseData {
         return table_data && table_users && table_pushers;
     }
     // проверка структуры таблицы
-    protected boolean checkCheckStructureTable(String base, String table, ArrayList<String> listColumns) {
+    protected boolean checkStructureTable(String base, String table, ArrayList<String> listColumns) {
         myLog.log(Level.SEVERE, "ошибка проверки таблицы");
         System.exit(-2);
         return false;

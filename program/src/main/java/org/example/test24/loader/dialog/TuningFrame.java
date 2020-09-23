@@ -918,7 +918,7 @@ class TuningFrame {
         }
         // проверка структуры
         try {
-            if (!conn.checkCheckStructureBd((String) comboBoxListBd.getSelectedItem())) {
+            if (!conn.checkStructureBd((String) comboBoxListBd.getSelectedItem())) {
                 textTypeBdStatus.setText("ошибка базы");
                 throw new Exception("структура БД нарушена");
             }
