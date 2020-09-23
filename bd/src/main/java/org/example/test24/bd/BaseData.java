@@ -21,6 +21,7 @@ public interface BaseData {
     int STATUS_CONNECT_ERROR = 11;
     int STATUS_CONNECT_NO_CONNECTION = 12;
     int STATUS_CONNECT_CLOSE = 13;
+    int STATUS_SQL_TRANSACTION_ERROR = 14;
     enum Status {
         OK                          (STATUS_OK),
         PARAMETERS_LOAD_ERROR       (STATUS_PARAMETERS_LOAD_ERROR),
@@ -35,7 +36,8 @@ public interface BaseData {
         CONNECT_BASE_ERROR          (STATUS_CONNECT_BASE_ERROR),
         CONNECT_ERROR               (STATUS_CONNECT_ERROR),
         CONNECT_NO_CONNECTION       (STATUS_CONNECT_NO_CONNECTION),
-        CONNECT_CLOSE               (STATUS_CONNECT_CLOSE);
+        CONNECT_CLOSE               (STATUS_CONNECT_CLOSE),
+        SQL_TRANSACTION_ERROR       (STATUS_SQL_TRANSACTION_ERROR);
 
         int codeStatus;
         int getCodeStatus() {

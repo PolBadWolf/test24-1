@@ -217,15 +217,25 @@ class BaseDataParent implements BaseData {
     // ===================================================================================================
     // установка нового пароля пользователю
     @Override
-    public void setNewUserPassword(User user, String newPassword) throws Exception {
-        if (connection == null) { throw new Exception("соединение не установлено"); }
-        boolean fl = connection.isClosed();
-        if (fl) { throw new Exception("соединение закрыто"); }
-        if (user == null) { throw new Exception("пользователь null"); }
+    public void setNewUserPassword(User user, String newPassword) throws BaseDataException {
+        if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
+        boolean fl = false;
+        try {
+            fl = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (fl) { throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE); }
+        if (user == null) { throw new BaseDataException("пользователь null", Status.PARAMETERS_ERROR); }
 
-        boolean saveAutoCommit = connection.getAutoCommit();
-        connection.setAutoCommit(false);
-        connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        boolean saveAutoCommit = true;
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка соединения", e, Status.SQL_TRANSACTION_ERROR);
+        }
 
         PreparedStatement preStatementLogger;
         PreparedStatement preStatementUserUpd;
@@ -262,18 +272,21 @@ class BaseDataParent implements BaseData {
             connection.commit();
             user.id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
         } catch (SQLException e) {
-            connection.rollback();
             try {
+                connection.rollback();
                 connection.setAutoCommit(saveAutoCommit);
-            } catch (SQLException se) { }
-            throw new Exception(e);
+            } catch (SQLException se) {
+                myLog.log(Level.SEVERE, "ошибка отмены транзакции", se);
+                e = new SQLException("ошибка отмены транзакции: " + se.getStackTrace(), e);
+            }
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
         }
         //
         try {
             connection.setAutoCommit(saveAutoCommit);
+            preStatementUserUpd.close();
+            preStatementLogger.close();
         } catch (SQLException se) { }
-        preStatementUserUpd.close();
-        preStatementLogger.close();
     }
     // ===================================================================================================
     // чтение списка толкателей
