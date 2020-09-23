@@ -2,9 +2,6 @@ package org.example.test24.bd;
 
 import java.util.Base64;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-
-import static org.example.test24.lib.MyLogger.myLog;
 
 public interface BaseData {
     // ==================== STATUS ====================
@@ -14,10 +11,12 @@ public interface BaseData {
     int STATUS_PARAMETERS_ERROR = 3;
     int STATUS_PARAMETERS_PASSWORD_ERROR = 4;
     int STATUS_BASE_TYPE_ERROR = 5;
-    int STATUS_CONNECT_DRIVER_ERROR = 6;
-    int STATUS_CONNECT_PASS_ERROR = 7;
-    int STATUS_CONNECT_BASE_ERROR = 8;
-    int STATUS_CONNECT_ERROR = 9;
+    int STATUS_BASE_TYPE_NO_SELECT = 6;
+    int STATUS_CONNECT_BASE_TYPE_ERROR = 7;
+    int STATUS_CONNECT_DRIVER_ERROR = 8;
+    int STATUS_CONNECT_PASS_ERROR = 9;
+    int STATUS_CONNECT_BASE_ERROR = 10;
+    int STATUS_CONNECT_ERROR = 11;
     enum Status {
         OK                          (STATUS_OK),
         PARAMETERS_LOAD_ERROR       (STATUS_PARAMETERS_LOAD_ERROR),
@@ -25,6 +24,8 @@ public interface BaseData {
         PARAMETERS_ERROR            (STATUS_PARAMETERS_ERROR),
         PARAMETERS_PASSWORD_ERROR   (STATUS_PARAMETERS_PASSWORD_ERROR),
         BASE_TYPE_ERROR             (STATUS_BASE_TYPE_ERROR),
+        BASE_TYPE_NO_SELECT         (STATUS_BASE_TYPE_NO_SELECT),
+        CONNECT_BASE_TYPE_ERROR     (STATUS_CONNECT_BASE_TYPE_ERROR),
         CONNECT_DRIVER_ERROR        (STATUS_CONNECT_DRIVER_ERROR),
         CONNECT_PASS_ERROR          (STATUS_CONNECT_PASS_ERROR),
         CONNECT_BASE_ERROR          (STATUS_CONNECT_BASE_ERROR),
@@ -36,6 +37,46 @@ public interface BaseData {
         }
         Status(int codeStatus) {
             this.codeStatus = codeStatus;
+        }
+
+        @Override
+        public String toString() {
+            String text;
+            switch (codeStatus) {
+                case STATUS_OK:
+                    text = "ок";
+                    break;
+                case STATUS_PARAMETERS_LOAD_ERROR:
+                    text = "ошибка загрузки";
+                    break;
+                case STATUS_PARAMETERS_SAVE_ERROR:
+                    text = "ошибка сохранения";
+                    break;
+                case STATUS_PARAMETERS_ERROR:
+                    text = "ошибка параметров";
+                    break;
+                case STATUS_PARAMETERS_PASSWORD_ERROR:
+                    text = "ошибка пароля в параметрах";
+                    break;
+                case STATUS_BASE_TYPE_ERROR:
+                    text = "ошибка типа БД";
+                    break;
+                case STATUS_CONNECT_DRIVER_ERROR:
+                    text = "ошибка драйвера";
+                    break;
+                case STATUS_CONNECT_PASS_ERROR:
+                    text = "ошибка пароля при соединении";
+                    break;
+                case STATUS_CONNECT_BASE_ERROR:
+                    text = "ошибка соединения с базой БД";
+                    break;
+                case STATUS_CONNECT_ERROR:
+                    text = "ошибка соединения с БД";
+                    break;
+                default:
+                    text = "неизвестный код статуса";
+            }
+            return text;
         }
     }
     // ==================== TYPE BD ====================
@@ -56,7 +97,7 @@ public interface BaseData {
         static void create(String typeBaseData, Consumer<TypeBaseDate> tbd) throws Exception {
             if (typeBaseData == null) {
                 tbd.accept(TypeBaseDate.ERROR);
-                throw new Exception("ошибка типа БД (typeBaseData = null)");
+                throw new BaseDataException("ошибка типа БД (typeBaseData = null)", Status.BASE_TYPE_ERROR);
             }
             switch (typeBaseData.toUpperCase()) {
                 case "MY_SQL":
@@ -67,8 +108,23 @@ public interface BaseData {
                     break;
                 default:
                     tbd.accept(TypeBaseDate.ERROR);
-                    throw new Exception("ошибка типа БД (typeBaseData = " + typeBaseData + ")");
+                    throw new BaseDataException("ошибка типа БД (typeBaseData = " + typeBaseData + ")", Status.BASE_TYPE_ERROR);
             }
+        }
+
+        public String codeToString() throws BaseDataException {
+            String text;
+            switch (codeTypeBaseData) {
+                case TYPEBD_MYSQL:
+                    text = "MY_SQL";
+                    break;
+                case TYPEBD_MSSQL:
+                    text = "MS_SQL";
+                    break;
+                default:
+                    throw new BaseDataException("не известный код типа БД", Status.BASE_TYPE_NO_SELECT);
+            }
+            return text;
         }
     }
     // ==================== PARAMETERS ====================
@@ -85,18 +141,18 @@ public interface BaseData {
         void setDataBase(String dataBase);
         void setUser(String user);
         void setPassword(String password);
-        static BaseData.Parameters create(BaseData.TypeBaseDate typeBaseDate) throws Exception {
+        static BaseData.Parameters create(BaseData.TypeBaseDate typeBaseDate) throws BaseDataException {
             return new ParametersSql(typeBaseDate);
         }
-        BaseData.Status load();
+        BaseData.Status load() throws BaseDataException;
         BaseData.Status save();
         void setDefault();
     }
     // ==================== CONFIG ====================
     interface Config {
-        static Config create() { return new ParametersConfig(""); }
+        static Config create() { return new ParametersConfig(); }
         Status load1() throws Exception;
-        Status save1();
+        Status save() throws BaseDataException;
         void setDefault();
         String getPortName();
         BaseData.TypeBaseDate getTypeBaseData();
@@ -113,7 +169,7 @@ public interface BaseData {
         }
     }
     // ==================== SQL ====================
-    static BaseData create(Parameters parameters) throws Exception {
+    static BaseData create(Parameters parameters) throws BaseDataException {
         BaseData baseData;
         switch (parameters.getTypeBaseDate().getCodeTypeBaseData()) {
             case BaseData.TYPEBD_MYSQL:
@@ -123,27 +179,27 @@ public interface BaseData {
                 baseData = new BaseDataMsSql();
                 break;
             default:
-                throw new Exception("ошибка открытия БД - не верный тип БД");
+                throw new BaseDataException("ошибка открытия БД - не верный тип БД", Status.CONNECT_BASE_TYPE_ERROR);
         }
         return baseData;
     }
     // ===================================================
     // открытие соединение с БД
-    void openConnect(Parameters parameters) throws Exception;
+    void openConnect(Parameters parameters) throws BaseDataException;
     // чтение списка БД
     String[] getListBase() throws Exception;
     // чтение списка пользователей
-    UserClass[] getListUsers(boolean actual) throws Exception;
+    User[] getListUsers(boolean actual) throws Exception;
     // проверка структуры БД
     boolean checkCheckStructureBd(String base) throws Exception;
     // установка нового пароля пользователю
-    void setNewUserPassword(UserClass user, String newPassword) throws Exception;
+    void setNewUserPassword(User user, String newPassword) throws Exception;
     // чтение списка толкателей
     Pusher[] getListPushers(boolean actual) throws Exception;
     // запись нового пользователя
-    void writeNewUser(int id_edit, String sunName, String password, int rang) throws Exception;
+    void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws Exception;
     // деактивация пользователя
-    void deativateUser(int source_id, int target_id) throws Exception;
+    void deativateUser(long id_loggerUserEdit, User user) throws Exception;
     // обновление данных о пользователе
-    void updateDataUser(int sourceId, int targetId, String surName, String password, int rang, UserClass editUser);
+    void updateDataUser(long id_loggerUserEdit, User editUser, String surName, String password, int rang) throws Exception;
 }

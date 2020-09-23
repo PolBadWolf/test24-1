@@ -8,12 +8,15 @@ import org.example.test24.lib.MySwingUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
 
 public class StartFrame {
+    public interface CallBack {
+
+    }
+    // ----------------------------------
     // title
     private JLabel label1;
     private JLabel label2;
@@ -26,7 +29,7 @@ public class StartFrame {
     private JButton buttonWork;
     private JButton buttonSetPassword;
     private JTextField fieldPassword;
-    private JComboBox<UserClass> comboBoxUsers;
+    private JComboBox<User> comboBoxUsers;
     private JComboBox<Pusher> comboBoxPusher;
     private JLabel jLabel1;
     private JLabel jLabel2;
@@ -50,12 +53,12 @@ public class StartFrame {
     // доступность ком порта
     boolean flagAvailabilityCommPort = false;
     // список пользователей / = [0] for false
-    private UserClass[] listUsers = new UserClass[0];
+    private User[] listUsers = new User[0];
     // список толкателей / = [0] for false
     private Pusher[] listPushers = new Pusher[0];
 
 
-    FrameCallBack callBack;
+    CallBack callBack;
     JFrame frame;
 
     BaseData.TypeBaseDate typeBaseDate;
@@ -63,7 +66,7 @@ public class StartFrame {
     BaseData connBD;
 
 
-    public static StartFrame main(boolean statMainWork, FrameCallBack callBack) throws Exception {
+    public static StartFrame main(boolean statMainWork, CallBack callBack) throws Exception {
         final StartFrame[] frame = new StartFrame[1];
         try {
             SwingUtilities.invokeAndWait(()->{
@@ -79,10 +82,10 @@ public class StartFrame {
         return frame[0];
     }
 
-    protected StartFrame(boolean statMainWork, FrameCallBack callBack) {
+    protected StartFrame(boolean statMainWork, CallBack callBack) {
         // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
         this.statMainWork = statMainWork;
-        this.callBack = callBack;
+        //this.callBack = callBack;
     }
 
 
@@ -98,9 +101,19 @@ public class StartFrame {
         }
         BaseData.Status result;
         // загрузка параметров БД
-        result = parameters.load();
-        if (result != BaseData.Status.OK) {
-            myLog.log(Level.WARNING, "загрузка параметров соединения с БД поумолчанию");
+        try {
+            result = parameters.load();
+            if (result != BaseData.Status.OK) {
+                myLog.log(Level.WARNING,
+                        "ошибка загрузка параметров соединения с БД\n" +
+                                result.toString() +
+                                "установить параметры поумолчанию");
+                parameters.setDefault();
+            }
+        } catch (Exception e) {
+            myLog.log(Level.WARNING,
+                    "ошибка загрузка параметров соединения с БД\n" +
+                            "установить параметры поумолчанию", e);
             parameters.setDefault();
         }
         return parameters;
@@ -131,7 +144,7 @@ public class StartFrame {
         // здесь сбросить флаги с БД
         flagConnecting = false;
         flagStructureIntegrity = false;
-        listUsers = new UserClass[0];
+        listUsers = new User[0];
         listPushers = new Pusher[0];
         // ----
         // загрузить параметры
@@ -211,23 +224,7 @@ public class StartFrame {
             }
         });
         // =================== загрузка начальных параметров ===================
-        // загрузка параметров соединения с БД
-        //------------------------------
-        // чтение конфигурации
-        BaseData.Config config = BaseData.Config.create();
-        try {
-            config.load1();
-        } catch (Exception e) {
-            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
-            config.setDefault();
-        }
-        // тип БД
-        typeBaseDate = config.getTypeBaseData();
-        // инициализация работы с БД и данных с ней связанных
-        initBaseData(typeBaseDate);
-        // *************************************************************************************
-        // проверка ком порта
-        flagAvailabilityCommPort = isCheckCommPort(config.getPortName());
+        loadAndSetBeginParameters();
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -250,15 +247,37 @@ public class StartFrame {
         } else {
             onInputComponents();
         }
+        loadAndSetBeginParameters2();
+    }
+    private void loadAndSetBeginParameters() {
+        // загрузка параметров соединения с БД
+        //------------------------------
+        // чтение конфигурации
+        BaseData.Config config = BaseData.Config.create();
+        try {
+            config.load1();
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
+            config.setDefault();
+        }
+        // тип БД
+        typeBaseDate = config.getTypeBaseData();
+        // инициализация работы с БД и данных с ней связанных
+        initBaseData(typeBaseDate);
+        // *************************************************************************************
+        // проверка ком порта
+        flagAvailabilityCommPort = isCheckCommPort(config.getPortName());
+    }
+    private void loadAndSetBeginParameters2() {
         // загрузка пользователей в комбо бокс
         try {
-            MyUtil.loadToComboBox(listUsers, comboBoxUsers);
+            MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
         }
         // загрузка толкателей в комбо бокс
         try {
-            MyUtil.loadToComboBox(listPushers, comboBoxPusher);
+            MyUtil.loadToComboBox(listPushers, comboBoxPusher, null);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }
@@ -266,7 +285,6 @@ public class StartFrame {
             // здесь загрузка текущего пользователя и толкателя, если потребуется
         }
         // -------
-
     }
 
     private void initComponents() {
@@ -471,8 +489,8 @@ public class StartFrame {
         button.addActionListener(e -> callSetNewPassword());
         return button;
     }
-    private JComboBox<UserClass> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JComboBox<UserClass> comboBox = new JComboBox<>();
+    private JComboBox<User> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
+        JComboBox<User> comboBox = new JComboBox<>();
         comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(true);
@@ -532,11 +550,11 @@ public class StartFrame {
     // ======================================================
     // обработка ввод
     private void callEnter() {
-        UserClass user = null;
+        User user = null;
         String password;
         boolean askLocalAdmin;
         try {
-            user = (UserClass) comboBoxUsers.getSelectedItem();
+            user = (User) comboBoxUsers.getSelectedItem();
             askLocalAdmin = false;
         } catch (ClassCastException e) {
             askLocalAdmin = true;
@@ -586,9 +604,9 @@ public class StartFrame {
         fieldPassword.setText("");
         buttonSetPassword.setEnabled(true);
         // разрешение на редактирование пользователей
-        buttonEditUsers.setEnabled((user.rang & (1 << UserClass.RANG_USERS)) != 0);
+        buttonEditUsers.setEnabled((user.rang & (1 << User.RANG_USERS)) != 0);
         // разрешение на редактирование толкателей
-        buttonEditPushers.setEnabled((user.rang & (1 << UserClass.RANG_PUSHERS)) != 0);
+        buttonEditPushers.setEnabled((user.rang & (1 << User.RANG_PUSHERS)) != 0);
         // разрешение кнопки работа
         buttonWork.setEnabled(true);
         // разрешение выбора толкателей
@@ -596,7 +614,7 @@ public class StartFrame {
     }
     // обработка новый пароль
     private void callSetNewPassword() {
-        UserClass currentUser = (UserClass) comboBoxUsers.getSelectedItem();
+        User currentUser = (User) comboBoxUsers.getSelectedItem();
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
             MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> buttonSetPassword.setEnabled(true));
@@ -607,7 +625,7 @@ public class StartFrame {
         try {
             connBD.setNewUserPassword(currentUser, newPassword);
             currentUser.password = newPassword;
-            if (!newPassword.equals(((UserClass) comboBoxUsers.getSelectedItem()).password)) {
+            if (!newPassword.equals(((User) comboBoxUsers.getSelectedItem()).password)) {
                 myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
             }
         } catch (Exception e) {
@@ -651,10 +669,10 @@ public class StartFrame {
     }
     // обработка настройка
     private void callTuning() {
-        if (1 == 1) {
+        /*if (1 == 1) {
             myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("не реализовано запуск настройки"));
             return;
-        }
+        }*/
         if (statMainWork) {
             // при основной работе нельзя менять параметры БД и порта
             MySwingUtil.showMessage(frame, "Настройка", "при основной работе нельзя менять параметры БД и порта", 10_000);
@@ -662,26 +680,20 @@ public class StartFrame {
             return;
         }
         // отключение управления
-        comboBoxUsers.setEnabled(false);
-        fieldPassword.setEnabled(false);
-        buttonEnter.setEnabled(false);
-        buttonTuning.setVisible(false);
-        // вызов окна
-        Thread thread = new Thread(()->{
-            try {
-                tuningFrame = TuningFrame.createFrame(
-                        new TuningFrameCallBack(),
-                        statMainWork
-                );
-            } catch (InterruptedException e) {
-                System.out.println("Ошибка вызова окна \"настройка\": " + e.getMessage());
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                System.out.println("Ошибка вызова окна \"настройка\": " + e.getMessage());
-                e.printStackTrace();
-            }
-        }, "thread for start tunnig frame");
-        thread.start();
+        SaveEnableComponents saveComponents = new SaveEnableComponents();
+        saveComponents.offline();
+        new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
+                new TuningFrame(new TuningFrame.CallBack() {
+                    @Override
+                    public void messageCloseTuning(boolean newData) {
+                        saveComponents.restore();
+                        loadAndSetBeginParameters();
+                        loadAndSetBeginParameters2();
+                    }
+                });
+            });
+        }, "create tuning").start();
     }
     // обработка редактирование пользователей
     private void callEditUsers() {
@@ -695,14 +707,26 @@ public class StartFrame {
                             public void messageCloseEditUsers(boolean newData) {
                                 if (newData) {
                                     // здесь перезагрузка списка пользователей
-                                    myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!", new Exception("не реализована перезагрузка списка пользователей после редактирования"));
+                                    // чтение списка пользователей
+                                    try {
+                                        listUsers = connBD.getListUsers(true);
+                                    } catch (Exception e) {
+                                        myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
+                                        listUsers = new User[0];
+                                        MySwingUtil.showMessage(
+                                                frame,
+                                                "обновление списка пользователей",
+                                                "ошибка обновления - требуется вмешательство администратора",
+                                                60_000
+                                        );
+                                    }
                                 }
                                 saveComponents.restore();
                             }
 
                             @Override
-                            public UserClass getCurrentUser() {
-                                return (UserClass) comboBoxUsers.getSelectedItem();
+                            public User getCurrentUser() {
+                                return (User) comboBoxUsers.getSelectedItem();
                             }
                         });
             });
@@ -710,62 +734,7 @@ public class StartFrame {
     }
     // обработка редактирование толкателей
     private void callEditPushers() {
-
-    }
-
-    // callBack из TuningFrame
-    private class TuningFrameCallBack implements FrameCallBack {
-        // =================================
-        // чтение параметров из конфига
-        @Override
-        public ParametersConfig getParametersConfig() {
-            return callBack.getParametersConfig();
-        }
-        // создание объекта параметров соединения с БД
-        @Override
-        public ParametersSql2 createParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
-            return callBack.createParametersSql(typeBaseData);
-        }
-
-        // запрос параметров соединения с БД
-        @Override
-        public ParametersSql2 requestParametersSql(BaseData2.TypeBaseData typeBaseData) throws Exception {
-            return callBack.requestParametersSql(typeBaseData);
-        }
-        // -----------------------------------------------------------
-        // создание тестого соединения
-        @Override
-        public BaseData2.Status createTestConnectBd(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
-            return callBack.createTestConnectBd(typeBaseData, parameters);
-        }
-        // тестовое соединение проверка структуры БД
-        @Override
-        public BaseData2.Status checkCheckStructureBd(String base) {
-            return callBack.checkCheckStructureBd(base);
-        }
-        // -----------------------------------------------------------
-        // создание рабочего соединения
-        @Override
-        public BaseData2.Status createWorkConnect(BaseData2.TypeBaseData typeBaseData, BaseData2.Parameters parameters) {
-            return callBack.createWorkConnect(typeBaseData, parameters);
-        }
-        // чтение списка пользователей
-        @Override
-        public UserClass[] getListUsers(boolean actual) throws Exception {
-            return callBack.getListUsers(actual);
-        }
-
-        @Override
-        public String[] getListBd() throws Exception {
-            return callBack.getListBd();
-        }
-
-        // -----------------------------------------------------------
-        // проверка ком порта
-        @Override
-        public boolean isCheckCommPort(boolean statMainWork, String portName) throws Exception {
-            return callBack.isCheckCommPort(statMainWork, portName);
-        }
+        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
     }
 
     // ===========================================================================
