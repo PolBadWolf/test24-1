@@ -35,7 +35,7 @@ class BaseDataParent implements BaseData {
     // ===================================================================================================
     // чтение списка БД
     @Override
-    public String[] getListBase() throws Exception { return new String[0]; }
+    public String[] getListBase() throws BaseDataException { return new String[0]; }
     // ===================================================================================================
     // чтение списка пользователей
     @Override

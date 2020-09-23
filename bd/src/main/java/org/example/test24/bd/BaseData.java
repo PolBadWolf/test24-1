@@ -19,6 +19,8 @@ public interface BaseData {
     int STATUS_CONNECT_PASS_ERROR = 9;
     int STATUS_CONNECT_BASE_ERROR = 10;
     int STATUS_CONNECT_ERROR = 11;
+    int STATUS_CONNECT_NO_CONNECTION = 12;
+    int STATUS_CONNECT_CLOSE = 13;
     enum Status {
         OK                          (STATUS_OK),
         PARAMETERS_LOAD_ERROR       (STATUS_PARAMETERS_LOAD_ERROR),
@@ -31,7 +33,9 @@ public interface BaseData {
         CONNECT_DRIVER_ERROR        (STATUS_CONNECT_DRIVER_ERROR),
         CONNECT_PASS_ERROR          (STATUS_CONNECT_PASS_ERROR),
         CONNECT_BASE_ERROR          (STATUS_CONNECT_BASE_ERROR),
-        CONNECT_ERROR               (STATUS_CONNECT_ERROR);
+        CONNECT_ERROR               (STATUS_CONNECT_ERROR),
+        CONNECT_NO_CONNECTION       (STATUS_CONNECT_NO_CONNECTION),
+        CONNECT_CLOSE               (STATUS_CONNECT_CLOSE);
 
         int codeStatus;
         int getCodeStatus() {

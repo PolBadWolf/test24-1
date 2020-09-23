@@ -54,28 +54,39 @@ class BaseDataMySql extends BaseDataParent {
     }
     // чтение списка БД
     @Override
-    public String[] getListBase() throws Exception {
+    public String[] getListBase() throws BaseDataException {
         if (connection == null) {
-            throw new Exception("отсутствует соединение (connection == null)");
+            throw new BaseDataException("отсутствует соединение (connection == null)", Status.CONNECT_NO_CONNECTION);
         }
         boolean flClosed;
-        flClosed = connection.isClosed();
+        try {
+            flClosed = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("отсутствует соединение (error)", e, Status.CONNECT_NO_CONNECTION);
+        }
         if (flClosed) {
-            throw new Exception("соединение закрыто");
+            throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
         }
         // запрос на список
-        ResultSet resultSet;
-        resultSet = connection.createStatement().executeQuery("SHOW DATABASES");
-        // отсев системных БД
+        ResultSet resultSet = null;
         ArrayList<String> list = new ArrayList<>();
-        String s;
-        while (resultSet.next()) {
-            s = resultSet.getString(1);
-            if (s.toLowerCase().equals("information_schema")) continue;
-            if (s.toLowerCase().equals("mysql")) continue;
-            if (s.toLowerCase().equals("performance_schema")) continue;
-            if (s.toLowerCase().equals("sys")) continue;
-            list.add(s);
+        try {
+            resultSet = connection.createStatement().executeQuery("SHOW DATABASES");
+            // отсев системных БД
+            String s;
+            while (resultSet.next()) {
+                s = resultSet.getString(1);
+                if (s.toLowerCase().equals("information_schema")) continue;
+                if (s.toLowerCase().equals("mysql")) continue;
+                if (s.toLowerCase().equals("performance_schema")) continue;
+                if (s.toLowerCase().equals("sys")) continue;
+                list.add(s);
+            }
+        } catch (SQLException e) {
+            if (list.size() == 0) {
+                throw new BaseDataException(e, Status.CONNECT_ERROR);
+            }
+            myLog.log(Level.SEVERE, "ошибка парсинга", e);
         }
         try {
             resultSet.close();
