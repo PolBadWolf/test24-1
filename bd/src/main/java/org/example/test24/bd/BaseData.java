@@ -182,19 +182,19 @@ public interface BaseData {
     // открытие соединение с БД
     void openConnect(Parameters parameters) throws BaseDataException;
     // чтение списка БД
-    String[] getListBase() throws Exception;
+    String[] getListBase() throws BaseDataException;
     // чтение списка пользователей
-    User[] getListUsers(boolean actual) throws Exception;
+    User[] getListUsers(boolean actual) throws BaseDataException;
     // проверка структуры БД
-    boolean checkStructureBd(String base) throws Exception;
+    boolean checkStructureBd(String base) throws BaseDataException;
     // установка нового пароля пользователю
-    void setNewUserPassword(User user, String newPassword) throws Exception;
+    void setNewUserPassword(User user, String newPassword) throws BaseDataException;
     // чтение списка толкателей
     Pusher[] getListPushers(boolean actual) throws Exception;
     // запись нового пользователя
-    void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws Exception;
+    void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws BaseDataException;
     // деактивация пользователя
-    void deativateUser(long id_loggerUserEdit, User user) throws Exception;
+    void deativateUser(long id_loggerUserEdit, User user) throws BaseDataException;
     // обновление данных о пользователе
     void updateDataUser(long id_loggerUserEdit, User editUser, String surName, String password, int rang) throws Exception;
     // запись замера

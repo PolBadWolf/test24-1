@@ -422,14 +422,24 @@ class BaseDataParent implements BaseData {
     // ===================================================================================================
     // деактивация пользователя
     @Override
-    public void deativateUser(long id_loggerUserEdit, User user) throws Exception {
-        if (connection == null) throw new Exception("соединение не установлено");
-        boolean fl = connection.isClosed();
-        if (fl) throw new Exception("соединение закрыто");
+    public void deativateUser(long id_loggerUserEdit, User user) throws BaseDataException {
+        if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
+        boolean fl = false;
+        try {
+            fl = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
 
-        boolean saveAutoCommit = connection.getAutoCommit();
-        connection.setAutoCommit(false);
-        connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        boolean saveAutoCommit = false;
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
 
         PreparedStatement preStatementLogger;
         PreparedStatement preStatementUserUpd;
@@ -465,17 +475,22 @@ class BaseDataParent implements BaseData {
             preStatementUserUpd.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            connection.rollback();
             try {
+                connection.rollback();
                 connection.setAutoCommit(saveAutoCommit);
-            } catch (SQLException se) { }
-            throw new Exception(e);
+            } catch (SQLException se) {
+                e = new SQLException("ошибка закрытия транзакции", se);
+            }
+            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
         }
-        try {
-            connection.setAutoCommit(saveAutoCommit);
+        try { connection.setAutoCommit(saveAutoCommit);
         } catch (SQLException se) { }
-        preStatementUserUpd.close();
-        preStatementLogger.close();
+        try {
+            preStatementUserUpd.close();
+            preStatementLogger.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
     // ===================================================================================================
     // обновление данных о пользователе
