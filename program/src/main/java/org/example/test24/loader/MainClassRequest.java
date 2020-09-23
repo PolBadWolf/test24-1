@@ -18,7 +18,7 @@ class MainClassRequest {
     protected Runner runner;
     protected CommPort commPort;
     protected StartFrame startFrame;
-    protected BaseData1 bdSql;
+    //protected BaseData1 bdSql;
     //protected BaseData connBd;
     // =============== недоступные переменные ==============
     // имя файла конфигурации

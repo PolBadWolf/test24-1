@@ -1,6 +1,5 @@
 package org.example.test24.runner;
 
-import org.example.test24.bd.BaseData1;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.screen.MainFrame_interface;
 
