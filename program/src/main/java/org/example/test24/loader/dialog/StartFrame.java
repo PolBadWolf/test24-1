@@ -562,7 +562,7 @@ public class StartFrame {
         password = fieldPassword.getText();
         if (askLocalAdmin) {
             String surName = (String) comboBoxUsers.getSelectedItem();
-            String pass = BaseData2.Password.encoding(password);
+            String pass = BaseData.Password.encoding(password);
             // проверка на локального админа
             if (!checkIntegratedAdministrator(surName, pass)) {
                 buttonEnter.setEnabled(false);
