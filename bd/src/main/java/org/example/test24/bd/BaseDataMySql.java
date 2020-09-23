@@ -96,7 +96,6 @@ class BaseDataMySql extends BaseDataParent {
         return list.toArray(new String[0]);
     }
     // проверка структуры таблицы
-    // проверка структуры таблицы
     protected boolean checkCheckStructureTable(String base, String table, ArrayList<String> listColumns) {
         PreparedStatement statement;
         ResultSet resultSet;

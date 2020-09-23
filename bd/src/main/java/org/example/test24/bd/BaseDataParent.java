@@ -39,85 +39,98 @@ class BaseDataParent implements BaseData {
     // ===================================================================================================
     // чтение списка пользователей
     @Override
-    public User[] getListUsers(boolean actual) throws Exception {
-        if (connection == null) throw new Exception("отсутствует соединение (connection == null)");
-        boolean flClosed = connection.isClosed();
-        if (flClosed) throw new Exception("соединение закрыто");
+    public User[] getListUsers(boolean actual) throws BaseDataException {
+        if (connection == null) throw new BaseDataException("отсутствует соединение (connection == null)", Status.CONNECT_NO_CONNECTION);
+        boolean flClosed = false;
+        try {
+            flClosed = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("отсутствует соединение (connection == null)", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (flClosed) throw new BaseDataException("отсутствует соединение (connection == null)", Status.CONNECT_CLOSE);
 
         ArrayList<User> listUsers = new ArrayList<>();
         Statement statement;
         ResultSet result;
         // запрос на список пользователей
         String tab = "table_users";
-        statement = connection.createStatement();
         // запрос
-        if (actual) {
-            result = statement.executeQuery(
-                    "SELECT" +
-                            " table_users.id_user, " +
-                            " logger_users.id_loggerUser, " +
-                            " logger_users.date, " +
-                            " logger_users.name, " +
-                            " logger_users.password, " +
-                            " logger_users.rang, " +
-                            " table_users.date_unreg " +
-                            " FROM " +
-                            " " + baseDat + ".logger_users " +
-                            " INNER JOIN " +
-                            " " + baseDat + ".table_users" +
-                            " ON  " +
-                            " logger_users.id_loggerUser = table_users.id_loggerUser " +
-                            " WHERE " +
-                            " table_users.date_unreg IS NULL " +
-                            " ORDER BY " +
-                            " name ASC "
-            );
-        } else {
-            result = statement.executeQuery(
-                    "SELECT" +
-                            " table_users.id_user, " +
-                            " logger_users.id_loggerUser, " +
-                            " logger_users.date, " +
-                            " logger_users.name, " +
-                            " logger_users.password, " +
-                            " logger_users.rang, " +
-                            " table_users.date_unreg " +
-                            " FROM " +
-                            " " + baseDat + ".logger_users " +
-                            " INNER JOIN " +
-                            " " + baseDat + ".table_users" +
-                            " ON  " +
-                            " logger_users.id_loggerUser = table_users.id_loggerUser " +
-                            " ORDER BY " +
-                            " name ASC "
-            );
+        try {
+            statement = connection.createStatement();
+            if (actual) {
+                result = statement.executeQuery(
+                        "SELECT" +
+                                " table_users.id_user, " +
+                                " logger_users.id_loggerUser, " +
+                                " logger_users.date, " +
+                                " logger_users.name, " +
+                                " logger_users.password, " +
+                                " logger_users.rang, " +
+                                " table_users.date_unreg " +
+                                " FROM " +
+                                " " + baseDat + ".logger_users " +
+                                " INNER JOIN " +
+                                " " + baseDat + ".table_users" +
+                                " ON  " +
+                                " logger_users.id_loggerUser = table_users.id_loggerUser " +
+                                " WHERE " +
+                                " table_users.date_unreg IS NULL " +
+                                " ORDER BY " +
+                                " name ASC "
+                );
+            } else {
+                result = statement.executeQuery(
+                        "SELECT" +
+                                " table_users.id_user, " +
+                                " logger_users.id_loggerUser, " +
+                                " logger_users.date, " +
+                                " logger_users.name, " +
+                                " logger_users.password, " +
+                                " logger_users.rang, " +
+                                " table_users.date_unreg " +
+                                " FROM " +
+                                " " + baseDat + ".logger_users " +
+                                " INNER JOIN " +
+                                " " + baseDat + ".table_users" +
+                                " ON  " +
+                                " logger_users.id_loggerUser = table_users.id_loggerUser " +
+                                " ORDER BY " +
+                                " name ASC "
+                );
+            }
+        } catch (SQLException e) {
+            throw new BaseDataException(e, Status.CONNECT_ERROR);
         }
         // создание списка
-        while (result.next()) {
-            String pass;
-            // пароль
-            try {
-                pass = BaseData.Password.decoding(result.getString("password"));
-            } catch (Exception e) {
-                myLog.log(Level.SEVERE, "ошибка декодирования пароля", e);
-                continue;
+        try {
+            while (result.next()) {
+                String pass;
+                // пароль
+                try {
+                    pass = BaseData.Password.decoding(result.getString("password"));
+                } catch (Exception e) {
+                    myLog.log(Level.SEVERE, "ошибка декодирования пароля", e);
+                    pass = null;
+                }
+                try {
+                    listUsers.add(
+                            new User(
+                                    result.getInt("id_user"),
+                                    result.getTimestamp("date"),
+                                    result.getInt("id_loggerUser"),
+                                    result.getString("name"),
+                                    pass,
+                                    result.getInt("rang"),
+                                    result.getTimestamp("date_unreg")
+                            )
+                    );
+                } catch (SQLException e) {
+                    myLog.log(Level.SEVERE, "ошибка парсинга", e);
+                    continue;
+                }
             }
-            try {
-                listUsers.add(
-                        new User(
-                                result.getInt("id_user"),
-                                result.getTimestamp("date"),
-                                result.getInt("id_loggerUser"),
-                                result.getString("name"),
-                                pass,
-                                result.getInt("rang"),
-                                result.getTimestamp("date_unreg")
-                        )
-                );
-            } catch (SQLException e) {
-                myLog.log(Level.SEVERE, "ошибка парсинга", e);
-                continue;
-            }
+        } catch (SQLException e) {
+            myLog.log(Level.WARNING, "ошибка парсинга", e);
         }
         // закрытие соединения
         try {
