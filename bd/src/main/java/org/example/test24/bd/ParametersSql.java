@@ -68,7 +68,7 @@ class ParametersSql implements BaseData.Parameters {
         this.password = password;
     }
     // ------------------------------------------------
-    ParametersSql(BaseData.TypeBaseDate typeBaseDate) throws BaseDataException {
+    ParametersSql(BaseData.TypeBaseDate typeBaseDate) throws ParametersSqlException {
         switch (typeBaseDate.codeTypeBaseData) {
             case BaseData.TYPEBD_MSSQL:
                 fileName = fileNameMsSql;
@@ -78,42 +78,50 @@ class ParametersSql implements BaseData.Parameters {
                 break;
             case BaseData.TYPEBD_ERROR:
                 this.stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
-                throw new BaseDataException("ошибочный тип БД", BaseData.Status.BASE_TYPE_ERROR);
+                throw new ParametersSqlException("ошибочный тип БД", BaseData.Status.BASE_TYPE_ERROR, null);
         }
         this.typeBaseDate = typeBaseDate;
         this.stat = BaseData.Status.OK;
     }
     // ------------------------------------------------
     @Override
-    public BaseData.Status load() throws BaseDataException {
+    public BaseData.Status load() throws ParametersSqlException {
+        ParametersSql parameters = new ParametersSql(this.typeBaseDate);
         Properties properties = new Properties();
+
         try {
             properties.load(new BufferedReader(new FileReader(fileName)));
         } catch (IOException e) {
-            stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
-            throw new BaseDataException("ошибки загрузки параметров из файла конфигурации", e, BaseData.Status.PARAMETERS_LOAD_ERROR);
+            parameters.stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
+            throw new ParametersSqlException("ошибки загрузки параметров из файла конфигурации", e, BaseData.Status.PARAMETERS_LOAD_ERROR, null);
         }
-        ipServer = properties.getProperty("Url_Server");
-        portServer = properties.getProperty("Port_Server");
-        dataBase = properties.getProperty("DataBase");
-        user = properties.getProperty("User");
+        parameters.ipServer = properties.getProperty("Url_Server");
+        parameters.portServer = properties.getProperty("Port_Server");
+        parameters.dataBase = properties.getProperty("DataBase");
+        parameters.user = properties.getProperty("User");
         //
-        try {
-            password = BaseData.Password.decoding(properties.getProperty("Password"));
+        try { parameters.password = BaseData.Password.decoding(properties.getProperty("Password"));
         } catch (Exception e) {
-            stat = BaseData.Status.PARAMETERS_PASSWORD_ERROR;
-            password = null;
+            parameters.password = null;
+            parameters.stat = BaseData.Status.PARAMETERS_PASSWORD_ERROR;
             myLog.log(Level.WARNING, "ошибка декодирования пароля", e);
         }
         //
-        if (ipServer == null || portServer == null || dataBase == null || user == null) {
-            myLog.log(Level.SEVERE, "один или несколько параметров в файле конфигурации отсутствуют");
-            stat = BaseData.Status.PARAMETERS_ERROR;
-        } else {
-            if (password != null) stat = BaseData.Status.OK;
+        if (parameters.ipServer == null || parameters.portServer == null || parameters.dataBase == null || parameters.user == null || parameters.password == null) {
+            parameters.stat = BaseData.Status.PARAMETERS_ERROR;
+            //myLog.log(Level.SEVERE, "один или несколько параметров в файле конфигурации отсутствуют");
+            throw new ParametersSqlException("один или несколько параметров в файле конфигурации отсутствуют", parameters.stat, parameters);
         }
         //
-        return stat;
+        {
+            this.ipServer = parameters.ipServer;
+            this.portServer = parameters.portServer;
+            this.dataBase = parameters.dataBase;
+            this.user = parameters.user;
+            this.password = parameters.password;
+            this.stat = BaseData.Status.OK;
+        }
+        return this.stat;
     }
     @Override
     public BaseData.Status save() {

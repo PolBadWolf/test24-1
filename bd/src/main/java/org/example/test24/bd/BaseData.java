@@ -199,4 +199,12 @@ public interface BaseData {
     void updateDataUser(long id_loggerUserEdit, User editUser, String surName, String password, int rang) throws BaseDataException;
     // запись замера
     void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
+    // запись нового типа толкателя
+    void writeNewTypePusher(PusherType pusherType) throws BaseDataException;
+    // обновление типа толкателя
+    void updateTypePusher(PusherType pusherType) throws BaseDataException;
+    // деактивация типа толкателя
+    void deativateTypePusher(long id_loggerUser, PusherType pusherType) throws BaseDataException;
+    // чтение списока типов толкателей
+    PusherType[] getListTypePushers(boolean actual) throws BaseDataException;
 }

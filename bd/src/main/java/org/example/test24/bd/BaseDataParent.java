@@ -49,6 +49,12 @@ class BaseDataParent implements BaseData {
         }
         if (flClosed) throw new BaseDataException("отсутствует соединение (connection == null)", Status.CONNECT_CLOSE);
 
+        try {
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+
         ArrayList<User> listUsers = new ArrayList<>();
         Statement statement;
         ResultSet result;
@@ -154,6 +160,12 @@ class BaseDataParent implements BaseData {
         }
         if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
 
+        try {
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+
         boolean table_data, table_spec;
         boolean table_users, logger_users;
         boolean table_pushers, logger_pushers;
@@ -234,7 +246,7 @@ class BaseDataParent implements BaseData {
             connection.setAutoCommit(false);
             connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         } catch (SQLException e) {
-            throw new BaseDataException("ошибка соединения", e, Status.SQL_TRANSACTION_ERROR);
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
         }
 
         PreparedStatement preStatementLogger;
@@ -257,6 +269,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, user.rang);
             preStatementLogger.executeUpdate();
+            long id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
             //
             preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
@@ -265,31 +278,30 @@ class BaseDataParent implements BaseData {
                             " id_loggerUser = ? " +
                             " WHERE id_user = ? "
             );
-            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
+            preStatementUserUpd.setLong(1, id_loggerUser);
             preStatementUserUpd.setLong(2, user.id_user);
             preStatementUserUpd.executeUpdate();
             //
             connection.commit();
-            user.id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
+            user.id_loggerUser = id_loggerUser;
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-                connection.setAutoCommit(saveAutoCommit);
+            try { connection.rollback();
             } catch (SQLException se) {
-                myLog.log(Level.SEVERE, "ошибка отмены транзакции", se);
-                e = new SQLException("ошибка отмены транзакции: " + se.getStackTrace(), e);
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
             throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
         }
         //
         try {
-            connection.setAutoCommit(saveAutoCommit);
             preStatementUserUpd.close();
             preStatementLogger.close();
         } catch (SQLException se) { }
     }
     // ===================================================================================================
-    // чтение списка толкателей
+    // чтение списка толкателей ****
     @Override
     public Pusher[] getListPushers(boolean actual) throws Exception {
         if (1==1) throw new Exception("НЕ РЕАЛИЗОВАНО !!!!!!!!!!!!!!!!!!");
@@ -348,7 +360,7 @@ class BaseDataParent implements BaseData {
         }
         if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
 
-        boolean saveAutoCommit = false;
+        boolean saveAutoCommit = true;
         try {
             saveAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
@@ -373,6 +385,7 @@ class BaseDataParent implements BaseData {
             preStatementUser.setTimestamp(1, timestamp);
             preStatementUser.setInt(2, 0);
             preStatementUser.executeUpdate();
+            long id_user = ((ClientPreparedStatement)preStatementUser).getLastInsertID();
             //
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
@@ -382,11 +395,12 @@ class BaseDataParent implements BaseData {
             );
             preStatementLogger.setTimestamp(1, timestamp);
             preStatementLogger.setLong(2, id_loggerUserEdit);
-            preStatementLogger.setLong(3, ((ClientPreparedStatement)preStatementUser).getLastInsertID());
+            preStatementLogger.setLong(3, id_user);
             preStatementLogger.setString(4, surName);
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, rang);
             preStatementLogger.executeUpdate();
+            long id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
             //
             preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
@@ -395,24 +409,22 @@ class BaseDataParent implements BaseData {
                             " id_loggerUser = ? " +
                             " WHERE id_user = ? "
             );
-            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID() );
-            preStatementUserUpd.setLong(2, ((ClientPreparedStatement)preStatementUser).getLastInsertID() );
+            preStatementUserUpd.setLong(1, id_loggerUser);
+            preStatementUserUpd.setLong(2, id_user);
             preStatementUserUpd.executeUpdate();
             //
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-                connection.setAutoCommit(saveAutoCommit);
+            try { connection.rollback();
             } catch (SQLException se) {
-                e = new SQLException("ошибка закрытия транзакции", se);
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
-            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
         }
         //
-        try {
-            connection.setAutoCommit(saveAutoCommit);
-        } catch (SQLException se) { }
         try {
             preStatementUserUpd.close();
             preStatementUser.close();
@@ -432,7 +444,7 @@ class BaseDataParent implements BaseData {
         }
         if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
 
-        boolean saveAutoCommit = false;
+        boolean saveAutoCommit = true;
         try {
             saveAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
@@ -460,6 +472,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, user.rang);
             preStatementLogger.executeUpdate();
+            long id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
             //
             preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
@@ -469,28 +482,25 @@ class BaseDataParent implements BaseData {
                             "date_unreg = ? " +
                             "WHERE id_user = ? "
             );
-            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
+            preStatementUserUpd.setLong(1, id_loggerUser);
             preStatementUserUpd.setTimestamp(2, timestamp);
             preStatementUserUpd.setLong(3, user.id_user);
             preStatementUserUpd.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-                connection.setAutoCommit(saveAutoCommit);
+            try { connection.rollback();
             } catch (SQLException se) {
-                e = new SQLException("ошибка закрытия транзакции", se);
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
-            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
         }
-        try { connection.setAutoCommit(saveAutoCommit);
-        } catch (SQLException se) { }
         try {
             preStatementUserUpd.close();
             preStatementLogger.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        } catch (SQLException throwables) { }
     }
     // ===================================================================================================
     // обновление данных о пользователе
@@ -505,7 +515,7 @@ class BaseDataParent implements BaseData {
         }
         if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
 
-        boolean saveAutoCommit = false;
+        boolean saveAutoCommit = true;
         try {
             saveAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
@@ -532,6 +542,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setString(5, BaseData.Password.encoding(password));
             preStatementLogger.setInt(6, rang);
             preStatementLogger.executeUpdate();
+            long id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
             //
             preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
@@ -540,23 +551,21 @@ class BaseDataParent implements BaseData {
                             " id_loggerUser = ? " +
                             " WHERE id_user = ? "
             );
-            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID() );
-            preStatementUserUpd.setLong(2, user.id_user );
+            preStatementUserUpd.setLong(1, id_loggerUser);
+            preStatementUserUpd.setLong(2, user.id_user);
             preStatementUserUpd.executeUpdate();
             //
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-                connection.setAutoCommit(saveAutoCommit);
+            try { connection.rollback();
             } catch (SQLException se) {
-                e = new SQLException("ошибка закрытия транзакции", se);
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
-            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
         }
-        //
-        try { connection.setAutoCommit(saveAutoCommit);
-        } catch (SQLException se) { }
         try {
             preStatementUserUpd.close();
             preStatementLogger.close();
@@ -577,7 +586,6 @@ class BaseDataParent implements BaseData {
         PreparedStatement statement = null;
         Statement statementReadSpec = null;
         boolean saveAutoCommit = false;
-        long id_spec;
         //
         try {
             saveAutoCommit = connection.getAutoCommit();
@@ -596,7 +604,7 @@ class BaseDataParent implements BaseData {
                             " LIMIT 1 "
             );
             resultSpec.next();
-            id_spec = resultSpec.getLong(1);
+            long id_spec = resultSpec.getLong(1);
             // запись
             statement = connection.prepareStatement(
                     "INSERT INTO " + baseDat + ".table_Data " +
@@ -611,24 +619,349 @@ class BaseDataParent implements BaseData {
             statement.setInt(6, tik_back);
             statement.setInt(7, tik_stop);
             statement.setBlob(8, distance);
-
             statement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
+            try { connection.rollback();
             } catch (SQLException se) {
-                e = new SQLException("ошибка закрытия транзакции", se);
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
-            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
         }
-        //
-        try { connection.setAutoCommit(saveAutoCommit);
-        } catch (SQLException se) { }
         //
         try {
             statementReadSpec.close();
             statement.close();
         } catch (SQLException e) { }
+    }
+    // запись нового типа толкателя
+    @Override
+    public void writeNewTypePusher(PusherType pusherType) throws BaseDataException {
+        if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
+        boolean fl = false;
+        try {
+            fl = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
+        //
+        try {
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        //
+        PreparedStatement preStatementPusherType;
+        PreparedStatement preStatementLoggerPusherType;
+        PreparedStatement preStatementUpdatePusherType;
+        // время записи
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
+        //
+        try {
+            // создание записи индификатора толкателя
+            preStatementPusherType = connection.prepareStatement(
+                    "INSERT INTO " +
+                            " " + baseDat + ".type_pushers " +
+                            " (date_reg, id_loggerTypePusher) " +
+                            " VALUES (?, ?) "
+            );
+            preStatementPusherType.setTimestamp(1, timestamp);
+            preStatementPusherType.setLong(2, 0);
+            preStatementPusherType.executeUpdate();
+            long id_typePusher = ((ClientPreparedStatement) preStatementPusherType).getLastInsertID();
+            // создание записи в журнале типа толкателя
+            preStatementLoggerPusherType = connection.prepareStatement(
+                    "INSERT INTO " +
+                            " " + baseDat + ".logger_type_pushers " +
+                            " (data_upd, id_loggerUser, id_typePusher, name_type, force_s, move_min, move_max) " +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?) "
+            );
+            preStatementLoggerPusherType.setTimestamp(1, timestamp);
+            preStatementLoggerPusherType.setLong(2, pusherType.id_loggerUser);
+            preStatementLoggerPusherType.setLong(3, id_typePusher);
+            preStatementLoggerPusherType.setString(4, pusherType.name);
+            preStatementLoggerPusherType.setInt(5, pusherType.force);
+            preStatementLoggerPusherType.setInt(6, pusherType.move_min);
+            preStatementLoggerPusherType.setInt(7, pusherType.move_max);
+            preStatementLoggerPusherType.executeUpdate();
+            long id_loggerTypePusher = ((ClientPreparedStatement) preStatementLoggerPusherType).getLastInsertID();
+            //
+            preStatementUpdatePusherType = connection.prepareStatement(
+                    "UPDATE " +
+                            " " + baseDat + ".type_pushers " +
+                            " SET " +
+                            " id_loggerTypePusher = ? " +
+                            " WHERE id_typePusher = ? "
+            );
+            preStatementUpdatePusherType.setLong(1, id_loggerTypePusher);
+            preStatementUpdatePusherType.setLong(2, id_typePusher);
+            preStatementUpdatePusherType.executeUpdate();
+            //
+            connection.commit();
+            pusherType.id_typePusher = id_typePusher;
+            pusherType.id_loggerTypePusher = id_loggerTypePusher;
+            pusherType.date_upd = timestamp;
+        } catch (SQLException e) {
+            try { connection.rollback();
+            } catch (SQLException se) { e = new SQLException("ошибка отката транзакции: " + se.getMessage(), e);
+            }
+            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        // close
+        try {
+            preStatementLoggerPusherType.close();
+            preStatementPusherType.close();
+            preStatementUpdatePusherType.close();
+        } catch (SQLException throwables) { }
+    }
+    // обновление типа толкателя
+    @Override
+    public void updateTypePusher(PusherType pusherType) throws BaseDataException {
+        if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
+        boolean fl = false;
+        try {
+            fl = connection.isClosed();
+        } catch (SQLException e) { throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (fl) { throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE); }
+        if (pusherType == null) { throw new BaseDataException("нет данных", Status.PARAMETERS_ERROR); }
+
+        boolean saveAutoCommit = true;
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+
+        PreparedStatement preStatementLogger;
+        PreparedStatement preStatementUpdate;
+
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
+        try {
+            preStatementLogger = connection.prepareStatement(
+                    "INSERT INTO " +
+                            " " + baseDat + ".logger_type_pushers " +
+                            " (data, id_loggerUser, id_typePusher, name_type, force_s, move_min, move_max) " +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?) "
+            );
+            preStatementLogger.setTimestamp(1, timestamp);
+            preStatementLogger.setLong(2, pusherType.id_loggerUser);
+            preStatementLogger.setLong(3, pusherType.id_typePusher);
+            preStatementLogger.setString(4, pusherType.name);
+            preStatementLogger.setInt(5, pusherType.force);
+            preStatementLogger.setInt(6, pusherType.move_min);
+            preStatementLogger.setInt(7, pusherType.move_max);
+            preStatementLogger.executeUpdate();
+            long id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
+            //
+            preStatementUpdate = connection.prepareStatement(
+                    "UPDATE " +
+                            " " + baseDat + ".type_pushers " +
+                            " SET " +
+                            " id_loggerTypePusher = ? " +
+                            " WHERE id_typePusher = ? "
+            );
+            preStatementUpdate.setLong(1, id_loggerTypePusher);
+            preStatementUpdate.setLong(2, pusherType.id_typePusher);
+            preStatementUpdate.executeUpdate();
+            //
+            connection.commit();
+        } catch (SQLException e) {
+            try { connection.rollback();
+            } catch (SQLException se) {
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
+            }
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
+        }
+        //
+        try {
+            preStatementLogger.close();
+            preStatementUpdate.close();
+        } catch (SQLException throwables) { }
+    }
+    // деактивация типа толкателя
+    @Override
+    public void deativateTypePusher(long id_loggerUser, PusherType pusherType) throws BaseDataException {
+        if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
+        boolean fl = false;
+        try {
+            fl = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (fl) { throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE); }
+        if (pusherType == null) { throw new BaseDataException("нет данных", Status.PARAMETERS_ERROR); }
+
+        boolean saveAutoCommit = true;
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException e) { throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        //
+        PreparedStatement preStatementLogger;
+        PreparedStatement preStatementUpdate;
+        //
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
+        try {
+            preStatementLogger = connection.prepareStatement(
+                    "INSERT INTO " +
+                            " " + baseDat + ".logger_type_pushers " +
+                            " (data, id_loggerUser, id_typePusher, name_type, force_s, move_min, move_max) " +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?) "
+            );
+            preStatementLogger.setTimestamp(1, timestamp);
+            preStatementLogger.setLong(2, pusherType.id_loggerUser);
+            preStatementLogger.setLong(3, pusherType.id_typePusher);
+            preStatementLogger.setString(4, pusherType.name);
+            preStatementLogger.setInt(5, pusherType.force);
+            preStatementLogger.setInt(6, pusherType.move_min);
+            preStatementLogger.setInt(7, pusherType.move_max);
+            preStatementLogger.executeUpdate();
+            long id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
+            //
+            preStatementUpdate = connection.prepareStatement(
+                    "UPDATE " +
+                            " " + baseDat + ".type_pushers " +
+                            " SET " +
+                            " id_loggerTypePusher = ?,  date_unreg = ? " +
+                            " WHERE id_typePusher = ? "
+            );
+            preStatementUpdate.setLong(1, id_loggerTypePusher);
+            preStatementUpdate.setTimestamp(2, timestamp);
+            preStatementUpdate.setLong(3, pusherType.id_typePusher);
+            preStatementUpdate.executeUpdate();
+            //
+            connection.commit();
+            pusherType.id_loggerTypePusher = id_loggerTypePusher;
+            pusherType.date_upd = timestamp;
+            pusherType.date_unreg = timestamp;
+        } catch (SQLException e) {
+            try { connection.rollback();
+            } catch (SQLException se) {
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
+            }
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
+        }
+        try {
+            preStatementLogger.close();
+            preStatementUpdate.close();
+        } catch (SQLException throwables) { }
+    }
+    // чтение списока типов толкателей
+    @Override
+    public PusherType[] getListTypePushers(boolean actual) throws BaseDataException {
+        if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
+        boolean fl = false;
+        try {
+            fl = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (fl) { throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE); }
+
+        boolean saveAutoCommit = true;
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException e) { throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        //
+        ResultSet result;
+        Statement statement;
+        ArrayList<PusherType> list;
+
+        try {
+            statement = connection.createStatement();
+            String query;
+            if (actual) {
+                query = " SELECT " +
+                        " type_pushers.id_typePusher, " +
+                        " logger_type_pushers.id_loggerTypePusher, " +
+                        " logger_type_pushers.data_upd, " +
+                        " logger_type_pushers.id_loggerUser, " +
+                        " logger_type_pushers.name_type, " +
+                        " logger_type_pushers.force_s, " +
+                        " logger_type_pushers.move_min, " +
+                        " logger_type_pushers.move_max, " +
+                        " type_pushers.date_unreg " +
+                        " FROM " + baseDat + ".logger_type_pushers " +
+                        " INNER JOIN " +baseDat + ".type_pushers " +
+                        " ON " +
+                        " logger_type_pushers.id_loggerTypePusher = type_pushers.id_loggerTypePusher " +
+                        " WHERE " +
+                        " type_pushers.date_unreg IS NULL " +
+                        " ORDER BY " +
+                        " logger_type_pushers.name_type ASC ";
+            } else {
+                query = " SELECT " +
+                        " type_pushers.id_typePusher, " +
+                        " logger_type_pushers.id_loggerTypePusher, " +
+                        " logger_type_pushers.data_upd, " +
+                        " logger_type_pushers.id_loggerUser, " +
+                        " logger_type_pushers.name_type, " +
+                        " logger_type_pushers.force_s, " +
+                        " logger_type_pushers.move_min, " +
+                        " logger_type_pushers.move_max, " +
+                        " type_pushers.date_unreg " +
+                        " FROM " + baseDat + ".logger_type_pushers " +
+                        " INNER JOIN " +baseDat + ".type_pushers " +
+                        " ON " +
+                        " logger_type_pushers.id_loggerTypePusher = type_pushers.id_loggerTypePusher " +
+                        " ORDER BY " +
+                        " logger_type_pushers.name_type ASC ";
+            }
+            result = statement.executeQuery(query);
+            // создание списка
+            list = new ArrayList<>();
+            //
+            try {
+                while (result.next()) {
+                    try {
+                        list.add(new PusherType(
+                                result.getLong("id_typePusher"),
+                                result.getTimestamp("data_upd"),
+                                result.getLong("id_loggerUser"),
+                                result.getLong("id_loggerTypePusher"),
+                                result.getString("name_type"),
+                                result.getInt("force_s"),
+                                result.getInt("move_min"),
+                                result.getInt("move_max"),
+                                result.getTimestamp("date_unreg")
+                        ));
+                    } catch (SQLException e) {
+                        myLog.log(Level.WARNING, "ошибка парсинга", e);
+                    }
+                }
+            } catch (SQLException e) { }
+            if (list.size() == 0) { throw new SQLException("ошибка получения списка типов толкателей"); }
+            connection.commit();
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
+        }
+        //
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) { }
+        return list.toArray(new PusherType[0]);
     }
 }

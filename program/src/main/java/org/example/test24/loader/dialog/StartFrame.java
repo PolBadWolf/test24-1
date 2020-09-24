@@ -89,32 +89,25 @@ public class StartFrame {
     }
 
 
-    private BaseData.Parameters getParametersBaseData(BaseData.TypeBaseDate typeBaseDate) throws Exception {
-        if (typeBaseDate == BaseData.TypeBaseDate.ERROR) {
-            throw new Exception("ошибка типа базы данных");
-        }
+    private BaseData.Parameters getParametersBaseData(BaseData.TypeBaseDate typeBaseDate) throws ParametersSqlException {
+        if (typeBaseDate == null) { throw new ParametersSqlException("ошибка типа базы данных", BaseData.Status.BASE_TYPE_NO_SELECT, null); }
+        if (typeBaseDate == BaseData.TypeBaseDate.ERROR) { throw new ParametersSqlException("ошибка типа базы данных", BaseData.Status.BASE_TYPE_ERROR, null); }
         BaseData.Parameters parameters;
         try {
             parameters = BaseData.Parameters.create(typeBaseDate);
         } catch (Exception e) {
-            throw new Exception(e);
+            throw new ParametersSqlException(e, ((BaseDataException) e).getStatus(), null);
         }
         BaseData.Status result;
         // загрузка параметров БД
         try {
             result = parameters.load();
-            if (result != BaseData.Status.OK) {
-                myLog.log(Level.WARNING,
-                        "ошибка загрузка параметров соединения с БД\n" +
-                                result.toString() +
-                                "установить параметры поумолчанию");
-                parameters.setDefault();
+            if (result != BaseData.Status.OK) { throw new ParametersSqlException(
+                        "ошибка загрузка параметров соединения с БД: ",
+                        result,
+                        parameters);
             }
-        } catch (Exception e) {
-            myLog.log(Level.WARNING,
-                    "ошибка загрузка параметров соединения с БД\n" +
-                            "установить параметры поумолчанию", e);
-            parameters.setDefault();
+        } catch (Exception e) { throw (ParametersSqlException) e;
         }
         return parameters;
     }
@@ -153,6 +146,7 @@ public class StartFrame {
             parameters = getParametersBaseData(typeBaseDate);
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка получения параметров подключения к БД", e);
+            parameters = ((ParametersSqlException) e).getParameters();
             return;
         }
         // создание соединения
@@ -248,6 +242,29 @@ public class StartFrame {
             onInputComponents();
         }
         loadAndSetBeginParameters2();
+        // ********************
+        /*try {
+            connBD.writeNewTypePusher(new PusherType(
+                    0,
+                    null,
+                    55,
+                    0,
+                    "BE BE be",
+                    30,
+                    10,
+                    1000,
+                    null
+            ));
+        } catch (BaseDataException e) {
+            e.printStackTrace();
+        }*/
+        try {
+            PusherType[] pusherTypes = connBD.getListTypePushers(false);
+            int a = 5;
+        } catch (BaseDataException e) {
+            e.printStackTrace();
+        }
+        // ********************
     }
     private void loadAndSetBeginParameters() {
         // загрузка параметров соединения с БД
