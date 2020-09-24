@@ -49,6 +49,12 @@ class BaseDataParent implements BaseData {
         }
         if (flClosed) throw new BaseDataException("отсутствует соединение (connection == null)", Status.CONNECT_CLOSE);
 
+        try {
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+
         ArrayList<User> listUsers = new ArrayList<>();
         Statement statement;
         ResultSet result;
