@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class PusherType {
     public long id_typePusher;
-    public Date date;                   // когда правили/создали
+    public Date date_upd;                   // когда правили/создали
     public long id_loggerUser;          // кто правил/создал
     public long id_loggerTypePusher;    // id записи
     public String name;                 // названия типа толкателя
@@ -13,9 +13,9 @@ public class PusherType {
     public int move_max;                // максимальное значение номинального хода
     public Date date_unreg;             // когда деактивировали
 
-    public PusherType(long id_typePusher, Date date, long id_loggerUser, long id_loggerTypePusher, String name, int force, int move_min, int move_max, Date date_unreg) {
+    public PusherType(long id_typePusher, Date date_upd, long id_loggerUser, long id_loggerTypePusher, String name, int force, int move_min, int move_max, Date date_unreg) {
         this.id_typePusher = id_typePusher;
-        this.date = date;
+        this.date_upd = date_upd;
         this.id_loggerUser = id_loggerUser;
         this.id_loggerTypePusher = id_loggerTypePusher;
         this.name = name;

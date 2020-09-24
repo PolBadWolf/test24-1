@@ -205,4 +205,6 @@ public interface BaseData {
     void updateTypePusher(PusherType pusherType) throws BaseDataException;
     // деактивация типа толкателя
     void deativateTypePusher(long id_loggerUser, PusherType pusherType) throws BaseDataException;
+    // чтение списока типов толкателей
+    PusherType[] getListTypePushers(boolean actual) throws BaseDataException;
 }

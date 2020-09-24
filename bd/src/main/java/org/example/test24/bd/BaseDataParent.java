@@ -705,7 +705,7 @@ class BaseDataParent implements BaseData {
             connection.commit();
             pusherType.id_typePusher = id_typePusher;
             pusherType.id_loggerTypePusher = id_loggerTypePusher;
-            pusherType.date = timestamp;
+            pusherType.date_upd = timestamp;
         } catch (SQLException e) {
             try { connection.rollback();
             } catch (SQLException se) { e = new SQLException("ошибка отката транзакции: " + se.getMessage(), e);
@@ -845,7 +845,7 @@ class BaseDataParent implements BaseData {
             //
             connection.commit();
             pusherType.id_loggerTypePusher = id_loggerTypePusher;
-            pusherType.date = timestamp;
+            pusherType.date_upd = timestamp;
             pusherType.date_unreg = timestamp;
         } catch (SQLException e) {
             try { connection.rollback();
@@ -861,5 +861,107 @@ class BaseDataParent implements BaseData {
             preStatementLogger.close();
             preStatementUpdate.close();
         } catch (SQLException throwables) { }
+    }
+    // чтение списока типов толкателей
+    @Override
+    public PusherType[] getListTypePushers(boolean actual) throws BaseDataException {
+        if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
+        boolean fl = false;
+        try {
+            fl = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (fl) { throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE); }
+
+        boolean saveAutoCommit = true;
+        try {
+            saveAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException e) { throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        //
+        ResultSet result;
+        Statement statement;
+        ArrayList<PusherType> list;
+
+        try {
+            statement = connection.createStatement();
+            String query;
+            if (actual) {
+                query = " SELECT " +
+                        " type_pushers.id_typePusher, " +
+                        " logger_type_pushers.id_loggerTypePusher, " +
+                        " logger_type_pushers.data_upd, " +
+                        " logger_type_pushers.id_loggerUser, " +
+                        " logger_type_pushers.name_type, " +
+                        " logger_type_pushers.force_s, " +
+                        " logger_type_pushers.move_min, " +
+                        " logger_type_pushers.move_max " +
+                        " type_pushers.date_unreg, " +
+                        " FROM " + baseDat + ".logger_type_pushers " +
+                        " INNER JOIN " +baseDat + ".type_pushers " +
+                        " ON " +
+                        " logger_type_pushers.id_loggerTypePusher = type_pushers.id_loggerTypePusher " +
+                        " WHERE " +
+                        " type_pushers.date_unreg IS NULL " +
+                        " ORDER BY " +
+                        " logger_type_pushers.name_type ASC ";
+            } else {
+                query = " SELECT " +
+                        " type_pushers.id_typePusher, " +
+                        " logger_type_pushers.id_loggerTypePusher, " +
+                        " logger_type_pushers.data_upd, " +
+                        " logger_type_pushers.id_loggerUser, " +
+                        " logger_type_pushers.name_type, " +
+                        " logger_type_pushers.force_s, " +
+                        " logger_type_pushers.move_min, " +
+                        " logger_type_pushers.move_max " +
+                        " type_pushers.date_unreg, " +
+                        " FROM " + baseDat + ".logger_type_pushers " +
+                        " INNER JOIN " +baseDat + ".type_pushers " +
+                        " ON " +
+                        " logger_type_pushers.id_loggerTypePusher = type_pushers.id_loggerTypePusher " +
+                        " ORDER BY " +
+                        " logger_type_pushers.name_type ASC ";
+            }
+            result = statement.executeQuery(query);
+            // создание списка
+            list = new ArrayList<>();
+            //
+            try {
+                while (result.next()) {
+                    try {
+                        list.add(new PusherType(
+                                result.getLong("id_typePusher"),
+                                result.getTimestamp("data_upd"),
+                                result.getLong("id_loggerUser"),
+                                result.getLong("id_loggerTypePusher"),
+                                result.getString("name_type"),
+                                result.getInt("force_s"),
+                                result.getInt("move_min"),
+                                result.getInt("move_max"),
+                                result.getTimestamp("date_unreg")
+                        ));
+                    } catch (SQLException e) {
+                        myLog.log(Level.WARNING, "ошибка парсинга", e);
+                    }
+                }
+            } catch (SQLException e) { }
+            if (list.size() == 0) { throw new SQLException("ошибка получения списка типов толкателей"); }
+            connection.commit();
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
+        }
+        //
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) { }
+        return list.toArray(new PusherType[0]);
     }
 }
