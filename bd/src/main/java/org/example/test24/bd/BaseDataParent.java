@@ -160,6 +160,12 @@ class BaseDataParent implements BaseData {
         }
         if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
 
+        try {
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        
         boolean table_data, table_spec;
         boolean table_users, logger_users;
         boolean table_pushers, logger_pushers;
