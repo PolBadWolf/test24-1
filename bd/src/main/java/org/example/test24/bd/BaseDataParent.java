@@ -385,6 +385,7 @@ class BaseDataParent implements BaseData {
             preStatementUser.setTimestamp(1, timestamp);
             preStatementUser.setInt(2, 0);
             preStatementUser.executeUpdate();
+            long id_user = ((ClientPreparedStatement)preStatementUser).getLastInsertID();
             //
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
@@ -394,11 +395,12 @@ class BaseDataParent implements BaseData {
             );
             preStatementLogger.setTimestamp(1, timestamp);
             preStatementLogger.setLong(2, id_loggerUserEdit);
-            preStatementLogger.setLong(3, ((ClientPreparedStatement)preStatementUser).getLastInsertID());
+            preStatementLogger.setLong(3, id_user);
             preStatementLogger.setString(4, surName);
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, rang);
             preStatementLogger.executeUpdate();
+            long id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
             //
             preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
@@ -407,8 +409,8 @@ class BaseDataParent implements BaseData {
                             " id_loggerUser = ? " +
                             " WHERE id_user = ? "
             );
-            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID() );
-            preStatementUserUpd.setLong(2, ((ClientPreparedStatement)preStatementUser).getLastInsertID() );
+            preStatementUserUpd.setLong(1, id_loggerUser);
+            preStatementUserUpd.setLong(2, id_user);
             preStatementUserUpd.executeUpdate();
             //
             connection.commit();
@@ -512,7 +514,7 @@ class BaseDataParent implements BaseData {
         }
         if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
 
-        boolean saveAutoCommit = false;
+        boolean saveAutoCommit = true;
         try {
             saveAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
