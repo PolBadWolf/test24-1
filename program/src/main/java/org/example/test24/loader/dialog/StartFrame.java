@@ -248,6 +248,29 @@ public class StartFrame {
             onInputComponents();
         }
         loadAndSetBeginParameters2();
+        // ********************
+        try {
+            connBD.writeNewTypePusher(new PusherType(
+                    0,
+                    null,
+                    55,
+                    0,
+                    "BE BE be",
+                    30,
+                    10,
+                    1000,
+                    null
+            ));
+        } catch (BaseDataException e) {
+            e.printStackTrace();
+        }
+        try {
+            PusherType[] pusherTypes = connBD.getListTypePushers(false);
+            int a = 5;
+        } catch (BaseDataException e) {
+            e.printStackTrace();
+        }
+        // ********************
     }
     private void loadAndSetBeginParameters() {
         // загрузка параметров соединения с БД
