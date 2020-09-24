@@ -678,7 +678,7 @@ class BaseDataParent implements BaseData {
             preStatementLoggerPusherType = connection.prepareStatement(
                     "INSERT INTO " +
                             " " + baseDat + ".logger_type_pushers " +
-                            " (data, id_loggerUser, id_typePusher, name_type, force_s, move_min, move_max) " +
+                            " (data_upd, id_loggerUser, id_typePusher, name_type, force_s, move_min, move_max) " +
                             " VALUES (?, ?, ?, ?, ?, ?, ?) "
             );
             preStatementLoggerPusherType.setTimestamp(1, timestamp);
