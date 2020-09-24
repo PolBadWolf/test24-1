@@ -165,7 +165,7 @@ class BaseDataParent implements BaseData {
         } catch (SQLException e) {
             throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
         }
-        
+
         boolean table_data, table_spec;
         boolean table_users, logger_users;
         boolean table_pushers, logger_pushers;
@@ -246,7 +246,7 @@ class BaseDataParent implements BaseData {
             connection.setAutoCommit(false);
             connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         } catch (SQLException e) {
-            throw new BaseDataException("ошибка соединения", e, Status.SQL_TRANSACTION_ERROR);
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
         }
 
         PreparedStatement preStatementLogger;
@@ -269,6 +269,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, user.rang);
             preStatementLogger.executeUpdate();
+            long id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
             //
             preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
@@ -277,25 +278,24 @@ class BaseDataParent implements BaseData {
                             " id_loggerUser = ? " +
                             " WHERE id_user = ? "
             );
-            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
+            preStatementUserUpd.setLong(1, id_loggerUser);
             preStatementUserUpd.setLong(2, user.id_user);
             preStatementUserUpd.executeUpdate();
             //
             connection.commit();
-            user.id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
+            user.id_loggerUser = id_loggerUser;
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-                connection.setAutoCommit(saveAutoCommit);
+            try { connection.rollback();
             } catch (SQLException se) {
-                myLog.log(Level.SEVERE, "ошибка отмены транзакции", se);
-                e = new SQLException("ошибка отмены транзакции: " + se.getStackTrace(), e);
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
             throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
         }
         //
         try {
-            connection.setAutoCommit(saveAutoCommit);
             preStatementUserUpd.close();
             preStatementLogger.close();
         } catch (SQLException se) { }
