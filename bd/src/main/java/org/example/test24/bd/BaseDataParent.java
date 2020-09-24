@@ -301,7 +301,7 @@ class BaseDataParent implements BaseData {
         } catch (SQLException se) { }
     }
     // ===================================================================================================
-    // чтение списка толкателей
+    // чтение списка толкателей ****
     @Override
     public Pusher[] getListPushers(boolean actual) throws Exception {
         if (1==1) throw new Exception("НЕ РЕАЛИЗОВАНО !!!!!!!!!!!!!!!!!!");
@@ -360,7 +360,7 @@ class BaseDataParent implements BaseData {
         }
         if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
 
-        boolean saveAutoCommit = false;
+        boolean saveAutoCommit = true;
         try {
             saveAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
@@ -413,13 +413,14 @@ class BaseDataParent implements BaseData {
             //
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-                connection.setAutoCommit(saveAutoCommit);
+            try { connection.rollback();
             } catch (SQLException se) {
-                e = new SQLException("ошибка отката транзакции: " + se.getMessage(), e);
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
-            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
         }
         //
         try {
