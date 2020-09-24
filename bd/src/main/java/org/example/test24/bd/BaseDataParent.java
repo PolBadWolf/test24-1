@@ -678,7 +678,7 @@ class BaseDataParent implements BaseData {
             preStatementLoggerPusherType = connection.prepareStatement(
                     "INSERT INTO " +
                             " " + baseDat + ".logger_type_pushers " +
-                            " (data, id_loggerUser, id_typePusher, name, force, move_min, move_max) " +
+                            " (data, id_loggerUser, id_typePusher, name_type, force_s, move_min, move_max) " +
                             " VALUES (?, ?, ?, ?, ?, ?, ?) "
             );
             preStatementLoggerPusherType.setTimestamp(1, timestamp);
@@ -705,6 +705,7 @@ class BaseDataParent implements BaseData {
             connection.commit();
             pusherType.id_typePusher = id_typePusher;
             pusherType.id_loggerTypePusher = id_loggerTypePusher;
+            pusherType.date = timestamp;
         } catch (SQLException e) {
             try { connection.rollback();
             } catch (SQLException se) { e = new SQLException("ошибка отката транзакции: " + se.getMessage(), e);
