@@ -472,6 +472,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, user.rang);
             preStatementLogger.executeUpdate();
+            long id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
             //
             preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
@@ -481,7 +482,7 @@ class BaseDataParent implements BaseData {
                             "date_unreg = ? " +
                             "WHERE id_user = ? "
             );
-            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID());
+            preStatementUserUpd.setLong(1, id_loggerUser);
             preStatementUserUpd.setTimestamp(2, timestamp);
             preStatementUserUpd.setLong(3, user.id_user);
             preStatementUserUpd.executeUpdate();
