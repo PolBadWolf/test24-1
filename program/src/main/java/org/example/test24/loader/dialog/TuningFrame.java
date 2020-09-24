@@ -64,6 +64,7 @@ class TuningFrame {
         try {
             parametersSql = loadParametersSql(configProg.getTypeBaseData());
         } catch (Exception e) {
+            parametersSql = ((ParametersSqlException) e).getParameters();
             myLog.log(Level.WARNING, "загрузка параметров", e);
             flInit = false;
         }

@@ -898,8 +898,8 @@ class BaseDataParent implements BaseData {
                         " logger_type_pushers.name_type, " +
                         " logger_type_pushers.force_s, " +
                         " logger_type_pushers.move_min, " +
-                        " logger_type_pushers.move_max " +
-                        " type_pushers.date_unreg, " +
+                        " logger_type_pushers.move_max, " +
+                        " type_pushers.date_unreg " +
                         " FROM " + baseDat + ".logger_type_pushers " +
                         " INNER JOIN " +baseDat + ".type_pushers " +
                         " ON " +
@@ -917,8 +917,8 @@ class BaseDataParent implements BaseData {
                         " logger_type_pushers.name_type, " +
                         " logger_type_pushers.force_s, " +
                         " logger_type_pushers.move_min, " +
-                        " logger_type_pushers.move_max " +
-                        " type_pushers.date_unreg, " +
+                        " logger_type_pushers.move_max, " +
+                        " type_pushers.date_unreg " +
                         " FROM " + baseDat + ".logger_type_pushers " +
                         " INNER JOIN " +baseDat + ".type_pushers " +
                         " ON " +
