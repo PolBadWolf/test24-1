@@ -424,9 +424,6 @@ class BaseDataParent implements BaseData {
         }
         //
         try {
-            connection.setAutoCommit(saveAutoCommit);
-        } catch (SQLException se) { }
-        try {
             preStatementUserUpd.close();
             preStatementUser.close();
             preStatementLogger.close();
@@ -445,7 +442,7 @@ class BaseDataParent implements BaseData {
         }
         if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
 
-        boolean saveAutoCommit = false;
+        boolean saveAutoCommit = true;
         try {
             saveAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
@@ -488,22 +485,19 @@ class BaseDataParent implements BaseData {
             preStatementUserUpd.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-                connection.setAutoCommit(saveAutoCommit);
+            try { connection.rollback();
             } catch (SQLException se) {
-                e = new SQLException("ошибка закрытия транзакции", se);
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
-            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
         }
-        try { connection.setAutoCommit(saveAutoCommit);
-        } catch (SQLException se) { }
         try {
             preStatementUserUpd.close();
             preStatementLogger.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        } catch (SQLException throwables) { }
     }
     // ===================================================================================================
     // обновление данных о пользователе
