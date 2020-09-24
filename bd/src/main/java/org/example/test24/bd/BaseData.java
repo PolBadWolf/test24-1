@@ -201,4 +201,6 @@ public interface BaseData {
     void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
     // запись нового типа толкателя
     void writeNewTypePusher(PusherType pusherType) throws BaseDataException;
+    // обновление типа толкателя
+    void updateTypePusher(PusherType pusherType) throws BaseDataException;
 }
