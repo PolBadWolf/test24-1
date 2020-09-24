@@ -542,6 +542,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setString(5, BaseData.Password.encoding(password));
             preStatementLogger.setInt(6, rang);
             preStatementLogger.executeUpdate();
+            long id_loggerUser = ((ClientPreparedStatement)preStatementLogger).getLastInsertID();
             //
             preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
@@ -550,23 +551,21 @@ class BaseDataParent implements BaseData {
                             " id_loggerUser = ? " +
                             " WHERE id_user = ? "
             );
-            preStatementUserUpd.setLong(1, ((ClientPreparedStatement)preStatementLogger).getLastInsertID() );
-            preStatementUserUpd.setLong(2, user.id_user );
+            preStatementUserUpd.setLong(1, id_loggerUser);
+            preStatementUserUpd.setLong(2, user.id_user);
             preStatementUserUpd.executeUpdate();
             //
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-                connection.setAutoCommit(saveAutoCommit);
+            try { connection.rollback();
             } catch (SQLException se) {
-                e = new SQLException("ошибка закрытия транзакции", se);
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
-            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
         }
-        //
-        try { connection.setAutoCommit(saveAutoCommit);
-        } catch (SQLException se) { }
         try {
             preStatementUserUpd.close();
             preStatementLogger.close();
