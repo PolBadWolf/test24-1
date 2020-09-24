@@ -586,7 +586,6 @@ class BaseDataParent implements BaseData {
         PreparedStatement statement = null;
         Statement statementReadSpec = null;
         boolean saveAutoCommit = false;
-        long id_spec;
         //
         try {
             saveAutoCommit = connection.getAutoCommit();
@@ -605,7 +604,7 @@ class BaseDataParent implements BaseData {
                             " LIMIT 1 "
             );
             resultSpec.next();
-            id_spec = resultSpec.getLong(1);
+            long id_spec = resultSpec.getLong(1);
             // запись
             statement = connection.prepareStatement(
                     "INSERT INTO " + baseDat + ".table_Data " +
@@ -620,20 +619,18 @@ class BaseDataParent implements BaseData {
             statement.setInt(6, tik_back);
             statement.setInt(7, tik_stop);
             statement.setBlob(8, distance);
-
             statement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
+            try { connection.rollback();
             } catch (SQLException se) {
-                e = new SQLException("ошибка закрытия транзакции", se);
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
-            throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            try { connection.setAutoCommit(saveAutoCommit);
+            } catch (SQLException throwables) { }
         }
-        //
-        try { connection.setAutoCommit(saveAutoCommit);
-        } catch (SQLException se) { }
         //
         try {
             statementReadSpec.close();
