@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.logging.Level;
 
+import static org.example.test24.bd.TypeBaseDate.*;
 import static org.example.test24.lib.MyLogger.myLog;
 
 class BaseDataParent implements BaseData {
@@ -16,11 +17,11 @@ class BaseDataParent implements BaseData {
     // ===================================================================================================
     static BaseData create(Parameters parameters) throws BaseDataException {
         BaseData baseData;
-        switch (parameters.getTypeBaseDate().getCodeTypeBaseData()) {
-            case BaseData.TYPEBD_MYSQL:
+        switch (parameters.getTypeBaseDate()) {
+            case MY_SQL:
                 baseData = new BaseDataMySql();
                 break;
-            case BaseData.TYPEBD_MSSQL:
+            case MS_SQL:
                 baseData = new BaseDataMsSql();
                 break;
             default:

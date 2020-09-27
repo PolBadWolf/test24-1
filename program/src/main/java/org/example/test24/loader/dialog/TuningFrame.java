@@ -105,14 +105,14 @@ class TuningFrame {
     // загрузка параметров конфигурации программы
     private BaseData.Config loadConfigProg() {
         BaseData.Config config = BaseData.Config.create();
-        BaseData.Status result = null;
+        Status result = null;
         try {
             result = config.load1();
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
             config.setDefault();
         }
-        if (result != BaseData.Status.OK) {
+        if (result != Status.OK) {
             myLog.log(Level.SEVERE, "загрузка параметров конфигурации программы", new Exception(result.toString()));
             config.setDefault();
         }
@@ -120,16 +120,16 @@ class TuningFrame {
     }
     // =============================================================================================================
     // загрузка параметров подключения к БД
-    private BaseData.Parameters loadParametersSql(BaseData.TypeBaseDate typeBaseDate) throws BaseDataException
+    private BaseData.Parameters loadParametersSql(TypeBaseDate typeBaseDate) throws BaseDataException
     {
-        if (typeBaseDate == null) throw new BaseDataException("не задан тип БД", BaseData.Status.BASE_TYPE_NO_SELECT);
-        if (typeBaseDate == BaseData.TypeBaseDate.ERROR)  throw new BaseDataException("ошибочный тип БД", BaseData.Status.BASE_TYPE_ERROR);
+        if (typeBaseDate == null) throw new BaseDataException("не задан тип БД", Status.BASE_TYPE_NO_SELECT);
+        if (typeBaseDate == TypeBaseDate.ERROR)  throw new BaseDataException("ошибочный тип БД", Status.BASE_TYPE_ERROR);
         //
         BaseData.Parameters parameters = BaseData.Parameters.create(typeBaseDate);
-        BaseData.Status result;
+        Status result;
         result = parameters.load();
-        if (result != BaseData.Status.OK) {
-            throw new BaseDataException("загрузка параметров соединения с БД", new Exception(result.toString()), BaseData.Status.PARAMETERS_ERROR);
+        if (result != Status.OK) {
+            throw new BaseDataException("загрузка параметров соединения с БД", new Exception(result.toString()), Status.PARAMETERS_ERROR);
         }
         //
         return parameters;
@@ -333,11 +333,11 @@ class TuningFrame {
         textField.setEditable(false);
         return textField;
     }
-    private JComboBox<BaseData.TypeBaseDate> getComboBoxTypeBd(int x, int y, int width, int height) {
-        JComboBox<BaseData.TypeBaseDate> comboBox = new JComboBox<>();
+    private JComboBox<TypeBaseDate> getComboBoxTypeBd(int x, int y, int width, int height) {
+        JComboBox<TypeBaseDate> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
-        comboBox.addItem(BaseData.TypeBaseDate.MS_SQL);
-        comboBox.addItem(BaseData.TypeBaseDate.MY_SQL);
+        comboBox.addItem(TypeBaseDate.MS_SQL);
+        comboBox.addItem(TypeBaseDate.MY_SQL);
         comboBox.addActionListener(e -> {
             callSelectTypeBase(comboBox);
         });
@@ -820,7 +820,7 @@ class TuningFrame {
 
     protected JPanel panelTypeBd = null;
     protected JTextField textTypeBdStatus = null;
-    protected JComboBox<BaseData.TypeBaseDate> comboBoxTypeBd = null;
+    protected JComboBox<TypeBaseDate> comboBoxTypeBd = null;
 
     protected JPanel panelParamSQL = null;
     protected JTextField fieldParamServerIP = null;
@@ -853,7 +853,7 @@ class TuningFrame {
         //============================
         BaseData.Parameters parameters;
         try {
-            parameters = loadParametersSql((BaseData.TypeBaseDate) comboBox.getSelectedItem());
+            parameters = loadParametersSql((TypeBaseDate) comboBox.getSelectedItem());
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "выбор типа БД: " + e.getStatus().toString(), e);
             textTypeBdStatus.setText("ошибка!!!!");
@@ -879,7 +879,7 @@ class TuningFrame {
         BaseData conn;
         flagTestBaseData = false;
         try {
-            parameters = BaseData.Parameters.create((BaseData.TypeBaseDate) comboBoxTypeBd.getSelectedItem());
+            parameters = BaseData.Parameters.create((TypeBaseDate) comboBoxTypeBd.getSelectedItem());
             parameters.setIpServer(fieldParamServerIP.getText());
             parameters.setPortServer(fieldParamServerPort.getText());
             parameters.setUser(fieldParamServerLogin.getText());
@@ -969,15 +969,15 @@ class TuningFrame {
             result = javax.swing.JOptionPane.showConfirmDialog(null, textMess, "сохранение параметров", JOptionPane.OK_CANCEL_OPTION);
             if (result != 0) return;
         }
-        BaseData.Status result;
+        Status result;
         // сохранения конфига
         BaseData.Config config;
         try {
             config = BaseData.Config.create();
             config.setPortName((String) comboBoxCommPort.getSelectedItem());
-            config.setTypeBaseData((BaseData.TypeBaseDate) comboBoxTypeBd.getSelectedItem());
+            config.setTypeBaseData((TypeBaseDate) comboBoxTypeBd.getSelectedItem());
             result = config.save();
-            if (result != BaseData.Status.OK) {
+            if (result != Status.OK) {
                 throw new BaseDataException("ошибка сохранения конфигурации", result);
             }
             configProg = config;
@@ -987,7 +987,7 @@ class TuningFrame {
         // сохранение параметров БД
         BaseData.Parameters parameters;
         try {
-            parameters = BaseData.Parameters.create((BaseData.TypeBaseDate) comboBoxTypeBd.getSelectedItem());
+            parameters = BaseData.Parameters.create((TypeBaseDate) comboBoxTypeBd.getSelectedItem());
             parameters.setIpServer(fieldParamServerIP.getText());
             parameters.setPortServer(fieldParamServerPort.getText());
             parameters.setUser(fieldParamServerLogin.getText());

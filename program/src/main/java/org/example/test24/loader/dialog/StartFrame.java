@@ -61,7 +61,7 @@ public class StartFrame {
     CallBack callBack;
     JFrame frame;
 
-    BaseData.TypeBaseDate typeBaseDate;
+    TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
     BaseData connBD;
 
@@ -89,20 +89,20 @@ public class StartFrame {
     }
 
 
-    private BaseData.Parameters getParametersBaseData(BaseData.TypeBaseDate typeBaseDate) throws ParametersSqlException {
-        if (typeBaseDate == null) { throw new ParametersSqlException("ошибка типа базы данных", BaseData.Status.BASE_TYPE_NO_SELECT, null); }
-        if (typeBaseDate == BaseData.TypeBaseDate.ERROR) { throw new ParametersSqlException("ошибка типа базы данных", BaseData.Status.BASE_TYPE_ERROR, null); }
+    private BaseData.Parameters getParametersBaseData(TypeBaseDate typeBaseDate) throws ParametersSqlException {
+        if (typeBaseDate == null) { throw new ParametersSqlException("ошибка типа базы данных", Status.BASE_TYPE_NO_SELECT, null); }
+        if (typeBaseDate == TypeBaseDate.ERROR) { throw new ParametersSqlException("ошибка типа базы данных", Status.BASE_TYPE_ERROR, null); }
         BaseData.Parameters parameters;
         try {
             parameters = BaseData.Parameters.create(typeBaseDate);
         } catch (Exception e) {
             throw new ParametersSqlException(e, ((BaseDataException) e).getStatus(), null);
         }
-        BaseData.Status result;
+        Status result;
         // загрузка параметров БД
         try {
             result = parameters.load();
-            if (result != BaseData.Status.OK) { throw new ParametersSqlException(
+            if (result != Status.OK) { throw new ParametersSqlException(
                         "ошибка загрузка параметров соединения с БД: ",
                         result,
                         parameters);
@@ -133,7 +133,7 @@ public class StartFrame {
         if (!flag) throw new Exception("отсутствует БД: " + parameters.getDataBase());
     }
 
-    private void initBaseData(BaseData.TypeBaseDate typeBaseDate) {
+    private void initBaseData(TypeBaseDate typeBaseDate) {
         // здесь сбросить флаги с БД
         flagConnecting = false;
         flagStructureIntegrity = false;
