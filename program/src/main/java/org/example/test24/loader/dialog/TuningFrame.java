@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -39,7 +40,7 @@ class TuningFrame {
     boolean flagLockActions = false;
     boolean flagTestBaseData;
     boolean flagTestCommPort;
-    boolean flagNewCorrectData = false;
+    boolean flagNewCorrectData;
 
 
 
@@ -105,12 +106,13 @@ class TuningFrame {
     // загрузка параметров конфигурации программы
     private BaseData.Config loadConfigProg() {
         BaseData.Config config = BaseData.Config.create();
-        Status result = null;
+        Status result;
         try {
             result = config.load1();
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
             config.setDefault();
+            result = Status.CONFIG_LOAD_ERROR;
         }
         if (result != Status.OK) {
             myLog.log(Level.SEVERE, "загрузка параметров конфигурации программы", new Exception(result.toString()));
@@ -191,7 +193,7 @@ class TuningFrame {
     }
     private void setComponentCommPort(String[] listCommPort, String defaultCommPort) {
         comboBoxCommPort.removeAllItems();
-        Arrays.stream(listCommPort).sorted((a, b) -> a.compareTo(b)).forEach(s -> comboBoxCommPort.addItem(s));
+        Arrays.stream(listCommPort).sorted(String::compareTo).forEach(s -> comboBoxCommPort.addItem(s));
         comboBoxCommPort.setSelectedItem(defaultCommPort);
     }
     private void setComponentBaseData(BaseData.Parameters parametersSql) {
@@ -447,8 +449,7 @@ class TuningFrame {
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> {
-            //pushButtonEditUsers();
-            myLog.log(Level.WARNING, "push button edit users", new Exception("action listener"));
+            pushButtonEditUsers();
         });
         return button;
     }
@@ -477,15 +478,15 @@ class TuningFrame {
             }
             callBack.messageCloseTuning(flagNewCorrectData);
         }
-        if (editUsers != null) {
+        /*if (editUsers != null) {
 
-        }
+        }*/
     } // ****************
     // ======
     private class EditUsersCallBack implements EditUsers.CallBack {
         @Override
         public void messageCloseEditUsers(boolean newData) {
-            editUsers = null;
+            //editUsers = null;
         }
 
         @Override
@@ -804,14 +805,45 @@ class TuningFrame {
     }
     // нажатие кнопки редактирование пользователей
     private void pushButtonEditUsers() {
-        /*if (editUsers == null) {
-            editUsers = new EditUsers(null, new EditUsersCallBack());
-        }*/
+        if (!flagTestBaseData) {
+            myLog.log(Level.SEVERE, "не установлен флаг коррекности БД");
+            buttonEditUsers.setEnabled(false);
+            return;
+        }
+        SaveEnableComponents saveComponents = new SaveEnableComponents();
+        saveComponents.offline();
+        new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
+                new EditUsers(connBD,
+                        new EditUsers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers(boolean newData) {
+                                if (newData) {
+                                    // здесь перезагрузка списка пользователей (новые данные)
+                                }
+                                saveComponents.restore();
+                            }
+                            // текущий активный пользователь
+                            @Override
+                            public User getCurrentUser() {
+                                User user = new User(
+                                        0,
+                                        new Date(),
+                                        0,
+                                        "lockAdmin",
+                                        "",
+                                        3,
+                                        null
+                                );
+                                return user;
+                            }
+                        });
+            });
+        }, "create edit users").start();
     }
     // ========================================================================
     // ===== компоненты JFrame =======
     protected JFrame frameTuning = null;
-    protected EditUsers editUsers = null;
 
     protected JPanel panelCommPort = null;
     protected JLabel labelPortCurrent = null;
@@ -878,6 +910,7 @@ class TuningFrame {
         BaseData.Parameters parameters;
         BaseData conn;
         flagTestBaseData = false;
+        buttonEditUsers.setEnabled(false);
         try {
             parameters = BaseData.Parameters.create((TypeBaseDate) comboBoxTypeBd.getSelectedItem());
             parameters.setIpServer(fieldParamServerIP.getText());
@@ -930,6 +963,8 @@ class TuningFrame {
         }
         textTypeBdStatus.setText("соединение установлено");
         flagTestBaseData = true;
+        //
+        buttonEditUsers.setEnabled(true);
     }
     private void callPushButtonTestCommPort() {
         CommPort port;
@@ -998,6 +1033,70 @@ class TuningFrame {
             flagNewCorrectData = true;
         } catch (BaseDataException e) {
             myLog.log(Level.WARNING, "сохранение параметров соединения", e);
+        }
+    }
+    // ===========================================================================
+    class SaveEnableComponents {
+        private boolean frameTuning;
+        private boolean comboBoxCommPort;
+        private boolean comboBoxTypeBd;
+        private boolean comboBoxListBd;
+        private boolean fieldParamServerIP;
+        private boolean fieldParamServerPort;
+        private boolean fieldParamServerLogin;
+        private boolean fieldParamServerPassword;
+        private boolean buttonOk;
+        private boolean buttonSave;
+        private boolean buttonTest;
+        private boolean buttonEditUsers;
+        private boolean buttonEditPushers;
+        public SaveEnableComponents() {
+            save();
+        }
+        public void save() {
+            frameTuning = TuningFrame.this.frameTuning.isEnabled();
+            comboBoxCommPort = TuningFrame.this.comboBoxCommPort.isEnabled();
+            comboBoxTypeBd = TuningFrame.this.comboBoxTypeBd.isEnabled();
+            comboBoxListBd = TuningFrame.this.comboBoxListBd.isEnabled();
+            fieldParamServerIP = TuningFrame.this.fieldParamServerIP.isEnabled();
+            fieldParamServerPort = TuningFrame.this.fieldParamServerPort.isEnabled();
+            fieldParamServerLogin = TuningFrame.this.fieldParamServerLogin.isEnabled();
+            fieldParamServerPassword = TuningFrame.this.fieldParamServerPassword.isEnabled();
+            buttonOk = TuningFrame.this.buttonOk.isEnabled();
+            buttonSave = TuningFrame.this.buttonSave.isEnabled();
+            buttonTest = TuningFrame.this.buttonTest.isEnabled();
+            buttonEditUsers = TuningFrame.this.buttonEditUsers.isEnabled();
+            buttonEditPushers = TuningFrame.this.buttonEditPushers.isEnabled();
+        }
+        public void restore() {
+            TuningFrame.this.frameTuning.setEnabled(frameTuning);
+            TuningFrame.this.comboBoxCommPort.setEnabled(comboBoxCommPort);
+            TuningFrame.this.comboBoxTypeBd.setEnabled(comboBoxTypeBd);
+            TuningFrame.this.comboBoxListBd.setEnabled(comboBoxListBd);
+            TuningFrame.this.fieldParamServerIP.setEnabled(fieldParamServerIP);
+            TuningFrame.this.fieldParamServerPort.setEnabled(fieldParamServerPort);
+            TuningFrame.this.fieldParamServerLogin.setEnabled(fieldParamServerLogin);
+            TuningFrame.this.fieldParamServerPassword.setEnabled(fieldParamServerPassword);
+            TuningFrame.this.buttonOk.setEnabled(buttonOk);
+            TuningFrame.this.buttonSave.setEnabled(buttonSave);
+            TuningFrame.this.buttonTest.setEnabled(buttonTest);
+            TuningFrame.this.buttonEditUsers.setEnabled(buttonEditUsers);
+            TuningFrame.this.buttonEditPushers.setEnabled(buttonEditPushers);
+        }
+        public void offline() {
+            TuningFrame.this.frameTuning.setEnabled(false);
+            TuningFrame.this.comboBoxCommPort.setEnabled(false);
+            TuningFrame.this.comboBoxTypeBd.setEnabled(false);
+            TuningFrame.this.comboBoxListBd.setEnabled(false);
+            TuningFrame.this.fieldParamServerIP.setEnabled(false);
+            TuningFrame.this.fieldParamServerPort.setEnabled(false);
+            TuningFrame.this.fieldParamServerLogin.setEnabled(false);
+            TuningFrame.this.fieldParamServerPassword.setEnabled(false);
+            TuningFrame.this.buttonOk.setEnabled(false);
+            TuningFrame.this.buttonSave.setEnabled(false);
+            TuningFrame.this.buttonTest.setEnabled(false);
+            TuningFrame.this.buttonEditUsers.setEnabled(false);
+            TuningFrame.this.buttonEditPushers.setEnabled(false);
         }
     }
     // ========================================================================
