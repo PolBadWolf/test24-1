@@ -259,12 +259,12 @@ public class StartFrame {
         } catch (BaseDataException e) {
             e.printStackTrace();
         }*/
-        /*try {
+        try {
             PusherType[] pusherTypes = connBD.getListTypePushers(false);
             int a = 5;
         } catch (BaseDataException e) {
             e.printStackTrace();
-        }*/
+        }
         // ********************
     }
     private void loadAndSetBeginParameters() {
