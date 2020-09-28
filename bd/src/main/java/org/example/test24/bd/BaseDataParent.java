@@ -804,41 +804,22 @@ class BaseDataParent implements BaseData {
         } catch (SQLException e) { throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
         }
         //
-        PreparedStatement preStatementLogger;
         PreparedStatement preStatementUpdate;
         //
         java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
         try {
-            preStatementLogger = connection.prepareStatement(
-                    "INSERT INTO " +
-                            " " + baseDat + ".logger_type_pushers " +
-                            " (data, id_loggerUser, id_typePusher, name_type, force_s, move_min, move_max) " +
-                            " VALUES (?, ?, ?, ?, ?, ?, ?) "
-            );
-            preStatementLogger.setTimestamp(1, timestamp);
-            preStatementLogger.setLong(2, pusherType.id_loggerUser);
-            preStatementLogger.setLong(3, pusherType.id_typePusher);
-            preStatementLogger.setString(4, pusherType.nameType);
-            preStatementLogger.setInt(5, pusherType.forceNominal);
-            preStatementLogger.setInt(6, pusherType.move_min);
-            preStatementLogger.setInt(7, pusherType.move_max);
-            preStatementLogger.executeUpdate();
-            long id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
-            //
             preStatementUpdate = connection.prepareStatement(
                     "UPDATE " +
                             " " + baseDat + ".type_pushers " +
                             " SET " +
-                            " id_loggerTypePusher = ?,  date_unreg = ? " +
+                            " date_unreg = ? " +
                             " WHERE id_typePusher = ? "
             );
-            preStatementUpdate.setLong(1, id_loggerTypePusher);
-            preStatementUpdate.setTimestamp(2, timestamp);
-            preStatementUpdate.setLong(3, pusherType.id_typePusher);
+            preStatementUpdate.setTimestamp(1, timestamp);
+            preStatementUpdate.setLong(2, pusherType.id_typePusher);
             preStatementUpdate.executeUpdate();
             //
             connection.commit();
-            pusherType.id_loggerTypePusher = id_loggerTypePusher;
             pusherType.date_upd = timestamp;
             pusherType.date_unreg = timestamp;
         } catch (SQLException e) {
@@ -852,7 +833,6 @@ class BaseDataParent implements BaseData {
             } catch (SQLException throwables) { }
         }
         try {
-            preStatementLogger.close();
             preStatementUpdate.close();
         } catch (SQLException throwables) { }
     }
