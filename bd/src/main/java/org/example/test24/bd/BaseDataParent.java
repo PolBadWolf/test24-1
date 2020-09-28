@@ -62,51 +62,56 @@ class BaseDataParent implements BaseData {
         Statement statement;
         ResultSet result;
         // запрос на список пользователей
-        String tab = "table_users";
+        String query;
         // запрос
         try {
             statement = connection.createStatement();
             if (actual) {
-                result = statement.executeQuery(
-                        "SELECT" +
+                query =
+                        "SELECT " +
                                 " table_users.id_user, " +
+                                " table_users.date_reg, " +
                                 " logger_users.id_loggerUser, " +
-                                " logger_users.date, " +
-                                " logger_users.name, " +
-                                " logger_users.password, " +
+                                " logger_users.date_upd, " +
+                                " logger_users.id_loggerUserEdit, " +
+                                " logger_users.surName, " +
+                                " logger_users.userPassword, " +
                                 " logger_users.rang, " +
                                 " table_users.date_unreg " +
                                 " FROM " +
                                 " " + baseDat + ".logger_users " +
                                 " INNER JOIN " +
-                                " " + baseDat + ".table_users" +
-                                " ON  " +
+                                " " + baseDat + ".table_users " +
+                                " ON " +
                                 " logger_users.id_loggerUser = table_users.id_loggerUser " +
                                 " WHERE " +
                                 " table_users.date_unreg IS NULL " +
                                 " ORDER BY " +
-                                " name ASC "
-                );
+                                " logger_users.surName ASC "
+                ;
             } else {
-                result = statement.executeQuery(
-                        "SELECT" +
+                query =
+                        "SELECT " +
                                 " table_users.id_user, " +
+                                " table_users.date_reg, " +
                                 " logger_users.id_loggerUser, " +
-                                " logger_users.date, " +
-                                " logger_users.name, " +
-                                " logger_users.password, " +
+                                " logger_users.date_upd, " +
+                                " logger_users.id_loggerUserEdit, " +
+                                " logger_users.surName, " +
+                                " logger_users.userPassword, " +
                                 " logger_users.rang, " +
                                 " table_users.date_unreg " +
                                 " FROM " +
                                 " " + baseDat + ".logger_users " +
                                 " INNER JOIN " +
-                                " " + baseDat + ".table_users" +
-                                " ON  " +
+                                " " + baseDat + ".table_users " +
+                                " ON " +
                                 " logger_users.id_loggerUser = table_users.id_loggerUser " +
                                 " ORDER BY " +
-                                " name ASC "
-                );
+                                " logger_users.surName ASC "
+                ;
             }
+            result = statement.executeQuery(query);
         } catch (SQLException e) {
             throw new BaseDataException(e, Status.CONNECT_ERROR);
         }
@@ -116,7 +121,7 @@ class BaseDataParent implements BaseData {
                 String pass;
                 // пароль
                 try {
-                    pass = BaseData.Password.decoding(result.getString("password"));
+                    pass = BaseData.Password.decoding(result.getString("userPassword"));
                 } catch (Exception e) {
                     myLog.log(Level.SEVERE, "ошибка декодирования пароля", e);
                     pass = null;
@@ -124,16 +129,17 @@ class BaseDataParent implements BaseData {
                 try {
                     listUsers.add(
                             new User(
-                                    result.getInt("id_user"),
-                                    result.getTimestamp("date"),
-                                    result.getInt("id_loggerUser"),
-                                    result.getString("name"),
+                                    result.getLong("id_user"),
+                                    result.getTimestamp("date_reg"),
+                                    result.getLong("id_loggerUser"),
+                                    result.getTimestamp("date_upd"),
+                                    result.getLong("id_loggerUserEdit"),
+                                    result.getString("surName"),
                                     pass,
                                     result.getInt("rang"),
                                     result.getTimestamp("date_unreg")
-                            )
-                    );
-                } catch (SQLException e) {
+                            ));
+                } catch (Exception e) {
                     myLog.log(Level.SEVERE, "ошибка парсинга", e);
                     continue;
                 }
@@ -267,7 +273,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setTimestamp(1, timestamp);
             preStatementLogger.setLong(2, user.id_loggerUser);
             preStatementLogger.setLong(3, user.id_user);
-            preStatementLogger.setString(4, user.name);
+            preStatementLogger.setString(4, user.surName);
             preStatementLogger.setString(5, pass);
             preStatementLogger.setInt(6, user.rang);
             preStatementLogger.executeUpdate();
@@ -488,7 +494,7 @@ class BaseDataParent implements BaseData {
     // ===================================================================================================
     // обновление данных о пользователе
     @Override
-    public void updateDataUser(long id_loggerUserEdit, User user, String surName, String password, int rang) throws BaseDataException {
+    public void updateDataUser(User user, long id_loggerUserEdit, String surName, String password, int rang) throws BaseDataException {
         if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
         boolean fl = false;
         try {

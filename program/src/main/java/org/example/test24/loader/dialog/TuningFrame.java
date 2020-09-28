@@ -827,7 +827,7 @@ class TuningFrame {
                             // текущий активный пользователь
                             @Override
                             public User getCurrentUser() {
-                                User user = new User(
+                                /*User user = new User(
                                         0,
                                         new Date(),
                                         0,
@@ -835,8 +835,8 @@ class TuningFrame {
                                         "",
                                         3,
                                         null
-                                );
-                                return user;
+                                );*/
+                                return null;
                             }
                         });
             });

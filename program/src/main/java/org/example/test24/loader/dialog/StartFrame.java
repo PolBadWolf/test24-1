@@ -259,12 +259,12 @@ public class StartFrame {
         } catch (BaseDataException e) {
             e.printStackTrace();
         }*/
-        try {
+        /*try {
             PusherType[] pusherTypes = connBD.getListTypePushers(false);
             int a = 5;
         } catch (BaseDataException e) {
             e.printStackTrace();
-        }
+        }*/
         // ********************
     }
     private void loadAndSetBeginParameters() {
@@ -600,8 +600,8 @@ public class StartFrame {
         // спрятать кнопку настройка
         buttonTuning.setVisible(false);
         // проверка пароля у пользователя из списка (БД)
-        if (!user.password.equals(password)) {
-            System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
+        if (!user.userPassword.equals(password)) {
+            System.out.println("у пользователя из списка не совпал пароль (" + user.userPassword + ")");
             // отключить кнопки управления
             buttonSetPassword.setEnabled(false);
             buttonEditUsers.setEnabled(false);
@@ -610,14 +610,14 @@ public class StartFrame {
             // отключить органы проверки пароля
             fieldPassword.setEnabled(false);
             buttonEnter.setEnabled(false);
-            myLog.log(Level.INFO, "ошибка ввода пароля: " + user.name + "/" + password);
+            myLog.log(Level.INFO, "ошибка ввода пароля: " + user.surName + "/" + password);
             MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
                 fieldPassword.setEnabled(true);
                 buttonEnter.setEnabled(true);
             });
             return;
         }
-        myLog.log(Level.INFO, "вход пользователем " + user.name + " с привелегиями " + user.rang);
+        myLog.log(Level.INFO, "вход пользователем " + user.surName + " с привелегиями " + user.rang);
         // разрешение смены пароля
         fieldPassword.setText("");
         buttonSetPassword.setEnabled(true);
@@ -637,13 +637,13 @@ public class StartFrame {
         if  (newPassword.length() == 0) {
             MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> buttonSetPassword.setEnabled(true));
             buttonSetPassword.setEnabled(false);
-            myLog.log(Level.WARNING, "попытка установки пустово пароля пользователем " + currentUser.name );
+            myLog.log(Level.WARNING, "попытка установки пустово пароля пользователем " + currentUser.surName );
             return;
         }
         try {
             connBD.setNewUserPassword(currentUser, newPassword);
-            currentUser.password = newPassword;
-            if (!newPassword.equals(((User) comboBoxUsers.getSelectedItem()).password)) {
+            currentUser.userPassword = newPassword;
+            if (!newPassword.equals(((User) comboBoxUsers.getSelectedItem()).userPassword)) {
                 myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
             }
         } catch (Exception e) {
