@@ -1,9 +1,7 @@
 package org.example.test24.bd;
 
 import com.mysql.cj.jdbc.ClientPreparedStatement;
-import org.example.test24.bd.usertypes.Pusher;
-import org.example.test24.bd.usertypes.TypePusher;
-import org.example.test24.bd.usertypes.User;
+import org.example.test24.bd.usertypes.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -337,7 +335,7 @@ class BaseDataParent implements BaseData {
                             " logger_pushers.namePusher, " +
                             " logger_type_pushers.id_loggerTypePusher, " +
                             " logger_type_pushers.data_upd, " +
-                            " logger_type_pushers.id_loggerUser, " +
+                            " logger_type_pushers.id_loggerUserEdit, " +
                             " logger_type_pushers.id_typePusher, " +
                             " logger_type_pushers.nameType, " +
                             " logger_type_pushers.forceNominal, " +
@@ -370,7 +368,7 @@ class BaseDataParent implements BaseData {
                             " logger_pushers.namePusher, " +
                             " logger_type_pushers.id_loggerTypePusher, " +
                             " logger_type_pushers.data_upd, " +
-                            " logger_type_pushers.id_loggerUser, " +
+                            " logger_type_pushers.id_loggerUserEdit, " +
                             " logger_type_pushers.id_typePusher, " +
                             " logger_type_pushers.nameType, " +
                             " logger_type_pushers.forceNominal, " +
@@ -394,13 +392,30 @@ class BaseDataParent implements BaseData {
         result = statement.executeQuery(query);
         // создание списка
         ArrayList<Pusher> listPusher = new ArrayList<>();
-        /*while (result.next()) {
+        while (result.next()) {
             listPusher.add(new Pusher(
                     result.getLong("id_pusher"),
                     result.getTimestamp("date_reg"),
-                    n
+                    new LoggerPusher(
+                            result.getLong("id_loggerPusher"),
+                            result.getTimestamp("logger_pushers.date_upd"),
+                            result.getLong("id_loggerUserEdit"),
+                            result.getLong("id_pusher"),
+                            result.getString("namePusher"),
+                            new LoggerTypePusher(
+                                    result.getLong("id_loggerTypePusher"),
+                                    result.getTimestamp("logger_type_pushers.data_upd"),
+                                    result.getLong("logger_type_pushers.id_loggerUserEdit"),
+                                    result.getLong("logger_type_pushers.id_typePusher"),
+                                    result.getString("nameType"),
+                                    result.getInt("forceNominal"),
+                                    result.getInt("move_min"),
+                                    result.getInt("move_max")
+                            )
+                    ),
+                    result.getTimestamp("date_unreg")
             ));
-        }*/
+        }
         try {
             result.close();
             statement.close();
@@ -823,12 +838,14 @@ class BaseDataParent implements BaseData {
             try { connection.setAutoCommit(saveAutoCommit);
             } catch (SQLException throwables) { }
         }
+        /*
         typePusher.date_upd = timestamp;
         typePusher.id_loggerUser = id_loggerUser;
         typePusher.nameType = nameType;
         typePusher.forceNominal = forceNominal;
         typePusher.move_min = move_min;
         typePusher.move_max = move_max;
+        */
         //
         try {
             preStatementLogger.close();
@@ -872,8 +889,8 @@ class BaseDataParent implements BaseData {
             preStatementUpdate.executeUpdate();
             //
             connection.commit();
-            typePusher.date_upd = timestamp;
-            typePusher.date_unreg = timestamp;
+            /*typePusher.date_upd = timestamp;
+            typePusher.date_unreg = timestamp;*/
         } catch (SQLException e) {
             try { connection.rollback();
             } catch (SQLException se) {
@@ -916,43 +933,51 @@ class BaseDataParent implements BaseData {
             statement = connection.createStatement();
             String query;
             if (actual) {
-                query = " SELECT " +
-                        " type_pushers.id_typePusher, " +
-                        " type_pushers.data_reg, " +
-                        " logger_type_pushers.id_loggerTypePusher, " +
-                        " logger_type_pushers.data_upd, " +
-                        " logger_type_pushers.id_loggerUser, " +
-                        " logger_type_pushers.nameType, " +
-                        " logger_type_pushers.forceNominal, " +
-                        " logger_type_pushers.move_min, " +
-                        " logger_type_pushers.move_max, " +
-                        " type_pushers.date_unreg " +
-                        " FROM " + baseDat + ".logger_type_pushers " +
-                        " INNER JOIN " +baseDat + ".type_pushers " +
-                        " ON " +
-                        " logger_type_pushers.id_loggerTypePusher = type_pushers.id_loggerTypePusher " +
-                        " WHERE " +
-                        " type_pushers.date_unreg IS NULL " +
-                        " ORDER BY " +
-                        " logger_type_pushers.nameType ASC ";
+                query =
+                        "SELECT " +
+                                " type_pushers.id_typePusher, " +
+                                " type_pushers.date_reg, " +
+                                " logger_type_pushers.id_loggerTypePusher, " +
+                                " logger_type_pushers.data_upd, " +
+                                " logger_type_pushers.id_loggerUserEdit, " +
+                                " logger_type_pushers.nameType, " +
+                                " logger_type_pushers.forceNominal, " +
+                                " logger_type_pushers.move_min, " +
+                                " logger_type_pushers.move_max, " +
+                                " type_pushers.date_unreg " +
+                                " FROM " +
+                                " " + baseDat + ".type_pushers " +
+                                " INNER JOIN " +
+                                " " + baseDat + ".logger_type_pushers " +
+                                " ON " +
+                                " type_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
+                                " WHERE " +
+                                " type_pushers.date_unreg IS NULL " +
+                                " ORDER BY " +
+                                " logger_type_pushers.nameType "
+                ;
             } else {
-                query = " SELECT " +
-                        " type_pushers.id_typePusher, " +
-                        " type_pushers.date_reg, " +
-                        " logger_type_pushers.id_loggerTypePusher, " +
-                        " logger_type_pushers.data_upd, " +
-                        " logger_type_pushers.id_loggerUser, " +
-                        " logger_type_pushers.nameType, " +
-                        " logger_type_pushers.forceNominal, " +
-                        " logger_type_pushers.move_min, " +
-                        " logger_type_pushers.move_max, " +
-                        " type_pushers.date_unreg " +
-                        " FROM " + baseDat + ".logger_type_pushers " +
-                        " INNER JOIN " +baseDat + ".type_pushers " +
-                        " ON " +
-                        " logger_type_pushers.id_loggerTypePusher = type_pushers.id_loggerTypePusher " +
-                        " ORDER BY " +
-                        " logger_type_pushers.nameType ASC ";
+                query =
+                        "SELECT " +
+                                " type_pushers.id_typePusher, " +
+                                " type_pushers.date_reg, " +
+                                " logger_type_pushers.id_loggerTypePusher, " +
+                                " logger_type_pushers.data_upd, " +
+                                " logger_type_pushers.id_loggerUserEdit, " +
+                                " logger_type_pushers.nameType, " +
+                                " logger_type_pushers.forceNominal, " +
+                                " logger_type_pushers.move_min, " +
+                                " logger_type_pushers.move_max, " +
+                                " type_pushers.date_unreg " +
+                                " FROM " +
+                                " " + baseDat + ".type_pushers " +
+                                " INNER JOIN " +
+                                " " + baseDat + ".logger_type_pushers " +
+                                " ON " +
+                                " type_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
+                                " ORDER BY " +
+                                " logger_type_pushers.nameType "
+                ;
             }
             result = statement.executeQuery(query);
             // создание списка
@@ -964,20 +989,23 @@ class BaseDataParent implements BaseData {
                         list.add(new TypePusher(
                                 result.getLong("id_typePusher"),
                                 result.getTimestamp("date_reg"),
-                                result.getLong("id_loggerTypePusher"),
-                                result.getTimestamp("data_upd"),
-                                result.getLong("id_loggerUser"),
-                                result.getString("nameType"),
-                                result.getInt("forceNominal"),
-                                result.getInt("move_min"),
-                                result.getInt("move_max"),
+                                new LoggerTypePusher(
+                                        result.getLong("id_loggerTypePusher"),
+                                        result.getTimestamp("data_upd"),
+                                        result.getLong("id_loggerUserEdit"),
+                                        result.getLong("id_typePusher"),
+                                        result.getString("nameType"),
+                                        result.getInt("forceNominal"),
+                                        result.getInt("move_min"),
+                                        result.getInt("move_max")
+                                ),
                                 result.getTimestamp("date_unreg")
                         ));
                     } catch (Exception e) {
                         myLog.log(Level.WARNING, "ошибка парсинга", e);
                     }
                 }
-            } catch (SQLException e) { }
+            } catch (Exception e) { }
             if (list.size() == 0) { throw new SQLException("ошибка получения списка типов толкателей"); }
             connection.commit();
         } catch (SQLException e) {
