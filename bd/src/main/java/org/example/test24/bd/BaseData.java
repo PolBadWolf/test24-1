@@ -1,5 +1,9 @@
 package org.example.test24.bd;
 
+import org.example.test24.bd.usertypes.Pusher;
+import org.example.test24.bd.usertypes.PusherType;
+import org.example.test24.bd.usertypes.User;
+
 import java.sql.Blob;
 import java.util.Base64;
 import java.util.Date;

@@ -1,6 +1,9 @@
 package org.example.test24.bd;
 
 import com.mysql.cj.jdbc.ClientPreparedStatement;
+import org.example.test24.bd.usertypes.Pusher;
+import org.example.test24.bd.usertypes.PusherType;
+import org.example.test24.bd.usertypes.User;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,7 +11,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.logging.Level;
 
-import static org.example.test24.bd.TypeBaseDate.*;
 import static org.example.test24.lib.MyLogger.myLog;
 
 class BaseDataParent implements BaseData {

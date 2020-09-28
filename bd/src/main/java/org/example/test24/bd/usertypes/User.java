@@ -1,4 +1,4 @@
-package org.example.test24.bd;
+package org.example.test24.bd.usertypes;
 
 import java.util.Date;
 

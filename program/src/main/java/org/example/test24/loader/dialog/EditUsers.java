@@ -1,7 +1,7 @@
 package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.BaseData;
-import org.example.test24.bd.User;
+import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.MySwingUtil;
 
 import javax.swing.*;

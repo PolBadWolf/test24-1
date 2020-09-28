@@ -3,6 +3,7 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
+import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.MyUtil;
 
 import javax.swing.*;
