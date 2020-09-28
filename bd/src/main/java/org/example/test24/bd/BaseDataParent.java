@@ -314,7 +314,7 @@ class BaseDataParent implements BaseData {
     // чтение списка толкателей ****
     @Override
     public Pusher[] getListPushers(boolean actual) throws Exception {
-        if (1==1) throw new Exception("НЕ РЕАЛИЗОВАНО !!!!!!!!!!!!!!!!!!");
+        //if (1==1) throw new Exception("НЕ РЕАЛИЗОВАНО !!!!!!!!!!!!!!!!!!");
         if (connection == null) throw new Exception("соединение не установлено");
         boolean fl = connection.isClosed();
         if (fl) throw new Exception("соединение закрыто");
@@ -325,30 +325,82 @@ class BaseDataParent implements BaseData {
         String tab = "table_pushers";
         statement = connection.createStatement();
         // запрос
+        String query;
         if (actual) {
-            result = statement.executeQuery(
-                    "SELECT id_pusher, date_reg, date_unreg, name\n" +
-                            "FROM " + baseDat + "." + tab + "\n" +
-                            "WHERE (date_unreg IS NULL)\n" +
-                            "ORDER BY id_pusher "
-            );
+            query =
+                    "SELECT " +
+                            " table_pushers.id_pusher, " +
+                            " table_pushers.date_reg, " +
+                            " logger_pushers.id_loggerPusher, " +
+                            " logger_pushers.date_upd, " +
+                            " logger_pushers.id_loggerUserEdit, " +
+                            " logger_pushers.namePusher, " +
+                            " logger_type_pushers.id_loggerTypePusher, " +
+                            " logger_type_pushers.data_upd, " +
+                            " logger_type_pushers.id_loggerUser, " +
+                            " logger_type_pushers.id_typePusher, " +
+                            " logger_type_pushers.nameType, " +
+                            " logger_type_pushers.forceNominal, " +
+                            " logger_type_pushers.move_min, " +
+                            " logger_type_pushers.move_max, " +
+                            " table_pushers.date_unreg " +
+                            " FROM " +
+                            " " + baseDat + ".table_pushers " +
+                            " INNER JOIN " +
+                            " " + baseDat + ".logger_pushers " +
+                            " ON " +
+                            " table_pushers.id_loggerPusher = logger_pushers.id_loggerPusher " +
+                            " INNER JOIN " +
+                            " " + baseDat + ".logger_type_pushers " +
+                            " ON " +
+                            " logger_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
+                            " WHERE " +
+                            " table_pushers.date_unreg IS NULL " +
+                            " ORDER BY " +
+                            " logger_pushers.namePusher ASC "
+            ;
         } else {
-            result = statement.executeQuery(
-                    "SELECT id_pusher, date_reg, date_unreg, name\n" +
-                            "FROM " + baseDat + "." + tab + "\n" +
-                            "ORDER BY id_pusher "
-            );
+            query =
+                    "SELECT " +
+                            " table_pushers.id_pusher, " +
+                            " table_pushers.date_reg, " +
+                            " logger_pushers.id_loggerPusher, " +
+                            " logger_pushers.date_upd, " +
+                            " logger_pushers.id_loggerUserEdit, " +
+                            " logger_pushers.namePusher, " +
+                            " logger_type_pushers.id_loggerTypePusher, " +
+                            " logger_type_pushers.data_upd, " +
+                            " logger_type_pushers.id_loggerUser, " +
+                            " logger_type_pushers.id_typePusher, " +
+                            " logger_type_pushers.nameType, " +
+                            " logger_type_pushers.forceNominal, " +
+                            " logger_type_pushers.move_min, " +
+                            " logger_type_pushers.move_max, " +
+                            " table_pushers.date_unreg " +
+                            " FROM " +
+                            " " + baseDat + ".table_pushers " +
+                            " INNER JOIN " +
+                            " " + baseDat + ".logger_pushers " +
+                            " ON " +
+                            " table_pushers.id_loggerPusher = logger_pushers.id_loggerPusher " +
+                            " INNER JOIN " +
+                            " " + baseDat + ".logger_type_pushers " +
+                            " ON " +
+                            " logger_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
+                            " ORDER BY " +
+                            " logger_pushers.namePusher ASC "
+            ;
         }
+        result = statement.executeQuery(query);
         // создание списка
         ArrayList<Pusher> listPusher = new ArrayList<>();
-        while (result.next()) {
+        /*while (result.next()) {
             listPusher.add(new Pusher(
-                    result.getInt("id_pusher"),
+                    result.getLong("id_pusher"),
                     result.getTimestamp("date_reg"),
-                    result.getTimestamp("date_unreg"),
-                    result.getString("name")
+                    n
             ));
-        }
+        }*/
         try {
             result.close();
             statement.close();

@@ -3,19 +3,22 @@ package org.example.test24.bd.usertypes;
 import java.util.Date;
 
 public class Pusher {
-    public int id_pusher;
+    public long id_pusher;
     public Date date_reg;
+    public long id_loggerPusher;
+    public Date date_upd;
+    public PusherType pusherType;
     public Date date_unreg;
-    public String name;
 
-    public Pusher(int id_pusher, Date date_reg, Date date_unreg, String name) {
+    public Pusher(long id_pusher, Date date_reg, PusherType pusherType, Date date_unreg) {
         this.id_pusher = id_pusher;
         this.date_reg = date_reg;
+        this.pusherType = pusherType;
         this.date_unreg = date_unreg;
-        this.name = name;
     }
+
     @Override
     public String toString() {
-        return name;
+        return pusherType.nameType;
     }
 }
