@@ -8,14 +8,15 @@ final class StatusConst {
     final static int STATUS_PARAMETERS_PASSWORD_ERROR = 4;
     final static int STATUS_BASE_TYPE_ERROR = 5;
     final static int STATUS_BASE_TYPE_NO_SELECT = 6;
-    final static int STATUS_CONNECT_BASE_TYPE_ERROR = 7;
-    final static int STATUS_CONNECT_DRIVER_ERROR = 8;
-    final static int STATUS_CONNECT_PASS_ERROR = 9;
-    final static int STATUS_CONNECT_BASE_ERROR = 10;
-    final static int STATUS_CONNECT_ERROR = 11;
-    final static int STATUS_CONNECT_NO_CONNECTION = 12;
-    final static int STATUS_CONNECT_CLOSE = 13;
-    final static int STATUS_SQL_TRANSACTION_ERROR = 14;
+    final static int STATUS_CONFIG_LOAD_ERROR = 7;
+    final static int STATUS_CONNECT_BASE_TYPE_ERROR = 8;
+    final static int STATUS_CONNECT_DRIVER_ERROR = 9;
+    final static int STATUS_CONNECT_PASS_ERROR = 10;
+    final static int STATUS_CONNECT_BASE_ERROR = 11;
+    final static int STATUS_CONNECT_ERROR = 12;
+    final static int STATUS_CONNECT_NO_CONNECTION = 13;
+    final static int STATUS_CONNECT_CLOSE = 14;
+    final static int STATUS_SQL_TRANSACTION_ERROR = 15;
 }
 
 public enum Status {
@@ -26,6 +27,7 @@ public enum Status {
     PARAMETERS_PASSWORD_ERROR       (StatusConst.STATUS_PARAMETERS_PASSWORD_ERROR),
     BASE_TYPE_ERROR                 (StatusConst.STATUS_BASE_TYPE_ERROR),
     BASE_TYPE_NO_SELECT             (StatusConst.STATUS_BASE_TYPE_NO_SELECT),
+    CONFIG_LOAD_ERROR               (StatusConst.STATUS_CONFIG_LOAD_ERROR),
     CONNECT_BASE_TYPE_ERROR         (StatusConst.STATUS_CONNECT_BASE_TYPE_ERROR),
     CONNECT_DRIVER_ERROR            (StatusConst.STATUS_CONNECT_DRIVER_ERROR),
     CONNECT_PASS_ERROR              (StatusConst.STATUS_CONNECT_PASS_ERROR),
@@ -66,6 +68,9 @@ public enum Status {
                 break;
             case StatusConst.STATUS_BASE_TYPE_ERROR:
                 text = "ошибка типа БД";
+                break;
+            case StatusConst.STATUS_CONFIG_LOAD_ERROR:
+                text = "ошибка загрузки конфигурации";
                 break;
             case StatusConst.STATUS_CONNECT_DRIVER_ERROR:
                 text = "ошибка драйвера";
