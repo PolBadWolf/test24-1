@@ -18,8 +18,7 @@ import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
 
-public class EditUsers extends JFrame
-{
+public class EditUsers extends JFrame {
     public interface CallBack {
         void messageCloseEditUsers(boolean newData);
         User getCurrentUser();
@@ -52,6 +51,7 @@ public class EditUsers extends JFrame
         // деактивация кнопок
         offButtonEditUser();
         setVisible(true);
+        setResizable(false);
         // ловушка закрытия окна
         addWindowListener(new WindowAdapter() {
             @Override
