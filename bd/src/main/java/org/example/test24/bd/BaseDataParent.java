@@ -523,7 +523,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
                             " " + baseDat + ".logger_users " +
-                            " (date, id_loggerUserEdit, id_user, name, password, rang) " +
+                            " (date_upd, id_loggerUserEdit, id_user, surName, userPassword, rang) " +
                             "VALUES (?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);
