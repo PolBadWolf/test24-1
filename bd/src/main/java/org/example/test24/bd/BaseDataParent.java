@@ -264,12 +264,13 @@ class BaseDataParent implements BaseData {
             java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
             String pass = BaseData.Password.encoding(newPassword);
             //
-            preStatementLogger = connection.prepareStatement(
+            String query =
                     "INSERT INTO " +
                             " " + baseDat + ".logger_users " +
-                            " (date, id_loggerUserEdit, id_user, name, password, rang) " +
+                            " (date_upd, id_loggerUserEdit, id_user, surName, userPassword, rang) " +
                             " VALUES (?, ?, ?, ?, ?, ?)"
-            );
+                    ;
+            preStatementLogger = connection.prepareStatement(query);
             preStatementLogger.setTimestamp(1, timestamp);
             preStatementLogger.setLong(2, user.id_loggerUser);
             preStatementLogger.setLong(3, user.id_user);
@@ -292,6 +293,7 @@ class BaseDataParent implements BaseData {
             //
             connection.commit();
             user.id_loggerUser = id_loggerUser;
+            user.userPassword = pass;
         } catch (SQLException e) {
             try { connection.rollback();
             } catch (SQLException se) {
@@ -398,7 +400,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
                             " " + baseDat + ".logger_users " +
-                            " (date, id_loggerUserEdit, id_user, name, password, rang) " +
+                            " (date_upd, id_loggerUserEdit, id_user, surName, userPassword, rang) " +
                             " VALUES (?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);
