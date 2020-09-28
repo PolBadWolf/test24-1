@@ -2,7 +2,7 @@ package org.example.test24.bd;
 
 import com.mysql.cj.jdbc.ClientPreparedStatement;
 import org.example.test24.bd.usertypes.Pusher;
-import org.example.test24.bd.usertypes.PusherType;
+import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
 
 import java.sql.*;
@@ -761,7 +761,7 @@ class BaseDataParent implements BaseData {
     }
     // обновление типа толкателя
     @Override
-    public void updateTypePusher(PusherType pusherType, long id_loggerUser, String nameType, int forceNominal, int move_min, int move_max) throws BaseDataException {
+    public void updateTypePusher(TypePusher typePusher, long id_loggerUser, String nameType, int forceNominal, int move_min, int move_max) throws BaseDataException {
         if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
         boolean fl = false;
         try {
@@ -769,7 +769,7 @@ class BaseDataParent implements BaseData {
         } catch (SQLException e) { throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
         }
         if (fl) { throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE); }
-        if (pusherType == null) { throw new BaseDataException("нет данных", Status.PARAMETERS_ERROR); }
+        if (typePusher == null) { throw new BaseDataException("нет данных", Status.PARAMETERS_ERROR); }
 
         boolean saveAutoCommit = true;
         try {
@@ -793,7 +793,7 @@ class BaseDataParent implements BaseData {
             );
             preStatementLogger.setTimestamp(1, timestamp);
             preStatementLogger.setLong(2, id_loggerUser);
-            preStatementLogger.setLong(3, pusherType.id_typePusher);
+            preStatementLogger.setLong(3, typePusher.id_typePusher);
             preStatementLogger.setString(4, nameType);
             preStatementLogger.setInt(5, forceNominal);
             preStatementLogger.setInt(6, move_min);
@@ -809,7 +809,7 @@ class BaseDataParent implements BaseData {
                             " WHERE id_typePusher = ? "
             );
             preStatementUpdate.setLong(1, id_loggerTypePusher);
-            preStatementUpdate.setLong(2, pusherType.id_typePusher);
+            preStatementUpdate.setLong(2, typePusher.id_typePusher);
             preStatementUpdate.executeUpdate();
             //
             connection.commit();
@@ -823,12 +823,12 @@ class BaseDataParent implements BaseData {
             try { connection.setAutoCommit(saveAutoCommit);
             } catch (SQLException throwables) { }
         }
-        pusherType.date_upd = timestamp;
-        pusherType.id_loggerUser = id_loggerUser;
-        pusherType.nameType = nameType;
-        pusherType.forceNominal = forceNominal;
-        pusherType.move_min = move_min;
-        pusherType.move_max = move_max;
+        typePusher.date_upd = timestamp;
+        typePusher.id_loggerUser = id_loggerUser;
+        typePusher.nameType = nameType;
+        typePusher.forceNominal = forceNominal;
+        typePusher.move_min = move_min;
+        typePusher.move_max = move_max;
         //
         try {
             preStatementLogger.close();
@@ -837,7 +837,7 @@ class BaseDataParent implements BaseData {
     }
     // деактивация типа толкателя
     @Override
-    public void deativateTypePusher(long id_loggerUser, PusherType pusherType) throws BaseDataException {
+    public void deativateTypePusher(long id_loggerUser, TypePusher typePusher) throws BaseDataException {
         if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
         boolean fl = false;
         try {
@@ -846,7 +846,7 @@ class BaseDataParent implements BaseData {
             throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
         }
         if (fl) { throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE); }
-        if (pusherType == null) { throw new BaseDataException("нет данных", Status.PARAMETERS_ERROR); }
+        if (typePusher == null) { throw new BaseDataException("нет данных", Status.PARAMETERS_ERROR); }
 
         boolean saveAutoCommit = true;
         try {
@@ -868,12 +868,12 @@ class BaseDataParent implements BaseData {
                             " WHERE id_typePusher = ? "
             );
             preStatementUpdate.setTimestamp(1, timestamp);
-            preStatementUpdate.setLong(2, pusherType.id_typePusher);
+            preStatementUpdate.setLong(2, typePusher.id_typePusher);
             preStatementUpdate.executeUpdate();
             //
             connection.commit();
-            pusherType.date_upd = timestamp;
-            pusherType.date_unreg = timestamp;
+            typePusher.date_upd = timestamp;
+            typePusher.date_unreg = timestamp;
         } catch (SQLException e) {
             try { connection.rollback();
             } catch (SQLException se) {
@@ -890,7 +890,7 @@ class BaseDataParent implements BaseData {
     }
     // чтение списока типов толкателей
     @Override
-    public PusherType[] getListTypePushers(boolean actual) throws BaseDataException {
+    public TypePusher[] getListTypePushers(boolean actual) throws BaseDataException {
         if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
         boolean fl = false;
         try {
@@ -910,7 +910,7 @@ class BaseDataParent implements BaseData {
         //
         ResultSet result;
         Statement statement;
-        ArrayList<PusherType> list;
+        ArrayList<TypePusher> list;
 
         try {
             statement = connection.createStatement();
@@ -961,7 +961,7 @@ class BaseDataParent implements BaseData {
             try {
                 while (result.next()) {
                     try {
-                        list.add(new PusherType(
+                        list.add(new TypePusher(
                                 result.getLong("id_typePusher"),
                                 result.getTimestamp("date_reg"),
                                 result.getLong("id_loggerTypePusher"),
@@ -991,6 +991,6 @@ class BaseDataParent implements BaseData {
             result.close();
             statement.close();
         } catch (SQLException throwables) { }
-        return list.toArray(new PusherType[0]);
+        return list.toArray(new TypePusher[0]);
     }
 }

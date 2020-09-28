@@ -2,7 +2,7 @@ package org.example.test24.bd.usertypes;
 
 import java.util.Date;
 
-public class PusherType {
+public class TypePusher {
     public long id_typePusher;          // индификатор
     public Date date_reg;               // когда создали
     public long id_loggerTypePusher;    // id записи типа толкателя
@@ -14,7 +14,7 @@ public class PusherType {
     public int move_max;                // максимальное значение номинального хода
     public Date date_unreg;             // когда деактивировали
 
-    public PusherType(long id_typePusher, Date date_reg, long id_loggerTypePusher, Date date_upd, long id_loggerUser, String nameType, int forceNominal, int move_min, int move_max, Date date_unreg) {
+    public TypePusher(long id_typePusher, Date date_reg, long id_loggerTypePusher, Date date_upd, long id_loggerUser, String nameType, int forceNominal, int move_min, int move_max, Date date_unreg) {
         this.id_typePusher = id_typePusher;
         this.date_reg = date_reg;
         this.id_loggerTypePusher = id_loggerTypePusher;
