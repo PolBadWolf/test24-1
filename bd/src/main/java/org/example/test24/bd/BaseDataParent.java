@@ -216,9 +216,8 @@ class BaseDataParent implements BaseData {
                 new ArrayList(Arrays.asList(
                         "id_pusher",
                         "date_reg",
-                        "date_unreg",
-                        "name",
-                        "id_unreg"
+                        "id_loggerPusher",
+                        "date_unreg"
                 ))
         );
         return table_data && table_users && table_pushers;
@@ -642,7 +641,7 @@ class BaseDataParent implements BaseData {
     }
     // запись нового типа толкателя
     @Override
-    public void writeNewTypePusher(PusherType pusherType) throws BaseDataException {
+    public void writeNewTypePusher(long id_loggerUser, String nameType, int forceNominal, int move_min, int move_max) throws BaseDataException {
         if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
         boolean fl = false;
         try {
@@ -681,16 +680,16 @@ class BaseDataParent implements BaseData {
             preStatementLoggerPusherType = connection.prepareStatement(
                     "INSERT INTO " +
                             " " + baseDat + ".logger_type_pushers " +
-                            " (data_upd, id_loggerUser, id_typePusher, name_type, force_s, move_min, move_max) " +
+                            " (data_upd, id_loggerUser, id_typePusher, nameType, forceNominal, move_min, move_max) " +
                             " VALUES (?, ?, ?, ?, ?, ?, ?) "
             );
             preStatementLoggerPusherType.setTimestamp(1, timestamp);
-            preStatementLoggerPusherType.setLong(2, pusherType.id_loggerUser);
+            preStatementLoggerPusherType.setLong(2, id_loggerUser);
             preStatementLoggerPusherType.setLong(3, id_typePusher);
-            preStatementLoggerPusherType.setString(4, pusherType.name);
-            preStatementLoggerPusherType.setInt(5, pusherType.force);
-            preStatementLoggerPusherType.setInt(6, pusherType.move_min);
-            preStatementLoggerPusherType.setInt(7, pusherType.move_max);
+            preStatementLoggerPusherType.setString(4, nameType);
+            preStatementLoggerPusherType.setInt(5, forceNominal);
+            preStatementLoggerPusherType.setInt(6, move_min);
+            preStatementLoggerPusherType.setInt(7, move_max);
             preStatementLoggerPusherType.executeUpdate();
             long id_loggerTypePusher = ((ClientPreparedStatement) preStatementLoggerPusherType).getLastInsertID();
             //
@@ -706,9 +705,6 @@ class BaseDataParent implements BaseData {
             preStatementUpdatePusherType.executeUpdate();
             //
             connection.commit();
-            pusherType.id_typePusher = id_typePusher;
-            pusherType.id_loggerTypePusher = id_loggerTypePusher;
-            pusherType.date_upd = timestamp;
         } catch (SQLException e) {
             try { connection.rollback();
             } catch (SQLException se) { e = new SQLException("ошибка отката транзакции: " + se.getMessage(), e);
@@ -757,8 +753,8 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setTimestamp(1, timestamp);
             preStatementLogger.setLong(2, pusherType.id_loggerUser);
             preStatementLogger.setLong(3, pusherType.id_typePusher);
-            preStatementLogger.setString(4, pusherType.name);
-            preStatementLogger.setInt(5, pusherType.force);
+            preStatementLogger.setString(4, pusherType.nameType);
+            preStatementLogger.setInt(5, pusherType.forceNominal);
             preStatementLogger.setInt(6, pusherType.move_min);
             preStatementLogger.setInt(7, pusherType.move_max);
             preStatementLogger.executeUpdate();
@@ -827,8 +823,8 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setTimestamp(1, timestamp);
             preStatementLogger.setLong(2, pusherType.id_loggerUser);
             preStatementLogger.setLong(3, pusherType.id_typePusher);
-            preStatementLogger.setString(4, pusherType.name);
-            preStatementLogger.setInt(5, pusherType.force);
+            preStatementLogger.setString(4, pusherType.nameType);
+            preStatementLogger.setInt(5, pusherType.forceNominal);
             preStatementLogger.setInt(6, pusherType.move_min);
             preStatementLogger.setInt(7, pusherType.move_max);
             preStatementLogger.executeUpdate();
@@ -895,11 +891,12 @@ class BaseDataParent implements BaseData {
             if (actual) {
                 query = " SELECT " +
                         " type_pushers.id_typePusher, " +
+                        " type_pushers.data_reg, " +
                         " logger_type_pushers.id_loggerTypePusher, " +
                         " logger_type_pushers.data_upd, " +
                         " logger_type_pushers.id_loggerUser, " +
-                        " logger_type_pushers.name_type, " +
-                        " logger_type_pushers.force_s, " +
+                        " logger_type_pushers.nameType, " +
+                        " logger_type_pushers.forceNominal, " +
                         " logger_type_pushers.move_min, " +
                         " logger_type_pushers.move_max, " +
                         " type_pushers.date_unreg " +
@@ -910,15 +907,16 @@ class BaseDataParent implements BaseData {
                         " WHERE " +
                         " type_pushers.date_unreg IS NULL " +
                         " ORDER BY " +
-                        " logger_type_pushers.name_type ASC ";
+                        " logger_type_pushers.nameType ASC ";
             } else {
                 query = " SELECT " +
                         " type_pushers.id_typePusher, " +
+                        " type_pushers.date_reg, " +
                         " logger_type_pushers.id_loggerTypePusher, " +
                         " logger_type_pushers.data_upd, " +
                         " logger_type_pushers.id_loggerUser, " +
-                        " logger_type_pushers.name_type, " +
-                        " logger_type_pushers.force_s, " +
+                        " logger_type_pushers.nameType, " +
+                        " logger_type_pushers.forceNominal, " +
                         " logger_type_pushers.move_min, " +
                         " logger_type_pushers.move_max, " +
                         " type_pushers.date_unreg " +
@@ -927,7 +925,7 @@ class BaseDataParent implements BaseData {
                         " ON " +
                         " logger_type_pushers.id_loggerTypePusher = type_pushers.id_loggerTypePusher " +
                         " ORDER BY " +
-                        " logger_type_pushers.name_type ASC ";
+                        " logger_type_pushers.nameType ASC ";
             }
             result = statement.executeQuery(query);
             // создание списка
@@ -938,16 +936,17 @@ class BaseDataParent implements BaseData {
                     try {
                         list.add(new PusherType(
                                 result.getLong("id_typePusher"),
+                                result.getTimestamp("date_reg"),
+                                result.getLong("id_loggerTypePusher"),
                                 result.getTimestamp("data_upd"),
                                 result.getLong("id_loggerUser"),
-                                result.getLong("id_loggerTypePusher"),
-                                result.getString("name_type"),
-                                result.getInt("force_s"),
+                                result.getString("nameType"),
+                                result.getInt("forceNominal"),
                                 result.getInt("move_min"),
                                 result.getInt("move_max"),
                                 result.getTimestamp("date_unreg")
                         ));
-                    } catch (SQLException e) {
+                    } catch (Exception e) {
                         myLog.log(Level.WARNING, "ошибка парсинга", e);
                     }
                 }

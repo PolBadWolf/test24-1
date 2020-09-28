@@ -74,7 +74,7 @@ public interface BaseData {
     // запись замера
     void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
     // запись нового типа толкателя
-    void writeNewTypePusher(PusherType pusherType) throws BaseDataException;
+    void writeNewTypePusher(long id_loggerUser, String nameType, int forceNominal, int move_min, int move_max) throws BaseDataException;
     // обновление типа толкателя
     void updateTypePusher(PusherType pusherType) throws BaseDataException;
     // деактивация типа толкателя
