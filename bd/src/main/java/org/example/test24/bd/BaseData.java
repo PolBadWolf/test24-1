@@ -76,7 +76,7 @@ public interface BaseData {
     // запись нового типа толкателя
     void writeNewTypePusher(long id_loggerUser, String nameType, int forceNominal, int move_min, int move_max) throws BaseDataException;
     // обновление типа толкателя
-    void updateTypePusher(PusherType pusherType) throws BaseDataException;
+    void updateTypePusher(PusherType pusherType, long id_loggerUser, String nameType, int forceNominal, int move_min, int move_max) throws BaseDataException;
     // деактивация типа толкателя
     void deativateTypePusher(long id_loggerUser, PusherType pusherType) throws BaseDataException;
     // чтение списока типов толкателей
