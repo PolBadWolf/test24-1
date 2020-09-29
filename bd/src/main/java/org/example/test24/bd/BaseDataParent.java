@@ -776,7 +776,7 @@ class BaseDataParent implements BaseData {
     }
     // обновление типа толкателя
     @Override
-    public void updateTypePusher(TypePusher typePusher, long id_loggerUser, String nameType, int forceNominal, int moveNominal, int unclenchingTime) throws BaseDataException {
+    public void updateTypePusher(TypePusher typePusher, long id_loggerUserEdit, String nameType, int forceNominal, int moveNominal, int unclenchingTime) throws BaseDataException {
         if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
         boolean fl = false;
         try {
@@ -804,11 +804,11 @@ class BaseDataParent implements BaseData {
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
                             " " + baseDat + ".logger_type_pushers " +
-                            " (data_upd, id_loggerUser, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime) " +
+                            " (data_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime) " +
                             " VALUES (?, ?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);
-            preStatementLogger.setLong(2, id_loggerUser);
+            preStatementLogger.setLong(2, id_loggerUserEdit);
             preStatementLogger.setLong(3, typePusher.id_typePusher);
             preStatementLogger.setString(4, nameType);
             preStatementLogger.setInt(5, forceNominal);
@@ -842,7 +842,7 @@ class BaseDataParent implements BaseData {
 
         typePusher.loggerTypePusher.id_loggerTypePusher = id_loggerTypePusher;
         typePusher.loggerTypePusher.data_upd = timestamp;
-        typePusher.loggerTypePusher.id_loggerUserEdit = id_loggerUser;
+        typePusher.loggerTypePusher.id_loggerUserEdit = id_loggerUserEdit;
         typePusher.loggerTypePusher.nameType = nameType;
         typePusher.loggerTypePusher.forceNominal = forceNominal;
         typePusher.loggerTypePusher.moveNominal = moveNominal;

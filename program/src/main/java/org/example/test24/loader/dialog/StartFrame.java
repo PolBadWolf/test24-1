@@ -270,8 +270,8 @@ public class StartFrame {
                 new EditTypePushers(
                         new EditTypePushers.CallBack() {
                             @Override
-                            public User getCurrentUser() {
-                                return (User) comboBoxUsers.getSelectedItem();
+                            public long getCurrentId_loggerUser() {
+                                return 0L;
                             }
                         },
                         connBD

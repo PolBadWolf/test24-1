@@ -3,14 +3,12 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.usertypes.TypePusher;
-import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.MySwingUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.AttributeSet;
@@ -28,7 +26,7 @@ import static org.example.test24.lib.MyLogger.myLog;
 
 public class EditTypePushers {
     interface CallBack {
-        User getCurrentUser();
+        long getCurrentId_loggerUser();
     }
 
     // ***********************************************************************
@@ -54,12 +52,12 @@ public class EditTypePushers {
     // список тип толкателей
     private TypePusher[] typePushers;
     private TypePusher editTypePusher = null;
-    private User userEdit;
+    private long currentId_loggerUserEdit;
 
     public EditTypePushers(CallBack callBack, BaseData connBD) {
         this.callBack = callBack;
         this.connBD = connBD;
-        userEdit = callBack.getCurrentUser();
+        currentId_loggerUserEdit = callBack.getCurrentId_loggerUser();
         // загрузка списка типа толкателей
         try {
             typePushers = getListTypePushers();
@@ -217,7 +215,7 @@ public class EditTypePushers {
     private void buttonDeleteAction(ActionEvent e) {
         if (editTypePusher == null) return;
         try {
-            connBD.deativateTypePusher(userEdit.id_loggerUser, editTypePusher);
+            connBD.deativateTypePusher(currentId_loggerUserEdit, editTypePusher);
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
             return;
@@ -251,6 +249,20 @@ public class EditTypePushers {
             MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
                 saveEnableComponents.restore();
             });
+            return;
+        }
+        try {
+            connBD.updateTypePusher(editTypePusher, currentId_loggerUserEdit,
+                    textName.getText(),
+                    Integer.parseInt(textForce.getText()),
+                    Integer.parseInt(textMove.getText()),
+                    Integer.parseInt(textUnclenching.getText())
+                    );
+            tableTypePushers.updateUI();
+        } catch (BaseDataException baseDataException) {
+            baseDataException.printStackTrace();
+        } finally {
+            clearFields();
         }
     }
     // button add
