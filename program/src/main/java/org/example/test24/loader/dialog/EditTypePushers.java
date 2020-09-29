@@ -251,6 +251,25 @@ public class EditTypePushers {
             });
             return;
         }
+        // заменяемые данные
+        String v_typeName = textName.getText();
+        int v_force = Integer.parseInt(textForce.getText());
+        int v_move = Integer.parseInt(textMove.getText());
+        int v_unclenching = Integer.parseInt(textUnclenching.getText());
+        // проверка на повтор
+        if (!v_typeName.equals(editTypePusher.loggerTypePusher.nameType)) {
+            boolean flAgain = false;
+            for (int i = 0; i < typePushers.length; i++) {
+                if (!v_typeName.equals(typePushers[i].loggerTypePusher.nameType)) continue;
+                flAgain = true;
+                break;
+            }
+            if (flAgain) {
+                // был повтор
+                return;
+            }
+        }
+        // обновление
         try {
             connBD.updateTypePusher(editTypePusher, currentId_loggerUserEdit,
                     textName.getText(),
