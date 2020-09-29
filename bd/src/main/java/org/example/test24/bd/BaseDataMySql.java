@@ -16,12 +16,12 @@ class BaseDataMySql extends BaseDataParent {
     }
     // открытие соединение с БД
     @Override
-    public void openConnect(Parameters parameters) throws Exception {
+    public void openConnect(Parameters parameters) throws BaseDataException {
         // подключение драйвера
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            throw new Exception("ошибка подключения драйвера", e);
+            throw new BaseDataException("ошибка подключения драйвера", e, Status.CONNECT_DRIVER_ERROR);
         }
         // установка параметров соединения
         String connectionUrl = "jdbc:mysql://%1$s:%2$s";
@@ -30,37 +30,63 @@ class BaseDataMySql extends BaseDataParent {
                 , parameters.getPortServer()
         ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
         // соединение
-        connection = DriverManager.getConnection(
-                connString,
-                parameters.getUser(),
-                parameters.getPassword()
-        );
+        try {
+            connection = DriverManager.getConnection(
+                    connString,
+                    parameters.getUser(),
+                    parameters.getPassword()
+            );
+        } catch (SQLException e) {
+            Status status;
+            switch (e.getErrorCode()) {
+                case 1045:
+                    status = Status.CONNECT_PASS_ERROR;
+                    break;
+                case 1049:
+                    status = Status.CONNECT_BASE_ERROR;
+                    break;
+                default:
+                    status = Status.CONNECT_ERROR;
+            }
+            throw new BaseDataException("установка соединения", e, status);
+        }
         this.baseDat = parameters.getDataBase();
     }
     // чтение списка БД
     @Override
-    public String[] getListBase() throws Exception {
+    public String[] getListBase() throws BaseDataException {
         if (connection == null) {
-            throw new Exception("отсутствует соединение (connection == null)");
+            throw new BaseDataException("отсутствует соединение (connection == null)", Status.CONNECT_NO_CONNECTION);
         }
         boolean flClosed;
-        flClosed = connection.isClosed();
+        try {
+            flClosed = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("отсутствует соединение (error)", e, Status.CONNECT_NO_CONNECTION);
+        }
         if (flClosed) {
-            throw new Exception("соединение закрыто");
+            throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
         }
         // запрос на список
-        ResultSet resultSet;
-        resultSet = connection.createStatement().executeQuery("SHOW DATABASES");
-        // отсев системных БД
+        ResultSet resultSet = null;
         ArrayList<String> list = new ArrayList<>();
-        String s;
-        while (resultSet.next()) {
-            s = resultSet.getString(1);
-            if (s.toLowerCase().equals("information_schema")) continue;
-            if (s.toLowerCase().equals("mysql")) continue;
-            if (s.toLowerCase().equals("performance_schema")) continue;
-            if (s.toLowerCase().equals("sys")) continue;
-            list.add(s);
+        try {
+            resultSet = connection.createStatement().executeQuery("SHOW DATABASES");
+            // отсев системных БД
+            String s;
+            while (resultSet.next()) {
+                s = resultSet.getString(1);
+                if (s.toLowerCase().equals("information_schema")) continue;
+                if (s.toLowerCase().equals("mysql")) continue;
+                if (s.toLowerCase().equals("performance_schema")) continue;
+                if (s.toLowerCase().equals("sys")) continue;
+                list.add(s);
+            }
+        } catch (SQLException e) {
+            if (list.size() == 0) {
+                throw new BaseDataException(e, Status.CONNECT_ERROR);
+            }
+            myLog.log(Level.SEVERE, "ошибка парсинга", e);
         }
         try {
             resultSet.close();
@@ -70,8 +96,7 @@ class BaseDataMySql extends BaseDataParent {
         return list.toArray(new String[0]);
     }
     // проверка структуры таблицы
-    // проверка структуры таблицы
-    protected boolean checkCheckStructureTable(String base, String table, ArrayList<String> listColumns) {
+    protected boolean checkStructureTable(String base, String table, ArrayList<String> listColumns) {
         PreparedStatement statement;
         ResultSet resultSet;
         String sample;

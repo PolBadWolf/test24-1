@@ -1,8 +1,7 @@
 package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.BaseData;
-import org.example.test24.bd.BaseData1;
-import org.example.test24.bd.UserClass;
+import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.MySwingUtil;
 
 import javax.swing.*;
@@ -19,20 +18,22 @@ import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
 
-public class EditUsers extends JFrame
-{
+public class EditUsers extends JFrame {
     public interface CallBack {
         void messageCloseEditUsers(boolean newData);
-        UserClass getCurrentUser();
+        User getCurrentUser();
     }
     // объект обратного вызова
     private CallBack callBack;
+    // события изменения
+    private boolean flagEventEdit;
     // объект доступа к БД
     private BaseData connBD;
     // активный пользователь
-    private UserClass activetUser;
-    private UserClass[] listUsers = null;
-    private UserClass[] tablUsers = null;
+    private User activetUser;
+    private User editUser = null;
+    private User[] listUsers = null;
+    private User[] tablUsers = null;
 
 
 
@@ -41,14 +42,16 @@ public class EditUsers extends JFrame
     public EditUsers(BaseData connBD, CallBack callBack) {
         this.connBD = connBD;
         this.callBack = callBack;
+        flagEventEdit = false;
         // загрузка списка пользователей
         activetUser = callBack.getCurrentUser();
         readUsersFromBase();
         // инициализация компонентов
         initComponents(); // ****************************************************************
         // деактивация кнопок
-        offButtonDeactive();
+        offButtonEditUser();
         setVisible(true);
+        setResizable(false);
         // ловушка закрытия окна
         addWindowListener(new WindowAdapter() {
             @Override
@@ -95,6 +98,9 @@ public class EditUsers extends JFrame
         buttonNewUser = getButtonNewUser("Новый пользователь", Font.PLAIN, 14, 440, 317, 160, 30);
         add(buttonNewUser);
 
+        buttonEditUser = getButton("Ред. пользователя", Font.PLAIN, 14, 440, 368, 160, 30, e -> pushButtonEditUser());
+        add(buttonEditUser);
+
         fieldSurName = getFieldSurName("", Font.PLAIN, 14, 80, 270, 340, 25);
         add(fieldSurName);
 
@@ -113,8 +119,8 @@ public class EditUsers extends JFrame
         String surName = fieldSurName.getText();
         String password = fieldPassword.getText();
         int rang = 0;
-        if (checkUsers.isSelected()) rang |= 1 << UserClass.RANG_USERS;
-        if (checkPushers.isSelected()) rang |= 1 << UserClass.RANG_PUSHERS;
+        if (checkUsers.isSelected()) rang |= 1 << User.RANG_USERS;
+        if (checkPushers.isSelected()) rang |= 1 << User.RANG_PUSHERS;
         // запись нового пользователя в базу
         if (surName.length() == 0) {
             MySwingUtil.showMessage(this,
@@ -138,8 +144,8 @@ public class EditUsers extends JFrame
         }
         // проверка на повтор
         boolean flag = false;
-        for (UserClass user : listUsers) {
-            if (user.name.equals(surName)) {
+        for (User user : listUsers) {
+            if (user.surName.equals(surName)) {
                 flag = true;
                 break;
             }
@@ -156,11 +162,79 @@ public class EditUsers extends JFrame
         }
         writeNewUserToBase(surName, password, rang);
         // очистка полей
-        fieldSurName.setText("");
-        fieldPassword.setText("");
-        checkUsers.setSelected(false);
-        checkPushers.setSelected(false);
+        clearFieldEdit();
     }
+    private void pushButtonEditUser() {
+        String surName = fieldSurName.getText();
+        String password = fieldPassword.getText();
+        int rang = 0;
+        if (checkUsers.isSelected()) rang |= 1 << User.RANG_USERS;
+        if (checkPushers.isSelected()) rang |= 1 << User.RANG_PUSHERS;
+        // запись нового пользователя в базу
+        if (surName.length() == 0) {
+            MySwingUtil.showMessage(this,
+                    "редактирование пользователя",
+                    "имя пользователя не задано",
+                    5_000,
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        onButtonEditUser();
+                    }
+            );
+            buttonNewUser.setEnabled(false);
+            offButtonEditUser();
+            return;
+        }
+        if (password.length() == 0) {
+            MySwingUtil.showMessage(this,
+                    "редактирование пользователя",
+                    "пароль пустой",
+                    5_000,
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        onButtonEditUser();
+                    }
+            );
+            buttonNewUser.setEnabled(false);
+            offButtonEditUser();
+            return;
+        }
+        // проверка на повтор
+        boolean flag = false;
+        for (User user : listUsers) {
+            if (user.id_user == editUser.id_user) continue;
+            if (user.surName.equals(surName)) {
+                flag = true;
+                break;
+            }
+        }
+        if (flag) {
+            myLog.log(Level.WARNING, "редактирование пользователя",
+                    new Exception(callBack.getCurrentUser().surName + " : " + editUser.surName + " -> " + surName + " - такой пользователь уже существует"));
+            MySwingUtil.showMessage(this,
+                    "редактирование пользователя",
+                    "такой пользователь уже существует",
+                    5_000,
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        onButtonEditUser();
+                    }
+            );
+            buttonNewUser.setEnabled(false);
+            offButtonEditUser();
+            return;
+        }
+        updateDataUser(
+                callBack.getCurrentUser().id_loggerUser,
+                editUser,
+                surName,
+                password,
+                rang
+        );
+        // очистка полей
+        clearFieldEdit();
+    }
+
     private void enterTextSurName() {
 
    }
@@ -168,28 +242,24 @@ public class EditUsers extends JFrame
 
     }
     private void selectTableCell() {
-        onButtonDeactive();
+        onButtonEditUser();
         // выбранный пользователь
-        UserClass user = tablUsers[table.getSelectedRow()];
-        fieldSurName.setText(user.name);
-        fieldPassword.setText(user.password);
-        checkUsers.setSelected((user.rang & 1 << UserClass.RANG_USERS) != 0);
-        checkPushers.setSelected((user.rang & 1 << UserClass.RANG_PUSHERS) != 0);
+        editUser = tablUsers[table.getSelectedRow()];
+        fieldSurName.setText(editUser.surName);
+        fieldPassword.setText(editUser.userPassword);
+        checkUsers.setSelected((editUser.rang & 1 << User.RANG_USERS) != 0);
+        checkPushers.setSelected((editUser.rang & 1 << User.RANG_PUSHERS) != 0);
     }
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //      воздействие на органы управления
-    private void onButtonDeactive() {
+    private void onButtonEditUser() {
         buttonDeactive.setEnabled(true);
+        buttonEditUser.setEnabled(true);
     }
-    private void offButtonDeactive() {
+    private void offButtonEditUser() {
+        buttonEditUser.setEnabled(false);
         buttonDeactive.setEnabled(false);
     }
-    /*private void onButtonNewUser() {
-        buttonNewUser.setEnabled(true);
-    }*/
-    /*private void offButtonNewUser() {
-        buttonNewUser.setEnabled(false);
-    }*/
     // ==========================================
     // чтение из базы в массив
     private void readUsersFromBase() {
@@ -197,44 +267,69 @@ public class EditUsers extends JFrame
             listUsers = connBD.getListUsers(true);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "чтение списка пользователей", e);
-            listUsers = new UserClass[0];
+            listUsers = new User[0];
         }
-        ArrayList<UserClass> list = new ArrayList<>();
-        for (UserClass user : listUsers) {
-            if (user.id != activetUser.id) list.add(user);
+        ArrayList<User> list = new ArrayList<>();
+        for (User user : listUsers) {
+            if (user.id_user != activetUser.id_user) list.add(user);
         }
-        tablUsers = list.toArray(new UserClass[0]);
+        tablUsers = list.toArray(new User[0]);
     }
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {
         // выбранная строка
-        int id = listUsers[table.getSelectedRow()].id;
-
         try {
             connBD.deativateUser(
-                    callBack.getCurrentUser().id,
-                    id
+                    callBack.getCurrentUser().id_loggerUser,
+                    editUser
             );
+            // обновить таблицу
+            readUsersFromBase();
+            table.updateUI();
+            flagEventEdit = true;
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "деактивация пользователя", e);
-            return;
+        } finally {
+            // отключить кнопки редактирования
+            offButtonEditUser();
+            // очистка полей
+            clearFieldEdit();
+            //
+            table.getSelectionModel().clearSelection();
         }
-        // отключить кнопку деактивация
-        offButtonDeactive();
-        // обновить таблицу
-        readUsersFromBase();
-        table.updateUI();
     }
     // запись нового пользователя в базу
     private void writeNewUserToBase(String surName, String password, int rang) {
         try {
-            connBD.writeNewUser(activetUser.id, surName, password, rang);
+            connBD.writeNewUser(activetUser.id_loggerUser, surName, password, rang);
+            flagEventEdit = true;
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "запись нового пользователя в базу", e);
         }
         // обновить таблицу
         readUsersFromBase();
         table.updateUI();
+    }
+    // обновление записи о пользователе
+    private void updateDataUser(long id_loggerUserEdit, User user, String surName, String password, int rang) {
+        try {
+            connBD.updateDataUser(user, id_loggerUserEdit, surName, password, rang);
+            flagEventEdit = true;
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "обновление записи пользователя в базе", e);
+        }
+        // обновить таблицу
+        readUsersFromBase();
+        table.updateUI();
+    }
+    // очистка полей редактирования
+    private void clearFieldEdit() {
+        editUser = null;
+        // очистка полей
+        fieldSurName.setText("");
+        fieldPassword.setText("");
+        checkUsers.setSelected(false);
+        checkPushers.setSelected(false);
     }
     //  ---
     // ==========================================
@@ -249,12 +344,13 @@ public class EditUsers extends JFrame
     private void closeFromLocal() {
         removeAll();
         dispose();
-        callBack.messageCloseEditUsers(false);
+        callBack.messageCloseEditUsers(flagEventEdit);
     }
     // ==========================================
     // компоненты
     JButton buttonDeactive;
     JButton buttonNewUser;
+    JButton buttonEditUser;
     JCheckBox checkUsers;
     JCheckBox checkPushers;
     JTextField fieldPassword;
@@ -296,15 +392,15 @@ public class EditUsers extends JFrame
             if (tablUsers != null) {
                 switch (columnIndex) {
                     case column_name:
-                        text = tablUsers[rowIndex].name;
+                        text = tablUsers[rowIndex].surName;
                         break;
                     case column_datereg:
-                        text = dateFormat.format(listUsers[rowIndex].date_reg);
+                        text = dateFormat.format(tablUsers[rowIndex].date_reg);
                         break;
                     case column_rang:
                         text = "";
-                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_USERS) != 0) text += "П";
-                        if ((listUsers[rowIndex].rang & 1 << UserClass.RANG_PUSHERS) != 0) text += "Т";
+                        if ((tablUsers[rowIndex].rang & 1 << User.RANG_USERS) != 0) text += "П";
+                        if ((tablUsers[rowIndex].rang & 1 << User.RANG_PUSHERS) != 0) text += "Т";
                         break;
                     default:
                 }
@@ -393,6 +489,13 @@ public class EditUsers extends JFrame
         button.setFont(new Font("Times New Roman", fontStyle, fontSize));
         button.setBounds(x, y, width, height);
         button.addActionListener(e -> pushButtonNewUser());
+        return button;
+    }
+    private JButton getButton(String text, int fontStyle, int fontSize, int x, int y, int width, int height, ActionListener listener) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Times New Roman", fontStyle, fontSize));
+        button.setBounds(x, y, width, height);
+        button.addActionListener(listener);
         return button;
     }
     private JTextField getFieldSurName(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
