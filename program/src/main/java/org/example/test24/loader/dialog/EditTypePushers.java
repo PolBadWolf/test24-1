@@ -3,6 +3,7 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.usertypes.TypePusher;
+import org.example.test24.bd.usertypes.User;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -26,7 +27,7 @@ import static org.example.test24.lib.MyLogger.myLog;
 
 public class EditTypePushers {
     interface CallBack {
-
+        User getCurrentUser();
     }
 
     // ***********************************************************************
@@ -41,6 +42,7 @@ public class EditTypePushers {
     private JTextField textForce;
     private JTextField textMove;
     private JTextField textUnclenching;
+    private JButton buttonDelete;
     private JButton buttonClear;
     private JButton buttonEdit;
     private JButton buttonAdd;
@@ -50,11 +52,13 @@ public class EditTypePushers {
     private BaseData connBD;
     // список тип толкателей
     private TypePusher[] typePushers;
-    private TypePusher editTypePusher;
+    private TypePusher editTypePusher = null;
+    private User userEdit;
 
     public EditTypePushers(CallBack callBack, BaseData connBD) {
         this.callBack = callBack;
         this.connBD = connBD;
+        userEdit = callBack.getCurrentUser();
         // загрузка списка типа толкателей
         try {
             typePushers = getListTypePushers();
@@ -92,16 +96,18 @@ public class EditTypePushers {
         frame.add(textName);
         textForce = getTextField(new Font("Times New Roman", 0, 18), 290, 310, 140, 24, new FilterTextDigit());
         frame.add(textForce);
-        textMove = getTextField(new Font("Times New Roman", 0, 18), 290, 360, 140, 24, new FilterTextDigit());
+        textMove = getTextField(new Font("Times New Roman", 0, 18), 290, 350, 140, 24, new FilterTextDigit());
         frame.add(textMove);
-        textUnclenching = getTextField(new Font("Times New Roman", 0, 18), 290, 400, 140, 24, new FilterTextDigit());
+        textUnclenching = getTextField(new Font("Times New Roman", 0, 18), 290, 385, 140, 24, new FilterTextDigit());
         frame.add(textUnclenching);
         // ---- кнопки
-        buttonClear = getButton("Очистить", new Font("Times New Roman", 0, 14), 470, 320, 120, 25, this::buttonClearAction);
+        buttonDelete = getButton("Удалить", new Font("Times New Roman", 0, 14), 470, 270, 120, 25, this::buttonDeleteAction);
+        frame.add(buttonDelete);
+        buttonClear = getButton("Очистить", new Font("Times New Roman", 0, 14), 470, 310, 120, 25, this::buttonClearAction);
         frame.add(buttonClear);
-        buttonEdit = getButton("Редактировать", new Font("Times New Roman", 0, 14), 470, 360, 120, 25, this::buttonEditAction);
+        buttonEdit = getButton("Редактировать", new Font("Times New Roman", 0, 14), 470, 350, 120, 25, this::buttonEditAction);
         frame.add(buttonEdit);
-        buttonAdd = getButton("Добавить", new Font("Times New Roman", 0, 14), 470, 400, 120, 25, this::buttonAddAction);
+        buttonAdd = getButton("Добавить", new Font("Times New Roman", 0, 14), 470, 385, 120, 25, this::buttonAddAction);
         frame.add(buttonAdd);
         // ---- таблица
         tableTypePushers = getTable(640 - 17, new TableModelTypePushers(),
@@ -206,6 +212,26 @@ public class EditTypePushers {
         return table;
     }
     // ----------- кнопки
+    // button delete
+    private void buttonDeleteAction(ActionEvent e) {
+        if (editTypePusher == null) return;
+        try {
+            connBD.deativateTypePusher(userEdit.id_loggerUser, editTypePusher);
+        } catch (BaseDataException baseDataException) {
+            baseDataException.printStackTrace();
+            return;
+        }
+        // обновить список
+        try {
+            typePushers = getListTypePushers();
+        } catch (BaseDataException baseDataException) {
+            baseDataException.printStackTrace();
+            return;
+        }
+        tableTypePushers.updateUI();
+        tableTypePushers.getSelectionModel().clearSelection();
+        editTypePusher = null;
+    }
     // button clear
     private void buttonClearAction(ActionEvent e) {
 

@@ -268,6 +268,10 @@ public class StartFrame {
             SwingUtilities.invokeLater(()->{
                 new EditTypePushers(
                         new EditTypePushers.CallBack() {
+                            @Override
+                            public User getCurrentUser() {
+                                return (User) comboBoxUsers.getSelectedItem();
+                            }
                         },
                         connBD
                 );
