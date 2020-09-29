@@ -4,6 +4,7 @@ import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
+import org.example.test24.lib.MySwingUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -238,7 +239,14 @@ public class EditTypePushers {
     }
     // button edit
     private void buttonEditAction(ActionEvent e) {
-
+        if (editTypePusher == null) return;
+        if (textName.getText().length() == 0) {
+            SaveEnableComponents saveEnableComponents = new SaveEnableComponents();
+            saveEnableComponents.offline();
+            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
+                saveEnableComponents.restore();
+            });
+        }
     }
     // button add
     private void buttonAddAction(ActionEvent e) {
@@ -306,6 +314,57 @@ public class EditTypePushers {
         @Override
         public String getColumnName(int column) {
             return titles[column];
+        }
+    }
+    class SaveEnableComponents {
+        private boolean frame;
+        private boolean tableTypePushers;
+        private boolean textName;
+        private boolean textForce;
+        private boolean textMove;
+        private boolean textUnclenching;
+        private boolean buttonDelete;
+        private boolean buttonClear;
+        private boolean buttonEdit;
+        private boolean buttonAdd;
+        public SaveEnableComponents() {
+            save();
+        }
+        public void save() {
+            frame = EditTypePushers.this.frame.isEnabled();
+            tableTypePushers = EditTypePushers.this.tableTypePushers.isEnabled();
+            textName = EditTypePushers.this.textName.isEnabled();
+            textForce = EditTypePushers.this.textForce.isEnabled();
+            textMove = EditTypePushers.this.textMove.isEnabled();
+            textUnclenching = EditTypePushers.this.textUnclenching.isEnabled();
+            buttonDelete = EditTypePushers.this.buttonDelete.isEnabled();
+            buttonClear = EditTypePushers.this.buttonClear.isEnabled();
+            buttonEdit = EditTypePushers.this.buttonEdit.isEnabled();
+            buttonAdd = EditTypePushers.this.buttonAdd.isEnabled();
+        }
+        public void restore() {
+            EditTypePushers.this.frame.setEnabled(frame);
+            EditTypePushers.this.tableTypePushers.setEnabled(tableTypePushers);
+            EditTypePushers.this.textName.setEnabled(textName);
+            EditTypePushers.this.textForce.setEnabled(textForce);
+            EditTypePushers.this.textMove.setEnabled(textMove);
+            EditTypePushers.this.textUnclenching.setEnabled(textUnclenching);
+            EditTypePushers.this.buttonDelete.setEnabled(buttonDelete);
+            EditTypePushers.this.buttonClear.setEnabled(buttonClear);
+            EditTypePushers.this.buttonEdit.setEnabled(buttonEdit);
+            EditTypePushers.this.buttonAdd.setEnabled(buttonAdd);
+        }
+        public void offline() {
+            EditTypePushers.this.frame.setEnabled(false);
+            EditTypePushers.this.tableTypePushers.setEnabled(false);
+            EditTypePushers.this.textName.setEnabled(false);
+            EditTypePushers.this.textForce.setEnabled(false);
+            EditTypePushers.this.textMove.setEnabled(false);
+            EditTypePushers.this.textUnclenching.setEnabled(false);
+            EditTypePushers.this.buttonDelete.setEnabled(false);
+            EditTypePushers.this.buttonClear.setEnabled(false);
+            EditTypePushers.this.buttonEdit.setEnabled(false);
+            EditTypePushers.this.buttonAdd.setEnabled(false);
         }
     }
 }
