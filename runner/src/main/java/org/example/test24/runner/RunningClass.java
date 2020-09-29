@@ -2,7 +2,7 @@ package org.example.test24.runner;
 
 import javafx.scene.paint.Color;
 import org.example.test24.bd.BaseData;
-import org.example.test24.bd.MyBlob;
+import org.example.test24.bd.usertypes.MyBlob;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.bd.DistClass;
 import org.example.test24.allinterface.screen.MainFrame_interface;

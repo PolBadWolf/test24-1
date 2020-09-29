@@ -3,6 +3,7 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
+import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.MyUtil;
 
 import javax.swing.*;
@@ -14,6 +15,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -39,7 +41,7 @@ class TuningFrame {
     boolean flagLockActions = false;
     boolean flagTestBaseData;
     boolean flagTestCommPort;
-    boolean flagNewCorrectData = false;
+    boolean flagNewCorrectData;
 
 
 
@@ -105,14 +107,15 @@ class TuningFrame {
     // загрузка параметров конфигурации программы
     private BaseData.Config loadConfigProg() {
         BaseData.Config config = BaseData.Config.create();
-        BaseData.Status result = null;
+        Status result;
         try {
             result = config.load1();
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
             config.setDefault();
+            result = Status.CONFIG_LOAD_ERROR;
         }
-        if (result != BaseData.Status.OK) {
+        if (result != Status.OK) {
             myLog.log(Level.SEVERE, "загрузка параметров конфигурации программы", new Exception(result.toString()));
             config.setDefault();
         }
@@ -120,16 +123,16 @@ class TuningFrame {
     }
     // =============================================================================================================
     // загрузка параметров подключения к БД
-    private BaseData.Parameters loadParametersSql(BaseData.TypeBaseDate typeBaseDate) throws BaseDataException
+    private BaseData.Parameters loadParametersSql(TypeBaseDate typeBaseDate) throws BaseDataException
     {
-        if (typeBaseDate == null) throw new BaseDataException("не задан тип БД", BaseData.Status.BASE_TYPE_NO_SELECT);
-        if (typeBaseDate == BaseData.TypeBaseDate.ERROR)  throw new BaseDataException("ошибочный тип БД", BaseData.Status.BASE_TYPE_ERROR);
+        if (typeBaseDate == null) throw new BaseDataException("не задан тип БД", Status.BASE_TYPE_NO_SELECT);
+        if (typeBaseDate == TypeBaseDate.ERROR)  throw new BaseDataException("ошибочный тип БД", Status.BASE_TYPE_ERROR);
         //
         BaseData.Parameters parameters = BaseData.Parameters.create(typeBaseDate);
-        BaseData.Status result;
+        Status result;
         result = parameters.load();
-        if (result != BaseData.Status.OK) {
-            throw new BaseDataException("загрузка параметров соединения с БД", new Exception(result.toString()), BaseData.Status.PARAMETERS_ERROR);
+        if (result != Status.OK) {
+            throw new BaseDataException("загрузка параметров соединения с БД", new Exception(result.toString()), Status.PARAMETERS_ERROR);
         }
         //
         return parameters;
@@ -191,7 +194,7 @@ class TuningFrame {
     }
     private void setComponentCommPort(String[] listCommPort, String defaultCommPort) {
         comboBoxCommPort.removeAllItems();
-        Arrays.stream(listCommPort).sorted((a, b) -> a.compareTo(b)).forEach(s -> comboBoxCommPort.addItem(s));
+        Arrays.stream(listCommPort).sorted(String::compareTo).forEach(s -> comboBoxCommPort.addItem(s));
         comboBoxCommPort.setSelectedItem(defaultCommPort);
     }
     private void setComponentBaseData(BaseData.Parameters parametersSql) {
@@ -333,11 +336,11 @@ class TuningFrame {
         textField.setEditable(false);
         return textField;
     }
-    private JComboBox<BaseData.TypeBaseDate> getComboBoxTypeBd(int x, int y, int width, int height) {
-        JComboBox<BaseData.TypeBaseDate> comboBox = new JComboBox<>();
+    private JComboBox<TypeBaseDate> getComboBoxTypeBd(int x, int y, int width, int height) {
+        JComboBox<TypeBaseDate> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
-        comboBox.addItem(BaseData.TypeBaseDate.MS_SQL);
-        comboBox.addItem(BaseData.TypeBaseDate.MY_SQL);
+        comboBox.addItem(TypeBaseDate.MS_SQL);
+        comboBox.addItem(TypeBaseDate.MY_SQL);
         comboBox.addActionListener(e -> {
             callSelectTypeBase(comboBox);
         });
@@ -447,8 +450,7 @@ class TuningFrame {
         button.setBounds(x, y, width, height);
         button.setEnabled(false);
         button.addActionListener(e -> {
-            //pushButtonEditUsers();
-            myLog.log(Level.WARNING, "push button edit users", new Exception("action listener"));
+            pushButtonEditUsers();
         });
         return button;
     }
@@ -477,15 +479,15 @@ class TuningFrame {
             }
             callBack.messageCloseTuning(flagNewCorrectData);
         }
-        if (editUsers != null) {
+        /*if (editUsers != null) {
 
-        }
+        }*/
     } // ****************
     // ======
     private class EditUsersCallBack implements EditUsers.CallBack {
         @Override
         public void messageCloseEditUsers(boolean newData) {
-            editUsers = null;
+            //editUsers = null;
         }
 
         @Override
@@ -804,14 +806,45 @@ class TuningFrame {
     }
     // нажатие кнопки редактирование пользователей
     private void pushButtonEditUsers() {
-        /*if (editUsers == null) {
-            editUsers = new EditUsers(null, new EditUsersCallBack());
-        }*/
+        if (!flagTestBaseData) {
+            myLog.log(Level.SEVERE, "не установлен флаг коррекности БД");
+            buttonEditUsers.setEnabled(false);
+            return;
+        }
+        SaveEnableComponents saveComponents = new SaveEnableComponents();
+        saveComponents.offline();
+        new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
+                new EditUsers(connBD,
+                        new EditUsers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers(boolean newData) {
+                                if (newData) {
+                                    // здесь перезагрузка списка пользователей (новые данные)
+                                }
+                                saveComponents.restore();
+                            }
+                            // текущий активный пользователь
+                            @Override
+                            public User getCurrentUser() {
+                                /*User user = new User(
+                                        0,
+                                        new Date(),
+                                        0,
+                                        "lockAdmin",
+                                        "",
+                                        3,
+                                        null
+                                );*/
+                                return null;
+                            }
+                        });
+            });
+        }, "create edit users").start();
     }
     // ========================================================================
     // ===== компоненты JFrame =======
     protected JFrame frameTuning = null;
-    protected EditUsers editUsers = null;
 
     protected JPanel panelCommPort = null;
     protected JLabel labelPortCurrent = null;
@@ -820,7 +853,7 @@ class TuningFrame {
 
     protected JPanel panelTypeBd = null;
     protected JTextField textTypeBdStatus = null;
-    protected JComboBox<BaseData.TypeBaseDate> comboBoxTypeBd = null;
+    protected JComboBox<TypeBaseDate> comboBoxTypeBd = null;
 
     protected JPanel panelParamSQL = null;
     protected JTextField fieldParamServerIP = null;
@@ -853,7 +886,7 @@ class TuningFrame {
         //============================
         BaseData.Parameters parameters;
         try {
-            parameters = loadParametersSql((BaseData.TypeBaseDate) comboBox.getSelectedItem());
+            parameters = loadParametersSql((TypeBaseDate) comboBox.getSelectedItem());
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "выбор типа БД: " + e.getStatus().toString(), e);
             textTypeBdStatus.setText("ошибка!!!!");
@@ -878,8 +911,9 @@ class TuningFrame {
         BaseData.Parameters parameters;
         BaseData conn;
         flagTestBaseData = false;
+        buttonEditUsers.setEnabled(false);
         try {
-            parameters = BaseData.Parameters.create((BaseData.TypeBaseDate) comboBoxTypeBd.getSelectedItem());
+            parameters = BaseData.Parameters.create((TypeBaseDate) comboBoxTypeBd.getSelectedItem());
             parameters.setIpServer(fieldParamServerIP.getText());
             parameters.setPortServer(fieldParamServerPort.getText());
             parameters.setUser(fieldParamServerLogin.getText());
@@ -930,6 +964,8 @@ class TuningFrame {
         }
         textTypeBdStatus.setText("соединение установлено");
         flagTestBaseData = true;
+        //
+        buttonEditUsers.setEnabled(true);
     }
     private void callPushButtonTestCommPort() {
         CommPort port;
@@ -969,15 +1005,15 @@ class TuningFrame {
             result = javax.swing.JOptionPane.showConfirmDialog(null, textMess, "сохранение параметров", JOptionPane.OK_CANCEL_OPTION);
             if (result != 0) return;
         }
-        BaseData.Status result;
+        Status result;
         // сохранения конфига
         BaseData.Config config;
         try {
             config = BaseData.Config.create();
             config.setPortName((String) comboBoxCommPort.getSelectedItem());
-            config.setTypeBaseData((BaseData.TypeBaseDate) comboBoxTypeBd.getSelectedItem());
+            config.setTypeBaseData((TypeBaseDate) comboBoxTypeBd.getSelectedItem());
             result = config.save();
-            if (result != BaseData.Status.OK) {
+            if (result != Status.OK) {
                 throw new BaseDataException("ошибка сохранения конфигурации", result);
             }
             configProg = config;
@@ -987,7 +1023,7 @@ class TuningFrame {
         // сохранение параметров БД
         BaseData.Parameters parameters;
         try {
-            parameters = BaseData.Parameters.create((BaseData.TypeBaseDate) comboBoxTypeBd.getSelectedItem());
+            parameters = BaseData.Parameters.create((TypeBaseDate) comboBoxTypeBd.getSelectedItem());
             parameters.setIpServer(fieldParamServerIP.getText());
             parameters.setPortServer(fieldParamServerPort.getText());
             parameters.setUser(fieldParamServerLogin.getText());
@@ -998,6 +1034,70 @@ class TuningFrame {
             flagNewCorrectData = true;
         } catch (BaseDataException e) {
             myLog.log(Level.WARNING, "сохранение параметров соединения", e);
+        }
+    }
+    // ===========================================================================
+    class SaveEnableComponents {
+        private boolean frameTuning;
+        private boolean comboBoxCommPort;
+        private boolean comboBoxTypeBd;
+        private boolean comboBoxListBd;
+        private boolean fieldParamServerIP;
+        private boolean fieldParamServerPort;
+        private boolean fieldParamServerLogin;
+        private boolean fieldParamServerPassword;
+        private boolean buttonOk;
+        private boolean buttonSave;
+        private boolean buttonTest;
+        private boolean buttonEditUsers;
+        private boolean buttonEditPushers;
+        public SaveEnableComponents() {
+            save();
+        }
+        public void save() {
+            frameTuning = TuningFrame.this.frameTuning.isEnabled();
+            comboBoxCommPort = TuningFrame.this.comboBoxCommPort.isEnabled();
+            comboBoxTypeBd = TuningFrame.this.comboBoxTypeBd.isEnabled();
+            comboBoxListBd = TuningFrame.this.comboBoxListBd.isEnabled();
+            fieldParamServerIP = TuningFrame.this.fieldParamServerIP.isEnabled();
+            fieldParamServerPort = TuningFrame.this.fieldParamServerPort.isEnabled();
+            fieldParamServerLogin = TuningFrame.this.fieldParamServerLogin.isEnabled();
+            fieldParamServerPassword = TuningFrame.this.fieldParamServerPassword.isEnabled();
+            buttonOk = TuningFrame.this.buttonOk.isEnabled();
+            buttonSave = TuningFrame.this.buttonSave.isEnabled();
+            buttonTest = TuningFrame.this.buttonTest.isEnabled();
+            buttonEditUsers = TuningFrame.this.buttonEditUsers.isEnabled();
+            buttonEditPushers = TuningFrame.this.buttonEditPushers.isEnabled();
+        }
+        public void restore() {
+            TuningFrame.this.frameTuning.setEnabled(frameTuning);
+            TuningFrame.this.comboBoxCommPort.setEnabled(comboBoxCommPort);
+            TuningFrame.this.comboBoxTypeBd.setEnabled(comboBoxTypeBd);
+            TuningFrame.this.comboBoxListBd.setEnabled(comboBoxListBd);
+            TuningFrame.this.fieldParamServerIP.setEnabled(fieldParamServerIP);
+            TuningFrame.this.fieldParamServerPort.setEnabled(fieldParamServerPort);
+            TuningFrame.this.fieldParamServerLogin.setEnabled(fieldParamServerLogin);
+            TuningFrame.this.fieldParamServerPassword.setEnabled(fieldParamServerPassword);
+            TuningFrame.this.buttonOk.setEnabled(buttonOk);
+            TuningFrame.this.buttonSave.setEnabled(buttonSave);
+            TuningFrame.this.buttonTest.setEnabled(buttonTest);
+            TuningFrame.this.buttonEditUsers.setEnabled(buttonEditUsers);
+            TuningFrame.this.buttonEditPushers.setEnabled(buttonEditPushers);
+        }
+        public void offline() {
+            TuningFrame.this.frameTuning.setEnabled(false);
+            TuningFrame.this.comboBoxCommPort.setEnabled(false);
+            TuningFrame.this.comboBoxTypeBd.setEnabled(false);
+            TuningFrame.this.comboBoxListBd.setEnabled(false);
+            TuningFrame.this.fieldParamServerIP.setEnabled(false);
+            TuningFrame.this.fieldParamServerPort.setEnabled(false);
+            TuningFrame.this.fieldParamServerLogin.setEnabled(false);
+            TuningFrame.this.fieldParamServerPassword.setEnabled(false);
+            TuningFrame.this.buttonOk.setEnabled(false);
+            TuningFrame.this.buttonSave.setEnabled(false);
+            TuningFrame.this.buttonTest.setEnabled(false);
+            TuningFrame.this.buttonEditUsers.setEnabled(false);
+            TuningFrame.this.buttonEditPushers.setEnabled(false);
         }
     }
     // ========================================================================

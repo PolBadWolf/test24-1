@@ -2,6 +2,9 @@ package org.example.test24.loader.dialog;
 
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
+import org.example.test24.bd.usertypes.Pusher;
+import org.example.test24.bd.usertypes.TypePusher;
+import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.MyUtil;
 import org.example.test24.lib.MySwingUtil;
 
@@ -61,7 +64,7 @@ public class StartFrame {
     CallBack callBack;
     JFrame frame;
 
-    BaseData.TypeBaseDate typeBaseDate;
+    TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
     BaseData connBD;
 
@@ -89,20 +92,20 @@ public class StartFrame {
     }
 
 
-    private BaseData.Parameters getParametersBaseData(BaseData.TypeBaseDate typeBaseDate) throws ParametersSqlException {
-        if (typeBaseDate == null) { throw new ParametersSqlException("ошибка типа базы данных", BaseData.Status.BASE_TYPE_NO_SELECT, null); }
-        if (typeBaseDate == BaseData.TypeBaseDate.ERROR) { throw new ParametersSqlException("ошибка типа базы данных", BaseData.Status.BASE_TYPE_ERROR, null); }
+    private BaseData.Parameters getParametersBaseData(TypeBaseDate typeBaseDate) throws ParametersSqlException {
+        if (typeBaseDate == null) { throw new ParametersSqlException("ошибка типа базы данных", Status.BASE_TYPE_NO_SELECT, null); }
+        if (typeBaseDate == TypeBaseDate.ERROR) { throw new ParametersSqlException("ошибка типа базы данных", Status.BASE_TYPE_ERROR, null); }
         BaseData.Parameters parameters;
         try {
             parameters = BaseData.Parameters.create(typeBaseDate);
         } catch (Exception e) {
             throw new ParametersSqlException(e, ((BaseDataException) e).getStatus(), null);
         }
-        BaseData.Status result;
+        Status result;
         // загрузка параметров БД
         try {
             result = parameters.load();
-            if (result != BaseData.Status.OK) { throw new ParametersSqlException(
+            if (result != Status.OK) { throw new ParametersSqlException(
                         "ошибка загрузка параметров соединения с БД: ",
                         result,
                         parameters);
@@ -133,7 +136,7 @@ public class StartFrame {
         if (!flag) throw new Exception("отсутствует БД: " + parameters.getDataBase());
     }
 
-    private void initBaseData(BaseData.TypeBaseDate typeBaseDate) {
+    private void initBaseData(TypeBaseDate typeBaseDate) {
         // здесь сбросить флаги с БД
         flagConnecting = false;
         flagStructureIntegrity = false;
@@ -244,22 +247,19 @@ public class StartFrame {
         loadAndSetBeginParameters2();
         // ********************
         /*try {
-            connBD.writeNewTypePusher(new PusherType(
+            Date date = new Date();
+            connBD.writeNewTypePusher(
                     0,
-                    null,
-                    55,
-                    0,
-                    "BE BE be",
-                    30,
-                    10,
-                    1000,
-                    null
-            ));
+                    "BE-790",
+                    1200,
+                    400,
+                    1200
+             );
         } catch (BaseDataException e) {
             e.printStackTrace();
         }*/
         try {
-            PusherType[] pusherTypes = connBD.getListTypePushers(false);
+            TypePusher[] typePushers = connBD.getListTypePushers(false);
             int a = 5;
         } catch (BaseDataException e) {
             e.printStackTrace();
@@ -599,8 +599,8 @@ public class StartFrame {
         // спрятать кнопку настройка
         buttonTuning.setVisible(false);
         // проверка пароля у пользователя из списка (БД)
-        if (!user.password.equals(password)) {
-            System.out.println("у пользователя из списка не совпал пароль (" + user.password + ")");
+        if (!user.userPassword.equals(password)) {
+            System.out.println("у пользователя из списка не совпал пароль (" + user.userPassword + ")");
             // отключить кнопки управления
             buttonSetPassword.setEnabled(false);
             buttonEditUsers.setEnabled(false);
@@ -609,14 +609,14 @@ public class StartFrame {
             // отключить органы проверки пароля
             fieldPassword.setEnabled(false);
             buttonEnter.setEnabled(false);
-            myLog.log(Level.INFO, "ошибка ввода пароля: " + user.name + "/" + password);
+            myLog.log(Level.INFO, "ошибка ввода пароля: " + user.surName + "/" + password);
             MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
                 fieldPassword.setEnabled(true);
                 buttonEnter.setEnabled(true);
             });
             return;
         }
-        myLog.log(Level.INFO, "вход пользователем " + user.name + " с привелегиями " + user.rang);
+        myLog.log(Level.INFO, "вход пользователем " + user.surName + " с привелегиями " + user.rang);
         // разрешение смены пароля
         fieldPassword.setText("");
         buttonSetPassword.setEnabled(true);
@@ -636,13 +636,13 @@ public class StartFrame {
         if  (newPassword.length() == 0) {
             MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> buttonSetPassword.setEnabled(true));
             buttonSetPassword.setEnabled(false);
-            myLog.log(Level.WARNING, "попытка установки пустово пароля пользователем " + currentUser.name );
+            myLog.log(Level.WARNING, "попытка установки пустово пароля пользователем " + currentUser.surName );
             return;
         }
         try {
             connBD.setNewUserPassword(currentUser, newPassword);
-            currentUser.password = newPassword;
-            if (!newPassword.equals(((User) comboBoxUsers.getSelectedItem()).password)) {
+            currentUser.userPassword = newPassword;
+            if (!newPassword.equals(((User) comboBoxUsers.getSelectedItem()).userPassword)) {
                 myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
             }
         } catch (Exception e) {

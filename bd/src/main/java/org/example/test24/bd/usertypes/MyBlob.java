@@ -1,4 +1,4 @@
-package org.example.test24.bd;
+package org.example.test24.bd.usertypes;
 
 import org.example.test24.lib.Converts;
 import org.example.test24.allinterface.bd.DistClass;
