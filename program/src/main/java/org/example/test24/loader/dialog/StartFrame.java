@@ -258,12 +258,21 @@ public class StartFrame {
         } catch (BaseDataException e) {
             e.printStackTrace();
         }*/
-        try {
+        /*try {
             TypePusher[] typePushers = connBD.getListTypePushers(false);
             int a = 5;
         } catch (BaseDataException e) {
             e.printStackTrace();
-        }
+        }*/
+        new Thread(()->{
+            SwingUtilities.invokeLater(()->{
+                new EditTypePushers(
+                        new EditTypePushers.CallBack() {
+                        },
+                        connBD
+                );
+            });
+        }).start();
         // ********************
     }
     private void loadAndSetBeginParameters() {
