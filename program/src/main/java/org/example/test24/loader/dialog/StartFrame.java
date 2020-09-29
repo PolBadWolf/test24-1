@@ -3,10 +3,10 @@ package org.example.test24.loader.dialog;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
 import org.example.test24.bd.usertypes.Pusher;
-import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
-import org.example.test24.lib.MyUtil;
-import org.example.test24.lib.MySwingUtil;
+import org.example.test24.lib.swing.MyUtil;
+import org.example.test24.lib.swing.MySwingUtil;
+import org.example.test24.lib.swing.SaveEnableComponents;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,6 +67,7 @@ public class StartFrame {
     TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
     BaseData connBD;
+    SaveEnableComponents saveEnableComponentsStartFrame;
 
 
     public static StartFrame main(boolean statMainWork, CallBack callBack) throws Exception {
@@ -209,6 +210,20 @@ public class StartFrame {
     private void start() {
         // загрузка компонентов и вывод загаловка
         initComponents();
+        //
+        saveEnableComponentsStartFrame = new SaveEnableComponents(new Component[]{
+                buttonEnter,
+                buttonSetPassword,
+                buttonWork,
+                buttonTuning,
+                buttonEditUsers,
+                buttonEditPushers,
+                comboBoxUsers,
+                comboBoxPusher,
+                fieldPassword,
+                frame
+        });
+        //
         onTitleComponents();
         frame.setResizable(false);
         frame.setLayout(null);
@@ -250,20 +265,33 @@ public class StartFrame {
             Date date = new Date();
             connBD.writeNewTypePusher(
                     0,
-                    "BE-790",
-                    1200,
-                    400,
-                    1200
+                    "BE-2",
+                    120,
+                    40,
+                    10
              );
         } catch (BaseDataException e) {
             e.printStackTrace();
         }*/
-        try {
+        /*try {
             TypePusher[] typePushers = connBD.getListTypePushers(false);
             int a = 5;
         } catch (BaseDataException e) {
             e.printStackTrace();
-        }
+        }*/
+        new Thread(()->{
+            SwingUtilities.invokeLater(()->{
+                new EditTypePushers(
+                        new EditTypePushers.CallBack() {
+                            @Override
+                            public long getCurrentId_loggerUser() {
+                                return 0L;
+                            }
+                        },
+                        connBD
+                );
+            });
+        }).start();
         // ********************
     }
     private void loadAndSetBeginParameters() {
@@ -697,14 +725,14 @@ public class StartFrame {
             return;
         }
         // отключение управления
-        SaveEnableComponents saveComponents = new SaveEnableComponents();
-        saveComponents.offline();
+        saveEnableComponentsStartFrame.save();
+        saveEnableComponentsStartFrame.offline();
         new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
                 new TuningFrame(new TuningFrame.CallBack() {
                     @Override
                     public void messageCloseTuning(boolean newData) {
-                        saveComponents.restore();
+                        saveEnableComponentsStartFrame.restore();
                         loadAndSetBeginParameters();
                         loadAndSetBeginParameters2();
                     }
@@ -714,8 +742,8 @@ public class StartFrame {
     }
     // обработка редактирование пользователей
     private void callEditUsers() {
-        SaveEnableComponents saveComponents = new SaveEnableComponents();
-        saveComponents.offline();
+        saveEnableComponentsStartFrame.save();
+        saveEnableComponentsStartFrame.offline();
         new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
                 new EditUsers(connBD,
@@ -738,7 +766,7 @@ public class StartFrame {
                                         );
                                     }
                                 }
-                                saveComponents.restore();
+                                saveEnableComponentsStartFrame.restore();
                             }
 
                             @Override
@@ -753,57 +781,5 @@ public class StartFrame {
     private void callEditPushers() {
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
     }
-
     // ===========================================================================
-    class SaveEnableComponents {
-        private boolean buttonEnter;
-        private boolean buttonSetPassword;
-        private boolean buttonWork;
-        private boolean buttonTuning;
-        private boolean buttonEditUsers;
-        private boolean buttonEditPushers;
-        private boolean comboBoxUsers;
-        private boolean comboBoxPusher;
-        private boolean fieldPassword;
-        private boolean frame;
-        public SaveEnableComponents() {
-            save();
-        }
-        public void save() {
-            buttonEnter = StartFrame.this.buttonEnter.isEnabled();
-            buttonSetPassword = StartFrame.this.buttonSetPassword.isEnabled();
-            buttonWork = StartFrame.this.buttonWork.isEnabled();
-            buttonTuning = StartFrame.this.buttonTuning.isEnabled();
-            buttonEditUsers = StartFrame.this.buttonEditUsers.isEnabled();
-            buttonEditPushers = StartFrame.this.buttonEditPushers.isEnabled();
-            comboBoxUsers = StartFrame.this.comboBoxUsers.isEnabled();
-            comboBoxPusher = StartFrame.this.comboBoxPusher.isEnabled();
-            fieldPassword = StartFrame.this.fieldPassword.isEnabled();
-            frame = StartFrame.this.frame.isEnabled();
-        }
-        public void restore() {
-            StartFrame.this.buttonEnter.setEnabled(buttonEnter);
-            StartFrame.this.buttonSetPassword.setEnabled(buttonSetPassword);
-            StartFrame.this.buttonWork.setEnabled(buttonWork);
-            StartFrame.this.buttonTuning.setEnabled(buttonTuning);
-            StartFrame.this.buttonEditUsers.setEnabled(buttonEditUsers);
-            StartFrame.this.buttonEditPushers.setEnabled(buttonEditPushers);
-            StartFrame.this.comboBoxUsers.setEnabled(comboBoxUsers);
-            StartFrame.this.comboBoxPusher.setEnabled(comboBoxPusher);
-            StartFrame.this.fieldPassword.setEnabled(fieldPassword);
-            StartFrame.this.frame.setEnabled(frame);
-        }
-        public void offline() {
-            StartFrame.this.buttonEnter.setEnabled(false);
-            StartFrame.this.buttonSetPassword.setEnabled(false);
-            StartFrame.this.buttonWork.setEnabled(false);
-            StartFrame.this.buttonTuning.setEnabled(false);
-            StartFrame.this.buttonEditUsers.setEnabled(false);
-            StartFrame.this.buttonEditPushers.setEnabled(false);
-            StartFrame.this.comboBoxUsers.setEnabled(false);
-            StartFrame.this.comboBoxPusher.setEnabled(false);
-            StartFrame.this.fieldPassword.setEnabled(false);
-            StartFrame.this.frame.setEnabled(false);
-        }
-    }
 }
