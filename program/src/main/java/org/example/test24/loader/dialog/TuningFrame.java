@@ -4,7 +4,7 @@ import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.usertypes.User;
-import org.example.test24.lib.MyUtil;
+import org.example.test24.lib.swing.MyUtil;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -15,7 +15,6 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;

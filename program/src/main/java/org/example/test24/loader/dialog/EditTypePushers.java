@@ -3,7 +3,7 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.usertypes.TypePusher;
-import org.example.test24.lib.MySwingUtil;
+import org.example.test24.lib.swing.MySwingUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
