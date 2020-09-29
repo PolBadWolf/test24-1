@@ -230,11 +230,11 @@ public class EditTypePushers {
         }
         tableTypePushers.updateUI();
         tableTypePushers.getSelectionModel().clearSelection();
-        editTypePusher = null;
+        clearFields();
     }
     // button clear
     private void buttonClearAction(ActionEvent e) {
-
+        clearFields();
     }
     // button edit
     private void buttonEditAction(ActionEvent e) {
@@ -243,6 +243,13 @@ public class EditTypePushers {
     // button add
     private void buttonAddAction(ActionEvent e) {
 
+    }
+    private void clearFields() {
+        editTypePusher = null;
+        textName.setText("");
+        textForce.setText("");
+        textMove.setText("");
+        textUnclenching.setText("");
     }
     // ----------- таблицы
     private void tableTypePushersChanged(ListSelectionEvent e) {
