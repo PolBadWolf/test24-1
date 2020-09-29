@@ -776,7 +776,7 @@ class BaseDataParent implements BaseData {
     }
     // обновление типа толкателя
     @Override
-    public void updateTypePusher(TypePusher typePusher, long id_loggerUser, String nameType, int forceNominal, int move_min, int move_max) throws BaseDataException {
+    public void updateTypePusher(TypePusher typePusher, long id_loggerUser, String nameType, int forceNominal, int moveNominal, int unclenchingTime) throws BaseDataException {
         if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
         boolean fl = false;
         try {
@@ -797,13 +797,14 @@ class BaseDataParent implements BaseData {
 
         PreparedStatement preStatementLogger;
         PreparedStatement preStatementUpdate;
+        long id_loggerTypePusher;
 
         java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
         try {
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
                             " " + baseDat + ".logger_type_pushers " +
-                            " (data_upd, id_loggerUser, id_typePusher, nameType, forceNominal, move_min, move_max) " +
+                            " (data_upd, id_loggerUser, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime) " +
                             " VALUES (?, ?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);
@@ -811,10 +812,10 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setLong(3, typePusher.id_typePusher);
             preStatementLogger.setString(4, nameType);
             preStatementLogger.setInt(5, forceNominal);
-            preStatementLogger.setInt(6, move_min);
-            preStatementLogger.setInt(7, move_max);
+            preStatementLogger.setInt(6, moveNominal);
+            preStatementLogger.setInt(7, unclenchingTime);
             preStatementLogger.executeUpdate();
-            long id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
+            id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
             //
             preStatementUpdate = connection.prepareStatement(
                     "UPDATE " +
@@ -838,14 +839,15 @@ class BaseDataParent implements BaseData {
             try { connection.setAutoCommit(saveAutoCommit);
             } catch (SQLException throwables) { }
         }
-        /*
-        typePusher.date_upd = timestamp;
-        typePusher.id_loggerUser = id_loggerUser;
-        typePusher.nameType = nameType;
-        typePusher.forceNominal = forceNominal;
-        typePusher.move_min = move_min;
-        typePusher.move_max = move_max;
-        */
+
+        typePusher.loggerTypePusher.id_loggerTypePusher = id_loggerTypePusher;
+        typePusher.loggerTypePusher.data_upd = timestamp;
+        typePusher.loggerTypePusher.id_loggerUserEdit = id_loggerUser;
+        typePusher.loggerTypePusher.nameType = nameType;
+        typePusher.loggerTypePusher.forceNominal = forceNominal;
+        typePusher.loggerTypePusher.moveNominal = moveNominal;
+        typePusher.loggerTypePusher.unclenchingTime = unclenchingTime;
+
         //
         try {
             preStatementLogger.close();
