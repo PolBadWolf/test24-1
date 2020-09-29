@@ -11,6 +11,7 @@ import org.example.test24.lib.MySwingUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Date;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -250,10 +251,10 @@ public class StartFrame {
             Date date = new Date();
             connBD.writeNewTypePusher(
                     0,
-                    "BE-790",
-                    1200,
-                    400,
-                    1200
+                    "BE-2",
+                    120,
+                    40,
+                    10
              );
         } catch (BaseDataException e) {
             e.printStackTrace();

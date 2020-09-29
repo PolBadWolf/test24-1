@@ -66,7 +66,7 @@ public class EditTypePushers {
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "ошибка получения списка типа толкателей", e);
             // в этом месте выход
-            return;
+            //return;
         }
         // инициация компонентов
         initComponents();
@@ -240,7 +240,12 @@ public class EditTypePushers {
     // button edit
     private void buttonEditAction(ActionEvent e) {
         if (editTypePusher == null) return;
-        if (textName.getText().length() == 0) {
+        if (
+                textName.getText().length() == 0
+                || textForce.getText().length() == 0
+                || textMove.getText().length() == 0
+                || textUnclenching.getText().length() == 0
+        ) {
             SaveEnableComponents saveEnableComponents = new SaveEnableComponents();
             saveEnableComponents.offline();
             MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
