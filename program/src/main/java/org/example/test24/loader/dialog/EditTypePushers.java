@@ -50,6 +50,7 @@ public class EditTypePushers {
     private BaseData connBD;
     // список тип толкателей
     private TypePusher[] typePushers;
+    private TypePusher editTypePusher;
 
     public EditTypePushers(CallBack callBack, BaseData connBD) {
         this.callBack = callBack;
@@ -100,8 +101,8 @@ public class EditTypePushers {
         frame.add(buttonClear);
         buttonEdit = getButton("Редактировать", new Font("Times New Roman", 0, 14), 470, 360, 120, 25, this::buttonEditAction);
         frame.add(buttonEdit);
-        buttonClear = getButton("Добавить", new Font("Times New Roman", 0, 14), 470, 400, 120, 25, this::buttonAddAction);
-        frame.add(buttonClear);
+        buttonAdd = getButton("Добавить", new Font("Times New Roman", 0, 14), 470, 400, 120, 25, this::buttonAddAction);
+        frame.add(buttonAdd);
         // ---- таблица
         tableTypePushers = getTable(640 - 17, new TableModelTypePushers(),
                 new ModelTableNameWidth[]{
@@ -219,7 +220,12 @@ public class EditTypePushers {
     }
     // ----------- таблицы
     private void tableTypePushersChanged(ListSelectionEvent e) {
-
+        if (!e.getValueIsAdjusting()) return;
+        editTypePusher = typePushers[tableTypePushers.getSelectedRow()];
+        textName.setText(editTypePusher.loggerTypePusher.nameType);
+        textForce.setText(String.valueOf(editTypePusher.loggerTypePusher.forceNominal));
+        textMove.setText(String.valueOf(editTypePusher.loggerTypePusher.moveNominal));
+        textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
     }
     // -----------
     class TableModelTypePushers extends AbstractTableModel {
@@ -251,8 +257,10 @@ public class EditTypePushers {
                     break;
                 case 1:
                     text = String.valueOf(typePusher.loggerTypePusher.forceNominal);
+                    break;
                 case 2:
                     text = String.valueOf(typePusher.loggerTypePusher.moveNominal);
+                    break;
                 case 3:
                     text = String.valueOf(typePusher.loggerTypePusher.unclenchingTime);
                     break;
