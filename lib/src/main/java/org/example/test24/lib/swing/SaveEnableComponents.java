@@ -9,6 +9,7 @@ public class SaveEnableComponents {
     public SaveEnableComponents(Component[] components) {
         this.components = components;
         stats = new boolean[components.length];
+        save();
     }
     public void save() {
         for (int i = 0; i < components.length; i++) {

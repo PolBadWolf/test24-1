@@ -4,6 +4,7 @@ import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.lib.swing.MySwingUtil;
+import org.example.test24.lib.swing.SaveEnableComponents;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -244,7 +245,17 @@ public class EditTypePushers {
                 || textMove.getText().length() == 0
                 || textUnclenching.getText().length() == 0
         ) {
-            SaveEnableComponents saveEnableComponents = new SaveEnableComponents();
+            SaveEnableComponents saveEnableComponents = new SaveEnableComponents(new Component[]{
+                    frame,
+                    textName,
+                    textForce,
+                    textMove,
+                    textUnclenching,
+                    buttonDelete,
+                    buttonClear,
+                    buttonEdit,
+                    buttonAdd
+            });
             saveEnableComponents.offline();
             MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
                 saveEnableComponents.restore();
@@ -265,7 +276,26 @@ public class EditTypePushers {
                 break;
             }
             if (flAgain) {
-                // был повтор
+                org.example.test24.lib.swing.SaveEnableComponents saveEnableComponents = new org.example.test24.lib.swing.SaveEnableComponents(
+                        new Component[]{
+                                frame,
+                                textName,
+                                textForce,
+                                textMove,
+                                textUnclenching,
+                                buttonDelete,
+                                buttonClear,
+                                buttonEdit,
+                                buttonAdd
+                        }
+                );
+                saveEnableComponents.offline();
+                MySwingUtil.showMessage(frame,
+                        "редактирование типа гидротолкателя",
+                        "такой тип уже существует",
+                        5_000,
+                        o -> saveEnableComponents.restore()
+                );
                 return;
             }
         }
@@ -350,57 +380,6 @@ public class EditTypePushers {
         @Override
         public String getColumnName(int column) {
             return titles[column];
-        }
-    }
-    class SaveEnableComponents {
-        private boolean frame;
-        private boolean tableTypePushers;
-        private boolean textName;
-        private boolean textForce;
-        private boolean textMove;
-        private boolean textUnclenching;
-        private boolean buttonDelete;
-        private boolean buttonClear;
-        private boolean buttonEdit;
-        private boolean buttonAdd;
-        public SaveEnableComponents() {
-            save();
-        }
-        public void save() {
-            frame = EditTypePushers.this.frame.isEnabled();
-            tableTypePushers = EditTypePushers.this.tableTypePushers.isEnabled();
-            textName = EditTypePushers.this.textName.isEnabled();
-            textForce = EditTypePushers.this.textForce.isEnabled();
-            textMove = EditTypePushers.this.textMove.isEnabled();
-            textUnclenching = EditTypePushers.this.textUnclenching.isEnabled();
-            buttonDelete = EditTypePushers.this.buttonDelete.isEnabled();
-            buttonClear = EditTypePushers.this.buttonClear.isEnabled();
-            buttonEdit = EditTypePushers.this.buttonEdit.isEnabled();
-            buttonAdd = EditTypePushers.this.buttonAdd.isEnabled();
-        }
-        public void restore() {
-            EditTypePushers.this.frame.setEnabled(frame);
-            EditTypePushers.this.tableTypePushers.setEnabled(tableTypePushers);
-            EditTypePushers.this.textName.setEnabled(textName);
-            EditTypePushers.this.textForce.setEnabled(textForce);
-            EditTypePushers.this.textMove.setEnabled(textMove);
-            EditTypePushers.this.textUnclenching.setEnabled(textUnclenching);
-            EditTypePushers.this.buttonDelete.setEnabled(buttonDelete);
-            EditTypePushers.this.buttonClear.setEnabled(buttonClear);
-            EditTypePushers.this.buttonEdit.setEnabled(buttonEdit);
-            EditTypePushers.this.buttonAdd.setEnabled(buttonAdd);
-        }
-        public void offline() {
-            EditTypePushers.this.frame.setEnabled(false);
-            EditTypePushers.this.tableTypePushers.setEnabled(false);
-            EditTypePushers.this.textName.setEnabled(false);
-            EditTypePushers.this.textForce.setEnabled(false);
-            EditTypePushers.this.textMove.setEnabled(false);
-            EditTypePushers.this.textUnclenching.setEnabled(false);
-            EditTypePushers.this.buttonDelete.setEnabled(false);
-            EditTypePushers.this.buttonClear.setEnabled(false);
-            EditTypePushers.this.buttonEdit.setEnabled(false);
-            EditTypePushers.this.buttonAdd.setEnabled(false);
         }
     }
 }
