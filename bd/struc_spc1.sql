@@ -11,7 +11,7 @@
  Target Server Version : 80020
  File Encoding         : 65001
 
- Date: 28/09/2020 16:32:16
+ Date: 29/09/2020 16:31:48
 */
 
 SET NAMES utf8mb4;
@@ -29,7 +29,7 @@ CREATE TABLE `logger_pushers`  (
   `namePusher` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'инвентарный номер толкателя',
   `id_loggerTypePusher` int NOT NULL COMMENT 'индификатор типа толкателя',
   PRIMARY KEY (`id_loggerPusher`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for logger_type_pushers
@@ -42,12 +42,12 @@ CREATE TABLE `logger_type_pushers`  (
   `id_typePusher` int NOT NULL COMMENT 'индификатор типа',
   `nameType` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT 'название типа',
   `forceNominal` int NULL DEFAULT NULL COMMENT 'номинальное усилие',
-  `move_min` int NULL DEFAULT NULL COMMENT 'номинальный ход минимальный',
-  `move_max` int NULL DEFAULT NULL COMMENT 'номинальный ход максимальный',
+  `moveNominal` int NULL DEFAULT NULL COMMENT 'номинальный ход минимальный',
+  `unclenchingTime` int NULL DEFAULT NULL COMMENT 'номинальный ход максимальный',
   PRIMARY KEY (`id_loggerTypePusher`, `id_typePusher`) USING BTREE,
   INDEX `id_typePusher`(`id_typePusher`) USING BTREE,
   INDEX `id_loggerTypePusher`(`id_loggerTypePusher`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for logger_users
@@ -62,7 +62,7 @@ CREATE TABLE `logger_users`  (
   `userPassword` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
   `rang` int NULL DEFAULT NULL,
   PRIMARY KEY (`id_loggerUser`, `id_user`, `id_loggerUserEdit`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for table_data
@@ -91,7 +91,7 @@ CREATE TABLE `table_pushers`  (
   `id_loggerPusher` int NULL DEFAULT NULL COMMENT 'указатель на данные по толкателю',
   `date_unreg` datetime(0) NULL DEFAULT NULL COMMENT 'дата деактивации толкателя',
   PRIMARY KEY (`id_pusher`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for table_spec
@@ -113,7 +113,7 @@ CREATE TABLE `table_users`  (
   `id_loggerUser` int NOT NULL,
   `date_unreg` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`id_user`, `id_loggerUser`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for type_pushers
@@ -126,6 +126,6 @@ CREATE TABLE `type_pushers`  (
   `date_unreg` datetime(0) NULL DEFAULT NULL COMMENT 'дата деактивации типа',
   PRIMARY KEY (`id_typePusher`) USING BTREE,
   INDEX `id_loggerTypePusher`(`id_loggerTypePusher`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
