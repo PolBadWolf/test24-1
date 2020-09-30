@@ -107,13 +107,13 @@ public class EditTypePushers {
         jLabel4 = CreateComponents.getjLabel("Время разжатия (сек)", new Font("Times New Roman", 0, 18), 40, 385, 140, 24, true, true);
         frame.add(jLabel4);
         // ---- поля ввода данных
-        textName = CreateComponents.getTextField(new Font("Times New Roman", 0, 18), 30, 270,400, 24, null, null, true, true);
+        textName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 30, 270,400, 24, null, null, true, true);
         frame.add(textName);
-        textForce = CreateComponents.getTextField(new Font("Times New Roman", 0, 18), 290, 310, 140, 24, new FilterTextDigit(), null, true, true);
+        textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 290, 310, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textForce);
-        textMove = CreateComponents.getTextField(new Font("Times New Roman", 0, 18), 290, 350, 140, 24, new FilterTextDigit(), null, true, true);
+        textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 290, 350, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textMove);
-        textUnclenching = CreateComponents.getTextField(new Font("Times New Roman", 0, 18), 290, 385, 140, 24, new FilterTextDigit(), null, true, true);
+        textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 290, 385, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textUnclenching);
         // ---- кнопки
         buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", 0, 14), 470, 270, 120, 25, this::buttonDeleteAction, true, true);

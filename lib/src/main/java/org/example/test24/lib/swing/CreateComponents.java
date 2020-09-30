@@ -8,6 +8,7 @@ import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 
 public class CreateComponents {
     // ---
@@ -21,8 +22,24 @@ public class CreateComponents {
         return label;
     }
     // ---
-    public static JTextField getTextField(Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
-        JTextField text = new JTextField();
+    final public static int TEXTFIELD = 0;
+    final public static int FORMATTEDTEXTFIELD = 1;
+    final public static int PASSWORDFIELD = 2;
+    public static JTextField getTextField(int typeField, Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
+        JTextField text;
+        switch (typeField) {
+            case TEXTFIELD:
+                text = new JTextField();
+                break;
+            case FORMATTEDTEXTFIELD:
+                text = new JFormattedTextField();
+                break;
+            case PASSWORDFIELD:
+                text = new JPasswordField();
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + typeField);
+        }
         text.setFont(font);
         text.setBounds(x, y, width, height);
         if (filter != null) {
@@ -106,4 +123,17 @@ public class CreateComponents {
         scrollPane.setEnabled(enable);
         return scrollPane;
     }
+    // ---
+    public static <T> JComboBox<T> getComboBox(Font font, int x, int y, int width, int height, boolean editable, ItemListener listener, boolean visible, boolean enable) {
+        JComboBox<T> comboBox = new JComboBox<>();
+        comboBox.setFont(font);
+        comboBox.setBounds(x, y, width, height);
+        comboBox.setEditable(editable);
+        if (listener != null) comboBox.addItemListener(listener);
+        comboBox.setVisible(visible);
+        comboBox.setEnabled(enable);
+        return comboBox;
+    }
+    // ---
+
 }

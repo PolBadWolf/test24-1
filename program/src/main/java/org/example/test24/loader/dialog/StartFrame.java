@@ -4,6 +4,7 @@ import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
 import org.example.test24.bd.usertypes.Pusher;
 import org.example.test24.bd.usertypes.User;
+import org.example.test24.lib.swing.CreateComponents;
 import org.example.test24.lib.swing.MyUtil;
 import org.example.test24.lib.swing.MySwingUtil;
 import org.example.test24.lib.swing.SaveEnableComponents;
@@ -271,7 +272,7 @@ public class StartFrame {
         } catch (BaseDataException e) {
             e.printStackTrace();
         }*/
-        new Thread(()->{
+        /*new Thread(()->{
             SwingUtilities.invokeLater(()->{
                 new EditTypePushers(
                         new EditTypePushers.CallBack() {
@@ -283,7 +284,7 @@ public class StartFrame {
                         connBD
                 );
             });
-        }).start();
+        }).start();*/
         // ********************
     }
     private void loadAndSetBeginParameters() {
@@ -323,92 +324,46 @@ public class StartFrame {
         frame = new JFrame();
         frame.setPreferredSize(new Dimension(640, 480));
         {
-            label1 = new JLabel();
-            label2 = new JLabel();
-            label3 = new JLabel();
-            label4 = new JLabel();
-            label5 = new JLabel();
             jLabel1 = new JLabel();
             jLabel2 = new JLabel();
             jLabel3 = new JLabel();
         } // подписи, надписи
         {
-            label1.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 57));
-            label1.setText("Стенд");
+            label1 = CreateComponents.getjLabel("Стенд", new Font("Times New Roman", Font.PLAIN, 57), 220, 130, 148, 66, false, true);
+            label2 = CreateComponents.getjLabel("испытания", new Font("Times New Roman", Font.PLAIN, 36), 210, 180, 227, 42, false, true);
+            label3 = CreateComponents.getjLabel("гидротолкателей", new Font("Times New Roman", Font.PLAIN, 36), 170, 210, 258, 42, false, true);
+            label4 = CreateComponents.getjLabel("Гумеров М.Н.", new Font("Times New Roman", Font.PLAIN, 11), 380, 400, 68, 20, false, true);
+            label5 = CreateComponents.getjLabel("ЦЗЛАМ ЛА", new Font("Times New Roman", Font.PLAIN, 16), 460, 400, 90, 19, false, true);
             frame.add(label1);
-            label1.setBounds(220, 130, 148, 66);
-            label1.setVisible(false);
-
-            label2.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 36)); // ******************
-            label2.setText("испытания");
             frame.add(label2);
-            label2.setBounds(180, 180, 227, 42);
-            label2.setVisible(false);
-
-            label3.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 36));
-            label3.setText("гидротолкателей");
             frame.add(label3);
-            label3.setBounds(170, 210, 258, 42);
-            label3.setVisible(false);
-
-            label4.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 11));
-            label4.setText("Гумеров М.Н.");
             frame.add(label4);
-            label4.setBounds(380, 400, 68, 20);
-            label4.setVisible(false);
-
-            label5.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 16));
-            label5.setText("ЦЗЛАМ ЛА");
             frame.add(label5);
-            label5.setBounds(460, 400, 90, 19);
-            label5.setVisible(false);
-
-            jLabel1.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-            jLabel1.setText("Пользователь : ");
-            jLabel1.setBounds(100, 200, 90, 16);
+            //
+            jLabel1 = CreateComponents.getjLabel("Пользователь : ", new Font("Times New Roman", Font.PLAIN, 14), 100, 195, 90, 16, false, true);
+            jLabel2 = CreateComponents.getjLabel("Пароль :", new Font("Times New Roman", Font.PLAIN, 14), 100, 235, 90, 16, false, true);
+            jLabel3 = CreateComponents.getjLabel("Толкатель :", new Font("Times New Roman", Font.PLAIN, 14), 100, 270, 90, 16, false, true);
             frame.add(jLabel1);
-            jLabel1.setVisible(false);
-
-            jLabel2.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-            jLabel2.setText("Пароль :");
-            jLabel2.setBounds(100, 240, 90, 16);
             frame.add(jLabel2);
-            jLabel2.setVisible(false);
-
-            jLabel3.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-            jLabel3.setText("Толкатель :");
-            jLabel3.setBounds(100, 270, 90, 16);
             frame.add(jLabel3);
-            jLabel3.setVisible(false);
         } // подписи, надписи
         {
-            comboBoxUsers = getComboBoxUser("Times New Roman", Font.PLAIN, 14, 190, 190, 350, 24);
+            comboBoxUsers = CreateComponents.<User>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 190, 350, 24, true, this::callSelectUser, false, true);
+            comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 190, 350, 24, true, null, false, true);
             frame.add(comboBoxUsers);
-            comboBoxUsers.setVisible(false);
-
-            comboBoxPusher = getComboBoxPusher("Times New Roman", Font.PLAIN, 14, 190, 270, 350, 24);
             frame.add(comboBoxPusher);
-            comboBoxPusher.setVisible(false);
         } // селекторы
-        fieldPassword = getFieldPassword("Times New Roman", Font.PLAIN, 14, 190, 230, 120, 24);
+        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 230,120, 24, null, null, false, true);
         frame.add(fieldPassword);
-        fieldPassword.setVisible(false);
         {
-            buttonEnter = getButtonEnter("проверка", "Times New Roman", Font.PLAIN, 14, 320, 230, 90, 24);
+            buttonEnter = CreateComponents.getButton("проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 230, 90, 24, this::callEnter, false, true);
+            buttonWork = CreateComponents.getButton("работа", new Font("Times New Roman", Font.PLAIN, 14), 200, 330, 90, 24, this::callReturnToWork, false, true);
+            buttonTuning = CreateComponents.getButton("настройка", new Font("Times New Roman", Font.PLAIN, 14), 190, 370, 116, 24, this::callTuning, false, true);
+            buttonSetPassword = CreateComponents.getButton("новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 230, 116, 24, this::callSetNewPassword, false, true);
             frame.add(buttonEnter);
-            buttonEnter.setVisible(false);
-
-            buttonWork = getButtonWork("работа", "Times New Roman", Font.PLAIN, 14, 200, 330, 90, 24);
             frame.add(buttonWork);
-            buttonWork.setVisible(false);
-
-            buttonTuning = getButtonTuning("настройка", "Times New Roman", Font.PLAIN, 14, 190, 370, 116, 24);
             frame.add(buttonTuning);
-            buttonTuning.setVisible(false);
-
-            buttonSetPassword = getButtonSetPassword("новый пароль", "Times New Roman", Font.PLAIN, 14, 420, 230, 116, 24);
             frame.add(buttonSetPassword);
-            buttonSetPassword.setVisible(false);
         } // кнопки
         {
             jPanel1 = new JPanel();
@@ -485,24 +440,16 @@ public class StartFrame {
         textField.setBounds(x, y, width, height);
         textField.addActionListener(e -> {
             buttonEnter.setEnabled(true);
-            callEnter();
+            callEnter(null);
         });
         return textField;
-    }
-    private JButton getButtonEnter(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e ->callEnter());
-        return button;
     }
     private JButton getButtonWork(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JButton button = new JButton();
         button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         button.setText(text);
         button.setBounds(x, y, width, height);
-        button.addActionListener(e ->callReturnToWork());
+        button.addActionListener(e ->callReturnToWork(e));
         return button;
     }
     private JButton getButtonTuning(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
@@ -510,7 +457,7 @@ public class StartFrame {
         button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         button.setText(text);
         button.setBounds(x, y, width, height);
-        button.addActionListener(e -> callTuning());
+        button.addActionListener(e -> callTuning(e));
         return button;
     }
     private JButton getButtonSetPassword(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
@@ -518,28 +465,14 @@ public class StartFrame {
         button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         button.setText(text);
         button.setBounds(x, y, width, height);
-        button.addActionListener(e -> callSetNewPassword());
+        button.addActionListener(e -> callSetNewPassword(e));
         return button;
-    }
-    private JComboBox<User> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JComboBox<User> comboBox = new JComboBox<>();
-        comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        comboBox.setBounds(x, y, width, height);
-        comboBox.setEditable(true);
-        comboBox.addItemListener(e -> {
-            if (e.getStateChange() == 1) return;
-            callSelectUser();
-        });
-        return comboBox;
     }
     private JComboBox<Pusher> getComboBoxPusher(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
         JComboBox<Pusher> comboBox = new JComboBox<>();
         comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(true);
-        comboBox.addActionListener(e -> {
-
-        });
         comboBox.addItemListener(e -> {
             if (e.getStateChange() == 1) return;
         });
@@ -581,14 +514,14 @@ public class StartFrame {
     }
     // ======================================================
     // обработка ввод
-    private void callEnter() {
+    private void callEnter(ActionEvent e) {
         User user = null;
         String password;
         boolean askLocalAdmin;
         try {
             user = (User) comboBoxUsers.getSelectedItem();
             askLocalAdmin = false;
-        } catch (ClassCastException e) {
+        } catch (ClassCastException e2) {
             askLocalAdmin = true;
         }
         password = fieldPassword.getText();
@@ -648,7 +581,7 @@ public class StartFrame {
         comboBoxPusher.setEnabled(true);
     }
     // обработка новый пароль
-    private void callSetNewPassword() {
+    private void callSetNewPassword(ActionEvent f) {
         User currentUser = (User) comboBoxUsers.getSelectedItem();
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
@@ -677,7 +610,8 @@ public class StartFrame {
         fieldPassword.setText("");
     }
     // обработка выбора пользователя
-    private void callSelectUser() {
+    private void callSelectUser(ItemEvent e) {
+        if (e.getStateChange() == 1) return;
         // разрешение ввода пароля
         fieldPassword.setText("");
         fieldPassword.setEnabled(true);
@@ -696,7 +630,7 @@ public class StartFrame {
         buttonTuning.setVisible(false);
     }
     // обработка "работа"
-    private void callReturnToWork() {
+    private void callReturnToWork(ActionEvent e) {
         if (!permissionWork()) {
             MySwingUtil.showMessage(frame, "ошибка", "нет готовности системы", 5_000);
             myLog.log(Level.INFO, "нет готовности системы");
@@ -709,7 +643,7 @@ public class StartFrame {
         //callBack.closeFrame();
     }
     // обработка настройка
-    private void callTuning() {
+    private void callTuning(ActionEvent e) {
         /*if (1 == 1) {
             myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("не реализовано запуск настройки"));
             return;
