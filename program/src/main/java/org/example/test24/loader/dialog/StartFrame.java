@@ -97,10 +97,8 @@ public class StartFrame {
         if (typeBaseDate == null) { throw new ParametersSqlException("ошибка типа базы данных", Status.BASE_TYPE_NO_SELECT, null); }
         if (typeBaseDate == TypeBaseDate.ERROR) { throw new ParametersSqlException("ошибка типа базы данных", Status.BASE_TYPE_ERROR, null); }
         BaseData.Parameters parameters;
-        try {
-            parameters = BaseData.Parameters.create(typeBaseDate);
-        } catch (Exception e) {
-            throw new ParametersSqlException(e, ((BaseDataException) e).getStatus(), null);
+        try { parameters = BaseData.Parameters.create(typeBaseDate);
+        } catch (Exception e) { throw new ParametersSqlException(e, ((BaseDataException) e).getStatus(), null);
         }
         Status result;
         // загрузка параметров БД
@@ -146,8 +144,7 @@ public class StartFrame {
         // ----
         // загрузить параметры
         parameters = null;
-        try {
-            parameters = getParametersBaseData(typeBaseDate);
+        try { parameters = getParametersBaseData(typeBaseDate);
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка получения параметров подключения к БД", e);
             parameters = ((ParametersSqlException) e).getParameters();
@@ -165,8 +162,7 @@ public class StartFrame {
             return;
         }
         // проверка структуры БД
-        try {
-            flagStructureIntegrity = connBD.checkStructureBd(parameters.getDataBase());
+        try { flagStructureIntegrity = connBD.checkStructureBd(parameters.getDataBase());
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка соединения с БД", e);
             return;
@@ -176,16 +172,12 @@ public class StartFrame {
             return;
         }
         // чтение списка пользователей
-        try {
-            listUsers = connBD.getListUsers(true);
-        } catch (Exception e) {
-            myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
+        try { listUsers = connBD.getListUsers(true);
+        } catch (Exception e) { myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
         }
         // чтение списка толкателей
-        try {
-            listPushers = connBD.getListPushers(true);
-        } catch (Exception e) {
-            myLog.log(Level.WARNING, "ошибка чтение списка толкателей с БД", e);
+        try { listPushers = connBD.getListPushers(true);
+        } catch (Exception e) { myLog.log(Level.WARNING, "ошибка чтение списка толкателей с БД", e);
         }
     }
 
@@ -240,10 +232,8 @@ public class StartFrame {
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
-            try {
-                Thread.sleep(2_000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            try { Thread.sleep(2_000);
+            } catch (InterruptedException e) { e.printStackTrace();
             }
         }
         // открытие основного экрана
@@ -259,8 +249,7 @@ public class StartFrame {
                     }
             );
             return;
-        } else {
-            onInputComponents();
+        } else { onInputComponents();
         }
         loadAndSetBeginParameters2();
         // ********************
@@ -302,8 +291,7 @@ public class StartFrame {
         //------------------------------
         // чтение конфигурации
         BaseData.Config config = BaseData.Config.create();
-        try {
-            config.load1();
+        try { config.load1();
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
             config.setDefault();
@@ -318,16 +306,12 @@ public class StartFrame {
     }
     private void loadAndSetBeginParameters2() {
         // загрузка пользователей в комбо бокс
-        try {
-            MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
-        } catch (Exception e) {
-            myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
+        try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
+        } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
         }
         // загрузка толкателей в комбо бокс
-        try {
-            MyUtil.loadToComboBox(listPushers, comboBoxPusher, null);
-        } catch (Exception e) {
-            myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
+        try { MyUtil.loadToComboBox(listPushers, comboBoxPusher, null);
+        } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }
         if (statMainWork) {
             // здесь загрузка текущего пользователя и толкателя, если потребуется
