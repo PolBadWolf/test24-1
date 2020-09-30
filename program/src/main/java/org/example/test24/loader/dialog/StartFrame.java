@@ -253,7 +253,10 @@ public class StartFrame {
                     "запуск начального экрана",
                     "структура БД нарушена - требуется вмешательство администратора",
                     30_000,
-                    o -> onInputComponents()
+                    o -> {
+                        onInputComponents();
+                        frame.requestFocus();
+                    }
             );
             return;
         } else {
@@ -612,7 +615,10 @@ public class StartFrame {
             if (!checkIntegratedAdministrator(surName, pass)) {
                 buttonEnter.setEnabled(false);
                 buttonTuning.setVisible(false);
-                MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> buttonEnter.setEnabled(true));
+                MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
+                    buttonEnter.setEnabled(true);
+                    frame.requestFocus();
+                });
                 myLog.log(Level.WARNING, "попытка входа локальным админом: " + surName + "/" + password);
                 return;
             }
@@ -662,7 +668,10 @@ public class StartFrame {
         User currentUser = (User) comboBoxUsers.getSelectedItem();
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
-            MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> buttonSetPassword.setEnabled(true));
+            MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> {
+                buttonSetPassword.setEnabled(true);
+                frame.requestFocus();
+            });
             buttonSetPassword.setEnabled(false);
             myLog.log(Level.WARNING, "попытка установки пустово пароля пользователем " + currentUser.surName );
             return;
@@ -674,7 +683,10 @@ public class StartFrame {
                 myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
             }
         } catch (Exception e) {
-            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка записи в БД", 5_000, o -> buttonSetPassword.setEnabled(true));
+            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка записи в БД", 5_000, o -> {
+                buttonSetPassword.setEnabled(true);
+                frame.requestFocus();
+            });
             buttonSetPassword.setEnabled(false);
             myLog.log(Level.SEVERE, "ошибка сохранения нового пароля", e);
         }

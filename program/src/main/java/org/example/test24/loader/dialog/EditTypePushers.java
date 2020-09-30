@@ -54,6 +54,7 @@ public class EditTypePushers {
     private TypePusher[] typePushers;
     private TypePusher editTypePusher = null;
     private long currentId_loggerUserEdit;
+    SaveEnableComponents saveEnableComponents;
 
     public EditTypePushers(CallBack callBack, BaseData connBD) {
         this.callBack = callBack;
@@ -69,6 +70,18 @@ public class EditTypePushers {
         }
         // инициация компонентов
         initComponents();
+        //
+        saveEnableComponents = new SaveEnableComponents(new Component[]{
+                frame,
+                textName,
+                textForce,
+                textMove,
+                textUnclenching,
+                buttonDelete,
+                buttonClear,
+                buttonEdit,
+                buttonAdd
+        });
     }
     // загрузка списка типа компонентов
     private TypePusher[] getListTypePushers() throws BaseDataException {
@@ -229,12 +242,13 @@ public class EditTypePushers {
             return;
         }
         tableTypePushers.updateUI();
-        tableTypePushers.getSelectionModel().clearSelection();
         clearFields();
+        tableTypePushers.getSelectionModel().clearSelection();
     }
     // button clear
     private void buttonClearAction(ActionEvent e) {
         clearFields();
+        tableTypePushers.getSelectionModel().clearSelection();
     }
     // button edit
     private void buttonEditAction(ActionEvent e) {
@@ -245,20 +259,11 @@ public class EditTypePushers {
                 || textMove.getText().length() == 0
                 || textUnclenching.getText().length() == 0
         ) {
-            SaveEnableComponents saveEnableComponents = new SaveEnableComponents(new Component[]{
-                    frame,
-                    textName,
-                    textForce,
-                    textMove,
-                    textUnclenching,
-                    buttonDelete,
-                    buttonClear,
-                    buttonEdit,
-                    buttonAdd
-            });
+            saveEnableComponents.save();
             saveEnableComponents.offline();
             MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
                 saveEnableComponents.restore();
+                frame.requestFocus();
             });
             return;
         }
@@ -276,25 +281,16 @@ public class EditTypePushers {
                 break;
             }
             if (flAgain) {
-                org.example.test24.lib.swing.SaveEnableComponents saveEnableComponents = new org.example.test24.lib.swing.SaveEnableComponents(
-                        new Component[]{
-                                frame,
-                                textName,
-                                textForce,
-                                textMove,
-                                textUnclenching,
-                                buttonDelete,
-                                buttonClear,
-                                buttonEdit,
-                                buttonAdd
-                        }
-                );
+                saveEnableComponents.save();
                 saveEnableComponents.offline();
                 MySwingUtil.showMessage(frame,
                         "редактирование типа гидротолкателя",
                         "такой тип уже существует",
                         5_000,
-                        o -> saveEnableComponents.restore()
+                        o -> {
+                            saveEnableComponents.restore();
+                            frame.requestFocus();
+                        }
                 );
                 return;
             }
@@ -312,6 +308,7 @@ public class EditTypePushers {
             baseDataException.printStackTrace();
         } finally {
             clearFields();
+            tableTypePushers.getSelectionModel().clearSelection();
         }
     }
     // button add
