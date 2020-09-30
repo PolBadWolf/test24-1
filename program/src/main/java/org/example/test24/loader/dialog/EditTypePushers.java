@@ -298,11 +298,11 @@ public class EditTypePushers {
         // обновление
         try {
             connBD.updateTypePusher(editTypePusher, currentId_loggerUserEdit,
-                    textName.getText(),
-                    Integer.parseInt(textForce.getText()),
-                    Integer.parseInt(textMove.getText()),
-                    Integer.parseInt(textUnclenching.getText())
-                    );
+                    v_typeName,
+                    v_force,
+                    v_move,
+                    v_unclenching
+            );
             tableTypePushers.updateUI();
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
@@ -313,7 +313,69 @@ public class EditTypePushers {
     }
     // button add
     private void buttonAddAction(ActionEvent e) {
-
+        if (
+                textName.getText().length() == 0
+                        || textForce.getText().length() == 0
+                        || textMove.getText().length() == 0
+                        || textUnclenching.getText().length() == 0
+        ) {
+            saveEnableComponents.save();
+            saveEnableComponents.offline();
+            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
+                saveEnableComponents.restore();
+                frame.requestFocus();
+            });
+            return;
+        }
+        // заменяемые данные
+        String v_typeName = textName.getText();
+        int v_force = Integer.parseInt(textForce.getText());
+        int v_move = Integer.parseInt(textMove.getText());
+        int v_unclenching = Integer.parseInt(textUnclenching.getText());
+        // проверка на повтор
+        {
+            boolean flAgain = false;
+            for (int i = 0; i < typePushers.length; i++) {
+                if (!v_typeName.equals(typePushers[i].loggerTypePusher.nameType)) continue;
+                flAgain = true;
+                break;
+            }
+            if (flAgain) {
+                saveEnableComponents.save();
+                saveEnableComponents.offline();
+                MySwingUtil.showMessage(frame,
+                        "редактирование типа гидротолкателя",
+                        "такой тип уже существует",
+                        5_000,
+                        o -> {
+                            saveEnableComponents.restore();
+                            frame.requestFocus();
+                        }
+                );
+                return;
+            }
+        }
+        // добавление
+        try {
+            connBD.writeNewTypePusher(currentId_loggerUserEdit,
+                    v_typeName,
+                    v_force,
+                    v_move,
+                    v_unclenching
+            );
+        } catch (BaseDataException baseDataException) {
+            baseDataException.printStackTrace();
+        } finally {
+            clearFields();
+            tableTypePushers.getSelectionModel().clearSelection();
+        }
+        try {
+            typePushers = getListTypePushers();
+        } catch (BaseDataException baseDataException) {
+            baseDataException.printStackTrace();
+        }
+        tableTypePushers.updateUI();
+        //
     }
     private void clearFields() {
         editTypePusher = null;
