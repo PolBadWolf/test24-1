@@ -135,5 +135,15 @@ public class CreateComponents {
         return comboBox;
     }
     // ---
+    public static JPanel getPanel(LayoutManager layoutManager, String titledBorder, int x, int y, int width, int height, boolean visible, boolean enable) {
+        JPanel panel = new JPanel();
+        panel.setLayout(layoutManager);
+        panel.setBorder(BorderFactory.createTitledBorder(titledBorder));
+        panel.setBounds(x, y, width, height);
+        panel.setVisible(visible);
+        panel.setEnabled(enable);
+        return panel;
+    }
+    // ---
 
 }

@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -844,7 +845,9 @@ class TuningFrame {
                             // текущий активный пользователь
                             @Override
                             public User getCurrentUser() {
-                                /*User user = new User(
+                                User user = new User(
+                                        0,
+                                        new Date(),
                                         0,
                                         new Date(),
                                         0,
@@ -852,8 +855,8 @@ class TuningFrame {
                                         "",
                                         3,
                                         null
-                                );*/
-                                return null;
+                                );
+                                return user;
                             }
                         });
             });

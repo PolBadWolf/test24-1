@@ -324,11 +324,6 @@ public class StartFrame {
         frame = new JFrame();
         frame.setPreferredSize(new Dimension(640, 480));
         {
-            jLabel1 = new JLabel();
-            jLabel2 = new JLabel();
-            jLabel3 = new JLabel();
-        } // подписи, надписи
-        {
             label1 = CreateComponents.getjLabel("Стенд", new Font("Times New Roman", Font.PLAIN, 57), 220, 130, 148, 66, false, true);
             label2 = CreateComponents.getjLabel("испытания", new Font("Times New Roman", Font.PLAIN, 36), 210, 180, 227, 42, false, true);
             label3 = CreateComponents.getjLabel("гидротолкателей", new Font("Times New Roman", Font.PLAIN, 36), 170, 210, 258, 42, false, true);
@@ -366,15 +361,12 @@ public class StartFrame {
             frame.add(buttonSetPassword);
         } // кнопки
         {
-            jPanel1 = new JPanel();
-            jPanel1.setLayout(null);
-            jPanel1.setBounds(380, 310, 160, 90);
-            jPanel1.setBorder(BorderFactory.createTitledBorder("редактирование"));
+            jPanel1 = CreateComponents.getPanel(null, "редактирование", 380, 310, 160, 90,true, true );
             // кнопка редактирования пользователей
-            buttonEditUsers = getButtonEditUsers("Пользователей", "Times New Roman", Font.PLAIN, 14, 20, 20, 120, 24);
-            jPanel1.add(buttonEditUsers);
             // кнопка редактирования толкателей
-            buttonEditPushers = getButtonEditPushers("Толкателей", "Times New Roman", Font.PLAIN, 14, 20, 55, 120, 24);
+            buttonEditUsers = CreateComponents.getButton("Пользователей", new Font("Times New Roman", Font.PLAIN, 14), 20, 20, 120, 24, this::callEditUsers, true, true);
+            buttonEditPushers = CreateComponents.getButton("Толкателей", new Font("Times New Roman", Font.PLAIN, 14), 20, 55, 120, 24, this::callEditPushers, true, true);
+            jPanel1.add(buttonEditUsers);
             jPanel1.add(buttonEditPushers);
 
             frame.add(jPanel1);
@@ -432,67 +424,6 @@ public class StartFrame {
         buttonEnter.setVisible(false);
         buttonWork.setVisible(false);
         buttonTuning.setVisible(false);
-    }
-
-    private JTextField getFieldPassword(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JTextField textField = new JPasswordField();
-        textField.setFont(new Font(fontName, fontStyle, fontSize));
-        textField.setBounds(x, y, width, height);
-        textField.addActionListener(e -> {
-            buttonEnter.setEnabled(true);
-            callEnter(null);
-        });
-        return textField;
-    }
-    private JButton getButtonWork(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e ->callReturnToWork(e));
-        return button;
-    }
-    private JButton getButtonTuning(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e -> callTuning(e));
-        return button;
-    }
-    private JButton getButtonSetPassword(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e -> callSetNewPassword(e));
-        return button;
-    }
-    private JComboBox<Pusher> getComboBoxPusher(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JComboBox<Pusher> comboBox = new JComboBox<>();
-        comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        comboBox.setBounds(x, y, width, height);
-        comboBox.setEditable(true);
-        comboBox.addItemListener(e -> {
-            if (e.getStateChange() == 1) return;
-        });
-        return comboBox;
-    }
-    private JButton getButtonEditUsers(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e ->callEditUsers());
-        return button;
-    }
-    private JButton getButtonEditPushers(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e -> callEditPushers());
-        return button;
     }
 
     // проверка встроенного администратор
@@ -671,7 +602,7 @@ public class StartFrame {
         }, "create tuning").start();
     }
     // обработка редактирование пользователей
-    private void callEditUsers() {
+    private void callEditUsers(ActionEvent e) {
         saveEnableComponentsStartFrame.save();
         saveEnableComponentsStartFrame.offline();
         new Thread(() -> {
@@ -708,7 +639,7 @@ public class StartFrame {
         }, "create edit users").start();
     }
     // обработка редактирование толкателей
-    private void callEditPushers() {
+    private void callEditPushers(ActionEvent e) {
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
     }
     // ===========================================================================
