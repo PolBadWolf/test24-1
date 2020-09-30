@@ -344,7 +344,7 @@ public class StartFrame {
         } // подписи, надписи
         {
             comboBoxUsers = CreateComponents.<User>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 190, 350, 24, true, this::callSelectUser, false, true);
-            comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 190, 350, 24, true, null, false, true);
+            comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 270, 350, 24, true, null, false, true);
             frame.add(comboBoxUsers);
             frame.add(comboBoxPusher);
         } // селекторы
@@ -612,7 +612,7 @@ public class StartFrame {
                             @Override
                             public void messageCloseEditUsers(boolean newData) {
                                 if (newData) {
-                                    // здесь перезагрузка списка пользователей
+                                    // **** здесь перезагрузка списка пользователей
                                     // чтение списка пользователей
                                     try {
                                         listUsers = connBD.getListUsers(true);
@@ -625,9 +625,24 @@ public class StartFrame {
                                                 "ошибка обновления - требуется вмешательство администратора",
                                                 60_000
                                         );
+                                        saveEnableComponentsStartFrame.restore();
+                                        frame.requestFocus();
+                                        return;
+                                    }
+                                    // загрузить обновленный список
+                                    try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
+                                    } catch (Exception e) {
+                                        myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
+                                        MySwingUtil.showMessage(
+                                                frame,
+                                                "обновление списка пользователей",
+                                                "ошибка обновления - требуется вмешательство администратора",
+                                                10_000
+                                        );
                                     }
                                 }
                                 saveEnableComponentsStartFrame.restore();
+                                frame.requestFocus();
                             }
 
                             @Override
