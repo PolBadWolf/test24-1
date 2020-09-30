@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class CreateComponents {
+    // ---
     public static JLabel getjLabel(String text, Font font, int x, int y, int width, int height, boolean visible, boolean enable) {
         JLabel label = new JLabel();
         label.setFont(font);
@@ -19,7 +20,7 @@ public class CreateComponents {
         label.setEnabled(enable);
         return label;
     }
-
+    // ---
     public static JTextField getTextField(Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
         JTextField text = new JTextField();
         text.setFont(font);
@@ -34,7 +35,7 @@ public class CreateComponents {
         text.setEnabled(enable);
         return text;
     }
-
+    // ---
     public static JButton getButton(String text, Font font, int x, int y, int width, int height, ActionListener listener, boolean visible, boolean enable) {
         JButton button = new JButton();
         button.setFont(font);
@@ -45,8 +46,8 @@ public class CreateComponents {
         button.setEnabled(enable);
         return button;
     }
-
-    public static JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, ListSelectionListener listener) {
+    // ---
+    public static JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, ListSelectionListener listener, boolean visible, boolean enable) {
         JTable table = new JTable();
         int autoN = 0;
         String[] titles = new String[nameWidths.length];
@@ -83,9 +84,10 @@ public class CreateComponents {
         //
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         if (listener != null) table.getSelectionModel().addListSelectionListener(listener);
+        table.setVisible(visible);
+        table.setEnabled(enable);
         return table;
     }
-
     public static class ModelTableNameWidth {
         public String title;
         public int width;
@@ -94,5 +96,14 @@ public class CreateComponents {
             this.title = title;
             this.width = width;
         }
+    }
+    // ---
+    public static JScrollPane getScrollPane(int x, int y, int width, int height, Component component, boolean visible, boolean enable) {
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBounds(x, y, width, height);
+        if (component != null) scrollPane.setViewportView(component);
+        scrollPane.setVisible(visible);
+        scrollPane.setEnabled(enable);
+        return scrollPane;
     }
 }

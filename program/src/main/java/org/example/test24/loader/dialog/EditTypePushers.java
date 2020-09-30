@@ -138,9 +138,11 @@ public class EditTypePushers {
                         new CreateComponents.ModelTableNameWidth("Ход штока (мм)", 100),
                         new CreateComponents.ModelTableNameWidth("Время разжатия (сек)", 130)
                 },
-                this::tableTypePushersChanged
+                this::tableTypePushersChanged,
+                true,
+                true
         );
-        scrollPane = getScrollPane(0, 0, 640, 220, tableTypePushers);
+        scrollPane = CreateComponents.getScrollPane(0, 0, 640, 220, tableTypePushers, true, true);
         frame.add(scrollPane);
         // ----
         frame.pack();
@@ -163,52 +165,6 @@ public class EditTypePushers {
             }
             super.replace(fb, offset, length, text, attrs);
         }
-    }
-    // -----------
-    private JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, ListSelectionListener listener) {
-        JTable table = new JTable();
-        int autoN = 0;
-        String[] titles = new String[nameWidths.length];
-        // остаточная ширина
-        for (int i = 0; i < nameWidths.length; i++) {
-            titles[i] = nameWidths[i].title;
-            if (nameWidths[i].width < 0) {
-                autoN++;
-                continue;
-            }
-            widthLast -= nameWidths[i].width;
-        }
-        // авто ширина
-        int autoWidth;
-        if (autoN == 0) autoWidth = 0;
-        else {
-            autoWidth = widthLast / autoN;
-        }
-        //
-        ((MyTableModel) tableModel).setTitles(titles);
-        table.setModel(tableModel);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        //
-        int w_i = 0;
-        int w;
-        TableColumnModel tableColumnModel = table.getColumnModel();
-        for (int i = 0; i < nameWidths.length; i++) {
-            if (nameWidths[i].width < 0) w = autoWidth;
-            else w = nameWidths[i].width;
-            tableColumnModel.getColumn(i).setPreferredWidth(w);
-            w_i += w;
-        }
-        //
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        if (listener != null) table.getSelectionModel().addListSelectionListener(listener);
-        return table;
-    }
-    private JScrollPane getScrollPane(int x, int y, int width, int height, Component component) {
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(x, y, width, height);
-        if (component != null) scrollPane.setViewportView(component);
-        return scrollPane;
     }
     // ----------- кнопки
     // button delete
@@ -386,7 +342,7 @@ public class EditTypePushers {
     }
     private int getColumnCountTableTypePushers() { return 4; }
     private Object getValueAtTableTypePushers(int rowIndex, int columnIndex) {
-        String text = "";
+        String text;
         TypePusher typePusher = typePushers[rowIndex];
         switch (columnIndex) {
             case 0:
@@ -407,52 +363,4 @@ public class EditTypePushers {
         return text;
     }
     // -----------
-    /*class TableModelTypePushers extends AbstractTableModel {
-        private String[] titles;
-
-        public void setTitles(String[] titles) {
-            this.titles = titles;
-        }
-
-        @Override
-        public int getRowCount() {
-            int row = 0;
-            if (typePushers != null) row = typePushers.length;
-            return row;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 4;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            String text = "";
-            TypePusher typePusher = typePushers[rowIndex];
-            switch (columnIndex) {
-                case 0:
-                    text = typePusher.loggerTypePusher.nameType;
-                    break;
-                case 1:
-                    text = String.valueOf(typePusher.loggerTypePusher.forceNominal);
-                    break;
-                case 2:
-                    text = String.valueOf(typePusher.loggerTypePusher.moveNominal);
-                    break;
-                case 3:
-                    text = String.valueOf(typePusher.loggerTypePusher.unclenchingTime);
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + columnIndex);
-            }
-            return text;
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            return titles[column];
-        }
-    }
-    */
 }
