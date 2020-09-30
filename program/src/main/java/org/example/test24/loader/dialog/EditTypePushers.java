@@ -387,11 +387,11 @@ public class EditTypePushers {
     // ----------- таблицы
     private void tableTypePushersChanged(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) return;
-        editTypePusher = typePushers[tableTypePushers.getSelectedRow()];
         textName.setText(editTypePusher.loggerTypePusher.nameType);
         textForce.setText(String.valueOf(editTypePusher.loggerTypePusher.forceNominal));
         textMove.setText(String.valueOf(editTypePusher.loggerTypePusher.moveNominal));
         textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
+        editTypePusher = typePushers[tableTypePushers.getSelectedRow()];
     }
     // -----------
     class TableModelTypePushers extends AbstractTableModel {
