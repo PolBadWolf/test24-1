@@ -484,17 +484,12 @@ public class StartFrame {
         if (!user.userPassword.equals(password)) {
             System.out.println("у пользователя из списка не совпал пароль (" + user.userPassword + ")");
             // отключить кнопки управления
-            buttonSetPassword.setEnabled(false);
-            buttonEditUsers.setEnabled(false);
-            buttonEditPushers.setEnabled(false);
-            comboBoxPusher.setEnabled(false);
-            // отключить органы проверки пароля
-            fieldPassword.setEnabled(false);
-            buttonEnter.setEnabled(false);
+            saveEnableComponentsStartFrame.save();
+            saveEnableComponentsStartFrame.offline();
             myLog.log(Level.INFO, "ошибка ввода пароля: " + user.surName + "/" + password);
             MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
-                fieldPassword.setEnabled(true);
-                buttonEnter.setEnabled(true);
+                saveEnableComponentsStartFrame.restore();
+                frame.requestFocus();
             });
             return;
         }
