@@ -1,4 +1,4 @@
-package org.example.test24.lib;
+package org.example.test24.lib.swing;
 
 import javax.swing.*;
 import java.awt.*;

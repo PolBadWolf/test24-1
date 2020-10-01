@@ -3,10 +3,11 @@ package org.example.test24.loader.dialog;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
 import org.example.test24.bd.usertypes.Pusher;
-import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
-import org.example.test24.lib.MyUtil;
-import org.example.test24.lib.MySwingUtil;
+import org.example.test24.lib.swing.CreateComponents;
+import org.example.test24.lib.swing.MyUtil;
+import org.example.test24.lib.swing.MySwingUtil;
+import org.example.test24.lib.swing.SaveEnableComponents;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,6 +68,7 @@ public class StartFrame {
     TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
     BaseData connBD;
+    SaveEnableComponents saveEnableComponentsStartFrame;
 
 
     public static StartFrame main(boolean statMainWork, CallBack callBack) throws Exception {
@@ -96,10 +98,8 @@ public class StartFrame {
         if (typeBaseDate == null) { throw new ParametersSqlException("ошибка типа базы данных", Status.BASE_TYPE_NO_SELECT, null); }
         if (typeBaseDate == TypeBaseDate.ERROR) { throw new ParametersSqlException("ошибка типа базы данных", Status.BASE_TYPE_ERROR, null); }
         BaseData.Parameters parameters;
-        try {
-            parameters = BaseData.Parameters.create(typeBaseDate);
-        } catch (Exception e) {
-            throw new ParametersSqlException(e, ((BaseDataException) e).getStatus(), null);
+        try { parameters = BaseData.Parameters.create(typeBaseDate);
+        } catch (Exception e) { throw new ParametersSqlException(e, ((BaseDataException) e).getStatus(), null);
         }
         Status result;
         // загрузка параметров БД
@@ -145,8 +145,7 @@ public class StartFrame {
         // ----
         // загрузить параметры
         parameters = null;
-        try {
-            parameters = getParametersBaseData(typeBaseDate);
+        try { parameters = getParametersBaseData(typeBaseDate);
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка получения параметров подключения к БД", e);
             parameters = ((ParametersSqlException) e).getParameters();
@@ -164,8 +163,7 @@ public class StartFrame {
             return;
         }
         // проверка структуры БД
-        try {
-            flagStructureIntegrity = connBD.checkStructureBd(parameters.getDataBase());
+        try { flagStructureIntegrity = connBD.checkStructureBd(parameters.getDataBase());
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка соединения с БД", e);
             return;
@@ -175,16 +173,12 @@ public class StartFrame {
             return;
         }
         // чтение списка пользователей
-        try {
-            listUsers = connBD.getListUsers(true);
-        } catch (Exception e) {
-            myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
+        try { listUsers = connBD.getListUsers(true);
+        } catch (Exception e) { myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
         }
         // чтение списка толкателей
-        try {
-            listPushers = connBD.getListPushers(true);
-        } catch (Exception e) {
-            myLog.log(Level.WARNING, "ошибка чтение списка толкателей с БД", e);
+        try { listPushers = connBD.getListPushers(true);
+        } catch (Exception e) { myLog.log(Level.WARNING, "ошибка чтение списка толкателей с БД", e);
         }
     }
 
@@ -209,6 +203,20 @@ public class StartFrame {
     private void start() {
         // загрузка компонентов и вывод загаловка
         initComponents();
+        //
+        saveEnableComponentsStartFrame = new SaveEnableComponents(new Component[]{
+                buttonEnter,
+                buttonSetPassword,
+                buttonWork,
+                buttonTuning,
+                buttonEditUsers,
+                buttonEditPushers,
+                comboBoxUsers,
+                comboBoxPusher,
+                fieldPassword,
+                frame
+        });
+        //
         onTitleComponents();
         frame.setResizable(false);
         frame.setLayout(null);
@@ -225,10 +233,8 @@ public class StartFrame {
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
-            try {
-                Thread.sleep(2_000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            try { Thread.sleep(2_000);
+            } catch (InterruptedException e) { e.printStackTrace();
             }
         }
         // открытие основного экрана
@@ -238,11 +244,13 @@ public class StartFrame {
                     "запуск начального экрана",
                     "структура БД нарушена - требуется вмешательство администратора",
                     30_000,
-                    o -> onInputComponents()
+                    o -> {
+                        onInputComponents();
+                        frame.requestFocus();
+                    }
             );
             return;
-        } else {
-            onInputComponents();
+        } else { onInputComponents();
         }
         loadAndSetBeginParameters2();
         // ********************
@@ -250,20 +258,33 @@ public class StartFrame {
             Date date = new Date();
             connBD.writeNewTypePusher(
                     0,
-                    "BE-790",
-                    1200,
-                    400,
-                    1200
+                    "BE-2",
+                    120,
+                    40,
+                    10
              );
         } catch (BaseDataException e) {
             e.printStackTrace();
         }*/
-        try {
+        /*try {
             TypePusher[] typePushers = connBD.getListTypePushers(false);
             int a = 5;
         } catch (BaseDataException e) {
             e.printStackTrace();
-        }
+        }*/
+        /*new Thread(()->{
+            SwingUtilities.invokeLater(()->{
+                new EditTypePushers(
+                        new EditTypePushers.CallBack() {
+                            @Override
+                            public long getCurrentId_loggerUser() {
+                                return 0L;
+                            }
+                        },
+                        connBD
+                );
+            });
+        }).start();*/
         // ********************
     }
     private void loadAndSetBeginParameters() {
@@ -271,8 +292,7 @@ public class StartFrame {
         //------------------------------
         // чтение конфигурации
         BaseData.Config config = BaseData.Config.create();
-        try {
-            config.load1();
+        try { config.load1();
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
             config.setDefault();
@@ -287,16 +307,12 @@ public class StartFrame {
     }
     private void loadAndSetBeginParameters2() {
         // загрузка пользователей в комбо бокс
-        try {
-            MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
-        } catch (Exception e) {
-            myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
+        try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
+        } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
         }
         // загрузка толкателей в комбо бокс
-        try {
-            MyUtil.loadToComboBox(listPushers, comboBoxPusher, null);
-        } catch (Exception e) {
-            myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
+        try { MyUtil.loadToComboBox(listPushers, comboBoxPusher, null);
+        } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }
         if (statMainWork) {
             // здесь загрузка текущего пользователя и толкателя, если потребуется
@@ -308,103 +324,49 @@ public class StartFrame {
         frame = new JFrame();
         frame.setPreferredSize(new Dimension(640, 480));
         {
-            label1 = new JLabel();
-            label2 = new JLabel();
-            label3 = new JLabel();
-            label4 = new JLabel();
-            label5 = new JLabel();
-            jLabel1 = new JLabel();
-            jLabel2 = new JLabel();
-            jLabel3 = new JLabel();
-        } // подписи, надписи
-        {
-            label1.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 57));
-            label1.setText("Стенд");
+            label1 = CreateComponents.getjLabel("Стенд", new Font("Times New Roman", Font.PLAIN, 57), 220, 130, 148, 66, false, true);
+            label2 = CreateComponents.getjLabel("испытания", new Font("Times New Roman", Font.PLAIN, 36), 210, 180, 227, 42, false, true);
+            label3 = CreateComponents.getjLabel("гидротолкателей", new Font("Times New Roman", Font.PLAIN, 36), 170, 210, 258, 42, false, true);
+            label4 = CreateComponents.getjLabel("Гумеров М.Н.", new Font("Times New Roman", Font.PLAIN, 11), 380, 400, 68, 20, false, true);
+            label5 = CreateComponents.getjLabel("ЦЗЛАМ ЛА", new Font("Times New Roman", Font.PLAIN, 16), 460, 400, 90, 19, false, true);
             frame.add(label1);
-            label1.setBounds(220, 130, 148, 66);
-            label1.setVisible(false);
-
-            label2.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 36)); // ******************
-            label2.setText("испытания");
             frame.add(label2);
-            label2.setBounds(180, 180, 227, 42);
-            label2.setVisible(false);
-
-            label3.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 36));
-            label3.setText("гидротолкателей");
             frame.add(label3);
-            label3.setBounds(170, 210, 258, 42);
-            label3.setVisible(false);
-
-            label4.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 11));
-            label4.setText("Гумеров М.Н.");
             frame.add(label4);
-            label4.setBounds(380, 400, 68, 20);
-            label4.setVisible(false);
-
-            label5.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 16));
-            label5.setText("ЦЗЛАМ ЛА");
             frame.add(label5);
-            label5.setBounds(460, 400, 90, 19);
-            label5.setVisible(false);
-
-            jLabel1.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-            jLabel1.setText("Пользователь : ");
-            jLabel1.setBounds(100, 200, 90, 16);
+            //
+            jLabel1 = CreateComponents.getjLabel("Пользователь : ", new Font("Times New Roman", Font.PLAIN, 14), 100, 195, 90, 16, false, true);
+            jLabel2 = CreateComponents.getjLabel("Пароль :", new Font("Times New Roman", Font.PLAIN, 14), 100, 235, 90, 16, false, true);
+            jLabel3 = CreateComponents.getjLabel("Толкатель :", new Font("Times New Roman", Font.PLAIN, 14), 100, 270, 90, 16, false, true);
             frame.add(jLabel1);
-            jLabel1.setVisible(false);
-
-            jLabel2.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-            jLabel2.setText("Пароль :");
-            jLabel2.setBounds(100, 240, 90, 16);
             frame.add(jLabel2);
-            jLabel2.setVisible(false);
-
-            jLabel3.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14));
-            jLabel3.setText("Толкатель :");
-            jLabel3.setBounds(100, 270, 90, 16);
             frame.add(jLabel3);
-            jLabel3.setVisible(false);
         } // подписи, надписи
         {
-            comboBoxUsers = getComboBoxUser("Times New Roman", Font.PLAIN, 14, 190, 190, 350, 24);
+            comboBoxUsers = CreateComponents.<User>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 190, 350, 24, true, this::callSelectUser, false, true);
+            comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 270, 350, 24, true, null, false, true);
             frame.add(comboBoxUsers);
-            comboBoxUsers.setVisible(false);
-
-            comboBoxPusher = getComboBoxPusher("Times New Roman", Font.PLAIN, 14, 190, 270, 350, 24);
             frame.add(comboBoxPusher);
-            comboBoxPusher.setVisible(false);
         } // селекторы
-        fieldPassword = getFieldPassword("Times New Roman", Font.PLAIN, 14, 190, 230, 120, 24);
+        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 230,120, 24, null, null, false, true);
         frame.add(fieldPassword);
-        fieldPassword.setVisible(false);
         {
-            buttonEnter = getButtonEnter("проверка", "Times New Roman", Font.PLAIN, 14, 320, 230, 90, 24);
+            buttonEnter = CreateComponents.getButton("проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 230, 90, 24, this::callEnter, false, true);
+            buttonWork = CreateComponents.getButton("работа", new Font("Times New Roman", Font.PLAIN, 14), 200, 330, 90, 24, this::callReturnToWork, false, true);
+            buttonTuning = CreateComponents.getButton("настройка", new Font("Times New Roman", Font.PLAIN, 14), 190, 370, 116, 24, this::callTuning, false, true);
+            buttonSetPassword = CreateComponents.getButton("новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 230, 116, 24, this::callSetNewPassword, false, true);
             frame.add(buttonEnter);
-            buttonEnter.setVisible(false);
-
-            buttonWork = getButtonWork("работа", "Times New Roman", Font.PLAIN, 14, 200, 330, 90, 24);
             frame.add(buttonWork);
-            buttonWork.setVisible(false);
-
-            buttonTuning = getButtonTuning("настройка", "Times New Roman", Font.PLAIN, 14, 190, 370, 116, 24);
             frame.add(buttonTuning);
-            buttonTuning.setVisible(false);
-
-            buttonSetPassword = getButtonSetPassword("новый пароль", "Times New Roman", Font.PLAIN, 14, 420, 230, 116, 24);
             frame.add(buttonSetPassword);
-            buttonSetPassword.setVisible(false);
         } // кнопки
         {
-            jPanel1 = new JPanel();
-            jPanel1.setLayout(null);
-            jPanel1.setBounds(380, 310, 160, 90);
-            jPanel1.setBorder(BorderFactory.createTitledBorder("редактирование"));
+            jPanel1 = CreateComponents.getPanel(null, "редактирование", 380, 310, 160, 90,true, true );
             // кнопка редактирования пользователей
-            buttonEditUsers = getButtonEditUsers("Пользователей", "Times New Roman", Font.PLAIN, 14, 20, 20, 120, 24);
-            jPanel1.add(buttonEditUsers);
             // кнопка редактирования толкателей
-            buttonEditPushers = getButtonEditPushers("Толкателей", "Times New Roman", Font.PLAIN, 14, 20, 55, 120, 24);
+            buttonEditUsers = CreateComponents.getButton("Пользователей", new Font("Times New Roman", Font.PLAIN, 14), 20, 20, 120, 24, this::callEditUsers, true, true);
+            buttonEditPushers = CreateComponents.getButton("Толкателей", new Font("Times New Roman", Font.PLAIN, 14), 20, 55, 120, 24, this::callEditPushers, true, true);
+            jPanel1.add(buttonEditUsers);
             jPanel1.add(buttonEditPushers);
 
             frame.add(jPanel1);
@@ -464,89 +426,6 @@ public class StartFrame {
         buttonTuning.setVisible(false);
     }
 
-    private JTextField getFieldPassword(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JTextField textField = new JPasswordField();
-        textField.setFont(new Font(fontName, fontStyle, fontSize));
-        textField.setBounds(x, y, width, height);
-        textField.addActionListener(e -> {
-            buttonEnter.setEnabled(true);
-            callEnter();
-        });
-        return textField;
-    }
-    private JButton getButtonEnter(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e ->callEnter());
-        return button;
-    }
-    private JButton getButtonWork(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e ->callReturnToWork());
-        return button;
-    }
-    private JButton getButtonTuning(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e -> callTuning());
-        return button;
-    }
-    private JButton getButtonSetPassword(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e -> callSetNewPassword());
-        return button;
-    }
-    private JComboBox<User> getComboBoxUser(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JComboBox<User> comboBox = new JComboBox<>();
-        comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        comboBox.setBounds(x, y, width, height);
-        comboBox.setEditable(true);
-        comboBox.addItemListener(e -> {
-            if (e.getStateChange() == 1) return;
-            callSelectUser();
-        });
-        return comboBox;
-    }
-    private JComboBox<Pusher> getComboBoxPusher(String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JComboBox<Pusher> comboBox = new JComboBox<>();
-        comboBox.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        comboBox.setBounds(x, y, width, height);
-        comboBox.setEditable(true);
-        comboBox.addActionListener(e -> {
-
-        });
-        comboBox.addItemListener(e -> {
-            if (e.getStateChange() == 1) return;
-        });
-        return comboBox;
-    }
-    private JButton getButtonEditUsers(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e ->callEditUsers());
-        return button;
-    }
-    private JButton getButtonEditPushers(String text, String fontName, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setFont(new java.awt.Font(fontName, fontStyle, fontSize));
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e -> callEditPushers());
-        return button;
-    }
-
     // проверка встроенного администратор
     private boolean checkIntegratedAdministrator(String surName, String password) {
 //        return  surName.equals("Doc") && password.equals("aUxPMjIzNjA=");
@@ -566,14 +445,14 @@ public class StartFrame {
     }
     // ======================================================
     // обработка ввод
-    private void callEnter() {
+    private void callEnter(ActionEvent e) {
         User user = null;
         String password;
         boolean askLocalAdmin;
         try {
             user = (User) comboBoxUsers.getSelectedItem();
             askLocalAdmin = false;
-        } catch (ClassCastException e) {
+        } catch (ClassCastException e2) {
             askLocalAdmin = true;
         }
         password = fieldPassword.getText();
@@ -584,7 +463,10 @@ public class StartFrame {
             if (!checkIntegratedAdministrator(surName, pass)) {
                 buttonEnter.setEnabled(false);
                 buttonTuning.setVisible(false);
-                MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> buttonEnter.setEnabled(true));
+                MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
+                    buttonEnter.setEnabled(true);
+                    frame.requestFocus();
+                });
                 myLog.log(Level.WARNING, "попытка входа локальным админом: " + surName + "/" + password);
                 return;
             }
@@ -602,17 +484,12 @@ public class StartFrame {
         if (!user.userPassword.equals(password)) {
             System.out.println("у пользователя из списка не совпал пароль (" + user.userPassword + ")");
             // отключить кнопки управления
-            buttonSetPassword.setEnabled(false);
-            buttonEditUsers.setEnabled(false);
-            buttonEditPushers.setEnabled(false);
-            comboBoxPusher.setEnabled(false);
-            // отключить органы проверки пароля
-            fieldPassword.setEnabled(false);
-            buttonEnter.setEnabled(false);
+            saveEnableComponentsStartFrame.save();
+            saveEnableComponentsStartFrame.offline();
             myLog.log(Level.INFO, "ошибка ввода пароля: " + user.surName + "/" + password);
             MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
-                fieldPassword.setEnabled(true);
-                buttonEnter.setEnabled(true);
+                saveEnableComponentsStartFrame.restore();
+                frame.requestFocus();
             });
             return;
         }
@@ -630,11 +507,14 @@ public class StartFrame {
         comboBoxPusher.setEnabled(true);
     }
     // обработка новый пароль
-    private void callSetNewPassword() {
+    private void callSetNewPassword(ActionEvent f) {
         User currentUser = (User) comboBoxUsers.getSelectedItem();
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
-            MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> buttonSetPassword.setEnabled(true));
+            MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> {
+                buttonSetPassword.setEnabled(true);
+                frame.requestFocus();
+            });
             buttonSetPassword.setEnabled(false);
             myLog.log(Level.WARNING, "попытка установки пустово пароля пользователем " + currentUser.surName );
             return;
@@ -646,14 +526,18 @@ public class StartFrame {
                 myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
             }
         } catch (Exception e) {
-            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка записи в БД", 5_000, o -> buttonSetPassword.setEnabled(true));
+            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка записи в БД", 5_000, o -> {
+                buttonSetPassword.setEnabled(true);
+                frame.requestFocus();
+            });
             buttonSetPassword.setEnabled(false);
             myLog.log(Level.SEVERE, "ошибка сохранения нового пароля", e);
         }
         fieldPassword.setText("");
     }
     // обработка выбора пользователя
-    private void callSelectUser() {
+    private void callSelectUser(ItemEvent e) {
+        if (e.getStateChange() == 1) return;
         // разрешение ввода пароля
         fieldPassword.setText("");
         fieldPassword.setEnabled(true);
@@ -672,7 +556,7 @@ public class StartFrame {
         buttonTuning.setVisible(false);
     }
     // обработка "работа"
-    private void callReturnToWork() {
+    private void callReturnToWork(ActionEvent e) {
         if (!permissionWork()) {
             MySwingUtil.showMessage(frame, "ошибка", "нет готовности системы", 5_000);
             myLog.log(Level.INFO, "нет готовности системы");
@@ -685,7 +569,7 @@ public class StartFrame {
         //callBack.closeFrame();
     }
     // обработка настройка
-    private void callTuning() {
+    private void callTuning(ActionEvent e) {
         /*if (1 == 1) {
             myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("не реализовано запуск настройки"));
             return;
@@ -697,14 +581,14 @@ public class StartFrame {
             return;
         }
         // отключение управления
-        SaveEnableComponents saveComponents = new SaveEnableComponents();
-        saveComponents.offline();
+        saveEnableComponentsStartFrame.save();
+        saveEnableComponentsStartFrame.offline();
         new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
                 new TuningFrame(new TuningFrame.CallBack() {
                     @Override
                     public void messageCloseTuning(boolean newData) {
-                        saveComponents.restore();
+                        saveEnableComponentsStartFrame.restore();
                         loadAndSetBeginParameters();
                         loadAndSetBeginParameters2();
                     }
@@ -713,9 +597,9 @@ public class StartFrame {
         }, "create tuning").start();
     }
     // обработка редактирование пользователей
-    private void callEditUsers() {
-        SaveEnableComponents saveComponents = new SaveEnableComponents();
-        saveComponents.offline();
+    private void callEditUsers(ActionEvent e) {
+        saveEnableComponentsStartFrame.save();
+        saveEnableComponentsStartFrame.offline();
         new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
                 new EditUsers(connBD,
@@ -723,7 +607,7 @@ public class StartFrame {
                             @Override
                             public void messageCloseEditUsers(boolean newData) {
                                 if (newData) {
-                                    // здесь перезагрузка списка пользователей
+                                    // **** здесь перезагрузка списка пользователей
                                     // чтение списка пользователей
                                     try {
                                         listUsers = connBD.getListUsers(true);
@@ -736,9 +620,24 @@ public class StartFrame {
                                                 "ошибка обновления - требуется вмешательство администратора",
                                                 60_000
                                         );
+                                        saveEnableComponentsStartFrame.restore();
+                                        frame.requestFocus();
+                                        return;
+                                    }
+                                    // загрузить обновленный список
+                                    try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
+                                    } catch (Exception e) {
+                                        myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
+                                        MySwingUtil.showMessage(
+                                                frame,
+                                                "обновление списка пользователей",
+                                                "ошибка обновления - требуется вмешательство администратора",
+                                                10_000
+                                        );
                                     }
                                 }
-                                saveComponents.restore();
+                                saveEnableComponentsStartFrame.restore();
+                                frame.requestFocus();
                             }
 
                             @Override
@@ -750,60 +649,8 @@ public class StartFrame {
         }, "create edit users").start();
     }
     // обработка редактирование толкателей
-    private void callEditPushers() {
+    private void callEditPushers(ActionEvent e) {
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
     }
-
     // ===========================================================================
-    class SaveEnableComponents {
-        private boolean buttonEnter;
-        private boolean buttonSetPassword;
-        private boolean buttonWork;
-        private boolean buttonTuning;
-        private boolean buttonEditUsers;
-        private boolean buttonEditPushers;
-        private boolean comboBoxUsers;
-        private boolean comboBoxPusher;
-        private boolean fieldPassword;
-        private boolean frame;
-        public SaveEnableComponents() {
-            save();
-        }
-        public void save() {
-            buttonEnter = StartFrame.this.buttonEnter.isEnabled();
-            buttonSetPassword = StartFrame.this.buttonSetPassword.isEnabled();
-            buttonWork = StartFrame.this.buttonWork.isEnabled();
-            buttonTuning = StartFrame.this.buttonTuning.isEnabled();
-            buttonEditUsers = StartFrame.this.buttonEditUsers.isEnabled();
-            buttonEditPushers = StartFrame.this.buttonEditPushers.isEnabled();
-            comboBoxUsers = StartFrame.this.comboBoxUsers.isEnabled();
-            comboBoxPusher = StartFrame.this.comboBoxPusher.isEnabled();
-            fieldPassword = StartFrame.this.fieldPassword.isEnabled();
-            frame = StartFrame.this.frame.isEnabled();
-        }
-        public void restore() {
-            StartFrame.this.buttonEnter.setEnabled(buttonEnter);
-            StartFrame.this.buttonSetPassword.setEnabled(buttonSetPassword);
-            StartFrame.this.buttonWork.setEnabled(buttonWork);
-            StartFrame.this.buttonTuning.setEnabled(buttonTuning);
-            StartFrame.this.buttonEditUsers.setEnabled(buttonEditUsers);
-            StartFrame.this.buttonEditPushers.setEnabled(buttonEditPushers);
-            StartFrame.this.comboBoxUsers.setEnabled(comboBoxUsers);
-            StartFrame.this.comboBoxPusher.setEnabled(comboBoxPusher);
-            StartFrame.this.fieldPassword.setEnabled(fieldPassword);
-            StartFrame.this.frame.setEnabled(frame);
-        }
-        public void offline() {
-            StartFrame.this.buttonEnter.setEnabled(false);
-            StartFrame.this.buttonSetPassword.setEnabled(false);
-            StartFrame.this.buttonWork.setEnabled(false);
-            StartFrame.this.buttonTuning.setEnabled(false);
-            StartFrame.this.buttonEditUsers.setEnabled(false);
-            StartFrame.this.buttonEditPushers.setEnabled(false);
-            StartFrame.this.comboBoxUsers.setEnabled(false);
-            StartFrame.this.comboBoxPusher.setEnabled(false);
-            StartFrame.this.fieldPassword.setEnabled(false);
-            StartFrame.this.frame.setEnabled(false);
-        }
-    }
 }

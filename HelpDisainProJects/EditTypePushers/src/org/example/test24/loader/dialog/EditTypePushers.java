@@ -28,26 +28,26 @@ public class EditTypePushers extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableTypePushers = new javax.swing.JTable();
         jTextField1 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        textForce = new javax.swing.JTextField();
+        textMove = new javax.swing.JTextField();
+        buttonAdd = new javax.swing.JButton();
+        buttonEdit = new javax.swing.JButton();
+        buttonClear = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        textUnclenching = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(640, 480));
         setResizable(false);
         getContentPane().setLayout(null);
 
-        jTable1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tableTypePushers.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        tableTypePushers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -64,7 +64,7 @@ public class EditTypePushers extends javax.swing.JFrame {
                 "Тип толкателя", "Усилие на штоке (кг)", "Ход штока (мм)", "Время разжатия (сек)"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tableTypePushers);
 
         getContentPane().add(jScrollPane1);
         jScrollPane1.setBounds(0, 0, 640, 220);
@@ -89,70 +89,70 @@ public class EditTypePushers extends javax.swing.JFrame {
         getContentPane().add(jLabel3);
         jLabel3.setBounds(40, 350, 160, 30);
 
-        jTextField2.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTextField2.setText("jTextField2");
-        getContentPane().add(jTextField2);
-        jTextField2.setBounds(290, 310, 140, 23);
+        textForce.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        textForce.setText("jTextField2");
+        getContentPane().add(textForce);
+        textForce.setBounds(290, 310, 140, 23);
 
-        jTextField3.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTextField3.setText("jTextField3");
-        getContentPane().add(jTextField3);
-        jTextField3.setBounds(290, 360, 140, 23);
+        textMove.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        textMove.setText("jTextField3");
+        getContentPane().add(textMove);
+        textMove.setBounds(290, 360, 140, 23);
 
-        jButton1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton1.setText("добавить");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        buttonAdd.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonAdd.setText("добавить");
+        buttonAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                buttonAddActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1);
-        jButton1.setBounds(470, 400, 120, 25);
+        getContentPane().add(buttonAdd);
+        buttonAdd.setBounds(470, 400, 120, 25);
 
-        jButton2.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton2.setText("редактировать");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        buttonEdit.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonEdit.setText("редактировать");
+        buttonEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                buttonEditActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton2);
-        jButton2.setBounds(470, 360, 120, 25);
+        getContentPane().add(buttonEdit);
+        buttonEdit.setBounds(470, 360, 120, 25);
 
-        jButton3.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton3.setText("очистить");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        buttonClear.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonClear.setText("очистить");
+        buttonClear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                buttonClearActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton3);
-        jButton3.setBounds(470, 320, 120, 25);
+        getContentPane().add(buttonClear);
+        buttonClear.setBounds(470, 320, 120, 25);
 
         jLabel4.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jLabel4.setText("Время разжатия (сек)");
         getContentPane().add(jLabel4);
         jLabel4.setBounds(40, 390, 170, 30);
 
-        jTextField4.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTextField4.setText("jTextField3");
-        getContentPane().add(jTextField4);
-        jTextField4.setBounds(290, 400, 140, 23);
+        textUnclenching.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        textUnclenching.setText("jTextField3");
+        getContentPane().add(textUnclenching);
+        textUnclenching.setBounds(290, 400, 140, 23);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_buttonAddActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void buttonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_buttonEditActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void buttonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_buttonClearActionPerformed
 
     /**
      * @param args the command line arguments
@@ -190,18 +190,18 @@ public class EditTypePushers extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton buttonAdd;
+    private javax.swing.JButton buttonClear;
+    private javax.swing.JButton buttonEdit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTable tableTypePushers;
+    private javax.swing.JTextField textForce;
+    private javax.swing.JTextField textMove;
+    private javax.swing.JTextField textUnclenching;
     // End of variables declaration//GEN-END:variables
 }

@@ -4,7 +4,8 @@ import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.usertypes.User;
-import org.example.test24.lib.MyUtil;
+import org.example.test24.lib.swing.MyUtil;
+import org.example.test24.lib.swing.SaveEnableComponents;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -31,6 +32,7 @@ class TuningFrame {
     BaseData.Parameters parametersSql;
     BaseData connBD;
 
+    private SaveEnableComponents saveEnableComponents;
 
     // ************** флаги ************
     // соединение с БД установлено
@@ -102,6 +104,22 @@ class TuningFrame {
         // установка компонентов в начальное положение
         setComponentsBegin();
         //lockBegin = false;
+        //
+        saveEnableComponents = new SaveEnableComponents(new Component[]{
+                frameTuning,
+                comboBoxCommPort,
+                comboBoxTypeBd,
+                comboBoxListBd,
+                fieldParamServerIP,
+                fieldParamServerPort,
+                fieldParamServerLogin,
+                fieldParamServerPassword,
+                buttonOk,
+                buttonSave,
+                buttonTest,
+                buttonEditUsers,
+                buttonEditPushers
+        });
     }
     // =============================================================================================================
     // загрузка параметров конфигурации программы
@@ -811,8 +829,8 @@ class TuningFrame {
             buttonEditUsers.setEnabled(false);
             return;
         }
-        SaveEnableComponents saveComponents = new SaveEnableComponents();
-        saveComponents.offline();
+        saveEnableComponents.save();
+        saveEnableComponents.offline();
         new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
                 new EditUsers(connBD,
@@ -822,12 +840,14 @@ class TuningFrame {
                                 if (newData) {
                                     // здесь перезагрузка списка пользователей (новые данные)
                                 }
-                                saveComponents.restore();
+                                saveEnableComponents.restore();
                             }
                             // текущий активный пользователь
                             @Override
                             public User getCurrentUser() {
-                                /*User user = new User(
+                                User user = new User(
+                                        0,
+                                        new Date(),
                                         0,
                                         new Date(),
                                         0,
@@ -835,8 +855,8 @@ class TuningFrame {
                                         "",
                                         3,
                                         null
-                                );*/
-                                return null;
+                                );
+                                return user;
                             }
                         });
             });
@@ -1037,68 +1057,4 @@ class TuningFrame {
         }
     }
     // ===========================================================================
-    class SaveEnableComponents {
-        private boolean frameTuning;
-        private boolean comboBoxCommPort;
-        private boolean comboBoxTypeBd;
-        private boolean comboBoxListBd;
-        private boolean fieldParamServerIP;
-        private boolean fieldParamServerPort;
-        private boolean fieldParamServerLogin;
-        private boolean fieldParamServerPassword;
-        private boolean buttonOk;
-        private boolean buttonSave;
-        private boolean buttonTest;
-        private boolean buttonEditUsers;
-        private boolean buttonEditPushers;
-        public SaveEnableComponents() {
-            save();
-        }
-        public void save() {
-            frameTuning = TuningFrame.this.frameTuning.isEnabled();
-            comboBoxCommPort = TuningFrame.this.comboBoxCommPort.isEnabled();
-            comboBoxTypeBd = TuningFrame.this.comboBoxTypeBd.isEnabled();
-            comboBoxListBd = TuningFrame.this.comboBoxListBd.isEnabled();
-            fieldParamServerIP = TuningFrame.this.fieldParamServerIP.isEnabled();
-            fieldParamServerPort = TuningFrame.this.fieldParamServerPort.isEnabled();
-            fieldParamServerLogin = TuningFrame.this.fieldParamServerLogin.isEnabled();
-            fieldParamServerPassword = TuningFrame.this.fieldParamServerPassword.isEnabled();
-            buttonOk = TuningFrame.this.buttonOk.isEnabled();
-            buttonSave = TuningFrame.this.buttonSave.isEnabled();
-            buttonTest = TuningFrame.this.buttonTest.isEnabled();
-            buttonEditUsers = TuningFrame.this.buttonEditUsers.isEnabled();
-            buttonEditPushers = TuningFrame.this.buttonEditPushers.isEnabled();
-        }
-        public void restore() {
-            TuningFrame.this.frameTuning.setEnabled(frameTuning);
-            TuningFrame.this.comboBoxCommPort.setEnabled(comboBoxCommPort);
-            TuningFrame.this.comboBoxTypeBd.setEnabled(comboBoxTypeBd);
-            TuningFrame.this.comboBoxListBd.setEnabled(comboBoxListBd);
-            TuningFrame.this.fieldParamServerIP.setEnabled(fieldParamServerIP);
-            TuningFrame.this.fieldParamServerPort.setEnabled(fieldParamServerPort);
-            TuningFrame.this.fieldParamServerLogin.setEnabled(fieldParamServerLogin);
-            TuningFrame.this.fieldParamServerPassword.setEnabled(fieldParamServerPassword);
-            TuningFrame.this.buttonOk.setEnabled(buttonOk);
-            TuningFrame.this.buttonSave.setEnabled(buttonSave);
-            TuningFrame.this.buttonTest.setEnabled(buttonTest);
-            TuningFrame.this.buttonEditUsers.setEnabled(buttonEditUsers);
-            TuningFrame.this.buttonEditPushers.setEnabled(buttonEditPushers);
-        }
-        public void offline() {
-            TuningFrame.this.frameTuning.setEnabled(false);
-            TuningFrame.this.comboBoxCommPort.setEnabled(false);
-            TuningFrame.this.comboBoxTypeBd.setEnabled(false);
-            TuningFrame.this.comboBoxListBd.setEnabled(false);
-            TuningFrame.this.fieldParamServerIP.setEnabled(false);
-            TuningFrame.this.fieldParamServerPort.setEnabled(false);
-            TuningFrame.this.fieldParamServerLogin.setEnabled(false);
-            TuningFrame.this.fieldParamServerPassword.setEnabled(false);
-            TuningFrame.this.buttonOk.setEnabled(false);
-            TuningFrame.this.buttonSave.setEnabled(false);
-            TuningFrame.this.buttonTest.setEnabled(false);
-            TuningFrame.this.buttonEditUsers.setEnabled(false);
-            TuningFrame.this.buttonEditPushers.setEnabled(false);
-        }
-    }
-    // ========================================================================
 }
