@@ -27,28 +27,33 @@ public class EditPushers extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        scrollPushers = new javax.swing.JScrollPane();
+        tablePushers = new javax.swing.JTable();
+        buttonDelete = new javax.swing.JButton();
+        buttonEdit = new javax.swing.JButton();
+        buttonAdd = new javax.swing.JButton();
+        textRegNumber = new javax.swing.JTextField();
+        panelTypePushers = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        comboBoxTypePushers = new javax.swing.JComboBox<>();
+        textForce = new javax.swing.JTextField();
+        textMove = new javax.swing.JTextField();
+        textUnclenching = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(640, 480));
         getContentPane().setLayout(null);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+        jLabel1.setText("Регистрационный номер");
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(200, 240, 210, 25);
+
+        tablePushers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {"a1", "be-790", "400", "300", "30"},
                 {null, null, null, null, null},
@@ -59,84 +64,79 @@ public class EditPushers extends javax.swing.JFrame {
                 "Рег. номер", "Тип толкателя", "Ном. усилие (кг)", "Ном.ход (мм)", "Врем. разжатия (сек)"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        scrollPushers.setViewportView(tablePushers);
 
-        getContentPane().add(jScrollPane1);
-        jScrollPane1.setBounds(0, 0, 640, 190);
+        getContentPane().add(scrollPushers);
+        scrollPushers.setBounds(0, 0, 640, 190);
 
-        jButton1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton1.setText("Удалить");
-        jButton1.setMaximumSize(new java.awt.Dimension(120, 25));
-        jButton1.setMinimumSize(new java.awt.Dimension(120, 25));
-        jButton1.setPreferredSize(new java.awt.Dimension(120, 25));
-        getContentPane().add(jButton1);
-        jButton1.setBounds(30, 310, 120, 25);
+        buttonDelete.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonDelete.setText("Удалить");
+        buttonDelete.setMaximumSize(new java.awt.Dimension(120, 25));
+        buttonDelete.setMinimumSize(new java.awt.Dimension(120, 25));
+        buttonDelete.setPreferredSize(new java.awt.Dimension(120, 25));
+        getContentPane().add(buttonDelete);
+        buttonDelete.setBounds(30, 310, 120, 25);
 
-        jButton2.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton2.setText("Редактировать");
-        getContentPane().add(jButton2);
-        jButton2.setBounds(30, 350, 120, 25);
+        buttonEdit.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonEdit.setText("Редактировать");
+        getContentPane().add(buttonEdit);
+        buttonEdit.setBounds(30, 350, 120, 25);
 
-        jButton3.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton3.setText("Добавить");
-        getContentPane().add(jButton3);
-        jButton3.setBounds(30, 390, 120, 25);
+        buttonAdd.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        buttonAdd.setText("Добавить");
+        getContentPane().add(buttonAdd);
+        buttonAdd.setBounds(30, 390, 120, 25);
 
-        jTextField1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTextField1.setText("jTextField1");
-        getContentPane().add(jTextField1);
-        jTextField1.setBounds(410, 240, 220, 25);
+        textRegNumber.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        textRegNumber.setText("jTextField1");
+        getContentPane().add(textRegNumber);
+        textRegNumber.setBounds(410, 240, 220, 25);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Параметры типа толкателя", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Times New Roman", 0, 12))); // NOI18N
-        jPanel1.setLayout(null);
-
-        jComboBox1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jPanel1.add(jComboBox1);
-        jComboBox1.setBounds(220, 14, 190, 30);
+        panelTypePushers.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Параметры типа толкателя", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Times New Roman", 0, 12))); // NOI18N
+        panelTypePushers.setLayout(null);
 
         jLabel2.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-        jLabel2.setText("Усилие на штоке (кг)");
-        jPanel1.add(jLabel2);
-        jLabel2.setBounds(20, 58, 190, 24);
+        jLabel2.setText("Тип толкателя");
+        panelTypePushers.add(jLabel2);
+        jLabel2.setBounds(20, 18, 190, 24);
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-        jLabel3.setText("Ход штока (мм)");
-        jPanel1.add(jLabel3);
-        jLabel3.setBounds(20, 88, 190, 24);
+        jLabel3.setText("Усилие на штоке (кг)");
+        panelTypePushers.add(jLabel3);
+        jLabel3.setBounds(20, 58, 190, 24);
 
         jLabel4.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-        jLabel4.setText("Время разжатия (сек)");
-        jPanel1.add(jLabel4);
-        jLabel4.setBounds(20, 118, 190, 24);
-
-        jTextField2.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTextField2.setText("jTextField2");
-        jPanel1.add(jTextField2);
-        jTextField2.setBounds(220, 60, 170, 25);
-
-        jTextField3.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTextField3.setText("jTextField3");
-        jPanel1.add(jTextField3);
-        jTextField3.setBounds(220, 90, 170, 25);
-
-        jTextField4.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTextField4.setText("jTextField4");
-        jPanel1.add(jTextField4);
-        jTextField4.setBounds(220, 120, 170, 25);
+        jLabel4.setText("Ход штока (мм)");
+        panelTypePushers.add(jLabel4);
+        jLabel4.setBounds(20, 88, 190, 24);
 
         jLabel5.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-        jLabel5.setText("Тип толкателя");
-        jPanel1.add(jLabel5);
-        jLabel5.setBounds(20, 18, 190, 24);
+        jLabel5.setText("Время разжатия (сек)");
+        panelTypePushers.add(jLabel5);
+        jLabel5.setBounds(20, 118, 190, 24);
 
-        getContentPane().add(jPanel1);
-        jPanel1.setBounds(190, 280, 440, 160);
+        comboBoxTypePushers.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        comboBoxTypePushers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        panelTypePushers.add(comboBoxTypePushers);
+        comboBoxTypePushers.setBounds(220, 14, 190, 30);
 
-        jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-        jLabel1.setText("Регистрационный номер");
-        getContentPane().add(jLabel1);
-        jLabel1.setBounds(200, 240, 210, 25);
+        textForce.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        textForce.setText("jTextField2");
+        panelTypePushers.add(textForce);
+        textForce.setBounds(220, 60, 170, 25);
+
+        textMove.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        textMove.setText("jTextField3");
+        panelTypePushers.add(textMove);
+        textMove.setBounds(220, 90, 170, 25);
+
+        textUnclenching.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        textUnclenching.setText("jTextField4");
+        panelTypePushers.add(textUnclenching);
+        textUnclenching.setBounds(220, 120, 170, 25);
+
+        getContentPane().add(panelTypePushers);
+        panelTypePushers.setBounds(190, 280, 440, 160);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -177,21 +177,21 @@ public class EditPushers extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JButton buttonAdd;
+    private javax.swing.JButton buttonDelete;
+    private javax.swing.JButton buttonEdit;
+    private javax.swing.JComboBox<String> comboBoxTypePushers;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JPanel panelTypePushers;
+    private javax.swing.JScrollPane scrollPushers;
+    private javax.swing.JTable tablePushers;
+    private javax.swing.JTextField textForce;
+    private javax.swing.JTextField textMove;
+    private javax.swing.JTextField textRegNumber;
+    private javax.swing.JTextField textUnclenching;
     // End of variables declaration//GEN-END:variables
 }

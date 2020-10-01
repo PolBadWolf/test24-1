@@ -1,4 +1,4 @@
-#config.txt
-#Tue Aug 04 20:19:21 YEKT 2020
+#config
+#Mon Sep 28 11:05:13 YEKT 2020
 DataBase=MY_SQL
-CommPort=com5
+CommPort=CNCA0
