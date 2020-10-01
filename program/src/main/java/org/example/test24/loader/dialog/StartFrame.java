@@ -272,7 +272,7 @@ public class StartFrame {
         } catch (BaseDataException e) {
             e.printStackTrace();
         }*/
-        new Thread(()->{
+        /*new Thread(()->{
             SwingUtilities.invokeLater(()->{
                 new EditTypePushers(
                         new EditTypePushers.CallBack() {
@@ -282,6 +282,20 @@ public class StartFrame {
                             }
                         },
                         connBD
+                );
+            });
+        }).start();*/
+        new Thread(()->{
+            SwingUtilities.invokeLater(()->{
+                new EditPushers(
+                        new EditPushers.CallBack() {
+                            @Override
+                            public long getCurrentId_loggerUser() {
+                                return 0;
+                            }
+                        },
+                        connBD,
+                        0L
                 );
             });
         }).start();
@@ -361,7 +375,7 @@ public class StartFrame {
             frame.add(buttonSetPassword);
         } // кнопки
         {
-            jPanel1 = CreateComponents.getPanel(null, "редактирование", 380, 310, 160, 90,true, true );
+            jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 380, 310, 160, 90,true, true );
             // кнопка редактирования пользователей
             // кнопка редактирования толкателей
             buttonEditUsers = CreateComponents.getButton("Пользователей", new Font("Times New Roman", Font.PLAIN, 14), 20, 20, 120, 24, this::callEditUsers, true, true);

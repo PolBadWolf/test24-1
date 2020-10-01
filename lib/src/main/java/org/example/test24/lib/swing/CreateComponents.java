@@ -135,10 +135,16 @@ public class CreateComponents {
         return comboBox;
     }
     // ---
-    public static JPanel getPanel(LayoutManager layoutManager, String titledBorder, int x, int y, int width, int height, boolean visible, boolean enable) {
+    public static JPanel getPanel(LayoutManager layoutManager, Font font, String titledBorder, int x, int y, int width, int height, boolean visible, boolean enable) {
         JPanel panel = new JPanel();
         panel.setLayout(layoutManager);
-        panel.setBorder(BorderFactory.createTitledBorder(titledBorder));
+        panel.setBorder(BorderFactory.createTitledBorder(
+                javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)),
+                titledBorder,
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+                javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                font
+        ));
         panel.setBounds(x, y, width, height);
         panel.setVisible(visible);
         panel.setEnabled(enable);

@@ -85,7 +85,7 @@ public class EditTypePushers {
                 buttonAdd
         });
     }
-    // загрузка списка типа компонентов
+    // загрузка списка типа толкателей
     private TypePusher[] getListTypePushers() throws BaseDataException {
         TypePusher[] typePushers = new TypePusher[0];
         typePushers = connBD.getListTypePushers(true);
