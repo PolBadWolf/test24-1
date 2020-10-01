@@ -4,8 +4,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import javax.swing.text.DocumentFilter;
-import javax.swing.text.PlainDocument;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
@@ -21,10 +20,12 @@ public class CreateComponents {
         label.setEnabled(enable);
         return label;
     }
+
     // ---
     final public static int TEXTFIELD = 0;
     final public static int FORMATTEDTEXTFIELD = 1;
     final public static int PASSWORDFIELD = 2;
+
     public static JTextField getTextField(int typeField, Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
         JTextField text;
         switch (typeField) {
@@ -89,14 +90,12 @@ public class CreateComponents {
         table.getTableHeader().setReorderingAllowed(false);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         //
-        int w_i = 0;
         int w;
         TableColumnModel tableColumnModel = table.getColumnModel();
         for (int i = 0; i < nameWidths.length; i++) {
             if (nameWidths[i].width < 0) w = autoWidth;
             else w = nameWidths[i].width;
             tableColumnModel.getColumn(i).setPreferredWidth(w);
-            w_i += w;
         }
         //
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -124,11 +123,13 @@ public class CreateComponents {
         return scrollPane;
     }
     // ---
-    public static <T> JComboBox<T> getComboBox(Font font, int x, int y, int width, int height, boolean editable, ItemListener listener, boolean visible, boolean enable) {
+    public static <T> JComboBox<T> getComboBox(Font font, int x, int y, int width, int height, boolean editable, DocumentFilter filter, ItemListener listener, boolean visible, boolean enable) {
         JComboBox<T> comboBox = new JComboBox<>();
         comboBox.setFont(font);
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(editable);
+        if (filter != null)
+            ((PlainDocument) ((JTextComponent) comboBox.getEditor().getEditorComponent()).getDocument()).setDocumentFilter(filter);
         if (listener != null) comboBox.addItemListener(listener);
         comboBox.setVisible(visible);
         comboBox.setEnabled(enable);
@@ -151,5 +152,4 @@ public class CreateComponents {
         return panel;
     }
     // ---
-
 }

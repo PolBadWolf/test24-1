@@ -357,8 +357,10 @@ public class StartFrame {
             frame.add(jLabel3);
         } // подписи, надписи
         {
-            comboBoxUsers = CreateComponents.<User>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 190, 350, 24, true, this::callSelectUser, false, true);
-            comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 270, 350, 24, true, null, false, true);
+            comboBoxUsers = CreateComponents.<User>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
+                    190, 190, 350, 24, true, null, this::callSelectUser, false, true);
+            comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
+                    190, 270, 350, 24, true, null, null, false, true);
             frame.add(comboBoxUsers);
             frame.add(comboBoxPusher);
         } // селекторы

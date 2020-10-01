@@ -11,6 +11,7 @@ import org.example.test24.lib.swing.MyTableModel;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -82,7 +83,7 @@ public class EditPushers {
         textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 410, 240,200, 25, null, null, true, true);
         buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", 0, 14), 30, 300, 120, 25, null, true, true);
         buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", 0, 14), 30, 340, 120, 25, null, true, true);
-        buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", 0, 14), 30, 380, 120, 25, null, true, true);
+        buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", 0, 14), 30, 380, 120, 25, this::callButtonAdd, true, true);
         // ---- таблица
         tablePushers = CreateComponents.getTable(
                 640 - 17,
@@ -115,7 +116,8 @@ public class EditPushers {
         jLabel3 = CreateComponents.getjLabel("Усилие на штоке (кг)", new Font("Times New Roman", 0, 18), 20, 58, 190, 25, true, true);
         jLabel4 = CreateComponents.getjLabel("Ход штока (мм", new Font("Times New Roman", 0, 18), 20, 88, 190, 25, true, true);
         jLabel5 = CreateComponents.getjLabel("Время разжатия (сек)", new Font("Times New Roman", 0, 18), 20, 118, 210, 25, true, true);
-        comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", 0, 14), 220, 14, 190, 25, true, null, true, true);
+        comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", 0, 14),
+                220, 14, 190, 25, true, null, null, true, true);
         textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 220, 60, 170, 25,
                 null, null, true, true);
         textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 220, 90, 170, 25,
@@ -153,24 +155,30 @@ public class EditPushers {
     private int getColumnCountTablePushers() { return 5; }
     private Object getValueAtTablePushers(int rowIndex, int columnIndex) {
         String text;
-        Pusher typePusher = listPushers[rowIndex];
-        /*switch (columnIndex) {
+        Pusher pusher = listPushers[rowIndex];
+        switch (columnIndex) {
             case 0:
-                text = typePusher.loggerTypePusher.nameType;
+                text = pusher.loggerPusher.namePusher;
                 break;
             case 1:
-                text = String.valueOf(typePusher.loggerTypePusher.forceNominal);
+                text = pusher.loggerPusher.loggerTypePusher.nameType;
                 break;
             case 2:
-                text = String.valueOf(typePusher.loggerTypePusher.moveNominal);
+                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.forceNominal);
                 break;
             case 3:
-                text = String.valueOf(typePusher.loggerTypePusher.unclenchingTime);
+                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.moveNominal);
+                break;
+            case 4:
+                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.unclenchingTime);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + columnIndex);
-        }*/
-        text = "123";
+        }
         return text;
+    }
+    // -----------
+    private void callButtonAdd(ActionEvent actionEvent) {
+
     }
 }
