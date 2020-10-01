@@ -272,7 +272,7 @@ public class StartFrame {
         } catch (BaseDataException e) {
             e.printStackTrace();
         }*/
-        /*new Thread(()->{
+        new Thread(()->{
             SwingUtilities.invokeLater(()->{
                 new EditTypePushers(
                         new EditTypePushers.CallBack() {
@@ -284,7 +284,7 @@ public class StartFrame {
                         connBD
                 );
             });
-        }).start();*/
+        }).start();
         // ********************
     }
     private void loadAndSetBeginParameters() {
