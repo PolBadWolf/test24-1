@@ -3,7 +3,9 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.usertypes.TypePusher;
+import org.example.test24.lib.swing.CreateComponents;
 import org.example.test24.lib.swing.MySwingUtil;
+import org.example.test24.lib.swing.MyTableModel;
 import org.example.test24.lib.swing.SaveEnableComponents;
 
 import javax.swing.*;
@@ -54,6 +56,7 @@ public class EditTypePushers {
     private TypePusher[] typePushers;
     private TypePusher editTypePusher = null;
     private long currentId_loggerUserEdit;
+    SaveEnableComponents saveEnableComponents;
 
     public EditTypePushers(CallBack callBack, BaseData connBD) {
         this.callBack = callBack;
@@ -69,6 +72,18 @@ public class EditTypePushers {
         }
         // инициация компонентов
         initComponents();
+        //
+        saveEnableComponents = new SaveEnableComponents(new Component[]{
+                frame,
+                textName,
+                textForce,
+                textMove,
+                textUnclenching,
+                buttonDelete,
+                buttonClear,
+                buttonEdit,
+                buttonAdd
+        });
     }
     // загрузка списка типа компонентов
     private TypePusher[] getListTypePushers() throws BaseDataException {
@@ -83,43 +98,51 @@ public class EditTypePushers {
         frame.setPreferredSize(new Dimension(640, 480));
         frame.setLayout(null);
         // ---- надписи
-        jLabel1 = getjLabel("Тип толкателя", new Font("Times New Roman", 0, 18), 120, 230, 210, 24);
+        jLabel1 = CreateComponents.getjLabel("Тип толкателя", new Font("Times New Roman", 0, 18), 120, 230, 210, 24, true, true);
         frame.add(jLabel1);
-        jLabel2 = getjLabel("Усилие на штоке (кг)", new Font("Times New Roman", 0, 18), 30, 310, 190, 24);
+        jLabel2 = CreateComponents.getjLabel("Усилие на штоке (кг)", new Font("Times New Roman", 0, 18), 30, 310, 190, 24, true, true);
         frame.add(jLabel2);
-        jLabel3 = getjLabel("Ход штока (мм)", new Font("Times New Roman", 0, 18), 40, 350, 140, 24);
+        jLabel3 = CreateComponents.getjLabel("Ход штока (мм)", new Font("Times New Roman", 0, 18), 40, 350, 140, 24, true, true);
         frame.add(jLabel3);
-        jLabel4 = getjLabel("Время разжатия (сек)", new Font("Times New Roman", 0, 18), 40, 385, 140, 24);
+        jLabel4 = CreateComponents.getjLabel("Время разжатия (сек)", new Font("Times New Roman", 0, 18), 40, 385, 140, 24, true, true);
         frame.add(jLabel4);
         // ---- поля ввода данных
-        textName = getTextField(new Font("Times New Roman", 0, 18), 30, 270,400, 24, null);
+        textName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 30, 270,400, 24, null, null, true, true);
         frame.add(textName);
-        textForce = getTextField(new Font("Times New Roman", 0, 18), 290, 310, 140, 24, new FilterTextDigit());
+        textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 290, 310, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textForce);
-        textMove = getTextField(new Font("Times New Roman", 0, 18), 290, 350, 140, 24, new FilterTextDigit());
+        textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 290, 350, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textMove);
-        textUnclenching = getTextField(new Font("Times New Roman", 0, 18), 290, 385, 140, 24, new FilterTextDigit());
+        textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 290, 385, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textUnclenching);
         // ---- кнопки
-        buttonDelete = getButton("Удалить", new Font("Times New Roman", 0, 14), 470, 270, 120, 25, this::buttonDeleteAction);
+        buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", 0, 14), 470, 270, 120, 25, this::buttonDeleteAction, true, true);
         frame.add(buttonDelete);
-        buttonClear = getButton("Очистить", new Font("Times New Roman", 0, 14), 470, 310, 120, 25, this::buttonClearAction);
+        buttonClear = CreateComponents.getButton("Очистить", new Font("Times New Roman", 0, 14), 470, 310, 120, 25, this::buttonClearAction, true, true);
         frame.add(buttonClear);
-        buttonEdit = getButton("Редактировать", new Font("Times New Roman", 0, 14), 470, 350, 120, 25, this::buttonEditAction);
+        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", 0, 14), 470, 350, 120, 25, this::buttonEditAction, true, true);
         frame.add(buttonEdit);
-        buttonAdd = getButton("Добавить", new Font("Times New Roman", 0, 14), 470, 385, 120, 25, this::buttonAddAction);
+        buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", 0, 14), 470, 385, 120, 25, this::buttonAddAction, true, true);
         frame.add(buttonAdd);
         // ---- таблица
-        tableTypePushers = getTable(640 - 17, new TableModelTypePushers(),
-                new ModelTableNameWidth[]{
-                        new ModelTableNameWidth("Тип толкателя", -1),
-                        new ModelTableNameWidth("Усилие на штоке (кг)", 130),
-                        new ModelTableNameWidth("Ход штока (мм)", 100),
-                        new ModelTableNameWidth("Время разжатия (сек)", 130)
+        tableTypePushers = CreateComponents.getTable(
+                640 - 17,
+                new MyTableModel(
+                        this::getRowCountTableTypePushers,
+                        this::getColumnCountTableTypePushers,
+                        this::getValueAtTableTypePushers
+                ),
+                new CreateComponents.ModelTableNameWidth[]{
+                        new CreateComponents.ModelTableNameWidth("Тип толкателя", -1),
+                        new CreateComponents.ModelTableNameWidth("Усилие на штоке (кг)", 130),
+                        new CreateComponents.ModelTableNameWidth("Ход штока (мм)", 100),
+                        new CreateComponents.ModelTableNameWidth("Время разжатия (сек)", 130)
                 },
-                this::tableTypePushersChanged
+                this::tableTypePushersChanged,
+                true,
+                true
         );
-        scrollPane = getScrollPane(0, 0, 640, 220, tableTypePushers);
+        scrollPane = CreateComponents.getScrollPane(0, 0, 640, 220, tableTypePushers, true, true);
         frame.add(scrollPane);
         // ----
         frame.pack();
@@ -143,74 +166,6 @@ public class EditTypePushers {
             super.replace(fb, offset, length, text, attrs);
         }
     }
-    // -----------
-    private JLabel getjLabel(String text, Font font, int x, int y, int width, int height) {
-        JLabel label = new JLabel();
-        label.setFont(font);
-        label.setText(text);
-        label.setBounds(x, y, width, height);
-        return label;
-    }
-    private JTextField getTextField(Font font, int x, int y, int width, int height, DocumentFilter filter) {
-        JTextField text = new JTextField();
-        text.setFont(font);
-        text.setBounds(x, y, width, height);
-        if (filter != null) { ((PlainDocument) text.getDocument()).setDocumentFilter(filter); }
-        return text;
-    }
-    private JButton getButton(String text, Font font, int x, int y, int width, int height, ActionListener listener) {
-        JButton button = new JButton();
-        button.setFont(font);
-        button.setText(text);
-        button.setBounds(x, y, width, height);
-        if (listener != null) button.addActionListener(listener);
-        return button;
-    }
-    private JScrollPane getScrollPane(int x, int y, int width, int height, Component component) {
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(x, y, width, height);
-        if (component != null) scrollPane.setViewportView(component);
-        return scrollPane;
-    }
-    private JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, ListSelectionListener listener) {
-        JTable table = new JTable();
-        int autoN = 0;
-        String[] titles = new String[nameWidths.length];
-        // остаточная ширина
-        for (int i = 0; i < nameWidths.length; i++) {
-            titles[i] = nameWidths[i].title;
-            if (nameWidths[i].width < 0) {
-                autoN++;
-                continue;
-            }
-            widthLast -= nameWidths[i].width;
-        }
-        // авто ширина
-        int autoWidth;
-        if (autoN == 0) autoWidth = 0;
-        else {
-            autoWidth = widthLast / autoN;
-        }
-        //
-        ((TableModelTypePushers) tableModel).setTitles(titles);
-        table.setModel(tableModel);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        //
-        int w_i = 0;
-        int w;
-        TableColumnModel tableColumnModel = table.getColumnModel();
-        for (int i = 0; i < nameWidths.length; i++) {
-            if (nameWidths[i].width < 0) w = autoWidth;
-            else w = nameWidths[i].width;
-            tableColumnModel.getColumn(i).setPreferredWidth(w);
-            w_i += w;
-        }
-        //
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        if (listener != null) table.getSelectionModel().addListSelectionListener(listener);
-        return table;
-    }
     // ----------- кнопки
     // button delete
     private void buttonDeleteAction(ActionEvent e) {
@@ -229,12 +184,13 @@ public class EditTypePushers {
             return;
         }
         tableTypePushers.updateUI();
-        tableTypePushers.getSelectionModel().clearSelection();
         clearFields();
+        tableTypePushers.getSelectionModel().clearSelection();
     }
     // button clear
     private void buttonClearAction(ActionEvent e) {
         clearFields();
+        tableTypePushers.getSelectionModel().clearSelection();
     }
     // button edit
     private void buttonEditAction(ActionEvent e) {
@@ -245,20 +201,11 @@ public class EditTypePushers {
                 || textMove.getText().length() == 0
                 || textUnclenching.getText().length() == 0
         ) {
-            SaveEnableComponents saveEnableComponents = new SaveEnableComponents(new Component[]{
-                    frame,
-                    textName,
-                    textForce,
-                    textMove,
-                    textUnclenching,
-                    buttonDelete,
-                    buttonClear,
-                    buttonEdit,
-                    buttonAdd
-            });
+            saveEnableComponents.save();
             saveEnableComponents.offline();
             MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
                 saveEnableComponents.restore();
+                frame.requestFocus();
             });
             return;
         }
@@ -276,25 +223,16 @@ public class EditTypePushers {
                 break;
             }
             if (flAgain) {
-                org.example.test24.lib.swing.SaveEnableComponents saveEnableComponents = new org.example.test24.lib.swing.SaveEnableComponents(
-                        new Component[]{
-                                frame,
-                                textName,
-                                textForce,
-                                textMove,
-                                textUnclenching,
-                                buttonDelete,
-                                buttonClear,
-                                buttonEdit,
-                                buttonAdd
-                        }
-                );
+                saveEnableComponents.save();
                 saveEnableComponents.offline();
                 MySwingUtil.showMessage(frame,
                         "редактирование типа гидротолкателя",
                         "такой тип уже существует",
                         5_000,
-                        o -> saveEnableComponents.restore()
+                        o -> {
+                            saveEnableComponents.restore();
+                            frame.requestFocus();
+                        }
                 );
                 return;
             }
@@ -302,21 +240,84 @@ public class EditTypePushers {
         // обновление
         try {
             connBD.updateTypePusher(editTypePusher, currentId_loggerUserEdit,
-                    textName.getText(),
-                    Integer.parseInt(textForce.getText()),
-                    Integer.parseInt(textMove.getText()),
-                    Integer.parseInt(textUnclenching.getText())
-                    );
+                    v_typeName,
+                    v_force,
+                    v_move,
+                    v_unclenching
+            );
             tableTypePushers.updateUI();
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
         } finally {
             clearFields();
+            tableTypePushers.getSelectionModel().clearSelection();
         }
     }
     // button add
     private void buttonAddAction(ActionEvent e) {
-
+        if (
+                textName.getText().length() == 0
+                        || textForce.getText().length() == 0
+                        || textMove.getText().length() == 0
+                        || textUnclenching.getText().length() == 0
+        ) {
+            saveEnableComponents.save();
+            saveEnableComponents.offline();
+            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
+                saveEnableComponents.restore();
+                frame.requestFocus();
+            });
+            return;
+        }
+        // заменяемые данные
+        String v_typeName = textName.getText();
+        int v_force = Integer.parseInt(textForce.getText());
+        int v_move = Integer.parseInt(textMove.getText());
+        int v_unclenching = Integer.parseInt(textUnclenching.getText());
+        // проверка на повтор
+        {
+            boolean flAgain = false;
+            for (int i = 0; i < typePushers.length; i++) {
+                if (!v_typeName.equals(typePushers[i].loggerTypePusher.nameType)) continue;
+                flAgain = true;
+                break;
+            }
+            if (flAgain) {
+                saveEnableComponents.save();
+                saveEnableComponents.offline();
+                MySwingUtil.showMessage(frame,
+                        "редактирование типа гидротолкателя",
+                        "такой тип уже существует",
+                        5_000,
+                        o -> {
+                            saveEnableComponents.restore();
+                            frame.requestFocus();
+                        }
+                );
+                return;
+            }
+        }
+        // добавление
+        try {
+            connBD.writeNewTypePusher(currentId_loggerUserEdit,
+                    v_typeName,
+                    v_force,
+                    v_move,
+                    v_unclenching
+            );
+        } catch (BaseDataException baseDataException) {
+            baseDataException.printStackTrace();
+        } finally {
+            clearFields();
+            tableTypePushers.getSelectionModel().clearSelection();
+        }
+        try {
+            typePushers = getListTypePushers();
+        } catch (BaseDataException baseDataException) {
+            baseDataException.printStackTrace();
+        }
+        tableTypePushers.updateUI();
+        //
     }
     private void clearFields() {
         editTypePusher = null;
@@ -328,58 +329,38 @@ public class EditTypePushers {
     // ----------- таблицы
     private void tableTypePushersChanged(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) return;
-        editTypePusher = typePushers[tableTypePushers.getSelectedRow()];
         textName.setText(editTypePusher.loggerTypePusher.nameType);
         textForce.setText(String.valueOf(editTypePusher.loggerTypePusher.forceNominal));
         textMove.setText(String.valueOf(editTypePusher.loggerTypePusher.moveNominal));
         textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
+        editTypePusher = typePushers[tableTypePushers.getSelectedRow()];
+    }
+    private int getRowCountTableTypePushers() {
+        int row = 0;
+        if (typePushers != null) row = typePushers.length;
+        return row;
+    }
+    private int getColumnCountTableTypePushers() { return 4; }
+    private Object getValueAtTableTypePushers(int rowIndex, int columnIndex) {
+        String text;
+        TypePusher typePusher = typePushers[rowIndex];
+        switch (columnIndex) {
+            case 0:
+                text = typePusher.loggerTypePusher.nameType;
+                break;
+            case 1:
+                text = String.valueOf(typePusher.loggerTypePusher.forceNominal);
+                break;
+            case 2:
+                text = String.valueOf(typePusher.loggerTypePusher.moveNominal);
+                break;
+            case 3:
+                text = String.valueOf(typePusher.loggerTypePusher.unclenchingTime);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + columnIndex);
+        }
+        return text;
     }
     // -----------
-    class TableModelTypePushers extends AbstractTableModel {
-        private String[] titles;
-
-        public void setTitles(String[] titles) {
-            this.titles = titles;
-        }
-
-        @Override
-        public int getRowCount() {
-            int row = 0;
-            if (typePushers != null) row = typePushers.length;
-            return row;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 4;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            String text = "";
-            TypePusher typePusher = typePushers[rowIndex];
-            switch (columnIndex) {
-                case 0:
-                    text = typePusher.loggerTypePusher.nameType;
-                    break;
-                case 1:
-                    text = String.valueOf(typePusher.loggerTypePusher.forceNominal);
-                    break;
-                case 2:
-                    text = String.valueOf(typePusher.loggerTypePusher.moveNominal);
-                    break;
-                case 3:
-                    text = String.valueOf(typePusher.loggerTypePusher.unclenchingTime);
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + columnIndex);
-            }
-            return text;
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            return titles[column];
-        }
-    }
 }
