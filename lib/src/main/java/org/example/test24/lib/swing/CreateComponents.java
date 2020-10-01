@@ -8,6 +8,8 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
+import java.util.Vector;
+import java.util.function.Consumer;
 
 public class CreateComponents {
     // ---
@@ -66,7 +68,7 @@ public class CreateComponents {
     }
     // ---
     public static JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, ListSelectionListener listener, boolean visible, boolean enable) {
-        JTable table = new JTable();
+        JTable table = new MyJTable();
         int autoN = 0;
         String[] titles = new String[nameWidths.length];
         // остаточная ширина
@@ -113,6 +115,46 @@ public class CreateComponents {
             this.width = width;
         }
     }
+    public static class MyJTable extends JTable{
+        private Consumer<JTable> callUpdate = null;
+
+        public void setCallUpdate(Consumer<JTable> callUpdate) {
+            this.callUpdate = callUpdate;
+        }
+
+        @Override
+        public void updateUI() {
+            if (callUpdate != null) callUpdate.accept(this);
+            super.updateUI();
+        }
+
+        public MyJTable() {
+        }
+
+        public MyJTable(TableModel dm) {
+            super(dm);
+        }
+
+        public MyJTable(TableModel dm, TableColumnModel cm) {
+            super(dm, cm);
+        }
+
+        public MyJTable(TableModel dm, TableColumnModel cm, ListSelectionModel sm) {
+            super(dm, cm, sm);
+        }
+
+        public MyJTable(int numRows, int numColumns) {
+            super(numRows, numColumns);
+        }
+
+        public MyJTable(Vector rowData, Vector columnNames) {
+            super(rowData, columnNames);
+        }
+
+        public MyJTable(Object[][] rowData, Object[] columnNames) {
+            super(rowData, columnNames);
+        }
+    }
     // ---
     public static JScrollPane getScrollPane(int x, int y, int width, int height, Component component, boolean visible, boolean enable) {
         JScrollPane scrollPane = new JScrollPane();
@@ -152,4 +194,5 @@ public class CreateComponents {
         return panel;
     }
     // ---
+
 }

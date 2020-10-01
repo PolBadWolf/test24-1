@@ -17,7 +17,6 @@ import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -116,9 +115,7 @@ public class EditPushers {
         tablePushers = CreateComponents.getTable(
                 640 - 17,
                 new MyTableModel(
-                        this::getRowCountTablePushers,
-                        this::getColumnCountTablePushers,
-                        this::getValueAtTablePushers
+                        new ControlTablePushers()
                 ),
                 new CreateComponents.ModelTableNameWidth[]{
                         new CreateComponents.ModelTableNameWidth("Рег. номер", -1),
@@ -181,35 +178,44 @@ public class EditPushers {
         textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
         editTypePusher = typePushers[tableTypePushers.getSelectedRow()];*/
     }
-    private int getRowCountTablePushers() {
-        int row = 0;
-        if (listPushers != null) row = listPushers.length;
-        return row;
-    }
-    private int getColumnCountTablePushers() { return 5; }
-    private Object getValueAtTablePushers(int rowIndex, int columnIndex) {
-        String text;
-        Pusher pusher = listPushers[rowIndex];
-        switch (columnIndex) {
-            case 0:
-                text = pusher.loggerPusher.namePusher;
-                break;
-            case 1:
-                text = pusher.loggerPusher.loggerTypePusher.nameType;
-                break;
-            case 2:
-                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.forceNominal);
-                break;
-            case 3:
-                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.moveNominal);
-                break;
-            case 4:
-                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.unclenchingTime);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + columnIndex);
+    class ControlTablePushers implements MyTableModel.Control {
+        @Override
+        public int getRowCount() {
+            int row = 0;
+            if (listPushers != null) row = listPushers.length;
+            return row;
         }
-        return text;
+
+        @Override
+        public int getColumnCount() {
+            return 5;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            String text;
+            Pusher pusher = listPushers[rowIndex];
+            switch (columnIndex) {
+                case 0:
+                    text = pusher.loggerPusher.namePusher;
+                    break;
+                case 1:
+                    text = pusher.loggerPusher.loggerTypePusher.nameType;
+                    break;
+                case 2:
+                    text = String.valueOf(pusher.loggerPusher.loggerTypePusher.forceNominal);
+                    break;
+                case 3:
+                    text = String.valueOf(pusher.loggerPusher.loggerTypePusher.moveNominal);
+                    break;
+                case 4:
+                    text = String.valueOf(pusher.loggerPusher.loggerTypePusher.unclenchingTime);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + columnIndex);
+            }
+            return text;
+        }
     }
     // ----------- фильтр для типа толкателей
     class FilterPushers extends DocumentFilter {

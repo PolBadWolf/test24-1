@@ -4,12 +4,12 @@ import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
 import org.example.test24.bd.usertypes.Pusher;
 import org.example.test24.bd.usertypes.User;
-import org.example.test24.lib.swing.CreateComponents;
-import org.example.test24.lib.swing.MyUtil;
-import org.example.test24.lib.swing.MySwingUtil;
-import org.example.test24.lib.swing.SaveEnableComponents;
+import org.example.test24.lib.swing.*;
 
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.logging.Level;
@@ -45,6 +45,8 @@ public class StartFrame {
     private JButton buttonEditPushers;
     //
     private TuningFrame tuningFrame;
+    private JTable tableFindPushers;
+    private ControlTableFindPusher controlTableFindPusher;
 
     // ===============================================
     //             флаги
@@ -285,7 +287,7 @@ public class StartFrame {
                 );
             });
         }).start();*/
-        new Thread(()->{
+        /*new Thread(()->{
             SwingUtilities.invokeLater(()->{
                 new EditPushers(
                         new EditPushers.CallBack() {
@@ -298,7 +300,7 @@ public class StartFrame {
                         0L
                 );
             });
-        }).start();
+        }).start();*/
         // ********************
     }
     private void loadAndSetBeginParameters() {
@@ -360,9 +362,23 @@ public class StartFrame {
             comboBoxUsers = CreateComponents.<User>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
                     190, 190, 350, 24, true, null, this::callSelectUser, false, true);
             comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
-                    190, 270, 350, 24, true, null, null, false, true);
+                    190, 270, 350, 24, true, new FilterFindPushers(), null, false, true);
+            controlTableFindPusher = new ControlTableFindPusher();
+            tableFindPushers = CreateComponents.getTable(200,
+                    new MyTableModel(controlTableFindPusher),
+                    new CreateComponents.ModelTableNameWidth[]{
+                            new CreateComponents.ModelTableNameWidth("Толкатель", -1)
+                    },
+                    null,
+                    false,
+                    true
+            );
+            ((CreateComponents.MyJTable) tableFindPushers).setCallUpdate(controlTableFindPusher::updateUI);
+            tableFindPushers.setBounds(190, 300, 350, 300);
             frame.add(comboBoxUsers);
             frame.add(comboBoxPusher);
+            frame.add(tableFindPushers);
+            tableFindPushers.updateUI();
         } // селекторы
         fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 230,120, 24, null, null, false, true);
         frame.add(fieldPassword);
@@ -669,4 +685,40 @@ public class StartFrame {
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
     }
     // ===========================================================================
+    class FilterFindPushers extends DocumentFilter {
+        @Override
+        public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+            super.remove(fb, offset, length);
+        }
+
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+            System.out.println(text.substring(0, 1).hashCode());
+            if (length > 1) {
+                super.replace(fb, offset, length, text, attrs);
+            }
+        }
+    }
+    // ===========================================================================
+    class ControlTableFindPusher implements MyTableModel.Control {
+        public void updateUI(JTable table) {
+            int x = tableFindPushers.getRowCount();
+            int width = tableFindPushers.getSize().width;
+            table.setSize(width, x * table.getRowHeight());
+        }
+        @Override
+        public int getRowCount() {
+            return 3;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 1;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return null;
+        }
+    }
 }

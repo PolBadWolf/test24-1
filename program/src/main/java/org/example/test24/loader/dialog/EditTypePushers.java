@@ -10,17 +10,11 @@ import org.example.test24.lib.swing.SaveEnableComponents;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
-import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Level;
@@ -128,9 +122,7 @@ public class EditTypePushers {
         tableTypePushers = CreateComponents.getTable(
                 640 - 17,
                 new MyTableModel(
-                        this::getRowCountTableTypePushers,
-                        this::getColumnCountTableTypePushers,
-                        this::getValueAtTableTypePushers
+                        new ControlTableTypePushers()
                 ),
                 new CreateComponents.ModelTableNameWidth[]{
                         new CreateComponents.ModelTableNameWidth("Тип толкателя", -1),
@@ -335,32 +327,41 @@ public class EditTypePushers {
         textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
         editTypePusher = typePushers[tableTypePushers.getSelectedRow()];
     }
-    private int getRowCountTableTypePushers() {
-        int row = 0;
-        if (typePushers != null) row = typePushers.length;
-        return row;
-    }
-    private int getColumnCountTableTypePushers() { return 4; }
-    private Object getValueAtTableTypePushers(int rowIndex, int columnIndex) {
-        String text;
-        TypePusher typePusher = typePushers[rowIndex];
-        switch (columnIndex) {
-            case 0:
-                text = typePusher.loggerTypePusher.nameType;
-                break;
-            case 1:
-                text = String.valueOf(typePusher.loggerTypePusher.forceNominal);
-                break;
-            case 2:
-                text = String.valueOf(typePusher.loggerTypePusher.moveNominal);
-                break;
-            case 3:
-                text = String.valueOf(typePusher.loggerTypePusher.unclenchingTime);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + columnIndex);
+    class ControlTableTypePushers implements MyTableModel.Control {
+        @Override
+        public int getRowCount() {
+            int row = 0;
+            if (typePushers != null) row = typePushers.length;
+            return row;
         }
-        return text;
+
+        @Override
+        public int getColumnCount() {
+            return 4;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            String text;
+            TypePusher typePusher = typePushers[rowIndex];
+            switch (columnIndex) {
+                case 0:
+                    text = typePusher.loggerTypePusher.nameType;
+                    break;
+                case 1:
+                    text = String.valueOf(typePusher.loggerTypePusher.forceNominal);
+                    break;
+                case 2:
+                    text = String.valueOf(typePusher.loggerTypePusher.moveNominal);
+                    break;
+                case 3:
+                    text = String.valueOf(typePusher.loggerTypePusher.unclenchingTime);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + columnIndex);
+            }
+            return text;
+        }
     }
     // -----------
 }
