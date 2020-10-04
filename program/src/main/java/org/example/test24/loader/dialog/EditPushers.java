@@ -112,7 +112,7 @@ public class EditPushers {
         buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", 0, 14), 30, 340, 120, 25, null, true, true);
         buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", 0, 14), 30, 380, 120, 25, this::callButtonAdd, true, true);
         // ---- таблица
-        tablePushers = CreateComponents.getTable(
+        /*tablePushers = CreateComponents.getTable(
                 640 - 17,
                 new MyTableModel(
                         new ControlTablePushers()
@@ -124,10 +124,11 @@ public class EditPushers {
                         new CreateComponents.ModelTableNameWidth("Ном.ход (мм)", 95),
                         new CreateComponents.ModelTableNameWidth("Время разж. (сек)", 110)
                 },
+                null,
                 this::tablePushersChanged,
                 true,
                 true
-        );
+        );*/
         scrollPushers = CreateComponents.getScrollPane(0, 0, 640, 220, tablePushers, true, true);
         frame.add(jLabel1);
         frame.add(textRegNumber);
