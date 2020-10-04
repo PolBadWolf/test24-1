@@ -8,26 +8,17 @@ public class MyTableModel extends AbstractTableModel {
         int getColumnCount();
         Object getValueAt(int rowIndex, int columnIndex);
     }
-    private Control control = null;
     private String[] titles;
-
-    public MyTableModel(Control control) {
-        this.control = control;
-    }
-
     public void setTitles(String[] titles) { this.titles = titles; }
-
-    @Override
-    public int getRowCount() { return control.getRowCount(); }
-
-    @Override
-    public int getColumnCount() { return control.getColumnCount(); }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) { return control.getValueAt(rowIndex, columnIndex); }
-
     @Override
     public String getColumnName(int column) {
         return titles[column];
     }
+
+    @Override
+    public int getRowCount() { return 0; }
+    @Override
+    public int getColumnCount() { return 0; }
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) { return null; }
 }

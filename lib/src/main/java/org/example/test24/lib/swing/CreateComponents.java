@@ -67,7 +67,7 @@ public class CreateComponents {
         return button;
     }
     // ---
-    public static JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, ListSelectionListener listener, boolean visible, boolean enable) {
+    public static JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, DocumentFilter filter, ListSelectionListener listener, boolean visible, boolean enable) {
         JTable table = new MyJTable();
         int autoN = 0;
         String[] titles = new String[nameWidths.length];
@@ -101,6 +101,7 @@ public class CreateComponents {
         }
         //
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        if (filter != null) ((PlainDocument) table.getCellEditor()).setDocumentFilter(filter);
         if (listener != null) table.getSelectionModel().addListSelectionListener(listener);
         table.setVisible(visible);
         table.setEnabled(enable);
@@ -113,46 +114,6 @@ public class CreateComponents {
         public ModelTableNameWidth(String title, int width) {
             this.title = title;
             this.width = width;
-        }
-    }
-    public static class MyJTable extends JTable{
-        private Consumer<JTable> callUpdate = null;
-
-        public void setCallUpdate(Consumer<JTable> callUpdate) {
-            this.callUpdate = callUpdate;
-        }
-
-        @Override
-        public void updateUI() {
-            if (callUpdate != null) callUpdate.accept(this);
-            super.updateUI();
-        }
-
-        public MyJTable() {
-        }
-
-        public MyJTable(TableModel dm) {
-            super(dm);
-        }
-
-        public MyJTable(TableModel dm, TableColumnModel cm) {
-            super(dm, cm);
-        }
-
-        public MyJTable(TableModel dm, TableColumnModel cm, ListSelectionModel sm) {
-            super(dm, cm, sm);
-        }
-
-        public MyJTable(int numRows, int numColumns) {
-            super(numRows, numColumns);
-        }
-
-        public MyJTable(Vector rowData, Vector columnNames) {
-            super(rowData, columnNames);
-        }
-
-        public MyJTable(Object[][] rowData, Object[] columnNames) {
-            super(rowData, columnNames);
         }
     }
     // ---
