@@ -53,6 +53,7 @@ public class StartFrame {
     //
     private TuningFrame tuningFrame;
     private JTable tableFindPushers;
+    private JTable tableFindUsers;
 
     // ===============================================
     //             флаги
@@ -238,6 +239,7 @@ public class StartFrame {
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
         new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers);
+        new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers);
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -366,34 +368,42 @@ public class StartFrame {
         } // подписи, надписи
         {
             comboBoxUsers = CreateComponents.<User>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
-                    190, 190, 350, 24, true, null, this::callSelectUser, false, true);
+                    190, 190, 350, 24, true,
+                    null,
+                    this::callSelectUser,
+                    false, true);
             comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
                     190, 270, 350, 24, true,
-                    null, // PushersControlFind.getControlFindPusher().getComboBoxFilter(),
-                    null, // PushersControlFind.getControlFindPusher().getComboBoxListener(),
+                    null,
+                    null,
                     false, true);
             tableFindPushers = CreateComponents.getTable(200,
-                    //ControlTableFindPusher.getControl(this).getTableModel(),
-                    null, //PushersControlFind.getControlFindPusher().getTableModel(),
+                    null,
                     new CreateComponents.ModelTableNameWidth[]{
                             new CreateComponents.ModelTableNameWidth("Толкатель", -1)
                     },
+                    null,
+                    null,
+                    false,
+                    true
+            );
+            tableFindUsers = CreateComponents.getTable(200,
+                    null,
+                    null,
                     null, //controlTableFindPusher.getFilterTable(),
                     null, //controlTableFindPusher::callTableFindPushers,
                     false,
                     true
             );
-            //new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers); // список еще не готов
-            //((MyJTable) tableFindPushers).setCallUpdate(controlTableFindPusher::updateUI);
-            /*((MyJTable) tableFindPushers).setCallUpdate(
-                    //ControlTableFindPusher.getControl(this).getTableUpdateUI(tableFindPushers)
-                    PushersControlFind.getControlFindPusher().getTableUpdateUI(tableFindPushers)
-            );*/
-            tableFindPushers.setBounds(190, 300, 350, 300);
+
+            //
+            tableFindPushers.setBounds(190, 300, 350, 30);
+            tableFindUsers.setBounds(190, 220, 350, 30);
 
             frame.add(comboBoxUsers);
             frame.add(comboBoxPusher);
             frame.add(tableFindPushers);
+            frame.add(tableFindUsers);
             tableFindPushers.updateUI();
         } // селекторы
         {
@@ -585,7 +595,7 @@ public class StartFrame {
     }
     // обработка выбора пользователя
     private void callSelectUser(ItemEvent e) {
-        if (e.getStateChange() == 1) return;
+        if (e.getStateChange() == ItemEvent.SELECTED) return;
         // разрешение ввода пароля
         fieldPassword.setText("");
         fieldPassword.setEnabled(true);
@@ -701,328 +711,4 @@ public class StartFrame {
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
     }
     // ===========================================================================
-    class FilterFindPushers extends DocumentFilter {
-        @Override
-        public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-            super.remove(fb, offset, length);
-        }
-
-        @Override
-        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-            System.out.println(offset + ", " + length + ", " + text);
-            if (length == 0) {
-                tableFindPushers.setVisible(true);
-            } else {
-                tableFindPushers.setVisible(false);
-            }
-            comboBoxUsers.firePopupMenuWillBecomeVisible();
-            super.replace(fb, offset, length, text, attrs);
-        }
-    }
-    // ===========================================================================
-    /*
-    class ControlTableFindPusher implements MyTableModel.Control {
-        class FilterTable extends  DocumentFilter {
-            @Override
-            public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-                super.remove(fb, offset, length);
-            }
-
-            @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                super.insertString(fb, offset, string, attr);
-            }
-
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                super.replace(fb, offset, length, text, attrs);
-            }
-        }
-        private FilterTable filterTable;
-        public ControlTableFindPusher() {
-            filterTable = new FilterTable();
-        }
-
-        public FilterTable getFilterTable() {
-            return filterTable;
-        }
-
-        public void updateUI(JTable table) {
-            int x = tableFindPushers.getRowCount();
-            int width = tableFindPushers.getSize().width;
-            table.setSize(width, x * table.getRowHeight());
-        }
-        @Override
-        public int getRowCount() {
-            return 3;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 1;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            return null;
-        }
-
-        public void callTableFindPushers(ListSelectionEvent listSelectionEvent) {
-            if (listSelectionEvent.getValueIsAdjusting()) return;
-
-        }
-        public void callComboBoxPushers(ItemEvent itemEvent) {
-            //System.out.println();
-            //comboBoxUsers.firePopupMenuWillBecomeVisible();
-        }
-    }
-    */
-
-    public JComboBox<Pusher> getComboBoxPusher() {
-        return comboBoxPusher;
-    }
-
-    public JTable getTableFindPushers() {
-        return tableFindPushers;
-    }
-
-    public Pusher[] getListPushers() {
-        return listPushers;
-    }
 }
-class PushersControlFind {
-    private static PushersControlFind pushersControlFind;
-    public static PushersControlFind getControlFindPusher() {
-        if (pushersControlFind == null) {
-            pushersControlFind = new PushersControlFind();
-        }
-        return pushersControlFind;
-    }
-    //
-    //
-    private PushersTableModel pushersTableModel;
-    private PushersDocumentFilterComboBox pushersDocumentFilterComboBox;
-    private PushersItemListenerComboBox pushersItemListenerComboBox;
-    //
-    public PushersControlFind() {
-        pushersTableModel = new PushersTableModel(this);
-        pushersDocumentFilterComboBox = new PushersDocumentFilterComboBox(this);
-        pushersItemListenerComboBox = new PushersItemListenerComboBox(this);
-    }
-    public PushersTableModel getTableModel() { return pushersTableModel; }
-    public PushersDocumentFilterComboBox getComboBoxFilter() { return pushersDocumentFilterComboBox; }
-    public PushersItemListenerComboBox getComboBoxListener() { return pushersItemListenerComboBox; }
-    // vars
-    String textFilter = "";
-    List<BoundExtractedResult<Pusher>> resultList;
-    //
-    public <T> Consumer<JTable> getTableUpdateUI(T t) {
-        return new Consumer<JTable>() {
-            @Override
-            public void accept(JTable table) {
-                /*resultList = FuzzySearch.extractTop(
-                        textFilter,
-                        Arrays.asList(StartFrame.startFrame.getListPushers()),
-                        x -> x.toString(),
-                        4
-                );
-                int row = resultList.size();
-                StartFrame.startFrame.getTableFindPushers().setSize(
-                        StartFrame.startFrame.getTableFindPushers().getWidth(),
-                        StartFrame.startFrame.getTableFindPushers().getRowHeight() * row
-                );*/
-            }
-        };
-    }
-}
-class PushersTableModel extends MyTableModel {
-    private PushersControlFind parent;
-    public PushersTableModel(PushersControlFind parent) {
-        this.parent = parent;
-    }
-    @Override
-    public int getRowCount() {
-        int row;
-        if (parent.resultList == null) row = 0;
-        else row = parent.resultList.size();
-        StartFrame.startFrame.getTableFindPushers().setSize(
-                StartFrame.startFrame.getTableFindPushers().getWidth(),
-                StartFrame.startFrame.getTableFindPushers().getRowHeight() * row
-        );
-        return row; //super.getRowCount();
-    }
-    @Override
-    public int getColumnCount() {
-        return 1;
-    }
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        //return super.getValueAt(rowIndex, columnIndex);
-        return
-        ((BoundExtractedResult<Pusher>) parent.resultList.get(rowIndex)).getReferent().toString();
-    }
-}
-class PushersDocumentFilterComboBox extends DocumentFilter {
-    private PushersControlFind parent;
-
-    public PushersDocumentFilterComboBox(PushersControlFind parent) {
-        this.parent = parent;
-    }
-
-    @Override
-    public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-        parent.textFilter = parent.textFilter.substring(0, offset);
-        StartFrame.startFrame.getTableFindPushers().setVisible(true);
-        //StartFrame.startFrame.getTableFindPushers().updateUI();
-        super.remove(fb, offset, length);
-    }
-
-    @Override
-    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-        parent.textFilter = parent.textFilter.substring(0, offset) + text;
-        if (text.length() == 1) {
-            StartFrame.startFrame.getTableFindPushers().setVisible(true);
-            //StartFrame.startFrame.getTableFindPushers().updateUI();
-            {
-                parent.resultList = FuzzySearch.extractTop(
-                        parent.textFilter,
-                        Arrays.asList(StartFrame.startFrame.getListPushers()),
-                        x -> x.toString(),
-                        4
-                );
-                int row = parent.resultList.size();
-            /*StartFrame.startFrame.getTableFindPushers().setSize(
-                    StartFrame.startFrame.getTableFindPushers().getWidth(),
-                    StartFrame.startFrame.getTableFindPushers().getRowHeight() * row
-            );*/
-
-            }
-        }
-        super.replace(fb, offset, length, text, attrs);
-    }
-}
-class PushersItemListenerComboBox implements ItemListener {
-    private PushersControlFind parent;
-
-    public PushersItemListenerComboBox(PushersControlFind parent) {
-        this.parent = parent;
-    }
-
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        StartFrame.startFrame.getTableFindPushers().setVisible(false);
-        int[] x = StartFrame.startFrame.getTableFindPushers().getSelectedRows();
-        int r = 0;
-        if (x.length > 0) r = x[0];
-        if (parent.resultList != null) {
-            BoundExtractedResult<Pusher> b = parent.resultList.get(r);
-            Pusher o = b.getReferent();
-            StartFrame.startFrame.getComboBoxPusher().setSelectedItem(o);
-        }
-    }
-}
-
-
-
-
-class ControlTableFindPusher {
-    private static ControlTableFindPusher controlTableFindPusher = null;
-    public static ControlTableFindPusher getControl(StartFrame parent) {
-        if (controlTableFindPusher == null) {
-            controlTableFindPusher = new ControlTableFindPusher(parent);
-        }
-        return controlTableFindPusher;
-    }
-    //
-    private StartFrame parent;
-    private MyTableModel tableModel;
-    private Filter filter;
-    //
-    private String textFilter = "";
-    //
-    public ControlTableFindPusher(StartFrame parent) {
-        this.parent = parent;
-        tableModel = new TableModel();
-        filter = new Filter();
-    }
-    //
-    public MyTableModel getTableModel() { return tableModel; }
-    private class TableModel extends MyTableModel {
-
-        @Override
-        public int getRowCount() {
-            int row = 1;
-/*            if (parent.comboBoxPusher != null) {
-                try {
-                    row = textFilter.length();
-                    if (row == 0) row = 1;
-                    parent.tableFindPushers.setSize(
-                            parent.tableFindPushers.getWidth(),
-                            parent.tableFindPushers.getRowHeight() * row
-                    );
-                } catch (Exception e) {
-                    // e.printStackTrace();
-                }
-            }*/
-            return row;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 1;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            return null;
-        }
-    }
-    //
-    public Filter getFilter() { return filter; }
-    private class Filter extends DocumentFilter {
-        @Override
-        public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-            textFilter = textFilter.substring(0, offset);
-//            parent.tableFindPushers.updateUI();
-            super.remove(fb, offset, length);
-        }
-        @Override
-        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-//            parent.tableFindPushers.setVisible(true);
-            textFilter = textFilter.substring(0, offset) + text;
-//            parent.tableFindPushers.updateUI();
-            super.replace(fb, offset, length, text, attrs);
-        }
-    }
-    //
-    public ItemListener getComboboxItemListener() {
-        return new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                //parent.tableFindPushers.setVisible(false);
-            }
-        };
-    }
-    //
-    public <T> Consumer<JTable> getTableUpdateUI(T t) {
-        return new Consumer<JTable>() {
-            @Override
-            public void accept(JTable table) {
-            }
-        };
-    }
-}
-
-/*
-    List<BoundExtractedResult<FFFF>> resultList;
-        resultList = FuzzySearch.extractTop(
-                query,
-                ffffList,
-                x -> x.toString(),
-                7
-                );
-                //System.out.println("find: \"" + query + "\" : index = " + res + " / " + ssoorrtt[res].toString() + " / " + ssoorrtt[res].code);
-                for (BoundExtractedResult<FFFF> res :resultList) {
-        System.out.println(res);
-        }
-*/

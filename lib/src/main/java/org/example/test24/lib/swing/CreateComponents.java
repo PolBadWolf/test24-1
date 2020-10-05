@@ -70,15 +70,19 @@ public class CreateComponents {
     public static JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, DocumentFilter filter, ListSelectionListener listener, boolean visible, boolean enable) {
         JTable table = new MyJTable();
         int autoN = 0;
-        String[] titles = new String[nameWidths.length];
-        // остаточная ширина
-        for (int i = 0; i < nameWidths.length; i++) {
-            titles[i] = nameWidths[i].title;
-            if (nameWidths[i].width < 0) {
-                autoN++;
-                continue;
+        String[] titles;
+        if (nameWidths == null) titles = new String[0];
+        else {
+            titles = new String[nameWidths.length];
+            // остаточная ширина
+            for (int i = 0; i < nameWidths.length; i++) {
+                titles[i] = nameWidths[i].title;
+                if (nameWidths[i].width < 0) {
+                    autoN++;
+                    continue;
+                }
+                widthLast -= nameWidths[i].width;
             }
-            widthLast -= nameWidths[i].width;
         }
         // авто ширина
         int autoWidth;

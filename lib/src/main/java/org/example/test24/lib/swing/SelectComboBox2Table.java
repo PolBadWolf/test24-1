@@ -6,6 +6,7 @@ import me.xdrop.fuzzywuzzy.model.BoundExtractedResult;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,9 +17,12 @@ public class SelectComboBox2Table<T> {
     //
     private boolean iKeep;
     private boolean comboLockSelect;
+    private boolean comboLockListener;
     private String textFilter;
     private List<BoundExtractedResult<T>> resultList;
     private T singleT;
+    //
+    private final ItemListener[] comboBoxItemListeners;
 
     public SelectComboBox2Table(JComboBox<T> comboBox, JTable table, T[] cs) {
         this.table = table;
@@ -42,6 +46,8 @@ public class SelectComboBox2Table<T> {
                 comboBoxFilterDo();
             }
         });
+        comboBoxItemListeners = comboBox.getItemListeners();
+        for (ItemListener il : comboBoxItemListeners) comboBox.removeItemListener(il);
         comboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) return;
             if (comboLockSelect) return;
@@ -51,6 +57,14 @@ public class SelectComboBox2Table<T> {
             table.clearSelection();
             table.setVisible(false);
             comboLockSelect = false;
+        });
+        comboBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) return;
+            if (comboLockSelect) return;
+            if (comboLockListener) return;
+            comboLockListener = true;
+            for (ItemListener il : comboBoxItemListeners) il.itemStateChanged(e);
+            comboLockListener = false;
         });
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) return;
@@ -76,7 +90,6 @@ public class SelectComboBox2Table<T> {
 
             @Override
             public Object getValueAt(int rowIndex, int columnIndex) {
-                //return super.getValueAt(rowIndex, columnIndex);
                 if (resultList.size() == 0) return "";
                 singleT = resultList.get(rowIndex).getReferent();
                 return singleT.toString();
