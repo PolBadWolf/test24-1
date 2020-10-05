@@ -8,6 +8,7 @@ import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.lib.swing.CreateComponents;
 import org.example.test24.lib.swing.MyTableModel;
 import org.example.test24.lib.swing.MyUtil;
+import org.example.test24.lib.swing.SelectComboBox2Table;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -17,12 +18,15 @@ import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
 
 public class EditPushers {
     interface CallBack {
+        void messageCloseEditUsers();
         long getCurrentId_loggerUser();
     }
 
@@ -51,6 +55,8 @@ public class EditPushers {
     private EditPushers.CallBack callBack;
     private BaseData connBD;
     private long currentId_loggerUserEdit;
+    // ***************************
+    private JTable tableFindTypePushers;
     //
     private Pusher[] listPushers;
     private TypePusher[] listTypePushers;
@@ -81,6 +87,7 @@ public class EditPushers {
                     comboBoxTypePushers,
                     null
             );
+            new SelectComboBox2Table<TypePusher>(comboBoxTypePushers, tableFindTypePushers, listTypePushers).setiKeep(true);
         } catch (BaseDataException e) {
             e.printStackTrace();
         } catch (Exception exception) {
@@ -143,16 +150,30 @@ public class EditPushers {
         jLabel3 = CreateComponents.getjLabel("Усилие на штоке (кг)", new Font("Times New Roman", 0, 18), 20, 78, 190, 25, true, true);
         jLabel4 = CreateComponents.getjLabel("Ход штока (мм)", new Font("Times New Roman", 0, 18), 20, 108, 190, 25, true, true);
         jLabel5 = CreateComponents.getjLabel("Время разжатия (сек)", new Font("Times New Roman", 0, 18), 20, 138, 210, 25, true, true);
-        textFind = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 220, 14, 170, 25,
+        textFind = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 220, 50, 170, 25,
                 new FilterPushers(), null, true, true);
-        comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", 0, 14), 220, 50, 190, 25,
-              false, null, this::callComboBoxTypePushers, true, true);
+        comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", 0, 14), 220, 14, 190, 25,
+              true,
+                null,
+                null, //this::callComboBoxTypePushers,
+                true, true);
+        tableFindTypePushers = CreateComponents.getTable(200,
+                null,
+                null,
+                null,
+                null,
+                false,
+                true
+        );
+        tableFindTypePushers.setBounds(220, 44, 220, 300);
+
         textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 220, 80, 170, 25,
                 null, null, true, true);
         textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 220, 110, 170, 25,
                 null, null, true, true);
         textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 220, 140, 170, 25,
                 null, null, true, true);
+        panelTypePushers.add(tableFindTypePushers);
         panelTypePushers.add(jLabel2);
         panelTypePushers.add(jLabel6);
         panelTypePushers.add(jLabel3);
@@ -168,6 +189,15 @@ public class EditPushers {
         frame.pack();
         frame.setVisible(true);
         frame.requestFocus();
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                callBack.messageCloseEditUsers();
+                frame.removeAll();
+                frame.dispose();
+            }
+        });
     }
 
     // ----------- таблицы
@@ -237,7 +267,8 @@ public class EditPushers {
     }
     // -----------
     private void callComboBoxTypePushers(ItemEvent itemEvent) {
-        if (itemEvent.getStateChange() == 1) return;
+        if (itemEvent.getStateChange() == ItemEvent.SELECTED) return;
+        TypePusher tp = (TypePusher) comboBoxTypePushers.getSelectedItem();
     }
     private void callButtonAdd(ActionEvent actionEvent) {
 

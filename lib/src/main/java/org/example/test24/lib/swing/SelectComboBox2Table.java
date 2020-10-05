@@ -118,5 +118,9 @@ public class SelectComboBox2Table<T> {
         if (!table.isVisible()) table.setVisible(true);
         table.updateUI();
     }
+
+    public void setiKeep(boolean iKeep) {
+        this.iKeep = iKeep;
+    }
 }
 

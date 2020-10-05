@@ -390,8 +390,8 @@ public class StartFrame {
             tableFindUsers = CreateComponents.getTable(200,
                     null,
                     null,
-                    null, //controlTableFindPusher.getFilterTable(),
-                    null, //controlTableFindPusher::callTableFindPushers,
+                    null,
+                    null,
                     false,
                     true
             );
@@ -715,6 +715,10 @@ public class StartFrame {
             SwingUtilities.invokeLater(() -> {
                 new EditPushers(
                         new EditPushers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers() {
+                                saveEnableComponentsStartFrame.restore();
+                            }
                             @Override
                             public long getCurrentId_loggerUser() {
                                 return 0;
