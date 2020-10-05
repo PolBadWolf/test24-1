@@ -708,7 +708,23 @@ public class StartFrame {
     }
     // обработка редактирование толкателей
     private void callEditPushers(ActionEvent e) {
-        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
+        //myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
+        saveEnableComponentsStartFrame.save();
+        saveEnableComponentsStartFrame.offline();
+        new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
+                new EditPushers(
+                        new EditPushers.CallBack() {
+                            @Override
+                            public long getCurrentId_loggerUser() {
+                                return 0;
+                            }
+                        },
+                        connBD,
+                        ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
+                );
+            });
+        }, "create edit pushers").start();
     }
     // ===========================================================================
 }
