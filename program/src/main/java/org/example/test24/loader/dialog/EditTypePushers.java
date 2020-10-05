@@ -356,47 +356,11 @@ public class EditTypePushers {
     // ----------- таблицы
     private void tableTypePushersChanged(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) return;
+        editTypePusher = listTypePushers[tableTypePushers.getSelectedRow()];
         textName.setText(editTypePusher.loggerTypePusher.nameType);
         textForce.setText(String.valueOf(editTypePusher.loggerTypePusher.forceNominal));
         textMove.setText(String.valueOf(editTypePusher.loggerTypePusher.moveNominal));
         textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
-        editTypePusher = listTypePushers[tableTypePushers.getSelectedRow()];
-    }
-    class ControlTableTypePushers implements MyTableModel.Control {
-        @Override
-        public int getRowCount() {
-            int row = 0;
-            if (listTypePushers != null) row = listTypePushers.length;
-            return row;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 4;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            String text;
-            TypePusher typePusher = listTypePushers[rowIndex];
-            switch (columnIndex) {
-                case 0:
-                    text = typePusher.loggerTypePusher.nameType;
-                    break;
-                case 1:
-                    text = String.valueOf(typePusher.loggerTypePusher.forceNominal);
-                    break;
-                case 2:
-                    text = String.valueOf(typePusher.loggerTypePusher.moveNominal);
-                    break;
-                case 3:
-                    text = String.valueOf(typePusher.loggerTypePusher.unclenchingTime);
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + columnIndex);
-            }
-            return text;
-        }
     }
     // -----------
 }
