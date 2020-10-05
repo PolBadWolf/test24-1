@@ -12,35 +12,33 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SelectComboBox2Table<T> {
-    interface CallBack {
-        void enterComboBox(String lastLogin);
-    }
     private final JTable table;
     private final List<T> cs;
     //
-    private boolean iKeep;
+    //private boolean iKeep;
     private boolean comboLockSelect;
     private boolean comboLockListener;
     private String textFilter;
     private List<BoundExtractedResult<T>> resultList;
     private T singleT;
-    private String lostLogin;
-    private CallBack callBack;
+    private final String lostName;
+    private boolean lock = true;
     //
     private final ItemListener[] comboBoxItemListeners;
 
-    public SelectComboBox2Table(JComboBox<T> comboBox, JTable table, T[] cs, CallBack callBack) {
+    public SelectComboBox2Table(JComboBox<T> comboBox, JTable table, T[] cs, String lostName) {
         this.table = table;
         this.cs = Arrays.asList(cs);
-        this.callBack = callBack;
+        this.lostName = lostName;
         //
-        iKeep = false;
+        //iKeep = false;
         textFilter = "";
         resultList= new ArrayList<>();
         ((PlainDocument) ((JTextComponent) comboBox.getEditor().getEditorComponent()).getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
             public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
                 super.remove(fb, offset, length);
+                if (lock) return;
                 textFilter = textFilter.substring(0, offset);
                 comboBoxFilterDo();
             }
@@ -48,6 +46,7 @@ public class SelectComboBox2Table<T> {
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
                 super.replace(fb, offset, length, text, attrs);
+                if (lock) return;
                 textFilter = textFilter.substring(0, offset) + text;
                 comboBoxFilterDo();
             }
@@ -58,7 +57,17 @@ public class SelectComboBox2Table<T> {
             if (e.getStateChange() == ItemEvent.DESELECTED) return;
             if (comboLockSelect) return;
             comboLockSelect = true;
-            lostLogin = (String) comboBox.getSelectedItem();
+            String getSel;
+            try {
+                getSel = (String) comboBox.getSelectedItem();
+                if (getSel.equals(lostName)) {
+                    table.clearSelection();
+                    table.setVisible(false);
+                    comboLockSelect = false;
+                    return;
+                }
+            } catch (Exception exception) {
+            }
             if (resultList.size() > 0) {
                 Object o = resultList.get(0).getReferent();
                 comboBox.setSelectedItem(o);
@@ -120,25 +129,25 @@ public class SelectComboBox2Table<T> {
         });
     }
     private void comboBoxFilterDo() {
-        if (!iKeep) {
-            iKeep = true;
-            return;
-        }
+//        if (!iKeep) {
+//            iKeep = true;
+//            return;
+//        }
         if (!table.isVisible()) table.setVisible(true);
         table.updateUI();
     }
 
-    public void setiKeep(boolean iKeep) {
-        this.iKeep = iKeep;
-    }
+//    public void setiKeep(boolean iKeep) {
+//        this.iKeep = iKeep;
+//    }
 
     public T getResultFist() {
         if (resultList == null || resultList.size() == 0) return null;
         return resultList.get(0).getReferent();
     }
 
-    public String getLostLogin() {
-        return lostLogin;
+    public void setLock(boolean lock) {
+        this.lock = lock;
     }
 }
 

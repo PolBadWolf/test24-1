@@ -841,6 +841,7 @@ class TuningFrame {
                                     // здесь перезагрузка списка пользователей (новые данные)
                                 }
                                 saveEnableComponents.restore();
+                                frameTuning.requestFocus();
                             }
                             // текущий активный пользователь
                             @Override

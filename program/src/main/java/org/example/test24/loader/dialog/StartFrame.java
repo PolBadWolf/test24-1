@@ -232,7 +232,7 @@ public class StartFrame {
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
         pusherSelectComboBox2Table = new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers, null);
-        userSelectComboBox2Table = new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers, null);
+        userSelectComboBox2Table = new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers, "a");
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -256,6 +256,7 @@ public class StartFrame {
         } else { onInputComponents();
         }
         loadAndSetBeginParameters2();
+        userSelectComboBox2Table.setLock(false);
         // ********************
         /*try {
             Date date = new Date();
@@ -634,6 +635,7 @@ public class StartFrame {
         // отключение управления
         saveEnableComponentsStartFrame.save();
         saveEnableComponentsStartFrame.offline();
+        userSelectComboBox2Table.setLock(true);
         new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
                 new TuningFrame(new TuningFrame.CallBack() {
@@ -642,6 +644,8 @@ public class StartFrame {
                         saveEnableComponentsStartFrame.restore();
                         loadAndSetBeginParameters();
                         loadAndSetBeginParameters2();
+                        userSelectComboBox2Table.setLock(false);
+                        frame.requestFocus();
                     }
                 });
             });
@@ -662,6 +666,7 @@ public class StartFrame {
                                     // чтение списка пользователей
                                     try {
                                         listUsers = connBD.getListUsers(true);
+                                        userSelectComboBox2Table = new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers, "a");
                                     } catch (Exception e) {
                                         myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
                                         listUsers = new User[0];

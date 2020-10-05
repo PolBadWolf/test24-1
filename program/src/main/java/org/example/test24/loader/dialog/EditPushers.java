@@ -12,9 +12,6 @@ import org.example.test24.lib.swing.SelectComboBox2Table;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -88,7 +85,7 @@ public class EditPushers {
                     null
             );
             typePusherSelectComboBox2Table = new SelectComboBox2Table<TypePusher>(comboBoxTypePushers, tableFindTypePushers, listTypePushers, null);
-            typePusherSelectComboBox2Table.setiKeep(true);
+//            typePusherSelectComboBox2Table.setiKeep(true);
             callComboBoxTypePushers(null);
         } catch (BaseDataException e) {
             e.printStackTrace();
