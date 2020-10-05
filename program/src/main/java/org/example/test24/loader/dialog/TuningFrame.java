@@ -202,7 +202,7 @@ class TuningFrame {
         setComponentBaseData(parametersSql);
         //textTypeBdStatus.setText(parametersSql.getTypeBaseDate().toString());
 //        // список БД
-        try { MyUtil.<String>loadToComboBox(listBaseBD, comboBoxListBd, parametersSql.getDataBase()); } catch (Exception e) {
+        try { MyUtil.<String>loadToComboBox(listBaseBD, comboBoxListBd, false, parametersSql.getDataBase()); } catch (Exception e) {
             myLog.log(Level.WARNING, "начальная инициализация компонентов", e);
         }
 //        //
@@ -841,6 +841,7 @@ class TuningFrame {
                                     // здесь перезагрузка списка пользователей (новые данные)
                                 }
                                 saveEnableComponents.restore();
+                                frameTuning.requestFocus();
                             }
                             // текущий активный пользователь
                             @Override
@@ -963,6 +964,7 @@ class TuningFrame {
             try { MyUtil.<String>loadToComboBox(
                     conn.getListBase(),
                     comboBoxListBd,
+                    false,
                     parametersSql.getDataBase()
             ); } catch (Exception e) {
                 myLog.log(Level.WARNING, "нажатие кнопки тест", e);

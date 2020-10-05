@@ -42,7 +42,7 @@ class BaseDataParent implements BaseData {
     @Override
     public User[] getListUsers(boolean actual) throws BaseDataException {
         if (connection == null) throw new BaseDataException("отсутствует соединение (connection == null)", Status.CONNECT_NO_CONNECTION);
-        boolean flClosed = false;
+        boolean flClosed;
         try {
             flClosed = connection.isClosed();
         } catch (SQLException e) {
@@ -1008,7 +1008,7 @@ class BaseDataParent implements BaseData {
                     }
                 }
             } catch (Exception e) { }
-            if (list.size() == 0) { throw new SQLException("ошибка получения списка типов толкателей"); }
+            //if (list.size() == 0) { throw new SQLException("ошибка получения списка типов толкателей"); }
             connection.commit();
         } catch (SQLException e) {
             throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);

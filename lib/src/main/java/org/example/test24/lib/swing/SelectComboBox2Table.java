@@ -13,28 +13,34 @@ import java.util.List;
 
 public class SelectComboBox2Table<T> {
     private final JTable table;
+    private final JComboBox<T> comboBox;
     private final List<T> cs;
     //
-    private boolean iKeep;
+    //private boolean iKeep;
     private boolean comboLockSelect;
     private boolean comboLockListener;
     private String textFilter;
     private List<BoundExtractedResult<T>> resultList;
     private T singleT;
+    private final String lostName;
+    private boolean lock = true;
     //
     private final ItemListener[] comboBoxItemListeners;
 
-    public SelectComboBox2Table(JComboBox<T> comboBox, JTable table, T[] cs) {
+    public SelectComboBox2Table(JComboBox<T> comboBox, JTable table, T[] cs, String lostName) {
+        this.comboBox = comboBox;
         this.table = table;
         this.cs = Arrays.asList(cs);
+        this.lostName = lostName;
         //
-        iKeep = false;
+        //iKeep = false;
         textFilter = "";
         resultList= new ArrayList<>();
         ((PlainDocument) ((JTextComponent) comboBox.getEditor().getEditorComponent()).getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
             public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
                 super.remove(fb, offset, length);
+                if (lock) return;
                 textFilter = textFilter.substring(0, offset);
                 comboBoxFilterDo();
             }
@@ -42,6 +48,7 @@ public class SelectComboBox2Table<T> {
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
                 super.replace(fb, offset, length, text, attrs);
+                if (lock) return;
                 textFilter = textFilter.substring(0, offset) + text;
                 comboBoxFilterDo();
             }
@@ -49,17 +56,30 @@ public class SelectComboBox2Table<T> {
         comboBoxItemListeners = comboBox.getItemListeners();
         for (ItemListener il : comboBoxItemListeners) comboBox.removeItemListener(il);
         comboBox.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) return;
+            //if (e.getStateChange() == ItemEvent.DESELECTED) return;
             if (comboLockSelect) return;
             comboLockSelect = true;
-            Object o = resultList.get(0).getReferent();
-            comboBox.setSelectedItem(o);
+            String getSel;
+            try {
+                getSel = (String) comboBox.getSelectedItem();
+                if (getSel.equals(lostName)) {
+                    table.clearSelection();
+                    table.setVisible(false);
+                    comboLockSelect = false;
+                    return;
+                }
+            } catch (Exception exception) {
+            }
+            if (resultList.size() > 0) {
+                Object o = resultList.get(0).getReferent();
+                comboBox.setSelectedItem(o);
+            }
             table.clearSelection();
             table.setVisible(false);
             comboLockSelect = false;
         });
         comboBox.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) return;
+            //if (e.getStateChange() == ItemEvent.SELECTED) return;
             if (comboLockSelect) return;
             if (comboLockListener) return;
             comboLockListener = true;
@@ -111,12 +131,31 @@ public class SelectComboBox2Table<T> {
         });
     }
     private void comboBoxFilterDo() {
-        if (!iKeep) {
-            iKeep = true;
-            return;
-        }
+//        if (!iKeep) {
+//            iKeep = true;
+//            return;
+//        }
         if (!table.isVisible()) table.setVisible(true);
         table.updateUI();
+    }
+
+//    public void setiKeep(boolean iKeep) {
+//        this.iKeep = iKeep;
+//    }
+
+    public T getResultFist() {
+        if (resultList == null || resultList.size() == 0) return null;
+        return resultList.get(0).getReferent();
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
+        resultList = FuzzySearch.extractTop(
+                textFilter,
+                this.cs,
+                Object::toString,
+                7
+        );
     }
 }
 
