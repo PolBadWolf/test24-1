@@ -25,12 +25,14 @@ public class SelectComboBox2Table<T> {
     private List<BoundExtractedResult<T>> resultList;
     private T singleT;
     private String lostLogin;
+    private CallBack callBack;
     //
     private final ItemListener[] comboBoxItemListeners;
 
-    public SelectComboBox2Table(JComboBox<T> comboBox, JTable table, T[] cs) {
+    public SelectComboBox2Table(JComboBox<T> comboBox, JTable table, T[] cs, CallBack callBack) {
         this.table = table;
         this.cs = Arrays.asList(cs);
+        this.callBack = callBack;
         //
         iKeep = false;
         textFilter = "";

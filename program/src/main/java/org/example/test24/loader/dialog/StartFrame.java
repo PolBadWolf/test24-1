@@ -231,8 +231,8 @@ public class StartFrame {
         });
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
-        pusherSelectComboBox2Table = new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers);
-        userSelectComboBox2Table = new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers);
+        pusherSelectComboBox2Table = new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers, null);
+        userSelectComboBox2Table = new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers, null);
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {

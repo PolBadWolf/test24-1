@@ -87,7 +87,7 @@ public class EditPushers {
                     true,
                     null
             );
-            typePusherSelectComboBox2Table = new SelectComboBox2Table<TypePusher>(comboBoxTypePushers, tableFindTypePushers, listTypePushers);
+            typePusherSelectComboBox2Table = new SelectComboBox2Table<TypePusher>(comboBoxTypePushers, tableFindTypePushers, listTypePushers, null);
             typePusherSelectComboBox2Table.setiKeep(true);
             callComboBoxTypePushers(null);
         } catch (BaseDataException e) {
