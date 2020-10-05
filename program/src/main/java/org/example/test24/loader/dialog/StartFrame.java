@@ -1,22 +1,29 @@
 package org.example.test24.loader.dialog;
 
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+import me.xdrop.fuzzywuzzy.model.BoundExtractedResult;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
 import org.example.test24.bd.usertypes.Pusher;
 import org.example.test24.bd.usertypes.User;
-import org.example.test24.lib.swing.CreateComponents;
-import org.example.test24.lib.swing.MyUtil;
-import org.example.test24.lib.swing.MySwingUtil;
-import org.example.test24.lib.swing.SaveEnableComponents;
+import org.example.test24.lib.swing.*;
 
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
 
 public class StartFrame {
+    static StartFrame startFrame;
     public interface CallBack {
 
     }
@@ -45,6 +52,8 @@ public class StartFrame {
     private JButton buttonEditPushers;
     //
     private TuningFrame tuningFrame;
+    private JTable tableFindPushers;
+    private JTable tableFindUsers;
 
     // ===============================================
     //             флаги
@@ -72,19 +81,18 @@ public class StartFrame {
 
 
     public static StartFrame main(boolean statMainWork, CallBack callBack) throws Exception {
-        final StartFrame[] frame = new StartFrame[1];
         try {
             SwingUtilities.invokeAndWait(()->{
-                frame[0] = new StartFrame(statMainWork, callBack);
+                startFrame = new StartFrame(statMainWork, callBack);
                 new Thread(()->{
-                    frame[0].start();
+                    startFrame.start();
                 }, "StartFrame start").start();
             });
         } catch (InterruptedException e) {
             myLog.log(Level.SEVERE, "ошибка создания startFrame", e);
             throw new Exception(e);
         }
-        return frame[0];
+        return startFrame;
     }
 
     protected StartFrame(boolean statMainWork, CallBack callBack) {
@@ -230,6 +238,8 @@ public class StartFrame {
         });
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
+        new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers);
+        new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers);
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -272,7 +282,7 @@ public class StartFrame {
         } catch (BaseDataException e) {
             e.printStackTrace();
         }*/
-        new Thread(()->{
+        /*new Thread(()->{
             SwingUtilities.invokeLater(()->{
                 new EditTypePushers(
                         new EditTypePushers.CallBack() {
@@ -284,7 +294,21 @@ public class StartFrame {
                         connBD
                 );
             });
-        }).start();
+        }).start();*/
+        /*new Thread(()->{
+            SwingUtilities.invokeLater(()->{
+                new EditPushers(
+                        new EditPushers.CallBack() {
+                            @Override
+                            public long getCurrentId_loggerUser() {
+                                return 0;
+                            }
+                        },
+                        connBD,
+                        0L
+                );
+            });
+        }).start();*/
         // ********************
     }
     private void loadAndSetBeginParameters() {
@@ -343,13 +367,45 @@ public class StartFrame {
             frame.add(jLabel3);
         } // подписи, надписи
         {
-            comboBoxUsers = CreateComponents.<User>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 190, 350, 24, true, this::callSelectUser, false, true);
-            comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 190, 270, 350, 24, true, null, false, true);
+            comboBoxUsers = CreateComponents.<User>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
+                    190, 190, 350, 24, true,
+                    null,
+                    this::callSelectUser,
+                    false, true);
+            comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
+                    190, 270, 350, 24, true,
+                    null,
+                    null,
+                    false, true);
+            tableFindPushers = CreateComponents.getTable(200,
+                    null,
+                    new CreateComponents.ModelTableNameWidth[]{
+                            new CreateComponents.ModelTableNameWidth("Толкатель", -1)
+                    },
+                    null,
+                    null,
+                    false,
+                    true
+            );
+            tableFindUsers = CreateComponents.getTable(200,
+                    null,
+                    null,
+                    null, //controlTableFindPusher.getFilterTable(),
+                    null, //controlTableFindPusher::callTableFindPushers,
+                    false,
+                    true
+            );
+
+            //
+            tableFindPushers.setBounds(190, 300, 350, 30);
+            tableFindUsers.setBounds(190, 220, 350, 30);
+
             frame.add(comboBoxUsers);
             frame.add(comboBoxPusher);
+            frame.add(tableFindPushers);
+            frame.add(tableFindUsers);
+            tableFindPushers.updateUI();
         } // селекторы
-        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 230,120, 24, null, null, false, true);
-        frame.add(fieldPassword);
         {
             buttonEnter = CreateComponents.getButton("проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 230, 90, 24, this::callEnter, false, true);
             buttonWork = CreateComponents.getButton("работа", new Font("Times New Roman", Font.PLAIN, 14), 200, 330, 90, 24, this::callReturnToWork, false, true);
@@ -361,7 +417,7 @@ public class StartFrame {
             frame.add(buttonSetPassword);
         } // кнопки
         {
-            jPanel1 = CreateComponents.getPanel(null, "редактирование", 380, 310, 160, 90,true, true );
+            jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 380, 310, 160, 90,true, true );
             // кнопка редактирования пользователей
             // кнопка редактирования толкателей
             buttonEditUsers = CreateComponents.getButton("Пользователей", new Font("Times New Roman", Font.PLAIN, 14), 20, 20, 120, 24, this::callEditUsers, true, true);
@@ -372,6 +428,8 @@ public class StartFrame {
             frame.add(jPanel1);
             jPanel1.setVisible(false);
         } // панель редактирование
+        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 230,120, 24, null, null, false, true);
+        frame.add(fieldPassword);
 
         frame.pack();
     }
@@ -537,7 +595,7 @@ public class StartFrame {
     }
     // обработка выбора пользователя
     private void callSelectUser(ItemEvent e) {
-        if (e.getStateChange() == 1) return;
+        if (e.getStateChange() == ItemEvent.SELECTED) return;
         // разрешение ввода пароля
         fieldPassword.setText("");
         fieldPassword.setEnabled(true);
@@ -650,7 +708,23 @@ public class StartFrame {
     }
     // обработка редактирование толкателей
     private void callEditPushers(ActionEvent e) {
-        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
+        //myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
+        saveEnableComponentsStartFrame.save();
+        saveEnableComponentsStartFrame.offline();
+        new Thread(() -> {
+            SwingUtilities.invokeLater(() -> {
+                new EditPushers(
+                        new EditPushers.CallBack() {
+                            @Override
+                            public long getCurrentId_loggerUser() {
+                                return 0;
+                            }
+                        },
+                        connBD,
+                        ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
+                );
+            });
+        }, "create edit pushers").start();
     }
     // ===========================================================================
 }

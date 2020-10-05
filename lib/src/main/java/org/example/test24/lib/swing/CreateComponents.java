@@ -4,11 +4,12 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import javax.swing.text.DocumentFilter;
-import javax.swing.text.PlainDocument;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
+import java.util.Vector;
+import java.util.function.Consumer;
 
 public class CreateComponents {
     // ---
@@ -21,10 +22,12 @@ public class CreateComponents {
         label.setEnabled(enable);
         return label;
     }
+
     // ---
     final public static int TEXTFIELD = 0;
     final public static int FORMATTEDTEXTFIELD = 1;
     final public static int PASSWORDFIELD = 2;
+
     public static JTextField getTextField(int typeField, Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
         JTextField text;
         switch (typeField) {
@@ -64,18 +67,22 @@ public class CreateComponents {
         return button;
     }
     // ---
-    public static JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, ListSelectionListener listener, boolean visible, boolean enable) {
-        JTable table = new JTable();
+    public static JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, DocumentFilter filter, ListSelectionListener listener, boolean visible, boolean enable) {
+        JTable table = new MyJTable();
         int autoN = 0;
-        String[] titles = new String[nameWidths.length];
-        // остаточная ширина
-        for (int i = 0; i < nameWidths.length; i++) {
-            titles[i] = nameWidths[i].title;
-            if (nameWidths[i].width < 0) {
-                autoN++;
-                continue;
+        String[] titles;
+        if (nameWidths == null) titles = new String[0];
+        else {
+            titles = new String[nameWidths.length];
+            // остаточная ширина
+            for (int i = 0; i < nameWidths.length; i++) {
+                titles[i] = nameWidths[i].title;
+                if (nameWidths[i].width < 0) {
+                    autoN++;
+                    continue;
+                }
+                widthLast -= nameWidths[i].width;
             }
-            widthLast -= nameWidths[i].width;
         }
         // авто ширина
         int autoWidth;
@@ -84,22 +91,23 @@ public class CreateComponents {
             autoWidth = widthLast / autoN;
         }
         //
-        ((MyTableModel) tableModel).setTitles(titles);
-        table.setModel(tableModel);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        //
-        int w_i = 0;
-        int w;
-        TableColumnModel tableColumnModel = table.getColumnModel();
-        for (int i = 0; i < nameWidths.length; i++) {
-            if (nameWidths[i].width < 0) w = autoWidth;
-            else w = nameWidths[i].width;
-            tableColumnModel.getColumn(i).setPreferredWidth(w);
-            w_i += w;
+        if (tableModel != null) {
+            ((MyTableModel) tableModel).setTitles(titles);
+            table.setModel(tableModel);
+            table.getTableHeader().setReorderingAllowed(false);
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            //
+            int w;
+            TableColumnModel tableColumnModel = table.getColumnModel();
+            for (int i = 0; i < nameWidths.length; i++) {
+                if (nameWidths[i].width < 0) w = autoWidth;
+                else w = nameWidths[i].width;
+                tableColumnModel.getColumn(i).setPreferredWidth(w);
+            }
         }
         //
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        if (filter != null) ((PlainDocument) table.getCellEditor()).setDocumentFilter(filter);
         if (listener != null) table.getSelectionModel().addListSelectionListener(listener);
         table.setVisible(visible);
         table.setEnabled(enable);
@@ -124,21 +132,29 @@ public class CreateComponents {
         return scrollPane;
     }
     // ---
-    public static <T> JComboBox<T> getComboBox(Font font, int x, int y, int width, int height, boolean editable, ItemListener listener, boolean visible, boolean enable) {
+    public static <T> JComboBox<T> getComboBox(Font font, int x, int y, int width, int height, boolean editable, DocumentFilter filter, ItemListener listener, boolean visible, boolean enable) {
         JComboBox<T> comboBox = new JComboBox<>();
         comboBox.setFont(font);
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(editable);
+        if (filter != null)
+            ((PlainDocument) ((JTextComponent) comboBox.getEditor().getEditorComponent()).getDocument()).setDocumentFilter(filter);
         if (listener != null) comboBox.addItemListener(listener);
         comboBox.setVisible(visible);
         comboBox.setEnabled(enable);
         return comboBox;
     }
     // ---
-    public static JPanel getPanel(LayoutManager layoutManager, String titledBorder, int x, int y, int width, int height, boolean visible, boolean enable) {
+    public static JPanel getPanel(LayoutManager layoutManager, Font font, String titledBorder, int x, int y, int width, int height, boolean visible, boolean enable) {
         JPanel panel = new JPanel();
         panel.setLayout(layoutManager);
-        panel.setBorder(BorderFactory.createTitledBorder(titledBorder));
+        panel.setBorder(BorderFactory.createTitledBorder(
+                javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)),
+                titledBorder,
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+                javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                font
+        ));
         panel.setBounds(x, y, width, height);
         panel.setVisible(visible);
         panel.setEnabled(enable);
