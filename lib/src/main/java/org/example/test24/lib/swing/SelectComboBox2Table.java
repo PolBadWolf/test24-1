@@ -13,6 +13,7 @@ import java.util.List;
 
 public class SelectComboBox2Table<T> {
     private final JTable table;
+    private final JComboBox<T> comboBox;
     private final List<T> cs;
     //
     //private boolean iKeep;
@@ -27,6 +28,7 @@ public class SelectComboBox2Table<T> {
     private final ItemListener[] comboBoxItemListeners;
 
     public SelectComboBox2Table(JComboBox<T> comboBox, JTable table, T[] cs, String lostName) {
+        this.comboBox = comboBox;
         this.table = table;
         this.cs = Arrays.asList(cs);
         this.lostName = lostName;
@@ -54,7 +56,7 @@ public class SelectComboBox2Table<T> {
         comboBoxItemListeners = comboBox.getItemListeners();
         for (ItemListener il : comboBoxItemListeners) comboBox.removeItemListener(il);
         comboBox.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.DESELECTED) return;
+            //if (e.getStateChange() == ItemEvent.DESELECTED) return;
             if (comboLockSelect) return;
             comboLockSelect = true;
             String getSel;
@@ -71,13 +73,13 @@ public class SelectComboBox2Table<T> {
             if (resultList.size() > 0) {
                 Object o = resultList.get(0).getReferent();
                 comboBox.setSelectedItem(o);
-                table.clearSelection();
-                table.setVisible(false);
             }
+            table.clearSelection();
+            table.setVisible(false);
             comboLockSelect = false;
         });
         comboBox.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.DESELECTED) return;
+            //if (e.getStateChange() == ItemEvent.SELECTED) return;
             if (comboLockSelect) return;
             if (comboLockListener) return;
             comboLockListener = true;
@@ -148,6 +150,12 @@ public class SelectComboBox2Table<T> {
 
     public void setLock(boolean lock) {
         this.lock = lock;
+        resultList = FuzzySearch.extractTop(
+                textFilter,
+                this.cs,
+                Object::toString,
+                7
+        );
     }
 }
 

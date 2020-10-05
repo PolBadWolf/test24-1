@@ -100,8 +100,8 @@ public class EditPushers {
                     null
             );
             typePusherSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxTypePushers, tableFindTypePushers, listTypePushers, null);
-//            typePusherSelectComboBox2Table.setiKeep(true);
             callComboBoxTypePushers(null);
+            typePusherSelectComboBox2Table.setLock(false);
         } catch (BaseDataException e) {
             e.printStackTrace();
         } catch (Exception exception) {
@@ -259,11 +259,12 @@ public class EditPushers {
     }
     // -----------
     private void callComboBoxTypePushers(ItemEvent itemEvent) {
-        if (itemEvent != null) {
-            if (itemEvent.getStateChange() == ItemEvent.DESELECTED) return;
-        }
+        /*if (itemEvent != null) {
+            if (itemEvent.getStateChange() == ItemEvent.SELECTED) return;
+        }*/
         try {
-            TypePusher tp = typePusherSelectComboBox2Table.getResultFist();
+            //TypePusher tp = typePusherSelectComboBox2Table.getResultFist();
+            TypePusher tp = (TypePusher) comboBoxTypePushers.getSelectedItem();
             textForce.setText(String.valueOf(tp.loggerTypePusher.forceNominal));
             textMove.setText(String.valueOf(tp.loggerTypePusher.moveNominal));
             textUnclenching.setText(String.valueOf(tp.loggerTypePusher.unclenchingTime));
