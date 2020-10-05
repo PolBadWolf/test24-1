@@ -331,11 +331,11 @@ public class StartFrame {
     }
     private void loadAndSetBeginParameters2() {
         // загрузка пользователей в комбо бокс
-        try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
+        try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, false, null);
         } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
         }
         // загрузка толкателей в комбо бокс
-        try { MyUtil.loadToComboBox(listPushers, comboBoxPusher, null);
+        try { MyUtil.loadToComboBox(listPushers, comboBoxPusher, false, null);
         } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }
         if (statMainWork) {
@@ -683,7 +683,7 @@ public class StartFrame {
                                         return;
                                     }
                                     // загрузить обновленный список
-                                    try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, null);
+                                    try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, false, null);
                                     } catch (Exception e) {
                                         myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
                                         MySwingUtil.showMessage(
@@ -718,6 +718,7 @@ public class StartFrame {
                             @Override
                             public void messageCloseEditUsers() {
                                 saveEnableComponentsStartFrame.restore();
+                                frame.requestFocus();
                             }
                             @Override
                             public long getCurrentId_loggerUser() {

@@ -49,17 +49,19 @@ public class SelectComboBox2Table<T> {
         comboBoxItemListeners = comboBox.getItemListeners();
         for (ItemListener il : comboBoxItemListeners) comboBox.removeItemListener(il);
         comboBox.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) return;
+            if (e.getStateChange() == ItemEvent.DESELECTED) return;
             if (comboLockSelect) return;
             comboLockSelect = true;
-            Object o = resultList.get(0).getReferent();
-            comboBox.setSelectedItem(o);
-            table.clearSelection();
-            table.setVisible(false);
+            if (resultList.size() > 0) {
+                Object o = resultList.get(0).getReferent();
+                comboBox.setSelectedItem(o);
+                table.clearSelection();
+                table.setVisible(false);
+            }
             comboLockSelect = false;
         });
         comboBox.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) return;
+            if (e.getStateChange() == ItemEvent.DESELECTED) return;
             if (comboLockSelect) return;
             if (comboLockListener) return;
             comboLockListener = true;
@@ -121,6 +123,11 @@ public class SelectComboBox2Table<T> {
 
     public void setiKeep(boolean iKeep) {
         this.iKeep = iKeep;
+    }
+
+    public T getResultFist() {
+        if (resultList == null || resultList.size() == 0) return null;
+        return resultList.get(0).getReferent();
     }
 }
 
