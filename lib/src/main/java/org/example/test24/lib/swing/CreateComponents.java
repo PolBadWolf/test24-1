@@ -87,17 +87,19 @@ public class CreateComponents {
             autoWidth = widthLast / autoN;
         }
         //
-        ((MyTableModel) tableModel).setTitles(titles);
-        table.setModel(tableModel);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        //
-        int w;
-        TableColumnModel tableColumnModel = table.getColumnModel();
-        for (int i = 0; i < nameWidths.length; i++) {
-            if (nameWidths[i].width < 0) w = autoWidth;
-            else w = nameWidths[i].width;
-            tableColumnModel.getColumn(i).setPreferredWidth(w);
+        if (tableModel != null) {
+            ((MyTableModel) tableModel).setTitles(titles);
+            table.setModel(tableModel);
+            table.getTableHeader().setReorderingAllowed(false);
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            //
+            int w;
+            TableColumnModel tableColumnModel = table.getColumnModel();
+            for (int i = 0; i < nameWidths.length; i++) {
+                if (nameWidths[i].width < 0) w = autoWidth;
+                else w = nameWidths[i].width;
+                tableColumnModel.getColumn(i).setPreferredWidth(w);
+            }
         }
         //
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

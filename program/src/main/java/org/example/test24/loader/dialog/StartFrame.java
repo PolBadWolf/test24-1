@@ -237,6 +237,7 @@ public class StartFrame {
         });
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
+        new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers);
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -368,12 +369,12 @@ public class StartFrame {
                     190, 190, 350, 24, true, null, this::callSelectUser, false, true);
             comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
                     190, 270, 350, 24, true,
-                    PushersControlFind.getControlFindPusher().getComboBoxFilter(),
-                    PushersControlFind.getControlFindPusher().getComboBoxListener(),
+                    null, // PushersControlFind.getControlFindPusher().getComboBoxFilter(),
+                    null, // PushersControlFind.getControlFindPusher().getComboBoxListener(),
                     false, true);
             tableFindPushers = CreateComponents.getTable(200,
                     //ControlTableFindPusher.getControl(this).getTableModel(),
-                    PushersControlFind.getControlFindPusher().getTableModel(),
+                    null, //PushersControlFind.getControlFindPusher().getTableModel(),
                     new CreateComponents.ModelTableNameWidth[]{
                             new CreateComponents.ModelTableNameWidth("Толкатель", -1)
                     },
@@ -382,11 +383,12 @@ public class StartFrame {
                     false,
                     true
             );
+            //new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers); // список еще не готов
             //((MyJTable) tableFindPushers).setCallUpdate(controlTableFindPusher::updateUI);
-            ((MyJTable) tableFindPushers).setCallUpdate(
+            /*((MyJTable) tableFindPushers).setCallUpdate(
                     //ControlTableFindPusher.getControl(this).getTableUpdateUI(tableFindPushers)
                     PushersControlFind.getControlFindPusher().getTableUpdateUI(tableFindPushers)
-            );
+            );*/
             tableFindPushers.setBounds(190, 300, 350, 300);
 
             frame.add(comboBoxUsers);
