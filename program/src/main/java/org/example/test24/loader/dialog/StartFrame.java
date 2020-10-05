@@ -77,9 +77,7 @@ public class StartFrame {
         try {
             SwingUtilities.invokeAndWait(()->{
                 startFrame = new StartFrame(statMainWork, callBack);
-                new Thread(()->{
-                    startFrame.start();
-                }, "StartFrame start").start();
+                new Thread(()-> startFrame.start(), "StartFrame start").start();
             });
         } catch (InterruptedException e) {
             myLog.log(Level.SEVERE, "ошибка создания startFrame", e);
@@ -231,8 +229,8 @@ public class StartFrame {
         });
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
-        pusherSelectComboBox2Table = new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers, null);
-        userSelectComboBox2Table = new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers, "a");
+        pusherSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxPusher, tableFindPushers, listPushers, null);
+        userSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxUsers, tableFindUsers, listUsers, "a");
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -361,12 +359,12 @@ public class StartFrame {
             frame.add(jLabel3);
         } // подписи, надписи
         {
-            comboBoxUsers = CreateComponents.<User>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
+            comboBoxUsers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
                     190, 190, 350, 24, true,
                     null,
                     this::callSelectUser,
                     false, true);
-            comboBoxPusher = CreateComponents.<Pusher>getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
+            comboBoxPusher = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
                     190, 270, 350, 24, true,
                     null,
                     null,
@@ -636,98 +634,85 @@ public class StartFrame {
         saveEnableComponentsStartFrame.save();
         saveEnableComponentsStartFrame.offline();
         userSelectComboBox2Table.setLock(true);
-        new Thread(() -> {
-            SwingUtilities.invokeLater(() -> {
-                new TuningFrame(new TuningFrame.CallBack() {
-                    @Override
-                    public void messageCloseTuning(boolean newData) {
-                        saveEnableComponentsStartFrame.restore();
-                        loadAndSetBeginParameters();
-                        loadAndSetBeginParameters2();
-                        userSelectComboBox2Table.setLock(false);
-                        frame.requestFocus();
-                    }
-                });
-            });
-        }, "create tuning").start();
+        new Thread(() -> SwingUtilities.invokeLater(() -> new TuningFrame(newData -> {
+            saveEnableComponentsStartFrame.restore();
+            loadAndSetBeginParameters();
+            loadAndSetBeginParameters2();
+            userSelectComboBox2Table.setLock(false);
+            frame.requestFocus();
+        })), "create tuning").start();
     }
     // обработка редактирование пользователей
     private void callEditUsers(ActionEvent e) {
         saveEnableComponentsStartFrame.save();
         saveEnableComponentsStartFrame.offline();
-        new Thread(() -> {
-            SwingUtilities.invokeLater(() -> {
-                new EditUsers(connBD,
-                        new EditUsers.CallBack() {
-                            @Override
-                            public void messageCloseEditUsers(boolean newData) {
-                                if (newData) {
-                                    // **** здесь перезагрузка списка пользователей
-                                    // чтение списка пользователей
-                                    try {
-                                        listUsers = connBD.getListUsers(true);
-                                        userSelectComboBox2Table = new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers, "a");
-                                    } catch (Exception e) {
-                                        myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
-                                        listUsers = new User[0];
-                                        MySwingUtil.showMessage(
-                                                frame,
-                                                "обновление списка пользователей",
-                                                "ошибка обновления - требуется вмешательство администратора",
-                                                60_000
-                                        );
-                                        saveEnableComponentsStartFrame.restore();
-                                        frame.requestFocus();
-                                        return;
-                                    }
-                                    // загрузить обновленный список
-                                    try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, false, null);
-                                    } catch (Exception e) {
-                                        myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
-                                        MySwingUtil.showMessage(
-                                                frame,
-                                                "обновление списка пользователей",
-                                                "ошибка обновления - требуется вмешательство администратора",
-                                                10_000
-                                        );
-                                    }
-                                }
+        new Thread(() -> SwingUtilities.invokeLater(() -> new EditUsers(connBD,
+                new EditUsers.CallBack() {
+                    @Override
+                    public void messageCloseEditUsers(boolean newData) {
+                        if (newData) {
+                            // **** здесь перезагрузка списка пользователей
+                            // чтение списка пользователей
+                            try {
+                                listUsers = connBD.getListUsers(true);
+                                userSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxUsers, tableFindUsers, listUsers, "a");
+                            } catch (Exception e) {
+                                myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
+                                listUsers = new User[0];
+                                MySwingUtil.showMessage(
+                                        frame,
+                                        "обновление списка пользователей",
+                                        "ошибка обновления - требуется вмешательство администратора",
+                                        60_000
+                                );
                                 saveEnableComponentsStartFrame.restore();
                                 frame.requestFocus();
+                                return;
                             }
+                            // загрузить обновленный список
+                            try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, false, null);
+                            } catch (Exception e) {
+                                myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
+                                MySwingUtil.showMessage(
+                                        frame,
+                                        "обновление списка пользователей",
+                                        "ошибка обновления - требуется вмешательство администратора",
+                                        10_000
+                                );
+                            }
+                        }
+                        saveEnableComponentsStartFrame.restore();
+                        frame.requestFocus();
+                    }
 
-                            @Override
-                            public User getCurrentUser() {
-                                return (User) comboBoxUsers.getSelectedItem();
-                            }
-                        });
-            });
-        }, "create edit users").start();
+                    @Override
+                    public User getCurrentUser() {
+                        return (User) comboBoxUsers.getSelectedItem();
+                    }
+                })), "create edit users").start();
     }
     // обработка редактирование толкателей
     private void callEditPushers(ActionEvent e) {
         //myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
         saveEnableComponentsStartFrame.save();
         saveEnableComponentsStartFrame.offline();
-        new Thread(() -> {
-            SwingUtilities.invokeLater(() -> {
-                new EditPushers(
-                        new EditPushers.CallBack() {
-                            @Override
-                            public void messageCloseEditUsers() {
-                                saveEnableComponentsStartFrame.restore();
-                                frame.requestFocus();
-                            }
-                            @Override
-                            public long getCurrentId_loggerUser() {
-                                return 0;
-                            }
-                        },
-                        connBD,
-                        ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
-                );
-            });
-        }, "create edit pushers").start();
+        pusherSelectComboBox2Table.setLock(true);
+        new Thread(() -> SwingUtilities.invokeLater(() -> new EditPushers(
+                new EditPushers.CallBack() {
+                    @Override
+                    public void messageCloseEditUsers() {
+                        saveEnableComponentsStartFrame.restore();
+                        frame.requestFocus();
+                        pusherSelectComboBox2Table.setLock(false);
+                    }
+                    @Override
+                    public long getCurrentId_loggerUser() {
+                        return 0;
+                    }
+                },
+                connBD,
+                ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
+        )), "create edit pushers").start();
     }
     // ===========================================================================
 }

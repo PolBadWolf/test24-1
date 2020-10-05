@@ -47,9 +47,9 @@ public class EditPushers {
     private JTextField textMove;
     private JTextField textUnclenching;
     // ***************************
-    private EditPushers.CallBack callBack;
-    private BaseData connBD;
-    private long currentId_loggerUserEdit;
+    private final EditPushers.CallBack callBack;
+    private final BaseData connBD;
+    private final long currentId_loggerUserEdit;
     // ***************************
     private JTable tableFindTypePushers;
     //
@@ -78,13 +78,13 @@ public class EditPushers {
             e.printStackTrace();
         }
         try {
-            MyUtil.<TypePusher>loadToComboBox(
+            MyUtil.loadToComboBox(
                     listTypePushers,
                     comboBoxTypePushers,
                     true,
                     null
             );
-            typePusherSelectComboBox2Table = new SelectComboBox2Table<TypePusher>(comboBoxTypePushers, tableFindTypePushers, listTypePushers, null);
+            typePusherSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxTypePushers, tableFindTypePushers, listTypePushers, null);
 //            typePusherSelectComboBox2Table.setiKeep(true);
             callComboBoxTypePushers(null);
         } catch (BaseDataException e) {
@@ -111,12 +111,12 @@ public class EditPushers {
         frame.setPreferredSize(new Dimension(640, 480));
         frame.setLayout(null);
         //
-        jLabel1 = CreateComponents.getjLabel("Регистрационный номер", new Font("Times New Roman", 0, 18), 200, 230, 210, 25, true, true);
-        textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 410, 230,200, 25, null, null, true, true);
-        buttonFilter = CreateComponents.getButton("Сброс Флтр.", new Font("Times New Roman", 0, 14), 30, 260, 120, 25, null, true, true);
-        buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", 0, 14), 30, 300, 120, 25, null, true, true);
-        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", 0, 14), 30, 340, 120, 25, null, true, true);
-        buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", 0, 14), 30, 380, 120, 25, this::callButtonAdd, true, true);
+        jLabel1 = CreateComponents.getjLabel("Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 200, 230, 210, 25, true, true);
+        textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 410, 230,200, 25, null, null, true, true);
+        buttonFilter = CreateComponents.getButton("Сброс Флтр.", new Font("Times New Roman", Font.PLAIN, 14), 30, 260, 120, 25, null, true, true);
+        buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 30, 300, 120, 25, null, true, true);
+        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 30, 340, 120, 25, null, true, true);
+        buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", Font.PLAIN, 14), 30, 380, 120, 25, this::callButtonAdd, true, true);
         // ---- таблица
         tablePushers = CreateComponents.getTable(
                 640 - 17,
@@ -185,11 +185,11 @@ public class EditPushers {
         frame.add(scrollPushers);
         //
         panelTypePushers = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "Параметры типа толкателя", 190, 260, 420, 170, true, true);
-        jLabel2 = CreateComponents.getjLabel("Тип толкателя", new Font("Times New Roman", 0, 18), 20, 28, 190, 25, true, true);
-        jLabel3 = CreateComponents.getjLabel("Усилие на штоке (кг)", new Font("Times New Roman", 0, 18), 20, 65, 190, 25, true, true);
-        jLabel4 = CreateComponents.getjLabel("Ход штока (мм)", new Font("Times New Roman", 0, 18), 20, 104, 190, 25, true, true);
-        jLabel5 = CreateComponents.getjLabel("Время разжатия (сек)", new Font("Times New Roman", 0, 18), 20, 138, 210, 25, true, true);
-        comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", 0, 14), 220, 28, 190, 25,
+        jLabel2 = CreateComponents.getjLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 20, 28, 190, 25, true, true);
+        jLabel3 = CreateComponents.getjLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 18), 20, 65, 190, 25, true, true);
+        jLabel4 = CreateComponents.getjLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 18), 20, 104, 190, 25, true, true);
+        jLabel5 = CreateComponents.getjLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 18), 20, 138, 210, 25, true, true);
+        comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 220, 28, 190, 25,
               true,
                 null,
                 this::callComboBoxTypePushers,
@@ -204,11 +204,11 @@ public class EditPushers {
         );
         tableFindTypePushers.setBounds(220, 55, 220, 300);
 
-        textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 220, 67, 170, 25,
+        textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 67, 170, 25,
                 null, null, true, true);
-        textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 220, 106, 170, 25,
+        textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 106, 170, 25,
                 null, null, true, true);
-        textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 14), 220, 140, 170, 25,
+        textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 140, 170, 25,
                 null, null, true, true);
         panelTypePushers.add(tableFindTypePushers);
         panelTypePushers.add(jLabel2);
