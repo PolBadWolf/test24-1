@@ -5,10 +5,7 @@ import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.Status;
 import org.example.test24.bd.usertypes.Pusher;
 import org.example.test24.bd.usertypes.TypePusher;
-import org.example.test24.lib.swing.CreateComponents;
-import org.example.test24.lib.swing.MyTableModel;
-import org.example.test24.lib.swing.MyUtil;
-import org.example.test24.lib.swing.SelectComboBox2Table;
+import org.example.test24.lib.swing.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -30,7 +27,7 @@ public class EditPushers {
     // ***************************
     private JFrame frame;
     private JLabel jLabel1;
-    private JButton buttonFilter;
+    private JButton buttonEditTypePushers;
     private JButton buttonDelete;
     private JButton buttonEdit;
     private JButton buttonAdd;
@@ -46,16 +43,17 @@ public class EditPushers {
     private JTextField textForce;
     private JTextField textMove;
     private JTextField textUnclenching;
+    private JTable tableFindTypePushers;
     // ***************************
     private final EditPushers.CallBack callBack;
     private final BaseData connBD;
     private final long currentId_loggerUserEdit;
     // ***************************
-    private JTable tableFindTypePushers;
     //
     private Pusher[] listPushers;
     private TypePusher[] listTypePushers;
     private SelectComboBox2Table<TypePusher> typePusherSelectComboBox2Table;
+    private SaveEnableComponents saveEnableComponents;
 
     public EditPushers(EditPushers.CallBack callBack, BaseData connBD, long currentId_loggerUserEdit) {
         this.callBack = callBack;
@@ -71,6 +69,23 @@ public class EditPushers {
         }
         // инициация компонентов
         initComponents();
+        //
+        saveEnableComponents = new SaveEnableComponents(new Component[]{
+                frame,
+                buttonEditTypePushers,
+                buttonDelete,
+                buttonEdit,
+                buttonAdd,
+                textRegNumber,
+                scrollPushers,
+                tablePushers,
+                comboBoxTypePushers,
+                panelTypePushers,
+                textMove,
+                textForce,
+                textUnclenching,
+                tableFindTypePushers
+        });
         // загрузка типов компонентов
         try {
             listTypePushers = connBD.getListTypePushers(true);
@@ -113,16 +128,13 @@ public class EditPushers {
         //
         jLabel1 = CreateComponents.getjLabel("Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 200, 230, 210, 25, true, true);
         textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 410, 230,200, 25, null, null, true, true);
-        buttonFilter = CreateComponents.getButton("Сброс Флтр.", new Font("Times New Roman", Font.PLAIN, 14), 30, 260, 120, 25, null, true, true);
-        buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 30, 300, 120, 25, null, true, true);
-        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 30, 340, 120, 25, null, true, true);
-        buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", Font.PLAIN, 14), 30, 380, 120, 25, this::callButtonAdd, true, true);
+        buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 30, 275, 120, 25, null, true, true);
+        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 30, 315, 120, 25, null, true, true);
+        buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", Font.PLAIN, 14), 30, 355, 120, 25, this::callButtonAdd, true, true);
+        buttonEditTypePushers = CreateComponents.getButton("Тип.Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 30, 395, 120, 25, this::callButtonEditTypePushers, true, true);
         // ---- таблица
         tablePushers = CreateComponents.getTable(
                 640 - 17,
-                /*new MyTableModel(
-                        new ControlTablePushers()
-                )*/
                 new MyTableModel() {
                     @Override
                     public int getRowCount() {
@@ -182,6 +194,7 @@ public class EditPushers {
         frame.add(buttonDelete);
         frame.add(buttonEdit);
         frame.add(buttonAdd);
+        frame.add(buttonEditTypePushers);
         frame.add(scrollPushers);
         //
         panelTypePushers = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "Параметры типа толкателя", 190, 260, 420, 170, true, true);
@@ -262,5 +275,24 @@ public class EditPushers {
     }
     private void callButtonAdd(ActionEvent actionEvent) {
 
+    }
+    private void callButtonEditTypePushers(ActionEvent actionEvent) {
+        saveEnableComponents.save();
+        saveEnableComponents.offline();
+        new Thread(()->{
+            SwingUtilities.invokeLater(()->{
+                new EditTypePushers(
+                        new EditTypePushers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers(boolean newData) {
+                                saveEnableComponents.restore();
+                                frame.requestFocus();
+                            }
+                        },
+                        connBD,
+                        currentId_loggerUserEdit
+                );
+            });
+        }, "create type pushers").start();
     }
 }

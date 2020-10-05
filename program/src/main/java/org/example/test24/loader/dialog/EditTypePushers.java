@@ -23,7 +23,7 @@ import static org.example.test24.lib.MyLogger.myLog;
 
 public class EditTypePushers {
     interface CallBack {
-        long getCurrentId_loggerUser();
+        void messageCloseEditUsers(boolean newData);
     }
 
     // ***********************************************************************
@@ -47,18 +47,19 @@ public class EditTypePushers {
     private CallBack callBack;
     private BaseData connBD;
     // список тип толкателей
-    private TypePusher[] typePushers;
+    private TypePusher[] listTypePushers;
     private TypePusher editTypePusher = null;
     private long currentId_loggerUserEdit;
     SaveEnableComponents saveEnableComponents;
 
-    public EditTypePushers(CallBack callBack, BaseData connBD) {
+    public EditTypePushers(CallBack callBack, BaseData connBD, long currentId_loggerUserEdit) {
         this.callBack = callBack;
         this.connBD = connBD;
-        currentId_loggerUserEdit = callBack.getCurrentId_loggerUser();
+        this.currentId_loggerUserEdit = currentId_loggerUserEdit;
+//        currentId_loggerUserEdit = callBack.getCurrentId_loggerUser();
         // загрузка списка типа толкателей
         try {
-            typePushers = getListTypePushers();
+            listTypePushers = getListTypePushers();
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "ошибка получения списка типа толкателей", e);
             // в этом месте выход
@@ -119,11 +120,44 @@ public class EditTypePushers {
         buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", 0, 14), 470, 385, 120, 25, this::buttonAddAction, true, true);
         frame.add(buttonAdd);
         // ---- таблица
-        /*tableTypePushers = CreateComponents.getTable(
+        tableTypePushers = CreateComponents.getTable(
                 640 - 17,
-                new MyTableModel(
-                        new ControlTableTypePushers()
-                ),
+                new MyTableModel() {
+                    @Override
+                    public int getRowCount() {
+                        if (listTypePushers == null) return 0;
+                        return listTypePushers.length;
+                    }
+
+                    @Override
+                    public int getColumnCount() {
+                        return 4;
+                    }
+
+                    @Override
+                    public Object getValueAt(int rowIndex, int columnIndex) {
+                        if (rowIndex < 0 || columnIndex < 0) return "";
+                        TypePusher typePusher = listTypePushers[rowIndex];
+                        String text;
+                        switch (columnIndex) {
+                            case 0:
+                                text = typePusher.loggerTypePusher.nameType;
+                                break;
+                            case 1:
+                                text = String.valueOf(typePusher.loggerTypePusher.forceNominal);
+                                break;
+                            case 2:
+                                text = String.valueOf(typePusher.loggerTypePusher.moveNominal);
+                                break;
+                            case 3:
+                                text = String.valueOf(typePusher.loggerTypePusher.unclenchingTime);
+                                break;
+                            default:
+                                throw new IllegalStateException("Unexpected value: " + columnIndex);
+                        }
+                        return text;
+                    }
+                },
                 new CreateComponents.ModelTableNameWidth[]{
                         new CreateComponents.ModelTableNameWidth("Тип толкателя", -1),
                         new CreateComponents.ModelTableNameWidth("Усилие на штоке (кг)", 130),
@@ -134,7 +168,7 @@ public class EditTypePushers {
                 this::tableTypePushersChanged,
                 true,
                 true
-        );*/
+        );
         scrollPane = CreateComponents.getScrollPane(0, 0, 640, 220, tableTypePushers, true, true);
         frame.add(scrollPane);
         // ----
@@ -171,7 +205,7 @@ public class EditTypePushers {
         }
         // обновить список
         try {
-            typePushers = getListTypePushers();
+            listTypePushers = getListTypePushers();
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
             return;
@@ -210,8 +244,8 @@ public class EditTypePushers {
         // проверка на повтор
         if (!v_typeName.equals(editTypePusher.loggerTypePusher.nameType)) {
             boolean flAgain = false;
-            for (int i = 0; i < typePushers.length; i++) {
-                if (!v_typeName.equals(typePushers[i].loggerTypePusher.nameType)) continue;
+            for (int i = 0; i < listTypePushers.length; i++) {
+                if (!v_typeName.equals(listTypePushers[i].loggerTypePusher.nameType)) continue;
                 flAgain = true;
                 break;
             }
@@ -270,8 +304,8 @@ public class EditTypePushers {
         // проверка на повтор
         {
             boolean flAgain = false;
-            for (int i = 0; i < typePushers.length; i++) {
-                if (!v_typeName.equals(typePushers[i].loggerTypePusher.nameType)) continue;
+            for (int i = 0; i < listTypePushers.length; i++) {
+                if (!v_typeName.equals(listTypePushers[i].loggerTypePusher.nameType)) continue;
                 flAgain = true;
                 break;
             }
@@ -305,7 +339,7 @@ public class EditTypePushers {
             tableTypePushers.getSelectionModel().clearSelection();
         }
         try {
-            typePushers = getListTypePushers();
+            listTypePushers = getListTypePushers();
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
         }
@@ -326,13 +360,13 @@ public class EditTypePushers {
         textForce.setText(String.valueOf(editTypePusher.loggerTypePusher.forceNominal));
         textMove.setText(String.valueOf(editTypePusher.loggerTypePusher.moveNominal));
         textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
-        editTypePusher = typePushers[tableTypePushers.getSelectedRow()];
+        editTypePusher = listTypePushers[tableTypePushers.getSelectedRow()];
     }
     class ControlTableTypePushers implements MyTableModel.Control {
         @Override
         public int getRowCount() {
             int row = 0;
-            if (typePushers != null) row = typePushers.length;
+            if (listTypePushers != null) row = listTypePushers.length;
             return row;
         }
 
@@ -344,7 +378,7 @@ public class EditTypePushers {
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             String text;
-            TypePusher typePusher = typePushers[rowIndex];
+            TypePusher typePusher = listTypePushers[rowIndex];
             switch (columnIndex) {
                 case 0:
                     text = typePusher.loggerTypePusher.nameType;
