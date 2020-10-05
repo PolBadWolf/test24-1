@@ -1,7 +1,5 @@
 package org.example.test24.loader.dialog;
 
-import me.xdrop.fuzzywuzzy.FuzzySearch;
-import me.xdrop.fuzzywuzzy.model.BoundExtractedResult;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
 import org.example.test24.bd.usertypes.Pusher;
@@ -9,15 +7,8 @@ import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.swing.*;
 
 import javax.swing.*;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -73,6 +64,8 @@ public class StartFrame {
 
     CallBack callBack;
     JFrame frame;
+    private SelectComboBox2Table<User> userSelectComboBox2Table;
+    private  SelectComboBox2Table<Pusher> pusherSelectComboBox2Table;
 
     TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
@@ -238,8 +231,8 @@ public class StartFrame {
         });
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
-        new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers);
-        new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers);
+        pusherSelectComboBox2Table = new SelectComboBox2Table<Pusher>(comboBoxPusher, tableFindPushers, listPushers);
+        userSelectComboBox2Table = new SelectComboBox2Table<User>(comboBoxUsers, tableFindUsers, listUsers);
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -595,7 +588,7 @@ public class StartFrame {
     }
     // обработка выбора пользователя
     private void callSelectUser(ItemEvent e) {
-        if (e.getStateChange() == ItemEvent.SELECTED) return;
+        if (e.getStateChange() == ItemEvent.DESELECTED) return;
         // разрешение ввода пароля
         fieldPassword.setText("");
         fieldPassword.setEnabled(true);
