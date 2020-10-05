@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SelectComboBox2Table<T> {
+    interface CallBack {
+        void enterComboBox(String lastLogin);
+    }
     private final JTable table;
     private final List<T> cs;
     //
@@ -21,6 +24,7 @@ public class SelectComboBox2Table<T> {
     private String textFilter;
     private List<BoundExtractedResult<T>> resultList;
     private T singleT;
+    private String lostLogin;
     //
     private final ItemListener[] comboBoxItemListeners;
 
@@ -52,6 +56,7 @@ public class SelectComboBox2Table<T> {
             if (e.getStateChange() == ItemEvent.DESELECTED) return;
             if (comboLockSelect) return;
             comboLockSelect = true;
+            lostLogin = (String) comboBox.getSelectedItem();
             if (resultList.size() > 0) {
                 Object o = resultList.get(0).getReferent();
                 comboBox.setSelectedItem(o);
@@ -128,6 +133,10 @@ public class SelectComboBox2Table<T> {
     public T getResultFist() {
         if (resultList == null || resultList.size() == 0) return null;
         return resultList.get(0).getReferent();
+    }
+
+    public String getLostLogin() {
+        return lostLogin;
     }
 }
 
