@@ -216,11 +216,11 @@ public class EditPushers {
         tableFindTypePushers.setBounds(220, 55, 220, 300);
 
         textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 67, 170, 25,
-                null, null, true, true);
+                null, null, true, true, false);
         textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 106, 170, 25,
-                null, null, true, true);
+                null, null, true, true, false);
         textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 140, 170, 25,
-                null, null, true, true);
+                null, null, true, true, false);
         panelTypePushers.add(tableFindTypePushers);
         panelTypePushers.add(jLabel2);
         panelTypePushers.add(jLabel3);
@@ -253,14 +253,7 @@ public class EditPushers {
         if (row < 0) return;
         editPusher = listPushers[row];
         textRegNumber.setText(editPusher.loggerPusher.namePusher);
-        //long idxLoogerTypePushers = editPusher.loggerPusher.loggerTypePusher.id_loggerTypePusher;
-        //TypePusher typePusher = selectTypePusher(listTypePushers, idxLoogerTypePushers);
-        //comboBoxTypePushers.setSelectedItem(typePusher);
-        /*textName.setText(editTypePusher.loggerTypePusher.nameType);
-        textForce.setText(String.valueOf(editTypePusher.loggerTypePusher.forceNominal));
-        textMove.setText(String.valueOf(editTypePusher.loggerTypePusher.moveNominal));
-        textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
-        editTypePusher = typePushers[tableTypePushers.getSelectedRow()];*/
+        comboBoxTypePushers.setSelectedItem(editPusher.loggerPusher.typePusher);
     }
     private TypePusher selectTypePusher(TypePusher[] listTypePushers, long idxLooger) {
         TypePusher tp = null;

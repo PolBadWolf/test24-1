@@ -29,7 +29,7 @@ public class CreateComponents {
     final public static int FORMATTEDTEXTFIELD = 1;
     final public static int PASSWORDFIELD = 2;
 
-    public static JTextField getTextField(int typeField, Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
+    public static JTextField getTextField(int typeField, Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable, boolean editable) {
         JTextField text;
         switch (typeField) {
             case TEXTFIELD:
@@ -46,15 +46,33 @@ public class CreateComponents {
         }
         text.setFont(font);
         text.setBounds(x, y, width, height);
-        if (filter != null) {
-            ((PlainDocument) text.getDocument()).setDocumentFilter(filter);
-        }
-        if (listener != null) {
-            text.addActionListener(listener);
+        text.setEditable(editable);
+        if (editable) {
+            if (filter != null) {
+                ((PlainDocument) text.getDocument()).setDocumentFilter(filter);
+            }
+            if (listener != null) {
+                text.addActionListener(listener);
+            }
         }
         text.setVisible(visible);
         text.setEnabled(enable);
         return text;
+    }
+    public static JTextField getTextField(int typeField, Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
+        return getTextField(
+                typeField,
+                font,
+                x,
+                y,
+                width,
+                height,
+                filter,
+                listener,
+                visible,
+                enable,
+                true
+        );
     }
     // ---
     public static JButton getButton(String text, Font font, int x, int y, int width, int height, ActionListener listener, boolean visible, boolean enable) {
