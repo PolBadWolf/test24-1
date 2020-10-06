@@ -11,8 +11,8 @@ class ParametersSql implements BaseData.Parameters {
     final static String fileNameMsSql = "ms_sql.txt";
     // ------------------------------------------------
     private String fileName;
-    private BaseData.TypeBaseDate typeBaseDate;
-    private BaseData.Status stat;
+    private TypeBaseDate typeBaseDate;
+    private Status stat;
     private String ipServer;
     private String portServer;
     private String dataBase;
@@ -20,11 +20,11 @@ class ParametersSql implements BaseData.Parameters {
     private String password;
     // ------------------------------------------------
     @Override
-    public BaseData.Status getStat() {
+    public Status getStat() {
         return stat;
     }
     @Override
-    public BaseData.TypeBaseDate getTypeBaseDate() {
+    public TypeBaseDate getTypeBaseDate() {
         return typeBaseDate;
     }
     @Override
@@ -68,53 +68,63 @@ class ParametersSql implements BaseData.Parameters {
         this.password = password;
     }
     // ------------------------------------------------
-    ParametersSql(BaseData.TypeBaseDate typeBaseDate) throws Exception {
+    ParametersSql(TypeBaseDate typeBaseDate) throws ParametersSqlException {
         switch (typeBaseDate.codeTypeBaseData) {
-            case BaseData.TYPEBD_MSSQL:
+            case TypeBaseDateConst.TYPEBD_MSSQL:
                 fileName = fileNameMsSql;
                 break;
-            case BaseData.TYPEBD_MYSQL:
+            case TypeBaseDateConst.TYPEBD_MYSQL:
                 fileName = fileNameMySql;
                 break;
-            case BaseData.TYPEBD_ERROR:
-                this.stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
-                throw new Exception("ошибочный тип БД");
+            case TypeBaseDateConst.TYPEBD_ERROR:
+                this.stat = Status.PARAMETERS_LOAD_ERROR;
+                throw new ParametersSqlException("ошибочный тип БД", Status.BASE_TYPE_ERROR, null);
         }
         this.typeBaseDate = typeBaseDate;
-        this.stat = BaseData.Status.OK;
+        this.stat = Status.OK;
     }
     // ------------------------------------------------
     @Override
-    public BaseData.Status load() {
+    public Status load() throws ParametersSqlException {
+        ParametersSql parameters = new ParametersSql(this.typeBaseDate);
         Properties properties = new Properties();
+
         try {
             properties.load(new BufferedReader(new FileReader(fileName)));
         } catch (IOException e) {
-            myLog.log(Level.SEVERE, "ошибки загрузки параметров из файла конфигурации", e);
-            stat = BaseData.Status.PARAMETERS_LOAD_ERROR;
-            return stat;
+            parameters.stat = Status.PARAMETERS_LOAD_ERROR;
+            throw new ParametersSqlException("ошибки загрузки параметров из файла конфигурации", e, Status.PARAMETERS_LOAD_ERROR, null);
         }
-        ipServer = properties.getProperty("Url_Server");
-        portServer = properties.getProperty("Port_Server");
-        dataBase = properties.getProperty("DataBase");
-        user = properties.getProperty("User");
-        try {
-            password = null;
-            password = BaseData.Password.decoding(properties.getProperty("Password"));
-            if (ipServer == null || portServer == null || dataBase == null || user == null) {
-                myLog.log(Level.SEVERE, "один или несколько параметров в файле конфигурации отсутствуют");
-                stat = BaseData.Status.PARAMETERS_ERROR;
-            } else {
-                stat = BaseData.Status.OK;
-            }
+        parameters.ipServer = properties.getProperty("Url_Server");
+        parameters.portServer = properties.getProperty("Port_Server");
+        parameters.dataBase = properties.getProperty("DataBase");
+        parameters.user = properties.getProperty("User");
+        //
+        try { parameters.password = BaseData.Password.decoding(properties.getProperty("Password"));
         } catch (Exception e) {
-            myLog.log(Level.SEVERE, "ошибка декодирования пароля", e);
-            stat = BaseData.Status.PARAMETERS_PASSWORD_ERROR;
+            parameters.password = null;
+            parameters.stat = Status.PARAMETERS_PASSWORD_ERROR;
+            myLog.log(Level.WARNING, "ошибка декодирования пароля", e);
         }
-        return stat;
+        //
+        if (parameters.ipServer == null || parameters.portServer == null || parameters.dataBase == null || parameters.user == null || parameters.password == null) {
+            parameters.stat = Status.PARAMETERS_ERROR;
+            //myLog.log(Level.SEVERE, "один или несколько параметров в файле конфигурации отсутствуют");
+            throw new ParametersSqlException("один или несколько параметров в файле конфигурации отсутствуют", parameters.stat, parameters);
+        }
+        //
+        {
+            this.ipServer = parameters.ipServer;
+            this.portServer = parameters.portServer;
+            this.dataBase = parameters.dataBase;
+            this.user = parameters.user;
+            this.password = parameters.password;
+            this.stat = Status.OK;
+        }
+        return this.stat;
     }
     @Override
-    public BaseData.Status save() {
+    public Status save() {
         Properties properties = new Properties();
         properties.setProperty("Url_Server", ipServer);
         properties.setProperty("Port_Server", portServer);
@@ -123,10 +133,10 @@ class ParametersSql implements BaseData.Parameters {
         properties.setProperty("Password", BaseData.Password.encoding(password));
         try {
             properties.store(new BufferedWriter(new FileWriter(fileName)), "parameters sql");
-            stat = BaseData.Status.OK;
+            stat = Status.OK;
         } catch (IOException e) {
             myLog.log(Level.SEVERE, "ошибка сохранения параметров соединения с БД", e);
-            stat = BaseData.Status.PARAMETERS_SAVE_ERROR;
+            stat = Status.PARAMETERS_SAVE_ERROR;
         }
         return stat;
     }

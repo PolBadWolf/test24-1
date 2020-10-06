@@ -2,14 +2,13 @@ package org.example.test24.bd;
 
 import java.io.*;
 import java.util.Properties;
-import java.util.logging.Level;
 
-import static org.example.test24.bd.BaseData2Class.*;
-import static org.example.test24.lib.MyLogger.myLog;
+//import static org.example.test24.bd.BaseData2Class.*;
+
 
 public class ParametersConfig implements BaseData.Config {
     final private String fileNameConfig = "config.txt";
-    private BaseData.Status stat = BaseData.Status.OK;
+    private Status stat = Status.OK;
 
 
     final public static int OK = 0;
@@ -39,19 +38,17 @@ public class ParametersConfig implements BaseData.Config {
     }
 
     private String portName;
-    private BaseData.TypeBaseDate typeBaseData;
+    private TypeBaseDate typeBaseData;
     private Diagnostic status;
 
-    public ParametersConfig(String fileNameConfig) {
-        //this.fileNameConfig = fileNameConfig;
-        typeBaseData = BaseData.TypeBaseDate.ERROR;
+    public ParametersConfig() {
+        typeBaseData = TypeBaseDate.ERROR;
         portName = "";
     }
 
     @Override
-    public BaseData.Status load1() throws Exception {
-        final BaseData.TypeBaseDate[] typeBaseDate = new BaseData.TypeBaseDate[1];
-        BaseData.Status status;
+    public Status load1() throws Exception {
+        Status status;
         Properties properties = new Properties();
         try {
             properties.load(new BufferedReader(new FileReader(fileNameConfig)));
@@ -60,27 +57,40 @@ public class ParametersConfig implements BaseData.Config {
         }
         portName = properties.getProperty("CommPort", "COM2").toUpperCase();
         try {
-            BaseData.TypeBaseDate.create(
-                    properties.getProperty("DataBase").toUpperCase(),
-                    t -> typeBaseDate[0] = t
+            this.typeBaseData = TypeBaseDate.create(
+                    properties.getProperty("DataBase").toUpperCase()
+                    //, t -> typeBaseDate[0] = t
             );
-            status = BaseData.Status.OK;
+            status = Status.OK;
         } catch (Exception exception) {
-            status = BaseData.Status.BASE_TYPE_ERROR;
+            status = Status.BASE_TYPE_ERROR;
+            // set default
+            this.typeBaseData = TypeBaseDate.MY_SQL;
         }
-        this.typeBaseData = typeBaseDate[0];
+        //this.typeBaseData = typeBaseDate[0];
         return status;
     }
     @Override
-    public BaseData.Status save1() {
-        return null;
+    public Status save() throws BaseDataException {
+        Properties properties = new Properties();
+        Status result = Status.PARAMETERS_SAVE_ERROR;
+        properties.setProperty("CommPort", portName);
+        properties.setProperty("DataBase", typeBaseData.codeToString());
+        try {
+            properties.store(new BufferedWriter(new FileWriter(fileNameConfig)), "config");
+            result = Status.OK;
+        } catch (IOException e) {
+            result = Status.PARAMETERS_PASSWORD_ERROR;
+            throw new BaseDataException("сохранение сонфигурации", e, result);
+        }
+        return result;
     }
     @Override
     public String getPortName() {
         return portName;
     }
     @Override
-    public BaseData.TypeBaseDate getTypeBaseData() {
+    public TypeBaseDate getTypeBaseData() {
         return typeBaseData;
     }
     @Override
@@ -88,7 +98,7 @@ public class ParametersConfig implements BaseData.Config {
         this.portName = portName;
     }
     @Override
-    public void setTypeBaseData(BaseData.TypeBaseDate typeBaseData) {
+    public void setTypeBaseData(TypeBaseDate typeBaseData) {
         this.typeBaseData = typeBaseData;
     }
 
@@ -110,7 +120,7 @@ public class ParametersConfig implements BaseData.Config {
             portName = "";
             status = Diagnostic.ERROR_LOAD;
         }
-        if (typeBaseData == BaseData.TypeBaseDate.ERROR) {
+        if (typeBaseData == TypeBaseDate.ERROR) {
             status = Diagnostic.ERROR_PARAMETERS;
         }
         return status;
@@ -119,10 +129,10 @@ public class ParametersConfig implements BaseData.Config {
     @Override
     public void setDefault() {
         portName = "com2";
-        typeBaseData = BaseData.TypeBaseDate.MY_SQL;
+        typeBaseData = TypeBaseDate.MY_SQL;
     }
 
-    public Diagnostic save() {
+    /*public Diagnostic save() {
         if (typeBaseData == BaseData.TypeBaseDate.ERROR || portName == null || portName == "") {
             status = Diagnostic.ERROR_PARAMETERS;
         } else {
@@ -137,5 +147,5 @@ public class ParametersConfig implements BaseData.Config {
             }
         }
         return status;
-    }
+    }*/
 }

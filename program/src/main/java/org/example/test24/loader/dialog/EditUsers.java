@@ -1,8 +1,8 @@
 package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.BaseData;
-import org.example.test24.bd.User;
-import org.example.test24.lib.MySwingUtil;
+import org.example.test24.bd.usertypes.User;
+import org.example.test24.lib.swing.MySwingUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -18,14 +18,15 @@ import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
 
-public class EditUsers extends JFrame
-{
+public class EditUsers extends JFrame {
     public interface CallBack {
         void messageCloseEditUsers(boolean newData);
         User getCurrentUser();
     }
     // объект обратного вызова
     private CallBack callBack;
+    // события изменения
+    private boolean flagEventEdit;
     // объект доступа к БД
     private BaseData connBD;
     // активный пользователь
@@ -41,6 +42,7 @@ public class EditUsers extends JFrame
     public EditUsers(BaseData connBD, CallBack callBack) {
         this.connBD = connBD;
         this.callBack = callBack;
+        flagEventEdit = false;
         // загрузка списка пользователей
         activetUser = callBack.getCurrentUser();
         readUsersFromBase();
@@ -49,6 +51,7 @@ public class EditUsers extends JFrame
         // деактивация кнопок
         offButtonEditUser();
         setVisible(true);
+        setResizable(false);
         // ловушка закрытия окна
         addWindowListener(new WindowAdapter() {
             @Override
@@ -124,7 +127,10 @@ public class EditUsers extends JFrame
                     "новый пользователь",
                     "имя пользователя не задано",
                     5_000,
-                    o -> buttonNewUser.setEnabled(true)
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        this.requestFocus();
+                    }
             );
             buttonNewUser.setEnabled(false);
             return;
@@ -134,7 +140,10 @@ public class EditUsers extends JFrame
                     "новый пользователь",
                     "пароль пустой",
                     5_000,
-                    o -> buttonNewUser.setEnabled(true)
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        this.requestFocus();
+                    }
             );
             buttonNewUser.setEnabled(false);
             return;
@@ -142,7 +151,7 @@ public class EditUsers extends JFrame
         // проверка на повтор
         boolean flag = false;
         for (User user : listUsers) {
-            if (user.name.equals(surName)) {
+            if (user.surName.equals(surName)) {
                 flag = true;
                 break;
             }
@@ -152,7 +161,10 @@ public class EditUsers extends JFrame
                     "новый пользователь",
                     "такой пользователь уже существует",
                     5_000,
-                    o -> buttonNewUser.setEnabled(true)
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        this.requestFocus();
+                    }
             );
             buttonNewUser.setEnabled(false);
             return;
@@ -200,14 +212,14 @@ public class EditUsers extends JFrame
         boolean flag = false;
         for (User user : listUsers) {
             if (user.id_user == editUser.id_user) continue;
-            if (user.name.equals(surName)) {
+            if (user.surName.equals(surName)) {
                 flag = true;
                 break;
             }
         }
         if (flag) {
             myLog.log(Level.WARNING, "редактирование пользователя",
-                    new Exception(callBack.getCurrentUser().name + " : " + editUser.name + " -> " + surName + " - такой пользователь уже существует"));
+                    new Exception(callBack.getCurrentUser().surName + " : " + editUser.surName + " -> " + surName + " - такой пользователь уже существует"));
             MySwingUtil.showMessage(this,
                     "редактирование пользователя",
                     "такой пользователь уже существует",
@@ -242,8 +254,8 @@ public class EditUsers extends JFrame
         onButtonEditUser();
         // выбранный пользователь
         editUser = tablUsers[table.getSelectedRow()];
-        fieldSurName.setText(editUser.name);
-        fieldPassword.setText(editUser.password);
+        fieldSurName.setText(editUser.surName);
+        fieldPassword.setText(editUser.userPassword);
         checkUsers.setSelected((editUser.rang & 1 << User.RANG_USERS) != 0);
         checkPushers.setSelected((editUser.rang & 1 << User.RANG_PUSHERS) != 0);
     }
@@ -283,6 +295,7 @@ public class EditUsers extends JFrame
             // обновить таблицу
             readUsersFromBase();
             table.updateUI();
+            flagEventEdit = true;
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "деактивация пользователя", e);
         } finally {
@@ -298,6 +311,7 @@ public class EditUsers extends JFrame
     private void writeNewUserToBase(String surName, String password, int rang) {
         try {
             connBD.writeNewUser(activetUser.id_loggerUser, surName, password, rang);
+            flagEventEdit = true;
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "запись нового пользователя в базу", e);
         }
@@ -307,9 +321,9 @@ public class EditUsers extends JFrame
     }
     // обновление записи о пользователе
     private void updateDataUser(long id_loggerUserEdit, User user, String surName, String password, int rang) {
-//       myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("обновление записи о пользователе"));
         try {
-            connBD.updateDataUser(id_loggerUserEdit, user, surName, password, rang);
+            connBD.updateDataUser(user, id_loggerUserEdit, surName, password, rang);
+            flagEventEdit = true;
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "обновление записи пользователя в базе", e);
         }
@@ -339,7 +353,7 @@ public class EditUsers extends JFrame
     private void closeFromLocal() {
         removeAll();
         dispose();
-        callBack.messageCloseEditUsers(false);
+        callBack.messageCloseEditUsers(flagEventEdit);
     }
     // ==========================================
     // компоненты
@@ -387,10 +401,10 @@ public class EditUsers extends JFrame
             if (tablUsers != null) {
                 switch (columnIndex) {
                     case column_name:
-                        text = tablUsers[rowIndex].name;
+                        text = tablUsers[rowIndex].surName;
                         break;
                     case column_datereg:
-                        text = dateFormat.format(tablUsers[rowIndex].date);
+                        text = dateFormat.format(tablUsers[rowIndex].date_reg);
                         break;
                     case column_rang:
                         text = "";
