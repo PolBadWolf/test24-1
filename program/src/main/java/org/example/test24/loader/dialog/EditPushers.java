@@ -155,18 +155,18 @@ public class EditPushers {
                             case 0:
                                 text = pusher.loggerPusher.namePusher;
                                 break;
-                            /*case 1:
-                                text = pusher.loggerPusher.loggerTypePusher.nameType;
+                            case 1:
+                                text = pusher.loggerPusher.typePusher.loggerTypePusher.nameType;
                                 break;
                             case 2:
-                                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.forceNominal);
+                                text = String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.forceNominal);
                                 break;
                             case 3:
-                                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.moveNominal);
+                                text = String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.moveNominal);
                                 break;
                             case 4:
-                                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.unclenchingTime);
-                                break;*/
+                                text = String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.unclenchingTime);
+                                break;
                             default:
                                 throw new IllegalStateException("Unexpected value: " + columnIndex);
                         }
