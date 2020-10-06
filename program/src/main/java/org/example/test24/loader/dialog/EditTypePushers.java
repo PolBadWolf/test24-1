@@ -177,6 +177,7 @@ public class EditTypePushers {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                callBack.messageCloseEditUsers(true);
                 super.windowClosing(e);
             }
         });

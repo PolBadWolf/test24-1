@@ -10,10 +10,7 @@ import org.example.test24.lib.swing.*;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -258,7 +255,7 @@ public class EditPushers {
         editTypePusher = typePushers[tableTypePushers.getSelectedRow()];*/
     }
     // -----------
-    private void callComboBoxTypePushers(ItemEvent itemEvent) {
+    private void callComboBoxTypePushers(ActionEvent actionEvent) {
         /*if (itemEvent != null) {
             if (itemEvent.getStateChange() == ItemEvent.SELECTED) return;
         }*/

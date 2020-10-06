@@ -6,6 +6,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.util.Vector;
@@ -132,14 +133,14 @@ public class CreateComponents {
         return scrollPane;
     }
     // ---
-    public static <T> JComboBox<T> getComboBox(Font font, int x, int y, int width, int height, boolean editable, DocumentFilter filter, ItemListener listener, boolean visible, boolean enable) {
+    public static <T> JComboBox<T> getComboBox(Font font, int x, int y, int width, int height, boolean editable, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
         JComboBox<T> comboBox = new JComboBox<>();
         comboBox.setFont(font);
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(editable);
         if (filter != null)
             ((PlainDocument) ((JTextComponent) comboBox.getEditor().getEditorComponent()).getDocument()).setDocumentFilter(filter);
-        if (listener != null) comboBox.addItemListener(listener);
+        if (listener != null) comboBox.addActionListener(listener);
         comboBox.setVisible(visible);
         comboBox.setEnabled(enable);
         return comboBox;

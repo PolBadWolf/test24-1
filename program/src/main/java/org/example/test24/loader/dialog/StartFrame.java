@@ -586,7 +586,7 @@ public class StartFrame {
         fieldPassword.setText("");
     }
     // обработка выбора пользователя
-    private void callSelectUser(ItemEvent e) {
+    private void callSelectUser(ActionEvent actionEvent) {
         //if (e.getStateChange() == ItemEvent.SELECTED) return;
         // разрешение ввода пароля
         fieldPassword.setText("");
