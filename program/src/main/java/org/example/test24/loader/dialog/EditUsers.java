@@ -69,21 +69,6 @@ public class EditUsers extends JFrame {
         label_title = getLabel_title("Редактор пользователей", Font.BOLD, 28, 160, 10, 310, 33);
         add(label_title);
 
-        label_surName = getLabel_surName("ФИО", Font.PLAIN, 16, 20, 268, 60, 30);
-        add(label_surName);
-
-        label_password = getLabel_password("Пароль", Font.PLAIN, 16, 20, 318, 60, 30);
-        add(label_password);
-
-        label_edit = getLabel_edit("Редактирование", Font.PLAIN, 18, 170, 345, 130, 60);
-        add(label_edit);
-
-        checkUsers = getJCheckBox("пользователей", false, Font.PLAIN, 14, 311, 350, 120, 25);
-        add(checkUsers);
-
-        checkPushers = getJCheckBox("толкателей", false, Font.PLAIN, 14, 311, 380, 120, 25);
-        add(checkPushers);
-
         table = getTable(new SimpleTableModel(), 562, new BiInt[]{
                 new BiInt(0, -1),
                 new BiInt(1, 32),
@@ -92,20 +77,41 @@ public class EditUsers extends JFrame {
         scroll_table = getScroll_table(table, 20,50, 580, 190);
         add(scroll_table);
 
-        buttonDeactive = getButtonDeactive("деактивация", Font.PLAIN, 14, 440, 268, 160, 30);
-        add(buttonDeactive);
+        label_search = getLabel_surName("Поиск", Font.PLAIN, 16, 20, 250, 60, 30);
+        add(label_search);
 
-        buttonNewUser = getButtonNewUser("Новый пользователь", Font.PLAIN, 14, 440, 317, 160, 30);
-        add(buttonNewUser);
+        fieldSearch = getFieldSurName("", Font.PLAIN, 14, 80, 252, 340, 25);
+        add(fieldSearch);
 
-        buttonEditUser = getButton("Ред. пользователя", Font.PLAIN, 14, 440, 368, 160, 30, e -> pushButtonEditUser());
-        add(buttonEditUser);
+        label_surName = getLabel_surName("ФИО", Font.PLAIN, 16, 20, 298, 60, 30);
+        add(label_surName);
 
-        fieldSurName = getFieldSurName("", Font.PLAIN, 14, 80, 270, 340, 25);
+        fieldSurName = getFieldSurName("", Font.PLAIN, 14, 80, 300, 340, 25);
         add(fieldSurName);
 
-        fieldPassword = getFieldPassword("", Font.PLAIN, 14, 80, 320, 340, 25);
+        buttonDeactive = getButtonDeactive("деактивация", Font.PLAIN, 14, 440, 298, 160, 30);
+        add(buttonDeactive);
+
+        label_password = getLabel_password("Пароль", Font.PLAIN, 16, 20, 338, 60, 30);
+        add(label_password);
+
+        fieldPassword = getFieldPassword("", Font.PLAIN, 14, 80, 340, 340, 25);
         add(fieldPassword);
+
+        buttonNewUser = getButtonNewUser("Новый пользователь", Font.PLAIN, 14, 440, 337, 160, 30);
+        add(buttonNewUser);
+
+        label_edit = getLabel_edit("Редактирование", Font.PLAIN, 18, 170, 365, 130, 60);
+        add(label_edit);
+
+        checkUsers = getJCheckBox("пользователей", false, Font.PLAIN, 14, 311, 370, 120, 25);
+        add(checkUsers);
+
+        checkPushers = getJCheckBox("толкателей", false, Font.PLAIN, 14, 311, 400, 120, 25);
+        add(checkPushers);
+
+        buttonEditUser = getButton("Ред. пользователя", Font.PLAIN, 14, 440, 388, 160, 30, e -> pushButtonEditUser());
+        add(buttonEditUser);
 
         pack();
     }
@@ -364,10 +370,12 @@ public class EditUsers extends JFrame {
     JCheckBox checkPushers;
     JTextField fieldPassword;
     JTextField fieldSurName;
+    JTextField fieldSearch;
     JLabel label_edit;
     JLabel label_password;
     JLabel label_surName;
     JLabel label_title;
+    JLabel label_search;
     JScrollPane scroll_table;
     JTable table;
     // ------------------------------------------
