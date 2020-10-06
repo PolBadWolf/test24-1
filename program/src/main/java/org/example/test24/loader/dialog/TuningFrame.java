@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -201,7 +202,7 @@ class TuningFrame {
         setComponentBaseData(parametersSql);
         //textTypeBdStatus.setText(parametersSql.getTypeBaseDate().toString());
 //        // список БД
-        try { MyUtil.<String>loadToComboBox(listBaseBD, comboBoxListBd, parametersSql.getDataBase()); } catch (Exception e) {
+        try { MyUtil.<String>loadToComboBox(listBaseBD, comboBoxListBd, false, parametersSql.getDataBase()); } catch (Exception e) {
             myLog.log(Level.WARNING, "начальная инициализация компонентов", e);
         }
 //        //
@@ -840,11 +841,14 @@ class TuningFrame {
                                     // здесь перезагрузка списка пользователей (новые данные)
                                 }
                                 saveEnableComponents.restore();
+                                frameTuning.requestFocus();
                             }
                             // текущий активный пользователь
                             @Override
                             public User getCurrentUser() {
-                                /*User user = new User(
+                                User user = new User(
+                                        0,
+                                        new Date(),
                                         0,
                                         new Date(),
                                         0,
@@ -852,8 +856,8 @@ class TuningFrame {
                                         "",
                                         3,
                                         null
-                                );*/
-                                return null;
+                                );
+                                return user;
                             }
                         });
             });
@@ -960,6 +964,7 @@ class TuningFrame {
             try { MyUtil.<String>loadToComboBox(
                     conn.getListBase(),
                     comboBoxListBd,
+                    false,
                     parametersSql.getDataBase()
             ); } catch (Exception e) {
                 myLog.log(Level.WARNING, "нажатие кнопки тест", e);
