@@ -180,5 +180,15 @@ public class CreateComponents {
         return panel;
     }
     // ---
+    public static JCheckBox getJCheckBox(String text, Font font, int x, int y, int width, int height, boolean selected, ActionListener listener, boolean visible, boolean enable) {
+        JCheckBox checkBox = new JCheckBox();
+        checkBox.setFont(font);
+        checkBox.setText(text);
+        checkBox.setSelected(selected);
+        checkBox.setBounds(x, y, width, height);
+        if (listener != null) checkBox.addActionListener(listener);
+        return checkBox;
+    }
+    // ---
 
 }
