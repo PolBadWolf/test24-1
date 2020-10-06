@@ -51,6 +51,7 @@ public class EditPushers {
     private TypePusher[] listTypePushers;
     private SelectComboBox2Table<TypePusher> typePusherSelectComboBox2Table;
     private SaveEnableComponents saveEnableComponents;
+    private Pusher editPusher;
 
     public EditPushers(EditPushers.CallBack callBack, BaseData connBD, long currentId_loggerUserEdit) {
         this.callBack = callBack;
@@ -248,11 +249,28 @@ public class EditPushers {
     // ----------- таблицы
     private void tablePushersChanged(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) return;
+        int row = tablePushers.getSelectedRow();
+        if (row < 0) return;
+        editPusher = listPushers[row];
+        textRegNumber.setText(editPusher.loggerPusher.namePusher);
+        long idxLoogerTypePushers = editPusher.loggerPusher.loggerTypePusher.id_loggerTypePusher;
+        TypePusher typePusher = selectTypePusher(listTypePushers, idxLoogerTypePushers);
+        comboBoxTypePushers.setSelectedItem(typePusher);
         /*textName.setText(editTypePusher.loggerTypePusher.nameType);
         textForce.setText(String.valueOf(editTypePusher.loggerTypePusher.forceNominal));
         textMove.setText(String.valueOf(editTypePusher.loggerTypePusher.moveNominal));
         textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
         editTypePusher = typePushers[tableTypePushers.getSelectedRow()];*/
+    }
+    private TypePusher selectTypePusher(TypePusher[] listTypePushers, long idxLooger) {
+        TypePusher tp = null;
+        for (TypePusher typePusher : listTypePushers) {
+            if (typePusher.loggerTypePusher.id_loggerTypePusher == idxLooger) {
+                tp = typePusher;
+                break;
+            }
+        }
+        return tp;
     }
     // -----------
     private void callComboBoxTypePushers(ActionEvent actionEvent) {
