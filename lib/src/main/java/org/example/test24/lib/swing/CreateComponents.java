@@ -110,6 +110,7 @@ public class CreateComponents {
             autoWidth = widthLast / autoN;
         }
         //
+        ((MyJTable) table).titles = titles;
         if (tableModel != null) {
             ((MyTableModel) tableModel).setTitles(titles);
             table.setModel(tableModel);

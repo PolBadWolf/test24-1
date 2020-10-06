@@ -13,26 +13,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SelectComboBox2Table<T> {
+public class SelectComboBox2Table_Top<T> {
     private final JTable table;
     private final JComboBox<T> comboBox;
     private final List<T> cs;
+    private final int rowMax;
     //
-    //private boolean iKeep;
     private boolean comboLockSelect;
-    private boolean comboLockListener;
     private String textFilter;
     private List<BoundExtractedResult<T>> resultList;
     private T singleT;
     private final String lostName;
     private boolean lock = true;
     //
-    //private final ItemListener[] comboBoxItemListeners;
 
-    public SelectComboBox2Table(JComboBox<T> comboBox, JTable table, T[] cs, String lostName) {
+    public SelectComboBox2Table_Top(JComboBox<T> comboBox, JTable table, T[] cs, int rowMax, String lostName) {
         this.comboBox = comboBox;
         this.table = table;
         this.cs = Arrays.asList(cs);
+        this.rowMax = rowMax;
         this.lostName = lostName;
         //
         //iKeep = false;
@@ -152,7 +151,7 @@ public class SelectComboBox2Table<T> {
                 textFilter,
                 this.cs,
                 Object::toString,
-                7
+                rowMax
         );
     }
 }

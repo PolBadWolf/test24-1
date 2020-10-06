@@ -64,8 +64,8 @@ public class StartFrame {
 
     CallBack callBack;
     JFrame frame;
-    private SelectComboBox2Table<User> userSelectComboBox2Table;
-    private  SelectComboBox2Table<Pusher> pusherSelectComboBox2Table;
+    private SelectComboBox2Table_Top<User> userSelectComboBox2Table;
+    private SelectComboBox2Table_Top<Pusher> pusherSelectComboBox2Table;
 
     TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
@@ -229,8 +229,8 @@ public class StartFrame {
         });
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
-        pusherSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxPusher, tableFindPushers, listPushers, null);
-        userSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxUsers, tableFindUsers, listUsers, "a");
+        pusherSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxPusher, tableFindPushers, listPushers, 7, null);
+        userSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxUsers, tableFindUsers, listUsers, 7, "a");
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -655,7 +655,7 @@ public class StartFrame {
                             // чтение списка пользователей
                             try {
                                 listUsers = connBD.getListUsers(true);
-                                userSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxUsers, tableFindUsers, listUsers, "a");
+                                userSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxUsers, tableFindUsers, listUsers, 7, "a");
                             } catch (Exception e) {
                                 myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
                                 listUsers = new User[0];

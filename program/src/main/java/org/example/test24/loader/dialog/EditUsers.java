@@ -3,8 +3,8 @@ package org.example.test24.loader.dialog;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.swing.CreateComponents;
+import org.example.test24.lib.swing.FilterSortField2Table;
 import org.example.test24.lib.swing.MySwingUtil;
-import org.example.test24.lib.swing.MyTableModel;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -71,16 +71,17 @@ public class EditUsers extends JFrame {
         label_title = CreateComponents.getjLabel("Редактор пользователей", new Font("Times New Roman", Font.BOLD, 28), 160, 10, 310, 33, true, true);
         add(label_title);
 
-        table = getTable(new SimpleTableModel(), 562, new BiInt[]{
+        /*table = getTable(new SimpleTableModel(), 562, new BiInt[]{
                 new BiInt(0, -1),
                 new BiInt(1, 32),
                 new BiInt(2, 122)
-        });
-        table = CreateComponents.getTable(562, new MyTableModel() {
-
-        }, new CreateComponents.ModelTableNameWidth[]{
-                new CreateComponents.ModelTableNameWidth("ФИО", -1)
-        });
+        });*/
+        table = CreateComponents.getTable(562, null, new CreateComponents.ModelTableNameWidth[]{
+                new CreateComponents.ModelTableNameWidth("ФИО", -1),
+                new CreateComponents.ModelTableNameWidth("ранг", 32),
+                new CreateComponents.ModelTableNameWidth("регистрация", 122)
+        },
+                null, null, true, true);
         scroll_table = CreateComponents.getScrollPane(20, 50, 580, 190, table, true, true);
         add(scroll_table);
 
@@ -90,6 +91,39 @@ public class EditUsers extends JFrame {
         fieldSearch = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 80, 259, 340, 25,
                 null, null, true, true);
         add(fieldSearch);
+
+        new FilterSortField2Table<User>(
+                fieldSearch,
+                table,
+                listUsers,
+                new FilterSortField2Table.CallBackF<User>() {
+                    @Override
+                    public Object decoder(int columnIndex, User result) {
+                        String text;
+                        switch (columnIndex) {
+                            case 0:
+                                text = result.surName;
+                                break;
+                            case 1:
+                                text = "";
+                                if ((result.rang & (1 << User.RANG_USERS)) != 0) text += "П";
+                                if ((result.rang & (1 << User.RANG_PUSHERS)) != 0) text += "Т";
+                                break;
+                            case 2:
+                                text = dateFormat.format(result.date_reg);
+                                break;
+                            default:
+                                throw new IllegalStateException("Unexpected value: " + columnIndex);
+                        }
+                        return text;
+                    }
+
+                    @Override
+                    public void selectRow(int rowIndex) {
+                        User user = listUsers[rowIndex];
+                    }
+                }
+        );
 
         label_surName = CreateComponents.getjLabel("ФИО", new Font("Times New Roman", Font.PLAIN, 16), 20, 298, 60, 30, true, true);
         add(label_surName);
