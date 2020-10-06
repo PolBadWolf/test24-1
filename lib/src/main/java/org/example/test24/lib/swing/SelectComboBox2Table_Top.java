@@ -92,7 +92,7 @@ public class SelectComboBox2Table_Top<T> {
             table.clearSelection();
             table.setVisible(false);
         });
-        table.setModel(new MyTableModel() {
+        MyTableModel tableModel = new MyTableModel() {
             @Override
             public int getRowCount() {
                 int row = resultList.size();
@@ -111,7 +111,9 @@ public class SelectComboBox2Table_Top<T> {
                 singleT = resultList.get(rowIndex).getReferent();
                 return singleT.toString();
             }
-        });
+        };
+        tableModel.setTitles(((MyJTable) table).titles);
+        table.setModel(tableModel);
         ((MyJTable) table).setCallUpdate(jTable -> {
             resultList = FuzzySearch.extractTop(
                     textFilter,
