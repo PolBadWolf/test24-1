@@ -121,6 +121,11 @@ public class EditUsers extends JFrame {
                     @Override
                     public void selectRow(int rowIndex) {
                         User user = listUsers[rowIndex];
+                        fieldSurName.setText(user.surName);
+                        fieldPassword.setText(user.userPassword);
+                        checkUsers.setSelected((user.rang & (1 << User.RANG_USERS)) != 0 );
+                        checkPushers.setSelected((user.rang & (1 << User.RANG_PUSHERS)) != 0 );
+                        table.clearSelection();
                     }
                 }
         );

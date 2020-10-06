@@ -65,10 +65,12 @@ public class SelectComboBox2Table_Top<T> {
                 Object o;
                 try {
                     o = comboBox.getSelectedItem();
-                    if (o.getClass().getSimpleName().equals("String")) {
-                        String s = (String) o;
-                        if (s.equals(lostName)) {
-                            return;
+                    if (o != null) {
+                        if (o.getClass().getSimpleName().equals("String")) {
+                            String s = (String) o;
+                            if (s.equals(lostName)) {
+                                return;
+                            }
                         }
                     }
                     if (resultList.size() > 0) {
