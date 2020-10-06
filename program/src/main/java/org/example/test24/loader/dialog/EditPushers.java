@@ -49,7 +49,7 @@ public class EditPushers {
     //
     private Pusher[] listPushers;
     private TypePusher[] listTypePushers;
-    private SelectComboBox2Table<TypePusher> typePusherSelectComboBox2Table;
+    private SelectComboBox2Table_Top<TypePusher> typePusherSelectComboBox2Table;
     private SaveEnableComponents saveEnableComponents;
     private Pusher editPusher;
 
@@ -97,7 +97,7 @@ public class EditPushers {
                     true,
                     null
             );
-            typePusherSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxTypePushers, tableFindTypePushers, listTypePushers, null);
+            typePusherSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxTypePushers, tableFindTypePushers, listTypePushers, 7, null);
             callComboBoxTypePushers(null);
             typePusherSelectComboBox2Table.setLock(false);
         } catch (BaseDataException e) {

@@ -2,6 +2,8 @@ package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.usertypes.User;
+import org.example.test24.lib.swing.CreateComponents;
+import org.example.test24.lib.swing.FilterSortField2Table;
 import org.example.test24.lib.swing.MySwingUtil;
 
 import javax.swing.*;
@@ -66,56 +68,115 @@ public class EditUsers extends JFrame {
         setPreferredSize(new Dimension(640, 480));
         setLayout(null);
 
-        label_title = getLabel_title("Редактор пользователей", Font.BOLD, 28, 160, 10, 310, 33);
+        label_title = CreateComponents.getjLabel("Редактор пользователей", new Font("Times New Roman", Font.BOLD, 28), 160, 10, 310, 33, true, true);
         add(label_title);
 
-        label_surName = getLabel_surName("ФИО", Font.PLAIN, 16, 20, 268, 60, 30);
-        add(label_surName);
-
-        label_password = getLabel_password("Пароль", Font.PLAIN, 16, 20, 318, 60, 30);
-        add(label_password);
-
-        label_edit = getLabel_edit("Редактирование", Font.PLAIN, 18, 170, 345, 130, 60);
-        add(label_edit);
-
-        checkUsers = getJCheckBox("пользователей", false, Font.PLAIN, 14, 311, 350, 120, 25);
-        add(checkUsers);
-
-        checkPushers = getJCheckBox("толкателей", false, Font.PLAIN, 14, 311, 380, 120, 25);
-        add(checkPushers);
-
-        table = getTable(new SimpleTableModel(), 562, new BiInt[]{
+        /*table = getTable(new SimpleTableModel(), 562, new BiInt[]{
                 new BiInt(0, -1),
                 new BiInt(1, 32),
                 new BiInt(2, 122)
-        });
-        scroll_table = getScroll_table(table, 20,50, 580, 190);
+        });*/
+        table = CreateComponents.getTable(562, null, new CreateComponents.ModelTableNameWidth[]{
+                new CreateComponents.ModelTableNameWidth("ФИО", -1),
+                new CreateComponents.ModelTableNameWidth("ранг", 32),
+                new CreateComponents.ModelTableNameWidth("регистрация", 122)
+        },
+                null, null, true, true);
+        scroll_table = CreateComponents.getScrollPane(20, 50, 580, 190, table, true, true);
         add(scroll_table);
 
-        buttonDeactive = getButtonDeactive("деактивация", Font.PLAIN, 14, 440, 268, 160, 30);
-        add(buttonDeactive);
+        label_search = CreateComponents.getjLabel("Поиск", new Font("Times New Roman", Font.PLAIN, 16), 20, 257, 60, 30, true, true);
+        add(label_search);
 
-        buttonNewUser = getButtonNewUser("Новый пользователь", Font.PLAIN, 14, 440, 317, 160, 30);
-        add(buttonNewUser);
+        fieldSearch = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 80, 259, 340, 25,
+                null, null, true, true);
+        add(fieldSearch);
 
-        buttonEditUser = getButton("Ред. пользователя", Font.PLAIN, 14, 440, 368, 160, 30, e -> pushButtonEditUser());
-        add(buttonEditUser);
+        new FilterSortField2Table<User>(
+                fieldSearch,
+                table,
+                listUsers,
+                new FilterSortField2Table.CallBackF<User>() {
+                    @Override
+                    public Object decoder(int columnIndex, User result) {
+                        String text;
+                        switch (columnIndex) {
+                            case 0:
+                                text = result.surName;
+                                break;
+                            case 1:
+                                text = "";
+                                if ((result.rang & (1 << User.RANG_USERS)) != 0) text += "П";
+                                if ((result.rang & (1 << User.RANG_PUSHERS)) != 0) text += "Т";
+                                break;
+                            case 2:
+                                text = dateFormat.format(result.date_reg);
+                                break;
+                            default:
+                                throw new IllegalStateException("Unexpected value: " + columnIndex);
+                        }
+                        return text;
+                    }
 
-        fieldSurName = getFieldSurName("", Font.PLAIN, 14, 80, 270, 340, 25);
+                    @Override
+                    public void selectRow(int rowIndex) {
+                        User user = listUsers[rowIndex];
+                        fieldSurName.setText(user.surName);
+                        fieldPassword.setText(user.userPassword);
+                        checkUsers.setSelected((user.rang & (1 << User.RANG_USERS)) != 0 );
+                        checkPushers.setSelected((user.rang & (1 << User.RANG_PUSHERS)) != 0 );
+                        table.clearSelection();
+                    }
+                }
+        );
+
+        label_surName = CreateComponents.getjLabel("ФИО", new Font("Times New Roman", Font.PLAIN, 16), 20, 298, 60, 30, true, true);
+        add(label_surName);
+
+        fieldSurName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 80, 300, 340, 25,
+                null, null, true, true);
         add(fieldSurName);
 
-        fieldPassword = getFieldPassword("", Font.PLAIN, 14, 80, 320, 340, 25);
+        buttonDeactive = CreateComponents.getButton("деактивация", new Font("Times New Roman", Font.PLAIN, 14), 440, 298, 160, 30,
+                this::pushButtonDeactive, true, true);
+        add(buttonDeactive);
+
+        label_password = CreateComponents.getjLabel("Пароль", new Font("Times New Roman", Font.PLAIN, 16), 20, 338, 60, 30, true, true);
+        add(label_password);
+
+        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 80, 340, 340, 25,
+                null, null, true, true);
         add(fieldPassword);
+
+        buttonNewUser = CreateComponents.getButton("Новый пользователь", new Font("Times New Roman", Font.PLAIN, 14), 440, 337, 160, 30,
+                this::pushButtonNewUser, true, true);
+        add(buttonNewUser);
+
+        label_edit = CreateComponents.getjLabel("Редактирование", new Font("Times New Roman", Font.PLAIN, 18), 170, 365, 130, 60, true, true);
+        add(label_edit);
+
+        checkUsers = CreateComponents.getJCheckBox("пользователей", new Font("Times New Roman", Font.PLAIN, 14), 311, 370, 120, 25,
+                false, null, true, true);
+        add(checkUsers);
+
+        checkPushers = CreateComponents.getJCheckBox("толкателей", new Font("Times New Roman", Font.PLAIN, 14), 311, 400, 120, 25,
+                false, null, true, true);
+        add(checkPushers);
+
+        buttonEditUser = CreateComponents.getButton("Ред. пользователя", new Font("Times New Roman", Font.PLAIN, 14), 440, 388, 160, 30,
+                this::pushButtonEditUser, true, true);
+        add(buttonEditUser);
 
         pack();
     }
+
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     //      воздействие из органов управления
-    private void pushButtonDeactive() {
+    private void pushButtonDeactive(ActionEvent actionEvent) {
         // деактивация выбранного пользователя
         deactiveSelectUser();
     }
-    private void pushButtonNewUser() {
+    private void pushButtonNewUser(ActionEvent actionEvent) {
         String surName = fieldSurName.getText();
         String password = fieldPassword.getText();
         int rang = 0;
@@ -173,7 +234,7 @@ public class EditUsers extends JFrame {
         // очистка полей
         clearFieldEdit();
     }
-    private void pushButtonEditUser() {
+    private void pushButtonEditUser(ActionEvent actionEvent) {
         String surName = fieldSurName.getText();
         String password = fieldPassword.getText();
         int rang = 0;
@@ -364,10 +425,12 @@ public class EditUsers extends JFrame {
     JCheckBox checkPushers;
     JTextField fieldPassword;
     JTextField fieldSurName;
+    JTextField fieldSearch;
     JLabel label_edit;
     JLabel label_password;
     JLabel label_surName;
     JLabel label_title;
+    JLabel label_search;
     JScrollPane scroll_table;
     JTable table;
     // ------------------------------------------
@@ -423,31 +486,6 @@ public class EditUsers extends JFrame {
         }
     }
     // ------------------------------------------
-    private JLabel getLabel_title(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Times New Roman", fontStyle, fontSize));
-        label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        label.setBounds(x, y, width, height);
-        return label;
-    }
-    private JLabel getLabel_surName(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Times New Roman", fontStyle, fontSize));
-        label.setBounds(x, y, width, height);
-        return label;
-    }
-    private JLabel getLabel_password(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Times New Roman", fontStyle, fontSize));
-        label.setBounds(x, y, width, height);
-        return label;
-    }
-    private JLabel getLabel_edit(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Times New Roman", fontStyle, fontSize));
-        label.setBounds(x, y, width, height);
-        return label;
-    }
     private JTable getTable(TableModel tableModel, int widthLast, BiInt[] widthColumns) {
         JTable table = new JTable();
         ArrayList<Integer> listAutoColumns = new ArrayList<>();
@@ -485,49 +523,6 @@ public class EditUsers extends JFrame {
         scrollPane.setViewportView(table);
         scrollPane.setBounds(x, y, width, height);
         return scrollPane;
-    }
-    private JButton getButtonDeactive(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Times New Roman", fontStyle, fontSize));
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e -> pushButtonDeactive());
-        return button;
-    }
-    private JButton getButtonNewUser(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Times New Roman", fontStyle, fontSize));
-        button.setBounds(x, y, width, height);
-        button.addActionListener(e -> pushButtonNewUser());
-        return button;
-    }
-    private JButton getButton(String text, int fontStyle, int fontSize, int x, int y, int width, int height, ActionListener listener) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Times New Roman", fontStyle, fontSize));
-        button.setBounds(x, y, width, height);
-        button.addActionListener(listener);
-        return button;
-    }
-    private JTextField getFieldSurName(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JTextField textField = new JTextField(text);
-        textField.setFont(new Font("Times New Roman", fontStyle, fontSize));
-        textField.setBounds(x, y, width, height);
-        textField.addActionListener(e -> enterTextSurName());
-        return textField;
-    }
-    private JTextField getFieldPassword(String text, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JTextField textField = new JPasswordField(text);
-        textField.setFont(new Font("Times New Roman", fontStyle, fontSize));
-        textField.setBounds(x, y, width, height);
-        textField.addActionListener(e -> enterTextPassword());
-        return textField;
-    }
-    private JCheckBox getJCheckBox(String text, boolean stat, int fontStyle, int fontSize, int x, int y, int width, int height) {
-        JCheckBox box = new JCheckBox();
-        box.setFont(new Font("Times New Roman", fontStyle, fontSize));
-        box.setText(text);
-        box.setSelected(stat);
-        box.setBounds(x, y, width, height);
-        return box;
     }
 
     class BiInt {

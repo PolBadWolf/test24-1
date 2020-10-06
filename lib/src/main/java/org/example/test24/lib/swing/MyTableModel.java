@@ -12,7 +12,7 @@ public class MyTableModel extends AbstractTableModel {
     public void setTitles(String[] titles) { this.titles = titles; }
     @Override
     public String getColumnName(int column) {
-        if (titles == null) return "";
+        if (titles == null || titles.length == 0) return "";
         return titles[column];
     }
 
