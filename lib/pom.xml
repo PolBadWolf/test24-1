@@ -12,5 +12,12 @@
     <groupId>org.example.test24</groupId>
     <artifactId>lib</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>me.xdrop</groupId>
+            <artifactId>fuzzywuzzy</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+    </dependencies>
 
 </project>

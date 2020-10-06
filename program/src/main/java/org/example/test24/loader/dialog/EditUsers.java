@@ -2,7 +2,7 @@ package org.example.test24.loader.dialog;
 
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.usertypes.User;
-import org.example.test24.lib.MySwingUtil;
+import org.example.test24.lib.swing.MySwingUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -127,7 +127,10 @@ public class EditUsers extends JFrame {
                     "новый пользователь",
                     "имя пользователя не задано",
                     5_000,
-                    o -> buttonNewUser.setEnabled(true)
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        this.requestFocus();
+                    }
             );
             buttonNewUser.setEnabled(false);
             return;
@@ -137,7 +140,10 @@ public class EditUsers extends JFrame {
                     "новый пользователь",
                     "пароль пустой",
                     5_000,
-                    o -> buttonNewUser.setEnabled(true)
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        this.requestFocus();
+                    }
             );
             buttonNewUser.setEnabled(false);
             return;
@@ -155,7 +161,10 @@ public class EditUsers extends JFrame {
                     "новый пользователь",
                     "такой пользователь уже существует",
                     5_000,
-                    o -> buttonNewUser.setEnabled(true)
+                    o -> {
+                        buttonNewUser.setEnabled(true);
+                        this.requestFocus();
+                    }
             );
             buttonNewUser.setEnabled(false);
             return;
