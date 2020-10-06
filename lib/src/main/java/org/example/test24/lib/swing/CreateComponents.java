@@ -6,6 +6,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.util.Vector;
@@ -28,7 +29,7 @@ public class CreateComponents {
     final public static int FORMATTEDTEXTFIELD = 1;
     final public static int PASSWORDFIELD = 2;
 
-    public static JTextField getTextField(int typeField, Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
+    public static JTextField getTextField(int typeField, Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable, boolean editable) {
         JTextField text;
         switch (typeField) {
             case TEXTFIELD:
@@ -45,15 +46,33 @@ public class CreateComponents {
         }
         text.setFont(font);
         text.setBounds(x, y, width, height);
-        if (filter != null) {
-            ((PlainDocument) text.getDocument()).setDocumentFilter(filter);
-        }
-        if (listener != null) {
-            text.addActionListener(listener);
+        text.setEditable(editable);
+        if (editable) {
+            if (filter != null) {
+                ((PlainDocument) text.getDocument()).setDocumentFilter(filter);
+            }
+            if (listener != null) {
+                text.addActionListener(listener);
+            }
         }
         text.setVisible(visible);
         text.setEnabled(enable);
         return text;
+    }
+    public static JTextField getTextField(int typeField, Font font, int x, int y, int width, int height, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
+        return getTextField(
+                typeField,
+                font,
+                x,
+                y,
+                width,
+                height,
+                filter,
+                listener,
+                visible,
+                enable,
+                true
+        );
     }
     // ---
     public static JButton getButton(String text, Font font, int x, int y, int width, int height, ActionListener listener, boolean visible, boolean enable) {
@@ -132,14 +151,14 @@ public class CreateComponents {
         return scrollPane;
     }
     // ---
-    public static <T> JComboBox<T> getComboBox(Font font, int x, int y, int width, int height, boolean editable, DocumentFilter filter, ItemListener listener, boolean visible, boolean enable) {
+    public static <T> JComboBox<T> getComboBox(Font font, int x, int y, int width, int height, boolean editable, DocumentFilter filter, ActionListener listener, boolean visible, boolean enable) {
         JComboBox<T> comboBox = new JComboBox<>();
         comboBox.setFont(font);
         comboBox.setBounds(x, y, width, height);
         comboBox.setEditable(editable);
         if (filter != null)
             ((PlainDocument) ((JTextComponent) comboBox.getEditor().getEditorComponent()).getDocument()).setDocumentFilter(filter);
-        if (listener != null) comboBox.addItemListener(listener);
+        if (listener != null) comboBox.addActionListener(listener);
         comboBox.setVisible(visible);
         comboBox.setEnabled(enable);
         return comboBox;

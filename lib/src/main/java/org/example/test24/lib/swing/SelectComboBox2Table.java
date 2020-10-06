@@ -5,6 +5,8 @@ import me.xdrop.fuzzywuzzy.model.BoundExtractedResult;
 
 import javax.swing.*;
 import javax.swing.text.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class SelectComboBox2Table<T> {
     private final String lostName;
     private boolean lock = true;
     //
-    private final ItemListener[] comboBoxItemListeners;
+    //private final ItemListener[] comboBoxItemListeners;
 
     public SelectComboBox2Table(JComboBox<T> comboBox, JTable table, T[] cs, String lostName) {
         this.comboBox = comboBox;
@@ -53,38 +55,34 @@ public class SelectComboBox2Table<T> {
                 comboBoxFilterDo();
             }
         });
-        comboBoxItemListeners = comboBox.getItemListeners();
-        for (ItemListener il : comboBoxItemListeners) comboBox.removeItemListener(il);
-        comboBox.addItemListener(e -> {
-            //if (e.getStateChange() == ItemEvent.DESELECTED) return;
-            if (comboLockSelect) return;
-            comboLockSelect = true;
-            String getSel;
-            try {
-                getSel = (String) comboBox.getSelectedItem();
-                if (getSel.equals(lostName)) {
-                    table.clearSelection();
-                    table.setVisible(false);
+        comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (comboLockSelect) {
                     comboLockSelect = false;
                     return;
                 }
-            } catch (Exception exception) {
+                comboLockSelect = true;
+                Object o;
+                try {
+                    o = comboBox.getSelectedItem();
+                    if (o.getClass().getSimpleName().equals("String")) {
+                        String s = (String) o;
+                        if (s.equals(lostName)) {
+                            return;
+                        }
+                    }
+                    if (resultList.size() > 0) {
+                        comboBox.setSelectedItem(resultList.get(0).getReferent());
+                    }
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                } finally {
+                    table.clearSelection();
+                    table.setVisible(false);
+                }
+                comboLockSelect = false;
             }
-            if (resultList.size() > 0) {
-                Object o = resultList.get(0).getReferent();
-                comboBox.setSelectedItem(o);
-            }
-            table.clearSelection();
-            table.setVisible(false);
-            comboLockSelect = false;
-        });
-        comboBox.addItemListener(e -> {
-            //if (e.getStateChange() == ItemEvent.SELECTED) return;
-            if (comboLockSelect) return;
-            if (comboLockListener) return;
-            comboLockListener = true;
-            for (ItemListener il : comboBoxItemListeners) il.itemStateChanged(e);
-            comboLockListener = false;
         });
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) return;
