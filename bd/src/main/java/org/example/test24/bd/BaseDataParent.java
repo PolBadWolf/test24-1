@@ -392,6 +392,7 @@ class BaseDataParent implements BaseData {
         result = statement.executeQuery(query);
         // создание списка
         ArrayList<Pusher> listPusher = new ArrayList<>();
+        myLog.log(Level.SEVERE, "нужен рефакторинг запроса", new Exception());
         while (result.next()) {
             listPusher.add(new Pusher(
                     result.getLong("id_pusher"),
@@ -402,7 +403,7 @@ class BaseDataParent implements BaseData {
                             result.getLong("id_loggerUserEditPusher"),
                             result.getLong("id_pusher"),
                             result.getString("namePusher"),
-                            new LoggerTypePusher(
+                            /*new LoggerTypePusher(
                                     result.getLong("id_loggerTypePusher"),
                                     result.getTimestamp("data_upd_type"),
                                     result.getLong("id_loggerUserEditType"),
@@ -411,6 +412,21 @@ class BaseDataParent implements BaseData {
                                     result.getInt("forceNominal"),
                                     result.getInt("moveNominal"),
                                     result.getInt("unclenchingTime")
+                            )*/
+                            new TypePusher(
+                                    0,
+                                    null,
+                                    new LoggerTypePusher(
+                                            0,
+                                            null,
+                                            0,
+                                            0,
+                                            null,
+                                            0,
+                                            0,
+                                            0
+                                    ),
+                                    null
                             )
                     ),
                     result.getTimestamp("date_unreg")

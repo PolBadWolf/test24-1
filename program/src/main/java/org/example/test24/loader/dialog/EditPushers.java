@@ -155,7 +155,7 @@ public class EditPushers {
                             case 0:
                                 text = pusher.loggerPusher.namePusher;
                                 break;
-                            case 1:
+                            /*case 1:
                                 text = pusher.loggerPusher.loggerTypePusher.nameType;
                                 break;
                             case 2:
@@ -166,7 +166,7 @@ public class EditPushers {
                                 break;
                             case 4:
                                 text = String.valueOf(pusher.loggerPusher.loggerTypePusher.unclenchingTime);
-                                break;
+                                break;*/
                             default:
                                 throw new IllegalStateException("Unexpected value: " + columnIndex);
                         }
@@ -253,9 +253,9 @@ public class EditPushers {
         if (row < 0) return;
         editPusher = listPushers[row];
         textRegNumber.setText(editPusher.loggerPusher.namePusher);
-        long idxLoogerTypePushers = editPusher.loggerPusher.loggerTypePusher.id_loggerTypePusher;
-        TypePusher typePusher = selectTypePusher(listTypePushers, idxLoogerTypePushers);
-        comboBoxTypePushers.setSelectedItem(typePusher);
+        //long idxLoogerTypePushers = editPusher.loggerPusher.loggerTypePusher.id_loggerTypePusher;
+        //TypePusher typePusher = selectTypePusher(listTypePushers, idxLoogerTypePushers);
+        //comboBoxTypePushers.setSelectedItem(typePusher);
         /*textName.setText(editTypePusher.loggerTypePusher.nameType);
         textForce.setText(String.valueOf(editTypePusher.loggerTypePusher.forceNominal));
         textMove.setText(String.valueOf(editTypePusher.loggerTypePusher.moveNominal));
