@@ -7,8 +7,6 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +14,7 @@ import java.util.List;
 public class SelectComboBox2Table_Top<T> {
     private final JTable table;
     private final JComboBox<T> comboBox;
-    private final List<T> cs;
+    private List<T> collection;
     private final int rowMax;
     //
     private boolean comboLockSelect;
@@ -27,10 +25,15 @@ public class SelectComboBox2Table_Top<T> {
     private boolean lock = true;
     //
 
-    public SelectComboBox2Table_Top(JComboBox<T> comboBox, JTable table, T[] cs, int rowMax, String lostName) {
+    public void setCollections(T[] collection) {
+        this.collection = Arrays.asList(collection);
+        doFilter();
+    }
+
+    public SelectComboBox2Table_Top(JComboBox<T> comboBox, JTable table, T[] collection, int rowMax, String lostName) {
         this.comboBox = comboBox;
         this.table = table;
-        this.cs = Arrays.asList(cs);
+        this.collection = Arrays.asList(collection);
         this.rowMax = rowMax;
         this.lostName = lostName;
         //
@@ -117,12 +120,7 @@ public class SelectComboBox2Table_Top<T> {
         tableModel.setTitles(((MyJTable) table).titles);
         table.setModel(tableModel);
         ((MyJTable) table).setCallUpdate(jTable -> {
-            resultList = FuzzySearch.extractTop(
-                    textFilter,
-                    this.cs,
-                    Object::toString,
-                    7
-            );
+            doFilter();
             int row = table.getRowCount();
             if (row == 0) row = 1;
             table.setSize(
@@ -139,6 +137,14 @@ public class SelectComboBox2Table_Top<T> {
         if (!table.isVisible()) table.setVisible(true);
         table.updateUI();
     }
+    private void doFilter() {
+        resultList = FuzzySearch.extractTop(
+                textFilter,
+                this.collection,
+                Object::toString,
+                rowMax
+        );
+    }
 
 //    public void setiKeep(boolean iKeep) {
 //        this.iKeep = iKeep;
@@ -151,12 +157,7 @@ public class SelectComboBox2Table_Top<T> {
 
     public void setLock(boolean lock) {
         this.lock = lock;
-        resultList = FuzzySearch.extractTop(
-                textFilter,
-                this.cs,
-                Object::toString,
-                rowMax
-        );
+        doFilter();
     }
 }
 

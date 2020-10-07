@@ -1040,4 +1040,15 @@ class BaseDataParent implements BaseData {
         } catch (SQLException throwables) { }
         return list.toArray(new TypePusher[0]);
     }
+
+    @Override
+    public BaseData cloneNewBase(String base) {
+        BaseData baseData = new BaseDataParent(connection, base);
+        return baseData;
+    }
+    protected BaseDataParent(Connection connection, String base) {
+        this.connection = connection;
+        this.baseDat = base;
+    }
+    protected BaseDataParent() {}
 }
