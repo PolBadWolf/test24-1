@@ -300,13 +300,25 @@ class TuningFrame {
             comboBoxListBd = getComboBoxListBd(160, 116, 140, 20);
             panelParamSQL.add(comboBoxListBd);
 
-            buttonOk = getButtonOk("Ok", 16, 140, 80, 30);
+            buttonOk = CreateComponents.getButton("Ok", new Font("Dialog", Font.BOLD, 12),
+                    16, 140, 80, 30,
+                    null,
+                    true,
+                    false);
             panelParamSQL.add(buttonOk);
 
-            buttonSave = getButtonSave("Сохранить", 108, 140, 100, 30);
+            buttonSave = CreateComponents.getButton("Сохранить", new Font("Dialog", Font.BOLD, 12),
+                    103, 140, 110, 30,
+                    this::callPushButtonSave,
+                    true,
+                    false);
             panelParamSQL.add(buttonSave);
 
-            buttonTest = getButtonTestBd("Тест", 220, 140, 80, 30);
+            buttonTest = CreateComponents.getButton("Тест", new Font("Dialog", Font.BOLD, 12),
+                    220, 140, 80, 30,
+                    this::callPushButtonTest,
+                    true,
+                    false);
             panelParamSQL.add(buttonTest);
         } // Parameters Base
         {
@@ -435,35 +447,6 @@ class TuningFrame {
         });
         return comboBox;
     }
-    private JButton getButtonOk(String text, int x, int y, int width, int height) {
-        JButton button = new JButton(text);
-        button.setBounds(x, y, width, height);
-        button.setEnabled(false);
-        button.addActionListener(e -> {
-            //pushButtonOk();
-            myLog.log(Level.WARNING, "push button ok", new Exception("action listener"));
-        });
-        return button;
-    }
-    private JButton getButtonSave(String text, int x, int y, int width, int height) {
-        JButton button = new JButton(text);
-        button.setBounds(x, y, width, height);
-        button.setEnabled(false);
-        button.addActionListener(e -> {
-            callPushButtonSave();
-        });
-        return button;
-    }
-    private JButton getButtonTestBd(String text, int x, int y, int width, int height) {
-        JButton button = new JButton(text);
-        button.setBounds(x, y, width, height);
-        button.setEnabled(false);
-        button.addActionListener(e -> {
-            callPushButtonTest();
-        });
-        return button;
-    }
-
     private JButton getButtonEditUsers(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
         button.setBounds(x, y, width, height);
@@ -818,7 +801,7 @@ class TuningFrame {
         buttonEditEnable(false);
     }
     // ========================================================================
-    private void callPushButtonTest() {
+    private void callPushButtonTest(ActionEvent actionEvent) {
         callPushButtonTestBaseData();
         callPushButtonTestCommPort();
         buttonSave.setEnabled(true);
@@ -913,7 +896,7 @@ class TuningFrame {
         }
     }
     // ========================================================================
-    private void callPushButtonSave() {
+    private void callPushButtonSave(ActionEvent actionEvent) {
         buttonSave.setEnabled(false);
         if (!flagTestBaseData || !flagTestCommPort) {
             int result;
