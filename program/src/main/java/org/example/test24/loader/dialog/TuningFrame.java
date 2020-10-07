@@ -698,71 +698,13 @@ class TuningFrame {
         }   // выдача статуса БД
     }
     // >>>>>>>>>>>>>>>>>>>>>>
-    // разрешение кнопки ок
-    protected void onOffButtonOk() {
-        //buttonOk.setEnabled((chCheckCommPort == CommPort.PortStat.INITCODE_OK) && flCheckSql);
-    }
-    protected void onButtonOk() {
-        buttonOk.setEnabled(true);
-    }
-    protected void offButtonOk() {
-        buttonOk.setEnabled(false);
-    }
     // разрешение кнопки тест
-    protected void onOffButtonTest() {
-        /*if (flCheckListBd) {
-            buttonTest.setEnabled(true);
-        } else {
-            buttonTest.setEnabled(false);
-        }*/
+    protected void buttonTestEnable(boolean enabled) {
+        buttonTest.setEnabled(enabled);
     }
-    protected void onButtonTest() {
-        buttonTest.setEnabled(true);
-    }
-    protected void offButtonTest() {
-        buttonTest.setEnabled(false);
-    }
-    // разрешение кнопки save
-    protected void onOffButtonSave() {
-        /*if (flCheckSql) {
-            buttonSave.setEnabled(true);
-        } else {
-            buttonSave.setEnabled(false);
-        }*/
-    }
-    protected void onButtonSave() {
-        buttonSave.setEnabled(true);
-    }
-    protected void offButtonSave() {
-        buttonSave.setEnabled(false);
-    }
-    // разрешение кнопки редактирование пользователей
-    protected void onOffButtonEditUsers() {
-        /*if (flCheckSql) {
-            buttonEditUsers.setEnabled(true);
-        } else {
-            buttonEditUsers.setEnabled(false);
-        }*/
-    }
-    protected void onButtonEditUsers() {
-        buttonEditUsers.setEnabled(true);
-    }
-    protected void offButtonEditUsers() {
-        buttonEditUsers.setEnabled(false);
-    }
-    // разрешение кнопки редактирование толкателей
-    protected void onOffButtonEditPushers() {
-        /*if (flCheckSql) {
-            buttonEditPushers.setEnabled(true);
-        } else {
-            buttonEditPushers.setEnabled(false);
-        }*/
-    }
-    protected void onButtonEditPushers() {
-        buttonEditPushers.setEnabled(true);
-    }
-    protected void offButtonEditPushers() {
-        buttonEditPushers.setEnabled(false);
+    protected void buttonEditEnable(boolean enabled) {
+        buttonEditUsers.setEnabled(enabled);
+        buttonEditPushers.setEnabled(enabled);
     }
     // <<<<<<<<<<<<<<<<<<<<<<
     // выбран тип БД
@@ -774,54 +716,6 @@ class TuningFrame {
         if (flCheckParamSql) {
             //callBack MC.saveConfigTypeBaseData(BaseData2.typeBaseDataCode((String) comboBox.getSelectedItem()));
         }
-    }
-    // смена параметров подключения к SQL серверу
-    private void selectParametersConnectBd() {
-        //if (lockBegin)  return;
-        try {
-            String currentItem = (String) comboBoxListBd.getSelectedItem();
-            //getListBdComp();
-            comboBoxListBd.setSelectedItem(currentItem);
-        } catch (Exception e) {
-            System.out.println("ошибка чтения списка БД: " + e.getMessage());
-        } // чтение списка БД
-        // разрешение кнопки тест
-        onOffButtonTest();
-        // запрет кнопки редактирования пользователей
-        offButtonEditUsers();
-        // запрет кнопки редактирования толкателей
-        offButtonEditPushers();
-    }
-    // нажатие кнопки ок
-    private void pushButtonOk() {
-        //if (lockBegin)  return;
-        closeFrame();
-    }
-    // нажатие кнопки save
-    private void pushButtonSave() {
-        //if (lockBegin)  return;
-        offButtonSave();
-        saveParametersSql();
-        // статус основных параметров
-        checkStatusComp();
-        // выдача статуса основных параметров
-        outStatus();
-        // разрешение кнопки ок
-        onOffButtonOk();
-        // разрешение кнопки редактирования пользователей
-        onOffButtonEditUsers();
-        // разрешение кнопки редактирования толкателей
-        onOffButtonEditPushers();
-    }
-    // нажатие кнопки test
-    private void pushButtonTest() {
-        //if (lockBegin)  return;
-        // статус основных параметров
-        checkStatusComp();
-        // выдача статуса основных параметров
-        outStatus();
-        onOffButtonSave();
-        offButtonTest();
     }
     // нажатие кнопки редактирование пользователей
     private void pushButtonEditUsers() {
@@ -921,15 +815,7 @@ class TuningFrame {
         textTypeBdStatus.setText("");
         flagTestBaseData = false;
         buttonSave.setEnabled(false);
-        buttonEditUsers.setEnabled(false);
-        buttonEditPushers.setEnabled(false);
-        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор базы БД"));
-        /*try {
-            //connBD = initConnect(parametersSql);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }*/
-        //connBD
+        buttonEditEnable(false);
     }
     // ========================================================================
     private void callPushButtonTest() {
@@ -998,6 +884,7 @@ class TuningFrame {
         flagTestBaseData = true;
         //
         buttonEditUsers.setEnabled(true);
+        buttonEditPushers.setEnabled(true);
     }
     private void callPushButtonTestCommPort() {
         CommPort port;
