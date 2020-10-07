@@ -4,6 +4,7 @@ import org.example.test24.bd.*;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.usertypes.User;
+import org.example.test24.lib.swing.CreateComponents;
 import org.example.test24.lib.swing.MyUtil;
 import org.example.test24.lib.swing.SaveEnableComponents;
 
@@ -13,6 +14,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
@@ -224,34 +226,45 @@ class TuningFrame {
         fieldParamServerLogin.setText(parametersSql.getUser());
         fieldParamServerPassword.setText(parametersSql.getPassword());
     }
-
-
-
-
-
-
-
     private void frameConstructor() {
-        frameTuning = getFrameTuning("настройка", 640, 480);
-        frameTuning.setResizable(false);
+        /*frameTuning = getFrameTuning("настройка", 640, 480);
+        frameTuning.setResizable(false);*/
+        frameTuning = CreateComponents.getFrame("настройка", 640, 480, false, null, new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                callBack.messageCloseTuning(true);
+            }
+        });
         Container container = frameTuning.getContentPane();
         {
-            panelCommPort = getPanelTitle("выбор Comm порта",10, 10, 170, 110);
+            panelCommPort = CreateComponents.getPanel(null, new Font("Times New Roman", Font.BOLD, 14),
+                    "выбор Comm порта", 10, 10, 170, 110, true, true);
             container.add(panelCommPort);
             //
-            panelCommPort.add(getLabel("текщий порт: ", 6, 15, 100, 30));
+            panelCommPort.add(CreateComponents.getLabel("текщий порт: ", new Font("Times New Roman", Font.PLAIN, 14),
+                    6, 10, 100, 30, true, true));
             //
-            labelPortCurrent = getLabel("", 80, 15, 100, 30);
+            labelPortCurrent = CreateComponents.getLabel("", new Font("Times New Roman", Font.PLAIN, 14),
+                    80, 15, 100, 30, true, true);
             panelCommPort.add(labelPortCurrent);
             //
-            comboBoxCommPort = getComboBoxCommPort(6, 50, 150, 20);
+            //comboBoxCommPort = getComboBoxCommPort(6, 50, 150, 20);
+            comboBoxCommPort = CreateComponents.getComboBox(new Font("Times New Roman", Font.BOLD, 12),
+                    6, 50, 150, 20, false,
+                    null,
+                    this::callSelectCommPort,
+                    true,
+                    true
+            );
             panelCommPort.add(comboBoxCommPort);
             //
             textCommPortStatus = getTextFieldStatus("", 6, 80, 150, 20);
             panelCommPort.add(textCommPortStatus);
         } // Comm Port
         {
-            panelTypeBd = getPanelTitle("выбор Базы данных ", 180, 10, 190, 110);
+            panelTypeBd = CreateComponents.getPanel(null, new Font("Times New Roman", Font.BOLD, 14),
+                    "выбор Базы данных ", 180, 10, 190, 110, true, true);
             container.add(panelTypeBd);
 
             panelTypeBd.add(getLabel("тип базы данных: ", 10, 10, 140, 30));
@@ -263,7 +276,8 @@ class TuningFrame {
             panelTypeBd.add(textTypeBdStatus);
         } // Type Base
         {
-            panelParamSQL = getPanelTitle("параметры подключения", 10, 130, 360, 200);
+            panelParamSQL = CreateComponents.getPanel(null, new Font("Times New Roman", Font.BOLD, 14),
+                    "параметры подключения", 10, 130, 360, 200, true, true);
             container.add(panelParamSQL);
 
             panelParamSQL.add(getLabel("ip адрес сервера: ", 6, 10, 140, 30));
@@ -296,7 +310,8 @@ class TuningFrame {
             panelParamSQL.add(buttonTest);
         } // Parameters Base
         {
-            panelSelectEdit = getPanelSelectEdit("редактирование", 10, 340, 360, 80);
+            panelSelectEdit = CreateComponents.getPanel(null, new Font("Times New Roman", Font.BOLD, 14),
+                    "редактирование", 10, 340, 360, 80, true, true);
             container.add(panelSelectEdit);
 
             buttonEditUsers = getButtonEditUsers("Пользователи", 16, 30, 140, 30);
@@ -328,13 +343,6 @@ class TuningFrame {
         return frame;
     }
 
-    private JPanel getPanelTitle(String title, int x, int y, int width, int height) {
-        JPanel panel = new JPanel();
-        panel.setBounds(x, y, width, height);
-        panel.setBorder(BorderFactory.createTitledBorder(title));
-        panel.setLayout(null);
-        return panel;
-    }
     private JLabel getLabel(String text, int x, int y, int width, int height) {
         JLabel label = new JLabel(text);
         label.setBounds(x, y, width, height);
@@ -344,7 +352,7 @@ class TuningFrame {
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
         comboBox.addActionListener(e -> {
-            callSelectCommPort(comboBox);
+            //callSelectCommPort(comboBox);
         });
         return comboBox;
     }
@@ -456,13 +464,6 @@ class TuningFrame {
         return button;
     }
 
-    private JPanel getPanelSelectEdit(String title, int x, int y, int width, int height) {
-        JPanel panel = new JPanel();
-        panel.setBounds(x, y, width, height);
-        panel.setBorder(BorderFactory.createTitledBorder(title));
-        panel.setLayout(null);
-        return panel;
-    }
     private JButton getButtonEditUsers(String text, int x, int y, int width, int height) {
         JButton button = new JButton(text);
         button.setBounds(x, y, width, height);
@@ -833,7 +834,8 @@ class TuningFrame {
         saveEnableComponents.offline();
         new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
-                new EditUsers(connBD,
+                new EditUsers(
+                        connBD.cloneNewBase((String) comboBoxListBd.getSelectedItem()),
                         new EditUsers.CallBack() {
                             @Override
                             public void messageCloseEditUsers(boolean newData) {
@@ -891,12 +893,11 @@ class TuningFrame {
     protected JButton buttonEditPushers = null;
     // ========================================================================
     // ********************* Actions ******************************************
-    private void callSelectCommPort(JComboBox comboBox) {
+    private void callSelectCommPort(ActionEvent actionEvent) {
         if (flagLockActions) return;
         textCommPortStatus.setText("");
         flagTestCommPort = false;
         buttonSave.setEnabled(false);
-        myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор comm port"));
     }
     private void callSelectTypeBase(JComboBox comboBox) {
         if (flagLockActions) return;
@@ -920,7 +921,15 @@ class TuningFrame {
         textTypeBdStatus.setText("");
         flagTestBaseData = false;
         buttonSave.setEnabled(false);
+        buttonEditUsers.setEnabled(false);
+        buttonEditPushers.setEnabled(false);
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор базы БД"));
+        /*try {
+            //connBD = initConnect(parametersSql);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }*/
+        //connBD
     }
     // ========================================================================
     private void callPushButtonTest() {
@@ -939,6 +948,7 @@ class TuningFrame {
             parameters.setPortServer(fieldParamServerPort.getText());
             parameters.setUser(fieldParamServerLogin.getText());
             parameters.setPassword(fieldParamServerPassword.getText());
+            parameters.setDataBase((String) comboBoxListBd.getSelectedItem());
             conn = connectBD(parameters);
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "нажатие кнопки тест: " + e.getStatus().toString(), e);
