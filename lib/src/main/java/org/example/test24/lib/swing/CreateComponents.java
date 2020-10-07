@@ -6,15 +6,13 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
-import java.util.Vector;
-import java.util.function.Consumer;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 public class CreateComponents {
     // ---
-    public static JLabel getjLabel(String text, Font font, int x, int y, int width, int height, boolean visible, boolean enable) {
+    public static JLabel getLabel(String text, Font font, int x, int y, int width, int height, boolean visible, boolean enable) {
         JLabel label = new JLabel();
         label.setFont(font);
         label.setText(text);
@@ -23,7 +21,6 @@ public class CreateComponents {
         label.setEnabled(enable);
         return label;
     }
-
     // ---
     final public static int TEXTFIELD = 0;
     final public static int FORMATTEDTEXTFIELD = 1;
@@ -189,6 +186,16 @@ public class CreateComponents {
         checkBox.setBounds(x, y, width, height);
         if (listener != null) checkBox.addActionListener(listener);
         return checkBox;
+    }
+    // ---
+    public static JFrame getFrame(String title, int width, int height, boolean resizable, LayoutManager layoutManager, WindowListener listener) {
+        JFrame frame = new JFrame(title);
+        frame.setSize(width, height);
+        frame.setPreferredSize(new Dimension(width, height));
+        frame.setResizable(resizable);
+        frame.setLayout(layoutManager);
+        frame.addWindowListener(listener);
+        return frame;
     }
     // ---
 

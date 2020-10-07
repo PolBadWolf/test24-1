@@ -7,10 +7,7 @@ import org.example.test24.lib.swing.FilterSortField2Table;
 import org.example.test24.lib.swing.MySwingUtil;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
@@ -34,8 +31,8 @@ public class EditUsers extends JFrame {
     // активный пользователь
     private User activetUser;
     private User editUser = null;
-    private User[] listUsers = null;
-    private User[] tablUsers = null;
+    private User[] listUsers = null; // полный список пользователей
+    private User[] tablUsers = null; // список без активного пользователя
 
     private FilterSortField2Table<User> userFilterSortField2Table;
 
@@ -70,7 +67,7 @@ public class EditUsers extends JFrame {
         setPreferredSize(new Dimension(640, 480));
         setLayout(null);
 
-        label_title = CreateComponents.getjLabel("Редактор пользователей", new Font("Times New Roman", Font.BOLD, 28), 160, 10, 310, 33, true, true);
+        label_title = CreateComponents.getLabel("Редактор пользователей", new Font("Times New Roman", Font.BOLD, 28), 160, 10, 310, 33, true, true);
         add(label_title);
 
         table = CreateComponents.getTable(562, null, new CreateComponents.ModelTableNameWidth[]{
@@ -82,7 +79,7 @@ public class EditUsers extends JFrame {
         scroll_table = CreateComponents.getScrollPane(20, 50, 580, 190, table, true, true);
         add(scroll_table);
 
-        label_search = CreateComponents.getjLabel("Поиск", new Font("Times New Roman", Font.PLAIN, 16), 20, 257, 60, 30, true, true);
+        label_search = CreateComponents.getLabel("Поиск", new Font("Times New Roman", Font.PLAIN, 16), 20, 257, 60, 30, true, true);
         add(label_search);
 
         fieldSearch = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 80, 259, 340, 25,
@@ -127,7 +124,7 @@ public class EditUsers extends JFrame {
                 }
         );
 
-        label_surName = CreateComponents.getjLabel("ФИО", new Font("Times New Roman", Font.PLAIN, 16), 20, 298, 60, 30, true, true);
+        label_surName = CreateComponents.getLabel("ФИО", new Font("Times New Roman", Font.PLAIN, 16), 20, 298, 60, 30, true, true);
         add(label_surName);
 
         fieldSurName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 80, 300, 340, 25,
@@ -138,7 +135,7 @@ public class EditUsers extends JFrame {
                 this::pushButtonDeactive, true, true);
         add(buttonDeactive);
 
-        label_password = CreateComponents.getjLabel("Пароль", new Font("Times New Roman", Font.PLAIN, 16), 20, 338, 60, 30, true, true);
+        label_password = CreateComponents.getLabel("Пароль", new Font("Times New Roman", Font.PLAIN, 16), 20, 338, 60, 30, true, true);
         add(label_password);
 
         fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 80, 340, 340, 25,
@@ -149,7 +146,7 @@ public class EditUsers extends JFrame {
                 this::pushButtonNewUser, true, true);
         add(buttonNewUser);
 
-        label_edit = CreateComponents.getjLabel("Редактирование", new Font("Times New Roman", Font.PLAIN, 18), 170, 365, 130, 60, true, true);
+        label_edit = CreateComponents.getLabel("Редактирование", new Font("Times New Roman", Font.PLAIN, 18), 170, 365, 130, 60, true, true);
         add(label_edit);
 
         checkUsers = CreateComponents.getJCheckBox("пользователей", new Font("Times New Roman", Font.PLAIN, 14), 311, 370, 120, 25,
@@ -302,21 +299,6 @@ public class EditUsers extends JFrame {
         clearFieldEdit();
     }
 
-    private void enterTextSurName() {
-
-   }
-    private void enterTextPassword() {
-
-    }
-    private void selectTableCell() {
-        onButtonEditUser();
-        // выбранный пользователь
-        editUser = tablUsers[table.getSelectedRow()];
-        fieldSurName.setText(editUser.surName);
-        fieldPassword.setText(editUser.userPassword);
-        checkUsers.setSelected((editUser.rang & 1 << User.RANG_USERS) != 0);
-        checkPushers.setSelected((editUser.rang & 1 << User.RANG_PUSHERS) != 0);
-    }
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //      воздействие на органы управления
     private void onButtonEditUser() {
@@ -484,51 +466,4 @@ public class EditUsers extends JFrame {
         }
     }
     // ------------------------------------------
-    private JTable getTable(TableModel tableModel, int widthLast, BiInt[] widthColumns) {
-        JTable table = new JTable();
-        ArrayList<Integer> listAutoColumns = new ArrayList<>();
-        try {
-            table.setModel(tableModel);
-            table.getTableHeader().setReorderingAllowed(false);
-            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-            for (BiInt widthColumn : widthColumns) {
-                if (widthColumn.width < 0) {
-                    listAutoColumns.add(widthColumn.index);
-                    continue;
-                }
-                table.getColumnModel().getColumn(widthColumn.index).setPreferredWidth(widthColumn.width);
-                widthLast = widthLast - widthColumn.width;
-            }
-            int wth = widthLast / listAutoColumns.size();
-            for (int index : listAutoColumns) {
-                table.getColumnModel().getColumn(index).setPreferredWidth(wth);
-            }
-            table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-                @Override
-                public void valueChanged(ListSelectionEvent e) {
-                    if (!e.getValueIsAdjusting()) return;
-                    selectTableCell();
-                }
-            });
-        } catch (ArrayIndexOutOfBoundsException ae) {
-            ae.printStackTrace();
-        }
-        return table;
-    }
-    private JScrollPane getScroll_table(JTable table, int x, int y, int width, int height) {
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(table);
-        scrollPane.setBounds(x, y, width, height);
-        return scrollPane;
-    }
-
-    class BiInt {
-        public int index;
-        public int width;
-        public BiInt(int index, int width) {
-            this.index = index;
-            this.width = width;
-        }
-    }
 }
