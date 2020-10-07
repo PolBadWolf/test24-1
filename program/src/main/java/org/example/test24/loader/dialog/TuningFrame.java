@@ -242,14 +242,13 @@ class TuningFrame {
                     "выбор Comm порта", 10, 10, 170, 110, true, true);
             container.add(panelCommPort);
             //
-            panelCommPort.add(CreateComponents.getLabel("текщий порт: ", new Font("Times New Roman", Font.PLAIN, 14),
+            panelCommPort.add(CreateComponents.getLabel("текщий порт: ", new Font("Tahoma", Font.BOLD, 12),
                     6, 10, 100, 30, true, true));
             //
             labelPortCurrent = CreateComponents.getLabel("", new Font("Times New Roman", Font.PLAIN, 14),
                     80, 15, 100, 30, true, true);
             panelCommPort.add(labelPortCurrent);
             //
-            //comboBoxCommPort = getComboBoxCommPort(6, 50, 150, 20);
             comboBoxCommPort = CreateComponents.getComboBox(new Font("Times New Roman", Font.BOLD, 12),
                     6, 50, 150, 20, false,
                     null,
@@ -259,45 +258,63 @@ class TuningFrame {
             );
             panelCommPort.add(comboBoxCommPort);
             //
-            textCommPortStatus = getTextFieldStatus("", 6, 80, 150, 20);
+            textCommPortStatus = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Tahoma", Font.BOLD, 12),
+                    6, 80, 150, 20,
+                    null,
+                    null,
+                    true,
+                    true,
+                    false);
             panelCommPort.add(textCommPortStatus);
         } // Comm Port
         {
-            panelTypeBd = CreateComponents.getPanel(null, new Font("Times New Roman", Font.BOLD, 14),
+            panelTypeBd = CreateComponents.getPanel(null, new Font("Tahoma", Font.BOLD, 12),
                     "выбор Базы данных ", 180, 10, 190, 110, true, true);
             container.add(panelTypeBd);
 
-            panelTypeBd.add(getLabel("тип базы данных: ", 10, 10, 140, 30));
+            panelTypeBd.add(CreateComponents.getLabel("тип базы данных: ", new Font("Tahoma", Font.BOLD, 12),
+                    10,10, 140, 30, true, true));
 
             comboBoxTypeBd = getComboBoxTypeBd(6, 50, 150, 20);
             panelTypeBd.add(comboBoxTypeBd);
 
-            textTypeBdStatus = getTextTypeBdStatus("", 6, 80, 150, 20);
+            textTypeBdStatus = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Tahoma", Font.BOLD, 12),
+                    6, 80, 150, 20,
+                    null,
+                    null,
+                    true,
+                    true,
+                    false);
             panelTypeBd.add(textTypeBdStatus);
         } // Type Base
         {
-            panelParamSQL = CreateComponents.getPanel(null, new Font("Times New Roman", Font.BOLD, 14),
+            panelParamSQL = CreateComponents.getPanel(null, new Font("Tahoma", Font.BOLD, 12),
                     "параметры подключения", 10, 130, 360, 200, true, true);
             container.add(panelParamSQL);
 
-            panelParamSQL.add(getLabel("ip адрес сервера: ", 6, 10, 140, 30));
+            panelParamSQL.add(CreateComponents.getLabel("ip адрес сервера: ", new Font("Tahoma", Font.BOLD, 12),
+                    6, 10, 140, 30, true, true));
             fieldParamServerIP = getFieldParamServerIP("", 160, 15, 140, 18);
             panelParamSQL.add(fieldParamServerIP);
 
-            panelParamSQL.add(getLabel("порт: ", 6, 30, 140, 30));
-            fieldParamServerPort = getFieldParamServerPort("", 160, 36, 140, 18);
+            panelParamSQL.add(CreateComponents.getLabel("порт: ", new Font("Tahoma", Font.BOLD, 12),
+                    6, 33, 140, 30, true, true));
+            fieldParamServerPort = getFieldParamServerPort("", 160, 39, 140, 18);
             panelParamSQL.add(fieldParamServerPort);
 
-            panelParamSQL.add(getLabel("логин: ", 6, 50, 140, 30));
-            fieldParamServerLogin = getFieldParamServerLogin("", 160, 56, 140, 18);
+            panelParamSQL.add(CreateComponents.getLabel("логин: ", new Font("Tahoma", Font.BOLD, 12),
+                    6, 57, 140, 30, true, true));
+            fieldParamServerLogin = getFieldParamServerLogin("", 160, 63, 140, 18);
             panelParamSQL.add(fieldParamServerLogin);
 
-            panelParamSQL.add(getLabel("пароль: ", 6, 80, 140, 30));
-            fieldParamServerPassword = getFieldParamServerPassword("", 160, 86, 140, 18);
+            panelParamSQL.add(CreateComponents.getLabel("пароль: ", new Font("Tahoma", Font.BOLD, 12),
+                    6, 82, 140, 30, true, true));
+            fieldParamServerPassword = getFieldParamServerPassword("", 160, 88, 140, 18);
             panelParamSQL.add(fieldParamServerPassword);
 
-            panelParamSQL.add(getLabel("база данных: ", 6, 110, 140, 30));
-            comboBoxListBd = getComboBoxListBd(160, 116, 140, 20);
+            panelParamSQL.add(CreateComponents.getLabel("база даных: ", new Font("Tahoma", Font.BOLD, 12),
+            6, 106, 140, 30, true, true));
+            comboBoxListBd = getComboBoxListBd(160, 112, 140, 20);
             panelParamSQL.add(comboBoxListBd);
 
             buttonOk = CreateComponents.getButton("Ok", new Font("Dialog", Font.BOLD, 12),
@@ -363,17 +380,6 @@ class TuningFrame {
         return frame;
     }
 
-    private JLabel getLabel(String text, int x, int y, int width, int height) {
-        JLabel label = new JLabel(text);
-        label.setBounds(x, y, width, height);
-        return label;
-    }
-    private JTextField getTextFieldStatus(String text, int x, int y, int width, int height) {
-        JTextField textField = new JTextField(text);
-        textField.setBounds(x, y, width, height);
-        textField.setEditable(false);
-        return textField;
-    }
     private JComboBox<TypeBaseDate> getComboBoxTypeBd(int x, int y, int width, int height) {
         JComboBox<TypeBaseDate> comboBox = new JComboBox<>();
         comboBox.setBounds(x, y, width, height);
@@ -383,12 +389,6 @@ class TuningFrame {
             callSelectTypeBase(comboBox);
         });
         return comboBox;
-    }
-    private JTextField getTextTypeBdStatus(String text, int x, int y, int width, int height) {
-        JTextField textField = new JTextField(text);
-        textField.setBounds(x, y, width, height);
-        textField.setEditable(false);
-        return textField;
     }
     private JTextField getFieldParamServerIP(String text, int x, int y, int width, int height) {
         JTextField field = new JTextField(text);
