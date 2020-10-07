@@ -81,4 +81,6 @@ public interface BaseData {
     void deativateTypePusher(long id_loggerUser, TypePusher typePusher) throws BaseDataException;
     // чтение списока типов толкателей
     TypePusher[] getListTypePushers(boolean actual) throws BaseDataException;
+    //
+    BaseData cloneNewBase(String base);
 }

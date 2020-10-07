@@ -37,6 +37,8 @@ public class EditUsers extends JFrame {
     private User[] listUsers = null;
     private User[] tablUsers = null;
 
+    private FilterSortField2Table<User> userFilterSortField2Table;
+
 
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -71,11 +73,6 @@ public class EditUsers extends JFrame {
         label_title = CreateComponents.getjLabel("Редактор пользователей", new Font("Times New Roman", Font.BOLD, 28), 160, 10, 310, 33, true, true);
         add(label_title);
 
-        /*table = getTable(new SimpleTableModel(), 562, new BiInt[]{
-                new BiInt(0, -1),
-                new BiInt(1, 32),
-                new BiInt(2, 122)
-        });*/
         table = CreateComponents.getTable(562, null, new CreateComponents.ModelTableNameWidth[]{
                 new CreateComponents.ModelTableNameWidth("ФИО", -1),
                 new CreateComponents.ModelTableNameWidth("ранг", 32),
@@ -92,10 +89,10 @@ public class EditUsers extends JFrame {
                 null, null, true, true);
         add(fieldSearch);
 
-        new FilterSortField2Table<User>(
+        userFilterSortField2Table = new FilterSortField2Table<User>(
                 fieldSearch,
                 table,
-                listUsers,
+                tablUsers,
                 new FilterSortField2Table.CallBackF<User>() {
                     @Override
                     public Object decoder(int columnIndex, User result) {
@@ -120,7 +117,7 @@ public class EditUsers extends JFrame {
 
                     @Override
                     public void selectRow(int rowIndex) {
-                        User user = listUsers[rowIndex];
+                        User user = tablUsers[rowIndex];
                         fieldSurName.setText(user.surName);
                         fieldPassword.setText(user.userPassword);
                         checkUsers.setSelected((user.rang & (1 << User.RANG_USERS)) != 0 );
@@ -344,6 +341,7 @@ public class EditUsers extends JFrame {
             if (user.id_user != activetUser.id_user) list.add(user);
         }
         tablUsers = list.toArray(new User[0]);
+        if (userFilterSortField2Table != null) userFilterSortField2Table.setCollections(tablUsers);
     }
     // деактивация выбранного пользователя
     private void deactiveSelectUser() {

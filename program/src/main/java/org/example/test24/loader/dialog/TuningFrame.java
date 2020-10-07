@@ -833,7 +833,8 @@ class TuningFrame {
         saveEnableComponents.offline();
         new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
-                new EditUsers(connBD,
+                new EditUsers(
+                        connBD.cloneNewBase((String) comboBoxListBd.getSelectedItem()),
                         new EditUsers.CallBack() {
                             @Override
                             public void messageCloseEditUsers(boolean newData) {
@@ -920,7 +921,15 @@ class TuningFrame {
         textTypeBdStatus.setText("");
         flagTestBaseData = false;
         buttonSave.setEnabled(false);
+        buttonEditUsers.setEnabled(false);
+        buttonEditPushers.setEnabled(false);
         myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!!!!!!!!", new Exception("action выбор базы БД"));
+        /*try {
+            //connBD = initConnect(parametersSql);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }*/
+        //connBD
     }
     // ========================================================================
     private void callPushButtonTest() {
@@ -939,6 +948,7 @@ class TuningFrame {
             parameters.setPortServer(fieldParamServerPort.getText());
             parameters.setUser(fieldParamServerLogin.getText());
             parameters.setPassword(fieldParamServerPassword.getText());
+            parameters.setDataBase((String) comboBoxListBd.getSelectedItem());
             conn = connectBD(parameters);
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "нажатие кнопки тест: " + e.getStatus().toString(), e);

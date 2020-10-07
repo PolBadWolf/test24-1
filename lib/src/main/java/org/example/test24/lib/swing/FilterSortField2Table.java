@@ -23,10 +23,15 @@ public class FilterSortField2Table<T> {
     }
     private final JTextField textField;
     private final JTable table;
-    private final List<T> collections;
+    private List<T> collections;
     //private final CallBack<T> callBack;
     private List<BoundExtractedResult<T>> results;
     private String textF;
+
+    public void setCollections(T[] collections) {
+        this.collections = Arrays.asList(collections);
+        fiterDoc();
+    }
 
     public FilterSortField2Table(JTextField textField, JTable table, T[] collections, CallBackF<T> callBack) {
         this.textField = textField;
