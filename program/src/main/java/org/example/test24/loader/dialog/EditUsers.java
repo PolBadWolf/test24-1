@@ -50,7 +50,7 @@ public class EditUsers extends JFrame {
         // инициализация компонентов
         initComponents(); // ****************************************************************
         // деактивация кнопок
-        offButtonEditUser();
+        offButtonEdit();
         setVisible(true);
         setResizable(false);
         // ловушка закрытия окна
@@ -114,12 +114,13 @@ public class EditUsers extends JFrame {
 
                     @Override
                     public void selectRow(int rowIndex) {
-                        User user = tablUsers[rowIndex];
-                        fieldSurName.setText(user.surName);
-                        fieldPassword.setText(user.userPassword);
-                        checkUsers.setSelected((user.rang & (1 << User.RANG_USERS)) != 0 );
-                        checkPushers.setSelected((user.rang & (1 << User.RANG_PUSHERS)) != 0 );
+                        editUser = tablUsers[rowIndex];
+                        fieldSurName.setText(editUser.surName);
+                        fieldPassword.setText(editUser.userPassword);
+                        checkUsers.setSelected((editUser.rang & (1 << User.RANG_USERS)) != 0 );
+                        checkPushers.setSelected((editUser.rang & (1 << User.RANG_PUSHERS)) != 0 );
                         table.clearSelection();
+                        onButtonEdit();
                     }
                 }
         );
@@ -242,11 +243,11 @@ public class EditUsers extends JFrame {
                     5_000,
                     o -> {
                         buttonNewUser.setEnabled(true);
-                        onButtonEditUser();
+                        onButtonEdit();
                     }
             );
             buttonNewUser.setEnabled(false);
-            offButtonEditUser();
+            offButtonEdit();
             return;
         }
         if (password.length() == 0) {
@@ -256,11 +257,11 @@ public class EditUsers extends JFrame {
                     5_000,
                     o -> {
                         buttonNewUser.setEnabled(true);
-                        onButtonEditUser();
+                        onButtonEdit();
                     }
             );
             buttonNewUser.setEnabled(false);
-            offButtonEditUser();
+            offButtonEdit();
             return;
         }
         // проверка на повтор
@@ -281,11 +282,11 @@ public class EditUsers extends JFrame {
                     5_000,
                     o -> {
                         buttonNewUser.setEnabled(true);
-                        onButtonEditUser();
+                        onButtonEdit();
                     }
             );
             buttonNewUser.setEnabled(false);
-            offButtonEditUser();
+            offButtonEdit();
             return;
         }
         updateDataUser(
@@ -301,11 +302,11 @@ public class EditUsers extends JFrame {
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //      воздействие на органы управления
-    private void onButtonEditUser() {
+    private void onButtonEdit() {
         buttonDeactive.setEnabled(true);
         buttonEditUser.setEnabled(true);
     }
-    private void offButtonEditUser() {
+    private void offButtonEdit() {
         buttonEditUser.setEnabled(false);
         buttonDeactive.setEnabled(false);
     }
@@ -341,7 +342,7 @@ public class EditUsers extends JFrame {
             myLog.log(Level.SEVERE, "деактивация пользователя", e);
         } finally {
             // отключить кнопки редактирования
-            offButtonEditUser();
+            offButtonEdit();
             // очистка полей
             clearFieldEdit();
             //

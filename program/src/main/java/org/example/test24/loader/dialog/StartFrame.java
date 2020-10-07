@@ -655,7 +655,8 @@ public class StartFrame {
                             // чтение списка пользователей
                             try {
                                 listUsers = connBD.getListUsers(true);
-                                userSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxUsers, tableFindUsers, listUsers, 7, "a");
+                                //userSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxUsers, tableFindUsers, listUsers, 7, "a");
+                                userSelectComboBox2Table.setCollections(listUsers);
                             } catch (Exception e) {
                                 myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
                                 listUsers = new User[0];
@@ -670,7 +671,9 @@ public class StartFrame {
                                 return;
                             }
                             // загрузить обновленный список
-                            try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, false, null);
+                            try {
+                                userSelectComboBox2Table.setLock(true);
+                                MyUtil.loadToComboBox(listUsers, comboBoxUsers, false, null);
                             } catch (Exception e) {
                                 myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
                                 MySwingUtil.showMessage(
@@ -679,6 +682,8 @@ public class StartFrame {
                                         "ошибка обновления - требуется вмешательство администратора",
                                         10_000
                                 );
+                            } finally {
+                                userSelectComboBox2Table.setLock(false);
                             }
                         }
                         saveEnableComponentsStartFrame.restore();
