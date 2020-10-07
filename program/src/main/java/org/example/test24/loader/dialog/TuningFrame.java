@@ -326,10 +326,18 @@ class TuningFrame {
                     "редактирование", 10, 340, 360, 80, true, true);
             container.add(panelSelectEdit);
 
-            buttonEditUsers = getButtonEditUsers("Пользователи", 16, 30, 140, 30);
+            buttonEditUsers = CreateComponents.getButton("Пользователи", new Font("Dialog", Font.BOLD, 12),
+                    16, 30, 140, 30,
+                    this::callPushButtonEditUsers,
+                    true,
+                    false);
             panelSelectEdit.add(buttonEditUsers);
 
-            buttonEditPushers = getButtonEditPushers("Толкатели", 200, 30, 140, 30);
+            buttonEditPushers = CreateComponents.getButton("Толкатели", new Font("Dialog", Font.BOLD, 12),
+                    200, 30, 140, 30,
+                    null,
+                    true,
+                    false);
             panelSelectEdit.add(buttonEditPushers);
         } // Select Edit
         frameTuning.pack();
@@ -359,14 +367,6 @@ class TuningFrame {
         JLabel label = new JLabel(text);
         label.setBounds(x, y, width, height);
         return label;
-    }
-    private JComboBox<String> getComboBoxCommPort(int x, int y, int width, int height) {
-        JComboBox<String> comboBox = new JComboBox<>();
-        comboBox.setBounds(x, y, width, height);
-        comboBox.addActionListener(e -> {
-            //callSelectCommPort(comboBox);
-        });
-        return comboBox;
     }
     private JTextField getTextFieldStatus(String text, int x, int y, int width, int height) {
         JTextField textField = new JTextField(text);
@@ -447,26 +447,6 @@ class TuningFrame {
         });
         return comboBox;
     }
-    private JButton getButtonEditUsers(String text, int x, int y, int width, int height) {
-        JButton button = new JButton(text);
-        button.setBounds(x, y, width, height);
-        button.setEnabled(false);
-        button.addActionListener(e -> {
-            pushButtonEditUsers();
-        });
-        return button;
-    }
-    private JButton getButtonEditPushers(String text, int x, int y, int width, int height) {
-        JButton button = new JButton(text);
-        button.setBounds(x, y, width, height);
-        button.setEnabled(false);
-        button.addActionListener(e -> {
-            //closeFrame();
-            myLog.log(Level.WARNING, "push button edit pushers", new Exception("action listener"));
-        });
-        return button;
-    }
-
     // закрытие окна
     private void closeFrame() {
         if (frameTuning != null) {
@@ -701,7 +681,7 @@ class TuningFrame {
         }
     }
     // нажатие кнопки редактирование пользователей
-    private void pushButtonEditUsers() {
+    private void callPushButtonEditUsers(ActionEvent actionEvent) {
         if (!flagTestBaseData) {
             myLog.log(Level.SEVERE, "не установлен флаг коррекности БД");
             buttonEditUsers.setEnabled(false);
