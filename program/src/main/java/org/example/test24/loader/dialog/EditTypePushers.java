@@ -93,13 +93,13 @@ public class EditTypePushers {
         frame.setPreferredSize(new Dimension(640, 480));
         frame.setLayout(null);
         // ---- надписи
-        jLabel1 = CreateComponents.getjLabel("Тип толкателя", new Font("Times New Roman", 0, 18), 120, 230, 210, 24, true, true);
+        jLabel1 = CreateComponents.getLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 120, 230, 210, 24, true, true);
         frame.add(jLabel1);
-        jLabel2 = CreateComponents.getjLabel("Усилие на штоке (кг)", new Font("Times New Roman", 0, 18), 30, 310, 190, 24, true, true);
+        jLabel2 = CreateComponents.getLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 16), 30, 310, 190, 24, true, true);
         frame.add(jLabel2);
-        jLabel3 = CreateComponents.getjLabel("Ход штока (мм)", new Font("Times New Roman", 0, 18), 40, 350, 140, 24, true, true);
+        jLabel3 = CreateComponents.getLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 16), 40, 350, 140, 24, true, true);
         frame.add(jLabel3);
-        jLabel4 = CreateComponents.getjLabel("Время разжатия (сек)", new Font("Times New Roman", 0, 18), 40, 385, 140, 24, true, true);
+        jLabel4 = CreateComponents.getLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 16), 40, 385, 140, 24, true, true);
         frame.add(jLabel4);
         // ---- поля ввода данных
         textName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 30, 270,400, 24, null, null, true, true);

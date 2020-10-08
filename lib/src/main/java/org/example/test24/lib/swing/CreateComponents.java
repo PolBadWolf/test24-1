@@ -1,20 +1,20 @@
 package org.example.test24.lib.swing;
 
+import com.sun.javafx.logging.JFRInputEvent;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
-import java.util.Vector;
-import java.util.function.Consumer;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 public class CreateComponents {
     // ---
-    public static JLabel getjLabel(String text, Font font, int x, int y, int width, int height, boolean visible, boolean enable) {
+    public static JLabel getLabel(String text, Font font, int x, int y, int width, int height, boolean visible, boolean enable) {
         JLabel label = new JLabel();
         label.setFont(font);
         label.setText(text);
@@ -23,7 +23,6 @@ public class CreateComponents {
         label.setEnabled(enable);
         return label;
     }
-
     // ---
     final public static int TEXTFIELD = 0;
     final public static int FORMATTEDTEXTFIELD = 1;
@@ -76,9 +75,8 @@ public class CreateComponents {
     }
     // ---
     public static JButton getButton(String text, Font font, int x, int y, int width, int height, ActionListener listener, boolean visible, boolean enable) {
-        JButton button = new JButton();
+        JButton button = new JButton(text);
         button.setFont(font);
-        button.setText(text);
         button.setBounds(x, y, width, height);
         if (listener != null) button.addActionListener(listener);
         button.setVisible(visible);
@@ -110,6 +108,7 @@ public class CreateComponents {
             autoWidth = widthLast / autoN;
         }
         //
+        ((MyJTable) table).titles = titles;
         if (tableModel != null) {
             ((MyTableModel) tableModel).setTitles(titles);
             table.setModel(tableModel);
@@ -178,6 +177,26 @@ public class CreateComponents {
         panel.setVisible(visible);
         panel.setEnabled(enable);
         return panel;
+    }
+    // ---
+    public static JCheckBox getJCheckBox(String text, Font font, int x, int y, int width, int height, boolean selected, ActionListener listener, boolean visible, boolean enable) {
+        JCheckBox checkBox = new JCheckBox();
+        checkBox.setFont(font);
+        checkBox.setText(text);
+        checkBox.setSelected(selected);
+        checkBox.setBounds(x, y, width, height);
+        if (listener != null) checkBox.addActionListener(listener);
+        return checkBox;
+    }
+    // ---
+    public static JFrame getFrame(String title, int width, int height, boolean resizable, LayoutManager layoutManager, WindowListener listener) {
+        JFrame frame = new JFrame(title);
+        frame.setSize(width, height);
+        frame.setPreferredSize(new Dimension(width, height));
+        frame.setResizable(resizable);
+        frame.setLayout(layoutManager);
+        frame.addWindowListener(listener);
+        return frame;
     }
     // ---
 

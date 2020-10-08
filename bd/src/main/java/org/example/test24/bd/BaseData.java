@@ -63,8 +63,6 @@ public interface BaseData {
     boolean checkStructureBd(String base) throws BaseDataException;
     // установка нового пароля пользователю
     void setNewUserPassword(User user, String newPassword) throws BaseDataException;
-    // чтение списка толкателей
-    Pusher[] getListPushers(boolean actual) throws Exception;
     // запись нового пользователя
     void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws BaseDataException;
     // деактивация пользователя
@@ -81,4 +79,12 @@ public interface BaseData {
     void deativateTypePusher(long id_loggerUser, TypePusher typePusher) throws BaseDataException;
     // чтение списока типов толкателей
     TypePusher[] getListTypePushers(boolean actual) throws BaseDataException;
+    //
+    BaseData cloneNewBase(String base);
+    // чтение списка толкателей
+    Pusher[] getListPushers(boolean actual) throws Exception;
+    // запись нового толкателя
+    void writeNewPusher(long id_loggerUser, String regNumber, long id_typePusher) throws BaseDataException;
+    // удаление толкателя
+    void deactivatePusher(long id_loggerUser, long id_pusher) throws BaseDataException;
 }
