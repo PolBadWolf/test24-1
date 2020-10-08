@@ -1133,4 +1133,56 @@ class BaseDataParent implements BaseData {
         } catch (SQLException throwables) {
         }
     }
+    // удаление толкателя
+    @Override
+    public void deactivatePusher(long id_loggerUser, long id_pusher) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(false);
+        //
+        PreparedStatement preparedStatement = null;
+        java.sql.Timestamp timestamp = new Timestamp(new Date().getTime());
+        try {
+            preparedStatement = connection.prepareStatement(
+                    "UPDATE " + baseDat + ".table_pushers SET " +
+                            " date_unreg = ? " +
+                            " WHERE id_pusher = ? "
+            );
+            preparedStatement.setTimestamp(1, timestamp);
+            preparedStatement.setLong(2, id_pusher);
+            preparedStatement.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException sqe) {
+                e = new SQLException("ошибка отмены транзакции: " + sqe.getMessage(), e);
+            }
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException throwables) {
+                }
+            }
+        }
+    }
+    protected void internalCheckConnect() throws BaseDataException {
+        if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
+        boolean fl = false;
+        try {
+            fl = connection.isClosed();
+        } catch (SQLException e) {
+            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
+        }
+        if (fl) { throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE); }
+    }
+    protected void internalAutoCommit(boolean enabled) throws BaseDataException {
+        try {
+            connection.setAutoCommit(enabled);
+            if (!enabled) connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+    }
 }

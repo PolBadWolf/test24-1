@@ -85,4 +85,6 @@ public interface BaseData {
     Pusher[] getListPushers(boolean actual) throws Exception;
     // запись нового толкателя
     void writeNewPusher(long id_loggerUser, String regNumber, long id_typePusher) throws BaseDataException;
+    // удаление толкателя
+    void deactivatePusher(long id_loggerUser, long id_pusher) throws BaseDataException;
 }
