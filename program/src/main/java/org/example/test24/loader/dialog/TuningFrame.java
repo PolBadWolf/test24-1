@@ -9,10 +9,6 @@ import org.example.test24.lib.swing.MyUtil;
 import org.example.test24.lib.swing.SaveEnableComponents;
 
 import javax.swing.*;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -47,11 +43,6 @@ class TuningFrame {
     boolean flagTestCommPort;
     boolean flagNewCorrectData;
 
-
-
-    //private BaseData1 bdSql = null; // *
-    //private Thread threadSkeep = null; // *
-    //private boolean threadSkeepOn; // *
 
     private CommPort.PortStat chCheckCommPort = CommPort.PortStat.INITCODE_NOTEXIST;
     private boolean flCheckParamSql = false;
@@ -204,7 +195,7 @@ class TuningFrame {
         setComponentBaseData(parametersSql);
         //textTypeBdStatus.setText(parametersSql.getTypeBaseDate().toString());
 //        // список БД
-        try { MyUtil.<String>loadToComboBox(listBaseBD, comboBoxListBd, false, parametersSql.getDataBase()); } catch (Exception e) {
+        try { MyUtil.loadToComboBox(listBaseBD, comboBoxListBd, false, parametersSql.getDataBase()); } catch (Exception e) {
             myLog.log(Level.WARNING, "начальная инициализация компонентов", e);
         }
 //        //
@@ -249,7 +240,7 @@ class TuningFrame {
                     80, 15, 100, 30, true, true);
             panelCommPort.add(labelPortCurrent);
             //
-            comboBoxCommPort = CreateComponents.getComboBox(new Font("Times New Roman", Font.BOLD, 12),
+            comboBoxCommPort = CreateComponents.getComboBox(new Font("Dialog", Font.BOLD, 12),
                     6, 50, 150, 20, false,
                     null,
                     this::callSelectCommPort,
@@ -258,7 +249,7 @@ class TuningFrame {
             );
             panelCommPort.add(comboBoxCommPort);
             //
-            textCommPortStatus = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Tahoma", Font.BOLD, 12),
+            textCommPortStatus = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Dialog", Font.BOLD, 12),
                     6, 80, 150, 20,
                     null,
                     null,
@@ -275,10 +266,16 @@ class TuningFrame {
             panelTypeBd.add(CreateComponents.getLabel("тип базы данных: ", new Font("Tahoma", Font.BOLD, 12),
                     10,10, 140, 30, true, true));
 
-            comboBoxTypeBd = getComboBoxTypeBd(6, 50, 150, 20);
+            //comboBoxTypeBd = getComboBoxTypeBd(6, 50, 150, 20); // callSelectTypeBase(comboBox);
+            comboBoxTypeBd = CreateComponents.getComboBox(new Font("Dialog", Font.BOLD, 11),
+                    6, 50, 150, 20, false, null, this::callSelectTypeBase, true, true);
+            flagLockActions = true;
+            comboBoxTypeBd.addItem(TypeBaseDate.MS_SQL);
+            comboBoxTypeBd.addItem(TypeBaseDate.MY_SQL);
+            flagLockActions = false;
             panelTypeBd.add(comboBoxTypeBd);
 
-            textTypeBdStatus = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Tahoma", Font.BOLD, 12),
+            textTypeBdStatus = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Dialog", Font.BOLD, 12),
                     6, 80, 150, 20,
                     null,
                     null,
@@ -292,29 +289,34 @@ class TuningFrame {
                     "параметры подключения", 10, 130, 360, 200, true, true);
             container.add(panelParamSQL);
 
-            panelParamSQL.add(CreateComponents.getLabel("ip адрес сервера: ", new Font("Tahoma", Font.BOLD, 12),
+            panelParamSQL.add(CreateComponents.getLabel("ip адрес сервера: ", new Font("Tahoma", Font.BOLD, 13),
                     6, 10, 140, 30, true, true));
-            fieldParamServerIP = getFieldParamServerIP("", 160, 15, 140, 18);
+            fieldParamServerIP = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Dialog", Font.PLAIN, 13),
+                    160, 15, 140, 20, null, null, true, true);
             panelParamSQL.add(fieldParamServerIP);
 
             panelParamSQL.add(CreateComponents.getLabel("порт: ", new Font("Tahoma", Font.BOLD, 12),
                     6, 33, 140, 30, true, true));
-            fieldParamServerPort = getFieldParamServerPort("", 160, 39, 140, 18);
+            fieldParamServerPort = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Dialog", Font.PLAIN, 13),
+                    160, 39, 140, 20, null, null, true, true);
             panelParamSQL.add(fieldParamServerPort);
 
             panelParamSQL.add(CreateComponents.getLabel("логин: ", new Font("Tahoma", Font.BOLD, 12),
                     6, 57, 140, 30, true, true));
-            fieldParamServerLogin = getFieldParamServerLogin("", 160, 63, 140, 18);
+            fieldParamServerLogin = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Dialog", Font.PLAIN, 13),
+                    160, 63, 140, 20, null, null, true, true);
             panelParamSQL.add(fieldParamServerLogin);
 
             panelParamSQL.add(CreateComponents.getLabel("пароль: ", new Font("Tahoma", Font.BOLD, 12),
                     6, 82, 140, 30, true, true));
-            fieldParamServerPassword = getFieldParamServerPassword("", 160, 88, 140, 18);
+            fieldParamServerPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Dialog", Font.PLAIN, 13),
+                    160, 88, 140, 20, null, null, true, true);
             panelParamSQL.add(fieldParamServerPassword);
 
             panelParamSQL.add(CreateComponents.getLabel("база даных: ", new Font("Tahoma", Font.BOLD, 12),
-            6, 106, 140, 30, true, true));
-            comboBoxListBd = getComboBoxListBd(160, 112, 140, 20);
+            6, 108, 140, 30, true, true));
+            comboBoxListBd = CreateComponents.getComboBox(new Font("Dialog", Font.PLAIN, 12), 160, 112, 140, 20, true,
+                    null, this::callSelectBaseData, true, true);
             panelParamSQL.add(comboBoxListBd);
 
             buttonOk = CreateComponents.getButton("Ok", new Font("Dialog", Font.BOLD, 12),
@@ -386,64 +388,7 @@ class TuningFrame {
         comboBox.addItem(TypeBaseDate.MS_SQL);
         comboBox.addItem(TypeBaseDate.MY_SQL);
         comboBox.addActionListener(e -> {
-            callSelectTypeBase(comboBox);
-        });
-        return comboBox;
-    }
-    private JTextField getFieldParamServerIP(String text, int x, int y, int width, int height) {
-        JTextField field = new JTextField(text);
-        field.setBounds(x, y, width, height);
-        ((PlainDocument)field.getDocument()).setDocumentFilter(new DocumentFilter() {
-            @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                if (string.equals(".") || string.matches("\\d")) {
-                    super.insertString(fb, offset, string, attr);
-                }
-            }
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                if (text.length() == 1) {
-                    if (!text.equals(".") && !text.matches("\\d")) return;
-                }
-                super.replace(fb, offset, length, text, attrs);
-            }
-        });
-        field.addActionListener(e -> {
-            myLog.log(Level.WARNING, "field server ip", new Exception("action listener"));
-        });
-        return field;
-    }
-    private JTextField getFieldParamServerPort(String text, int x, int y, int width, int height) {
-        JTextField field = new JTextField(text);
-        field.setBounds(x, y, width, height);
-        field.addActionListener(e -> {
-            myLog.log(Level.WARNING, "field server port", new Exception("action listener"));
-        });
-        return field;
-    }
-    private JTextField getFieldParamServerLogin(String text, int x, int y, int width, int height) {
-        JTextField field = new JTextField(text);
-        field.setBounds(x, y, width, height);
-        field.addActionListener(e -> {
-            myLog.log(Level.WARNING, "field server user", new Exception("action listener"));
-        });
-        return field;
-    }
-    private JTextField getFieldParamServerPassword(String text, int x, int y, int width, int height) {
-//        JTextField field = new JPasswordField(text);
-        JTextField field = new JTextField(text);
-        field.setBounds(x, y, width, height);
-        field.addActionListener(e -> {
-            myLog.log(Level.WARNING, "field server password", new Exception("action listener"));
-        });
-        return field;
-    }
-    private JComboBox<String> getComboBoxListBd(int x, int y, int width, int height) {
-        JComboBox<String> comboBox = new JComboBox<>();
-        comboBox.setBounds(x, y, width, height);
-        comboBox.addItemListener(e -> {
-            if (e.getStateChange() == 1) return;
-            callSelectBaseData(comboBox);
+            callSelectTypeBase(e);
         });
         return comboBox;
     }
@@ -461,64 +406,8 @@ class TuningFrame {
             }
             callBack.messageCloseTuning(flagNewCorrectData);
         }
-        /*if (editUsers != null) {
-
-        }*/
     } // ****************
     // ======
-    private class EditUsersCallBack implements EditUsers.CallBack {
-        @Override
-        public void messageCloseEditUsers(boolean newData) {
-            //editUsers = null;
-        }
-
-        @Override
-        public User getCurrentUser() {
-            return null;
-        }
-/*@Override
-        public BaseData1 getBdInterface() {
-            if (bdSql == null) {
-                String typeBd = (String) comboBoxTypeBd.getSelectedItem();
-                // подключение к БД
-                //bdSql = BaseData1.init(typeBd, callBack MC.getFilesNameSql());
-            }
-            return bdSql;
-        }*/
-    }
-    // ==================
-
-
-
-
-    // загрузка параметров SQL
-    /*private boolean loadParametersSql(String typeBd) {
-        boolean stat = false;
-        parametersSql = new ParametersSql2(
-                BaseData1.getNameFileParametrsSql(
-                        typeBd,
-                        callBack MC.getFilesNameSql()
-                )
-        );
-        try {
-            //parametersSql.load();
-            stat = true;
-        } catch (Exception e) {
-            System.out.println("ошибка чтения параметров SQL: " + e.getMessage());
-        }
-        return stat;
-    }
-    */
-    // сохранение параметров SQL
-    private void saveParametersSql() {
-        /*parametersSql.urlServer = fieldParamServerIP.getText();
-        parametersSql.portServer = fieldParamServerPort.getText();
-        parametersSql.user = fieldParamServerLogin.getText();
-        parametersSql.password = fieldParamServerPassword.getText();
-        parametersSql.dataBase = (String) comboBoxListBd.getSelectedItem();
-        parametersSql.save();*/
-        checkStatusComp();
-    }
     // статус основных параметров
     private void checkStatusComp() {
         {
@@ -756,7 +645,7 @@ class TuningFrame {
         flagTestCommPort = false;
         buttonSave.setEnabled(false);
     }
-    private void callSelectTypeBase(JComboBox comboBox) {
+    private void callSelectTypeBase(ActionEvent actionEvent) {
         if (flagLockActions) return;
         textTypeBdStatus.setText("");
         comboBoxListBd.removeAllItems();
@@ -765,7 +654,7 @@ class TuningFrame {
         //============================
         BaseData.Parameters parameters;
         try {
-            parameters = loadParametersSql((TypeBaseDate) comboBox.getSelectedItem());
+            parameters = loadParametersSql((TypeBaseDate) comboBoxTypeBd.getSelectedItem());
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "выбор типа БД: " + e.getStatus().toString(), e);
             textTypeBdStatus.setText("ошибка!!!!");
@@ -773,7 +662,7 @@ class TuningFrame {
         }
         setComponentBaseData(parameters);
     }
-    private void callSelectBaseData(JComboBox comboBox) {
+    private void callSelectBaseData(ActionEvent e) {
         if (flagLockActions) return;
         textTypeBdStatus.setText("");
         flagTestBaseData = false;
