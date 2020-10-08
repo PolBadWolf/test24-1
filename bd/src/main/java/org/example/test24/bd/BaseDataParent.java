@@ -841,22 +841,8 @@ class BaseDataParent implements BaseData {
     // чтение списока типов толкателей
     @Override
     public TypePusher[] getListTypePushers(boolean actual) throws BaseDataException {
-        if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
-        boolean fl = false;
-        try {
-            fl = connection.isClosed();
-        } catch (SQLException e) {
-            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
-        }
-        if (fl) { throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE); }
-
-        boolean saveAutoCommit = true;
-        try {
-            saveAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        } catch (SQLException e) { throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
-        }
+        internalCheckConnect();
+        internalAutoCommit(false);
         //
         ResultSet result;
         Statement statement;
@@ -868,48 +854,37 @@ class BaseDataParent implements BaseData {
             if (actual) {
                 query =
                         "SELECT " +
-                                " type_pushers.id_typePusher, " +
-                                " type_pushers.date_reg, " +
-                                " logger_type_pushers.id_loggerTypePusher, " +
-                                " logger_type_pushers.date_upd, " +
-                                " logger_type_pushers.id_loggerUserEdit, " +
-                                " logger_type_pushers.nameType, " +
-                                " logger_type_pushers.forceNominal, " +
-                                " logger_type_pushers.moveNominal, " +
-                                " logger_type_pushers.unclenchingTime, " +
-                                " type_pushers.date_unreg " +
-                                " FROM " +
-                                " " + baseDat + ".type_pushers " +
-                                " INNER JOIN " +
-                                " " + baseDat + ".logger_type_pushers " +
-                                " ON " +
-                                " type_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
-                                " WHERE " +
-                                " type_pushers.date_unreg IS NULL " +
-                                " ORDER BY " +
-                                " logger_type_pushers.nameType "
+                                " pusherstype.id_typePusher, " +
+                                " pusherstype.date_reg, " +
+                                " pusherstype_logger.id_loggerTypePusher, " +
+                                " pusherstype_logger.date_upd, " +
+                                " pusherstype_logger.id_loggerUserEdit, " +
+                                " pusherstype_logger.nameType, " +
+                                " pusherstype_logger.forceNominal, " +
+                                " pusherstype_logger.moveNominal, " +
+                                " pusherstype_logger.unclenchingTime, " +
+                                " pusherstype.date_unreg " +
+                                " FROM " + baseDat + ".pusherstype " +
+                                " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
+                                " WHERE pusherstype.date_unreg IS NULL " +
+                                " ORDER BY pusherstype_logger.nameType "
                 ;
             } else {
                 query =
                         "SELECT " +
-                                " type_pushers.id_typePusher, " +
-                                " type_pushers.date_reg, " +
-                                " logger_type_pushers.id_loggerTypePusher, " +
-                                " logger_type_pushers.date_upd, " +
-                                " logger_type_pushers.id_loggerUserEdit, " +
-                                " logger_type_pushers.nameType, " +
-                                " logger_type_pushers.forceNominal, " +
-                                " logger_type_pushers.moveNominal, " +
-                                " logger_type_pushers.unclenchingTime, " +
-                                " type_pushers.date_unreg " +
-                                " FROM " +
-                                " " + baseDat + ".type_pushers " +
-                                " INNER JOIN " +
-                                " " + baseDat + ".logger_type_pushers " +
-                                " ON " +
-                                " type_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
-                                " ORDER BY " +
-                                " logger_type_pushers.nameType "
+                                " pusherstype.id_typePusher, " +
+                                " pusherstype.date_reg, " +
+                                " pusherstype_logger.id_loggerTypePusher, " +
+                                " pusherstype_logger.date_upd, " +
+                                " pusherstype_logger.id_loggerUserEdit, " +
+                                " pusherstype_logger.nameType, " +
+                                " pusherstype_logger.forceNominal, " +
+                                " pusherstype_logger.moveNominal, " +
+                                " pusherstype_logger.unclenchingTime, " +
+                                " pusherstype.date_unreg " +
+                                " FROM " + baseDat + ".pusherstype " +
+                                " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
+                                " ORDER BY pusherstype_logger.nameType "
                 ;
             }
             result = statement.executeQuery(query);
@@ -943,9 +918,6 @@ class BaseDataParent implements BaseData {
             connection.commit();
         } catch (SQLException e) {
             throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
-        } finally {
-            try { connection.setAutoCommit(saveAutoCommit);
-            } catch (SQLException throwables) { }
         }
         //
         try {
