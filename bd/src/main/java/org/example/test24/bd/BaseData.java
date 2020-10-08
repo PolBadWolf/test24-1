@@ -62,7 +62,7 @@ public interface BaseData {
     // проверка структуры БД
     boolean checkStructureBd(String base) throws BaseDataException;
     // установка нового пароля пользователю
-    void setNewUserPassword(User user, String newPassword) throws BaseDataException;
+    void setNewUserPassword(long id_loggerUserEdit, User user, String newPassword) throws BaseDataException;
     // запись нового пользователя
     void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws BaseDataException;
     // деактивация пользователя
