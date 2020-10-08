@@ -464,39 +464,37 @@ class BaseDataParent implements BaseData {
     // деактивация пользователя
     @Override
     public void deativateUser(long id_loggerUserEdit, User user) throws BaseDataException {
-        if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
-        boolean fl = false;
+        internalCheckConnect();
+        internalAutoCommit(false);
+        PreparedStatement preparedStatementLogger;
+        PreparedStatement preStatementUserUpdate;
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
         try {
-            fl = connection.isClosed();
-        } catch (SQLException e) {
-            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
-        }
-        if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
-
-        boolean saveAutoCommit;
-        try {
-            saveAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        } catch (SQLException e) {
-            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
-        }
-
-        PreparedStatement preStatementUserUpd;
-
-        try {
-            java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
-            //
-            preStatementUserUpd = connection.prepareStatement(
-                    "UPDATE " +
-                            baseDat + ".table_users " +
-                            "SET " +
-                            "date_unreg = ? " +
-                            "WHERE id_user = ? "
+            preparedStatementLogger = connection.prepareStatement(
+                    "INSERT INTO " + baseDat + ".users_logger " +
+                            " (date_upd, id_loggerUserEdit, id_user, surName, userPassword, rang) " +
+                            " VALUES (?, ?, ?, ?, ?, ?) "
             );
-            preStatementUserUpd.setTimestamp(1, timestamp);
-            preStatementUserUpd.setLong(2, user.id_user);
-            preStatementUserUpd.executeUpdate();
+            preparedStatementLogger.setTimestamp(1, timestamp);
+            preparedStatementLogger.setLong(2, id_loggerUserEdit);
+            preparedStatementLogger.setLong(3,  user.id_user);
+            preparedStatementLogger.setString(4, user.surName);
+            preparedStatementLogger.setString(5, BaseData.Password.encoding(user.userPassword));
+            preparedStatementLogger.setInt(6, user.rang);
+            preparedStatementLogger.executeUpdate();
+            long id_loggerUser = ((ClientPreparedStatement)preparedStatementLogger).getLastInsertID();
+            //
+            preStatementUserUpdate = connection.prepareStatement(
+                    "UPDATE " + baseDat + ".users " +
+                            " SET " +
+                            " date_unreg = ?, " +
+                            " id_loggerUser = ? " +
+                            " WHERE id_user = ? "
+            );
+            preStatementUserUpdate.setTimestamp(1, timestamp);
+            preStatementUserUpdate.setLong(2, id_loggerUser);
+            preStatementUserUpdate.setLong(3, user.id_user);
+            preStatementUserUpdate.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
             try { connection.rollback();
@@ -504,44 +502,27 @@ class BaseDataParent implements BaseData {
                 e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
             throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
-        } finally {
-            try { connection.setAutoCommit(saveAutoCommit);
-            } catch (SQLException throwables) { }
         }
         try {
-            preStatementUserUpd.close();
+            preparedStatementLogger.close();
+            preStatementUserUpdate.close();
         } catch (SQLException throwables) { }
     }
     // ===================================================================================================
     // обновление данных о пользователе
     @Override
     public void updateDataUser(User user, long id_loggerUserEdit, String surName, String password, int rang) throws BaseDataException {
-        if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
-        boolean fl = false;
-        try {
-            fl = connection.isClosed();
-        } catch (SQLException e) {
-            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
-        }
-        if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
+        internalCheckConnect();
+        internalAutoCommit(false);
 
-        boolean saveAutoCommit = true;
-        try {
-            saveAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        } catch (SQLException e) {
-            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
-        }
-
-        PreparedStatement preStatementLogger = null;
-        PreparedStatement preStatementUserUpd = null;
+        PreparedStatement preStatementLogger;
+        PreparedStatement preStatementUserUpd;
 
         java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
         try {
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
-                            " " + baseDat + ".logger_users " +
+                            " " + baseDat + ".users_logger " +
                             " (date_upd, id_loggerUserEdit, id_user, surName, userPassword, rang) " +
                             "VALUES (?, ?, ?, ?, ?, ?) "
             );
@@ -556,7 +537,7 @@ class BaseDataParent implements BaseData {
             //
             preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
-                            " " + baseDat + ".table_users " +
+                            " " + baseDat + ".users " +
                             " SET " +
                             " id_loggerUser = ? " +
                             " WHERE id_user = ? "
@@ -572,9 +553,6 @@ class BaseDataParent implements BaseData {
                 e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
             throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
-        } finally {
-            try { connection.setAutoCommit(saveAutoCommit);
-            } catch (SQLException throwables) { }
         }
         try {
             preStatementUserUpd.close();
