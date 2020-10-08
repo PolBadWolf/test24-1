@@ -692,23 +692,8 @@ class BaseDataParent implements BaseData {
     // обновление типа толкателя
     @Override
     public void updateTypePusher(TypePusher typePusher, long id_loggerUserEdit, String nameType, int forceNominal, int moveNominal, int unclenchingTime) throws BaseDataException {
-        if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
-        boolean fl = false;
-        try {
-            fl = connection.isClosed();
-        } catch (SQLException e) { throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
-        }
-        if (fl) { throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE); }
-        if (typePusher == null) { throw new BaseDataException("нет данных", Status.PARAMETERS_ERROR); }
-
-        boolean saveAutoCommit = true;
-        try {
-            saveAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        } catch (SQLException e) {
-            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
-        }
+        internalCheckConnect();
+        internalAutoCommit(false);
 
         PreparedStatement preStatementLogger;
         PreparedStatement preStatementUpdate;
@@ -717,8 +702,7 @@ class BaseDataParent implements BaseData {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
         try {
             preStatementLogger = connection.prepareStatement(
-                    "INSERT INTO " +
-                            " " + baseDat + ".logger_type_pushers " +
+                    "INSERT INTO " + baseDat + ".pusherstype_logger " +
                             " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime) " +
                             " VALUES (?, ?, ?, ?, ?, ?, ?) "
             );
@@ -733,8 +717,7 @@ class BaseDataParent implements BaseData {
             id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
             //
             preStatementUpdate = connection.prepareStatement(
-                    "UPDATE " +
-                            " " + baseDat + ".type_pushers " +
+                    "UPDATE " + baseDat + ".pusherstype " +
                             " SET " +
                             " id_loggerTypePusher = ? " +
                             " WHERE id_typePusher = ? "
@@ -750,9 +733,6 @@ class BaseDataParent implements BaseData {
                 e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
             throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
-        } finally {
-            try { connection.setAutoCommit(saveAutoCommit);
-            } catch (SQLException throwables) { }
         }
 
         typePusher.loggerTypePusher.id_loggerTypePusher = id_loggerTypePusher;
