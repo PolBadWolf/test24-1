@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 public class MyJTable extends JTable {
     private Consumer<JTable> callUpdate = null;
+    public String[] titles;
 
     public void setCallUpdate(Consumer<JTable> callUpdate) {
         this.callUpdate = callUpdate;
