@@ -41,20 +41,8 @@ class BaseDataParent implements BaseData {
     // чтение списка пользователей
     @Override
     public User[] getListUsers(boolean actual) throws BaseDataException {
-        if (connection == null) throw new BaseDataException("отсутствует соединение (connection == null)", Status.CONNECT_NO_CONNECTION);
-        boolean flClosed;
-        try {
-            flClosed = connection.isClosed();
-        } catch (SQLException e) {
-            throw new BaseDataException("отсутствует соединение (connection == null)", e, Status.CONNECT_NO_CONNECTION);
-        }
-        if (flClosed) throw new BaseDataException("отсутствует соединение (connection == null)", Status.CONNECT_CLOSE);
-
-        try {
-            connection.setAutoCommit(true);
-        } catch (SQLException e) {
-            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
-        }
+        internalCheckConnect();
+        internalAutoCommit(true);
 
         ArrayList<User> listUsers = new ArrayList<>();
         Statement statement;
@@ -67,46 +55,46 @@ class BaseDataParent implements BaseData {
             if (actual) {
                 query =
                         "SELECT " +
-                                " table_users.id_user, " +
-                                " table_users.date_reg, " +
-                                " logger_users.id_loggerUser, " +
-                                " logger_users.date_upd, " +
-                                " logger_users.id_loggerUserEdit, " +
-                                " logger_users.surName, " +
-                                " logger_users.userPassword, " +
-                                " logger_users.rang, " +
-                                " table_users.date_unreg " +
+                                " users.id_user, " +
+                                " users.date_reg, " +
+                                " users_logger.id_loggerUser, " +
+                                " users_logger.date_upd, " +
+                                " users_logger.id_loggerUserEdit, " +
+                                " users_logger.surName, " +
+                                " users_logger.userPassword, " +
+                                " users_logger.rang, " +
+                                " users.date_unreg " +
                                 " FROM " +
-                                " " + baseDat + ".logger_users " +
+                                " " + baseDat + ".users " +
                                 " INNER JOIN " +
-                                " " + baseDat + ".table_users " +
+                                " " + baseDat + ".users_logger " +
                                 " ON " +
-                                " logger_users.id_loggerUser = table_users.id_loggerUser " +
+                                " users.id_loggerUser = users_logger.id_loggerUser " +
                                 " WHERE " +
-                                " table_users.date_unreg IS NULL " +
+                                " users.date_unreg IS NULL " +
                                 " ORDER BY " +
-                                " logger_users.surName ASC "
+                                " users_logger.surName ASC "
                 ;
             } else {
                 query =
                         "SELECT " +
-                                " table_users.id_user, " +
-                                " table_users.date_reg, " +
-                                " logger_users.id_loggerUser, " +
-                                " logger_users.date_upd, " +
-                                " logger_users.id_loggerUserEdit, " +
-                                " logger_users.surName, " +
-                                " logger_users.userPassword, " +
-                                " logger_users.rang, " +
-                                " table_users.date_unreg " +
+                                " users.id_user, " +
+                                " users.date_reg, " +
+                                " users_logger.id_loggerUser, " +
+                                " users_logger.date_upd, " +
+                                " users_logger.id_loggerUserEdit, " +
+                                " users_logger.surName, " +
+                                " users_logger.userPassword, " +
+                                " users_logger.rang, " +
+                                " users.date_unreg " +
                                 " FROM " +
-                                " " + baseDat + ".logger_users " +
+                                " " + baseDat + ".users " +
                                 " INNER JOIN " +
-                                " " + baseDat + ".table_users " +
+                                " " + baseDat + ".users_logger " +
                                 " ON " +
-                                " logger_users.id_loggerUser = table_users.id_loggerUser " +
+                                " users.id_loggerUser = users_logger.id_loggerUser " +
                                 " ORDER BY " +
-                                " logger_users.surName ASC "
+                                " users_logger.surName ASC "
                 ;
             }
             result = statement.executeQuery(query);
@@ -158,27 +146,15 @@ class BaseDataParent implements BaseData {
     // проверка структуры БД
     @Override
     public boolean checkStructureBd(String base) throws BaseDataException {
-        if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
-        boolean fl = false;
-        try {
-            fl = connection.isClosed();
-        } catch (SQLException e) {
-            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
-        }
-        if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
+        internalCheckConnect();
+        internalAutoCommit(true);
 
-        try {
-            connection.setAutoCommit(true);
-        } catch (SQLException e) {
-            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
-        }
-
-        boolean table_data, table_spec;
-        boolean table_users, logger_users;
-        boolean table_pushers, logger_pushers;
-        table_data = checkStructureTable(
+        boolean data, data_spec;
+        boolean users, users_logger;
+        boolean pushers, logger_pushers;
+        data = checkStructureTable(
                 base,
-                "table_data",
+                "data",
                 new ArrayList(Arrays.asList(
                         "id",
                         "dateTime",
@@ -191,9 +167,9 @@ class BaseDataParent implements BaseData {
                         "dis"
                 ))
         );
-        table_users = checkStructureTable(
+        users = checkStructureTable(
                 base,
-                "table_users",
+                "users",
                 new ArrayList(Arrays.asList(
                         "id_user",
                         "date_reg",
@@ -201,9 +177,9 @@ class BaseDataParent implements BaseData {
                         "date_unreg"
                 ))
         );
-        logger_users = checkStructureTable(
+        users_logger = checkStructureTable(
                 base,
-                "logger_users",
+                "users_logger",
                 new ArrayList(Arrays.asList(
                         "id_loggerUser",
                         "date",
@@ -214,9 +190,9 @@ class BaseDataParent implements BaseData {
                         "rang"
                 ))
         );
-        table_pushers = checkStructureTable(
+        pushers = checkStructureTable(
                 base,
-                "table_pushers",
+                "pushers",
                 new ArrayList(Arrays.asList(
                         "id_pusher",
                         "date_reg",
@@ -224,7 +200,7 @@ class BaseDataParent implements BaseData {
                         "date_unreg"
                 ))
         );
-        return table_data && table_users && table_pushers;
+        return data && users && pushers;
     }
     // проверка структуры таблицы
     protected boolean checkStructureTable(String base, String table, ArrayList<String> listColumns) {
@@ -327,78 +303,55 @@ class BaseDataParent implements BaseData {
         if (actual) {
             query =
                     " SELECT " +
-                            " table_pushers.id_pusher, " +
-                            " table_pushers.date_reg AS date_reg_pushers, " +
-                            " logger_pushers.id_loggerPusher, " +
-                            " logger_pushers.date_upd AS date_upd_pushers, " +
-                            " logger_pushers.id_loggerUserEdit AS id_loggerUserEdit_pushers, " +
-                            " logger_pushers.namePusher, " +
-                            " type_pushers.id_typePusher, " +
-                            " type_pushers.date_reg AS date_reg_typepushers, " +
-                            " logger_type_pushers.id_loggerTypePusher, " +
-                            " logger_type_pushers.date_upd AS date_upd_typepushers, " +
-                            " logger_type_pushers.id_loggerUserEdit AS id_loggerUserEdittypepushers, " +
-                            " logger_type_pushers.nameType, " +
-                            " logger_type_pushers.forceNominal, " +
-                            " logger_type_pushers.moveNominal, " +
-                            " logger_type_pushers.unclenchingTime, " +
-                            " type_pushers.date_unreg AS date_unreg_typepushers, " +
-                            " table_pushers.date_unreg AS date_unreg_pushers " +
-                            " FROM " +
-                            " " + baseDat + ".table_pushers " +
-                            " INNER JOIN " +
-                            " " + baseDat + ".logger_pushers " +
-                            " ON " +
-                            " table_pushers.id_loggerPusher = logger_pushers.id_loggerPusher " +
-                            " INNER JOIN " +
-                            " " + baseDat + ".type_pushers " +
-                            " ON " +
-                            " logger_pushers.id_typePusher = type_pushers.id_typePusher " +
-                            " INNER JOIN " +
-                            " " + baseDat + ".logger_type_pushers " +
-                            " ON " +
-                            " type_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
-                            " WHERE " +
-                            " table_pushers.date_unreg IS NULL " +
-                            " ORDER BY " +
-                            " logger_pushers.namePusher "
+                            " pushers.id_pusher, " +
+                            " pushers.date_reg AS date_reg_pushers, " +
+                            " pushers_logger.id_loggerPusher,  " +
+                            " pushers_logger.date_upd AS date_upd_pushers, " +
+                            " pushers_logger.id_loggerUserEdit AS id_loggerUserEdit_pushers, " +
+                            " pushers_logger.namePusher, " +
+                            " pusherstype.id_typePusher, " +
+                            " pusherstype.date_reg AS date_reg_typepushers, " +
+                            " pusherstype_logger.id_loggerTypePusher, " +
+                            " pusherstype_logger.date_upd AS date_upd_typepushers, " +
+                            " pusherstype_logger.id_loggerUserEdit AS id_loggerUserEdittypepushers, " +
+                            " pusherstype_logger.nameType, " +
+                            " pusherstype_logger.forceNominal, " +
+                            " pusherstype_logger.moveNominal, " +
+                            " pusherstype_logger.unclenchingTime, " +
+                            " pusherstype.date_unreg AS date_unreg_typepushers, " +
+                            " pushers.date_unreg AS date_unreg_pushers " +
+                            " FROM " +  baseDat + ".pushers " +
+                            " INNER JOIN " + baseDat + ".pushers_logger ON pushers.id_loggerPusher = pushers_logger.id_loggerPusher " +
+                            " INNER JOIN " + baseDat + ".pusherstype ON pushers_logger.id_typePusher = pusherstype.id_typePusher " +
+                            " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
+                            " WHERE pushers.date_unreg IS NULL " +
+                            " ORDER BY pushers_logger.namePusher "
             ;
         } else {
             query =
                     " SELECT " +
-                            " table_pushers.id_pusher, " +
-                            " table_pushers.date_reg AS date_reg_pushers, " +
-                            " logger_pushers.id_loggerPusher, " +
-                            " logger_pushers.date_upd AS date_upd_pushers, " +
-                            " logger_pushers.id_loggerUserEdit AS id_loggerUserEdit_pushers, " +
-                            " logger_pushers.namePusher, " +
-                            " type_pushers.id_typePusher, " +
-                            " type_pushers.date_reg AS date_reg_typepushers, " +
-                            " logger_type_pushers.id_loggerTypePusher, " +
-                            " logger_type_pushers.date_upd AS date_upd_typepushers, " +
-                            " logger_type_pushers.id_loggerUserEdit AS id_loggerUserEdittypepushers, " +
-                            " logger_type_pushers.nameType, " +
-                            " logger_type_pushers.forceNominal, " +
-                            " logger_type_pushers.moveNominal, " +
-                            " logger_type_pushers.unclenchingTime, " +
-                            " type_pushers.date_unreg AS date_unreg_typepushers, " +
-                            " table_pushers.date_unreg AS date_unreg_pushers " +
-                            " FROM " +
-                            " " + baseDat + ".table_pushers " +
-                            " INNER JOIN " +
-                            " " + baseDat + ".logger_pushers " +
-                            " ON " +
-                            " table_pushers.id_loggerPusher = logger_pushers.id_loggerPusher " +
-                            " INNER JOIN " +
-                            " " + baseDat + ".type_pushers " +
-                            " ON " +
-                            " logger_pushers.id_typePusher = type_pushers.id_typePusher " +
-                            " INNER JOIN " +
-                            " " + baseDat + ".logger_type_pushers " +
-                            " ON " +
-                            " type_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
-                            " ORDER BY " +
-                            " logger_pushers.namePusher "
+                            " pushers.id_pusher, " +
+                            " pushers.date_reg AS date_reg_pushers, " +
+                            " pushers_logger.id_loggerPusher,  " +
+                            " pushers_logger.date_upd AS date_upd_pushers, " +
+                            " pushers_logger.id_loggerUserEdit AS id_loggerUserEdit_pushers, " +
+                            " pushers_logger.namePusher, " +
+                            " pusherstype.id_typePusher, " +
+                            " pusherstype.date_reg AS date_reg_typepushers, " +
+                            " pusherstype_logger.id_loggerTypePusher, " +
+                            " pusherstype_logger.date_upd AS date_upd_typepushers, " +
+                            " pusherstype_logger.id_loggerUserEdit AS id_loggerUserEdittypepushers, " +
+                            " pusherstype_logger.nameType, " +
+                            " pusherstype_logger.forceNominal, " +
+                            " pusherstype_logger.moveNominal, " +
+                            " pusherstype_logger.unclenchingTime, " +
+                            " pusherstype.date_unreg AS date_unreg_typepushers, " +
+                            " pushers.date_unreg AS date_unreg_pushers " +
+                            " FROM " +  baseDat + ".pushers " +
+                            " INNER JOIN " + baseDat + ".pushers_logger ON pushers.id_loggerPusher = pushers_logger.id_loggerPusher " +
+                            " INNER JOIN " + baseDat + ".pusherstype ON pushers_logger.id_typePusher = pusherstype.id_typePusher " +
+                            " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
+                            " ORDER BY pushers_logger.namePusher "
             ;
         }
         result = statement.executeQuery(query);
