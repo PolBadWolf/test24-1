@@ -398,23 +398,8 @@ class BaseDataParent implements BaseData {
     // запись нового пользователя
     @Override
     public void writeNewUser(long id_loggerUserEdit, String surName, String password, int rang) throws BaseDataException {
-        if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
-        boolean fl;
-        try {
-            fl = connection.isClosed();
-        } catch (SQLException e) {
-            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
-        }
-        if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
-
-        boolean saveAutoCommit;
-        try {
-            saveAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        } catch (SQLException e) {
-            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
-        }
+        internalCheckConnect();
+        internalAutoCommit(false);
 
         PreparedStatement preStatementUser;
         PreparedStatement preStatementLogger;
@@ -425,7 +410,7 @@ class BaseDataParent implements BaseData {
             //
             preStatementUser = connection.prepareStatement(
                     "INSERT INTO " +
-                            " " + baseDat + ".table_users " +
+                            " " + baseDat + ".users " +
                             " (date_reg, id_loggerUser) " +
                             " VALUES (?, ?) "
             );
@@ -436,7 +421,7 @@ class BaseDataParent implements BaseData {
             //
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
-                            " " + baseDat + ".logger_users " +
+                            " " + baseDat + ".users_logger " +
                             " (date_upd, id_loggerUserEdit, id_user, surName, userPassword, rang) " +
                             " VALUES (?, ?, ?, ?, ?, ?) "
             );
@@ -451,7 +436,7 @@ class BaseDataParent implements BaseData {
             //
             preStatementUserUpd = connection.prepareStatement(
                     "UPDATE " +
-                            " " + baseDat + ".table_users " +
+                            " " + baseDat + ".users " +
                             " SET " +
                             " id_loggerUser = ? " +
                             " WHERE id_user = ? "
@@ -467,9 +452,6 @@ class BaseDataParent implements BaseData {
                 e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
             throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
-        } finally {
-            try { connection.setAutoCommit(saveAutoCommit);
-            } catch (SQLException throwables) { }
         }
         //
         try {
