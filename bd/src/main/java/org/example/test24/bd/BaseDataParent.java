@@ -730,6 +730,7 @@ class BaseDataParent implements BaseData {
         } catch (SQLException e) {
             throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
         }
+        String query;
         //
         PreparedStatement preStatementPusherType;
         PreparedStatement preStatementLoggerPusherType;
@@ -739,23 +740,23 @@ class BaseDataParent implements BaseData {
         //
         try {
             // создание записи индификатора толкателя
-            preStatementPusherType = connection.prepareStatement(
-                    "INSERT INTO " +
-                            " " + baseDat + ".type_pushers " +
-                            " (date_reg, id_loggerTypePusher) " +
-                            " VALUES (?, ?) "
-            );
+            query = "INSERT INTO " +
+                    " " + baseDat + ".type_pushers " +
+                    " (date_reg, id_loggerTypePusher) " +
+                    " VALUES (?, ?) "
+            ;
+            preStatementPusherType = connection.prepareStatement(query);
             preStatementPusherType.setTimestamp(1, timestamp);
             preStatementPusherType.setLong(2, 0);
             preStatementPusherType.executeUpdate();
             long id_typePusher = ((ClientPreparedStatement) preStatementPusherType).getLastInsertID();
             // создание записи в журнале типа толкателя
-            preStatementLoggerPusherType = connection.prepareStatement(
-                    "INSERT INTO " +
-                            " " + baseDat + ".logger_type_pushers " +
-                            " (data_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime) " +
-                            " VALUES (?, ?, ?, ?, ?, ?, ?) "
-            );
+            query = "INSERT INTO " +
+                    " " + baseDat + ".logger_type_pushers " +
+                    " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime) " +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?) "
+            ;
+            preStatementLoggerPusherType = connection.prepareStatement(query);
             preStatementLoggerPusherType.setTimestamp(1, timestamp);
             preStatementLoggerPusherType.setLong(2, id_loggerUser);
             preStatementLoggerPusherType.setLong(3, id_typePusher);
@@ -821,7 +822,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " +
                             " " + baseDat + ".logger_type_pushers " +
-                            " (data_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime) " +
+                            " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime) " +
                             " VALUES (?, ?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);

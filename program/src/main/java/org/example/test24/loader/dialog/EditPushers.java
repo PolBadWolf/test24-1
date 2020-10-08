@@ -87,10 +87,6 @@ public class EditPushers {
         // загрузка типов компонентов
         try {
             listTypePushers = connBD.getListTypePushers(true);
-        } catch (BaseDataException e) {
-            e.printStackTrace();
-        }
-        try {
             MyUtil.loadToComboBox(
                     listTypePushers,
                     comboBoxTypePushers,
@@ -295,6 +291,24 @@ public class EditPushers {
                             @Override
                             public void messageCloseEditUsers(boolean newData) {
                                 saveEnableComponents.restore();
+                                // обновление данных по типам толкатей
+                                typePusherSelectComboBox2Table.setLock(true);
+                                try {
+                                    listTypePushers = connBD.getListTypePushers(true);
+                                    MyUtil.loadToComboBox(
+                                            listTypePushers,
+                                            comboBoxTypePushers,
+                                            true,
+                                            null
+                                    );
+                                    typePusherSelectComboBox2Table.setCollections(listTypePushers);
+                                } catch (BaseDataException e) {
+                                    e.printStackTrace();
+                                } catch (Exception exception) {
+                                    exception.printStackTrace();
+                                }
+                                comboBoxTypePushers.setSelectedIndex(-1);
+                                typePusherSelectComboBox2Table.setLock(false);
                                 frame.requestFocus();
                             }
                         },

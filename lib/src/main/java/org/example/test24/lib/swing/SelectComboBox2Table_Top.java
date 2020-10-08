@@ -75,9 +75,11 @@ public class SelectComboBox2Table_Top<T> {
                                 return;
                             }
                         }
-                    }
-                    if (resultList.size() > 0) {
-                        comboBox.setSelectedItem(resultList.get(0).getReferent());
+                        if (resultList.size() > 0) {
+                            comboBox.setSelectedItem(resultList.get(0).getReferent());
+                        }
+                    } else {
+                        comboBox.setSelectedItem(null);
                     }
                 } catch (Exception exception) {
                     exception.printStackTrace();
