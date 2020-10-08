@@ -275,7 +275,7 @@ class TuningFrame {
             flagLockActions = false;
             panelTypeBd.add(comboBoxTypeBd);
 
-            textTypeBdStatus = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Dialog", Font.BOLD, 12),
+            textTypeBdStatus = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Dialog", Font.BOLD, 11),
                     6, 80, 150, 20,
                     null,
                     null,
