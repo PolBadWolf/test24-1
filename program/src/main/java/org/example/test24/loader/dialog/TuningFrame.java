@@ -275,7 +275,7 @@ class TuningFrame {
             flagLockActions = false;
             panelTypeBd.add(comboBoxTypeBd);
 
-            textTypeBdStatus = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Dialog", Font.BOLD, 12),
+            textTypeBdStatus = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Dialog", Font.BOLD, 11),
                     6, 80, 150, 20,
                     null,
                     null,
@@ -354,7 +354,7 @@ class TuningFrame {
 
             buttonEditPushers = CreateComponents.getButton("Толкатели", new Font("Dialog", Font.BOLD, 12),
                     200, 30, 140, 30,
-                    null,
+                    this::callPushButtonEditPushers,
                     true,
                     false);
             panelSelectEdit.add(buttonEditPushers);
@@ -610,6 +610,34 @@ class TuningFrame {
                         });
             });
         }, "create edit users").start();
+    }
+    private void callPushButtonEditPushers(ActionEvent actionEvent) {
+        if (!flagTestBaseData) {
+            myLog.log(Level.SEVERE, "не установлен флаг коррекности БД");
+            buttonEditUsers.setEnabled(false);
+            return;
+        }
+        saveEnableComponents.save();
+        saveEnableComponents.offline();
+        new Thread(()->{
+            SwingUtilities.invokeLater(()->{
+                new EditPushers(
+                        new EditPushers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers() {
+                                saveEnableComponents.restore();
+                                frameTuning.requestFocus();
+                            }
+                            @Override
+                            public long getCurrentId_loggerUser() {
+                                return 0;
+                            }
+                        },
+                        connBD.cloneNewBase((String) comboBoxListBd.getSelectedItem()),
+                        0
+                        );
+            });
+        },"create edit pushers").start();
     }
     // ========================================================================
     // ===== компоненты JFrame =======
