@@ -251,7 +251,7 @@ public class EditPushers {
         textRegNumber.setText(editPusher.loggerPusher.namePusher);
         comboBoxTypePushers.setSelectedItem(editPusher.loggerPusher.typePusher);
     }
-    private TypePusher selectTypePusher(TypePusher[] listTypePushers, long idxLooger) {
+    /*private TypePusher selectTypePusher(TypePusher[] listTypePushers, long idxLooger) {
         TypePusher tp = null;
         for (TypePusher typePusher : listTypePushers) {
             if (typePusher.loggerTypePusher.id_loggerTypePusher == idxLooger) {
@@ -260,14 +260,16 @@ public class EditPushers {
             }
         }
         return tp;
+    }*/
+    // -----------
+    private void clearFields() {
+        textRegNumber.setText("");
+        comboBoxTypePushers.setSelectedItem(null);
     }
+
     // -----------
     private void callComboBoxTypePushers(ActionEvent actionEvent) {
-        /*if (itemEvent != null) {
-            if (itemEvent.getStateChange() == ItemEvent.SELECTED) return;
-        }*/
         try {
-            //TypePusher tp = typePusherSelectComboBox2Table.getResultFist();
             TypePusher tp = (TypePusher) comboBoxTypePushers.getSelectedItem();
             textForce.setText(String.valueOf(tp.loggerTypePusher.forceNominal));
             textMove.setText(String.valueOf(tp.loggerTypePusher.moveNominal));
@@ -279,7 +281,57 @@ public class EditPushers {
         }
     }
     private void callButtonAdd(ActionEvent actionEvent) {
-
+        if (
+                textRegNumber.getText().length() == 0 ||
+                        comboBoxTypePushers.getSelectedItem() == null
+        ) {
+            saveEnableComponents.save();
+            saveEnableComponents.offline();
+            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
+                saveEnableComponents.restore();
+                frame.requestFocus();
+            });
+            return;
+        }
+        // заменяемые данные
+        String updateRegNumber = textRegNumber.getText();
+        long updateId_TypePusher = ((TypePusher) comboBoxTypePushers.getSelectedItem()).id_typePusher;
+        // проверка на повтор
+        {
+            boolean flAgain = false;
+            for (int i = 0; i < listPushers.length; i++) {
+                if (!updateRegNumber.equals(listPushers[i].loggerPusher.namePusher)) continue;
+                flAgain = true;
+                break;
+            }
+            if (flAgain) {
+                saveEnableComponents.save();
+                saveEnableComponents.offline();
+                MySwingUtil.showMessage(frame,
+                        "редактирование списка толкателей",
+                        "такой толкатель уже существует",
+                        5_000, o -> {
+                            saveEnableComponents.restore();
+                            frame.requestFocus();
+                        });
+                return;
+            }
+        }
+        // добавление
+        try {
+            connBD.writeNewPusher(currentId_loggerUserEdit, updateRegNumber, updateId_TypePusher);
+        } catch (BaseDataException e) {
+            e.printStackTrace();
+        }
+        // очистка полей
+        clearFields();
+        // обновление записей
+        try {
+            listPushers = connBD.getListPushers(true);
+        } catch (Exception exception) {
+            //exception.printStackTrace();
+        }
+        tablePushers.updateUI();
     }
     private void callButtonEditTypePushers(ActionEvent actionEvent) {
         saveEnableComponents.save();
