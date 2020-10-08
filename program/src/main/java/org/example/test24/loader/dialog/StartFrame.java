@@ -64,8 +64,8 @@ public class StartFrame {
 
     CallBack callBack;
     JFrame frame;
-    private SelectComboBox2Table<User> userSelectComboBox2Table;
-    private  SelectComboBox2Table<Pusher> pusherSelectComboBox2Table;
+    private SelectComboBox2Table_Top<User> userSelectComboBox2Table;
+    private SelectComboBox2Table_Top<Pusher> pusherSelectComboBox2Table;
 
     TypeBaseDate typeBaseDate;
     BaseData.Parameters parameters;
@@ -229,8 +229,8 @@ public class StartFrame {
         });
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
-        pusherSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxPusher, tableFindPushers, listPushers, null);
-        userSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxUsers, tableFindUsers, listUsers, "a");
+        pusherSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxPusher, tableFindPushers, listPushers, 7, null);
+        userSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxUsers, tableFindUsers, listUsers, 7, "a");
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -340,20 +340,20 @@ public class StartFrame {
         frame = new JFrame();
         frame.setPreferredSize(new Dimension(640, 480));
         {
-            label1 = CreateComponents.getjLabel("Стенд", new Font("Times New Roman", Font.PLAIN, 57), 220, 130, 148, 66, false, true);
-            label2 = CreateComponents.getjLabel("испытания", new Font("Times New Roman", Font.PLAIN, 36), 210, 180, 227, 42, false, true);
-            label3 = CreateComponents.getjLabel("гидротолкателей", new Font("Times New Roman", Font.PLAIN, 36), 170, 210, 258, 42, false, true);
-            label4 = CreateComponents.getjLabel("Гумеров М.Н.", new Font("Times New Roman", Font.PLAIN, 11), 380, 400, 68, 20, false, true);
-            label5 = CreateComponents.getjLabel("ЦЗЛАМ ЛА", new Font("Times New Roman", Font.PLAIN, 16), 460, 400, 90, 19, false, true);
+            label1 = CreateComponents.getLabel("Стенд", new Font("Times New Roman", Font.PLAIN, 57), 220, 130, 148, 66, false, true);
+            label2 = CreateComponents.getLabel("испытания", new Font("Times New Roman", Font.PLAIN, 36), 210, 180, 227, 42, false, true);
+            label3 = CreateComponents.getLabel("гидротолкателей", new Font("Times New Roman", Font.PLAIN, 36), 170, 210, 258, 42, false, true);
+            label4 = CreateComponents.getLabel("Гумеров М.Н.", new Font("Times New Roman", Font.PLAIN, 11), 380, 400, 68, 20, false, true);
+            label5 = CreateComponents.getLabel("ЦЗЛАМ ЛА", new Font("Times New Roman", Font.PLAIN, 16), 460, 400, 90, 19, false, true);
             frame.add(label1);
             frame.add(label2);
             frame.add(label3);
             frame.add(label4);
             frame.add(label5);
             //
-            jLabel1 = CreateComponents.getjLabel("Пользователь : ", new Font("Times New Roman", Font.PLAIN, 14), 100, 195, 90, 16, false, true);
-            jLabel2 = CreateComponents.getjLabel("Пароль :", new Font("Times New Roman", Font.PLAIN, 14), 100, 235, 90, 16, false, true);
-            jLabel3 = CreateComponents.getjLabel("Толкатель :", new Font("Times New Roman", Font.PLAIN, 14), 100, 270, 90, 16, false, true);
+            jLabel1 = CreateComponents.getLabel("Пользователь : ", new Font("Times New Roman", Font.PLAIN, 14), 100, 195, 90, 16, false, true);
+            jLabel2 = CreateComponents.getLabel("Пароль :", new Font("Times New Roman", Font.PLAIN, 14), 100, 235, 90, 16, false, true);
+            jLabel3 = CreateComponents.getLabel("Толкатель :", new Font("Times New Roman", Font.PLAIN, 14), 100, 270, 90, 16, false, true);
             frame.add(jLabel1);
             frame.add(jLabel2);
             frame.add(jLabel3);
@@ -655,7 +655,8 @@ public class StartFrame {
                             // чтение списка пользователей
                             try {
                                 listUsers = connBD.getListUsers(true);
-                                userSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxUsers, tableFindUsers, listUsers, "a");
+                                //userSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxUsers, tableFindUsers, listUsers, 7, "a");
+                                userSelectComboBox2Table.setCollections(listUsers);
                             } catch (Exception e) {
                                 myLog.log(Level.WARNING, "ошибка чтение списка пользователей с БД", e);
                                 listUsers = new User[0];
@@ -670,7 +671,9 @@ public class StartFrame {
                                 return;
                             }
                             // загрузить обновленный список
-                            try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, false, null);
+                            try {
+                                userSelectComboBox2Table.setLock(true);
+                                MyUtil.loadToComboBox(listUsers, comboBoxUsers, false, null);
                             } catch (Exception e) {
                                 myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
                                 MySwingUtil.showMessage(
@@ -679,6 +682,8 @@ public class StartFrame {
                                         "ошибка обновления - требуется вмешательство администратора",
                                         10_000
                                 );
+                            } finally {
+                                userSelectComboBox2Table.setLock(false);
                             }
                         }
                         saveEnableComponentsStartFrame.restore();

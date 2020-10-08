@@ -49,8 +49,9 @@ public class EditPushers {
     //
     private Pusher[] listPushers;
     private TypePusher[] listTypePushers;
-    private SelectComboBox2Table<TypePusher> typePusherSelectComboBox2Table;
+    private SelectComboBox2Table_Top<TypePusher> typePusherSelectComboBox2Table;
     private SaveEnableComponents saveEnableComponents;
+    private Pusher editPusher;
 
     public EditPushers(EditPushers.CallBack callBack, BaseData connBD, long currentId_loggerUserEdit) {
         this.callBack = callBack;
@@ -96,7 +97,7 @@ public class EditPushers {
                     true,
                     null
             );
-            typePusherSelectComboBox2Table = new SelectComboBox2Table<>(comboBoxTypePushers, tableFindTypePushers, listTypePushers, null);
+            typePusherSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxTypePushers, tableFindTypePushers, listTypePushers, 7, null);
             callComboBoxTypePushers(null);
             typePusherSelectComboBox2Table.setLock(false);
         } catch (BaseDataException e) {
@@ -123,7 +124,7 @@ public class EditPushers {
         frame.setPreferredSize(new Dimension(640, 480));
         frame.setLayout(null);
         //
-        jLabel1 = CreateComponents.getjLabel("Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 200, 230, 210, 25, true, true);
+        jLabel1 = CreateComponents.getLabel("Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 200, 230, 210, 25, true, true);
         textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 410, 230,200, 25, null, null, true, true);
         buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 30, 275, 120, 25, null, true, true);
         buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 30, 315, 120, 25, null, true, true);
@@ -155,16 +156,16 @@ public class EditPushers {
                                 text = pusher.loggerPusher.namePusher;
                                 break;
                             case 1:
-                                text = pusher.loggerPusher.loggerTypePusher.nameType;
+                                text = pusher.loggerPusher.typePusher.loggerTypePusher.nameType;
                                 break;
                             case 2:
-                                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.forceNominal);
+                                text = String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.forceNominal);
                                 break;
                             case 3:
-                                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.moveNominal);
+                                text = String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.moveNominal);
                                 break;
                             case 4:
-                                text = String.valueOf(pusher.loggerPusher.loggerTypePusher.unclenchingTime);
+                                text = String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.unclenchingTime);
                                 break;
                             default:
                                 throw new IllegalStateException("Unexpected value: " + columnIndex);
@@ -195,10 +196,10 @@ public class EditPushers {
         frame.add(scrollPushers);
         //
         panelTypePushers = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "Параметры типа толкателя", 190, 260, 420, 170, true, true);
-        jLabel2 = CreateComponents.getjLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 20, 28, 190, 25, true, true);
-        jLabel3 = CreateComponents.getjLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 18), 20, 65, 190, 25, true, true);
-        jLabel4 = CreateComponents.getjLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 18), 20, 104, 190, 25, true, true);
-        jLabel5 = CreateComponents.getjLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 18), 20, 138, 210, 25, true, true);
+        jLabel2 = CreateComponents.getLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 20, 28, 190, 25, true, true);
+        jLabel3 = CreateComponents.getLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 18), 20, 65, 190, 25, true, true);
+        jLabel4 = CreateComponents.getLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 18), 20, 104, 190, 25, true, true);
+        jLabel5 = CreateComponents.getLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 18), 20, 138, 210, 25, true, true);
         comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 220, 28, 190, 25,
               true,
                 null,
@@ -215,11 +216,11 @@ public class EditPushers {
         tableFindTypePushers.setBounds(220, 55, 220, 300);
 
         textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 67, 170, 25,
-                null, null, true, true);
+                null, null, true, true, false);
         textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 106, 170, 25,
-                null, null, true, true);
+                null, null, true, true, false);
         textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 140, 170, 25,
-                null, null, true, true);
+                null, null, true, true, false);
         panelTypePushers.add(tableFindTypePushers);
         panelTypePushers.add(jLabel2);
         panelTypePushers.add(jLabel3);
@@ -248,11 +249,21 @@ public class EditPushers {
     // ----------- таблицы
     private void tablePushersChanged(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) return;
-        /*textName.setText(editTypePusher.loggerTypePusher.nameType);
-        textForce.setText(String.valueOf(editTypePusher.loggerTypePusher.forceNominal));
-        textMove.setText(String.valueOf(editTypePusher.loggerTypePusher.moveNominal));
-        textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
-        editTypePusher = typePushers[tableTypePushers.getSelectedRow()];*/
+        int row = tablePushers.getSelectedRow();
+        if (row < 0) return;
+        editPusher = listPushers[row];
+        textRegNumber.setText(editPusher.loggerPusher.namePusher);
+        comboBoxTypePushers.setSelectedItem(editPusher.loggerPusher.typePusher);
+    }
+    private TypePusher selectTypePusher(TypePusher[] listTypePushers, long idxLooger) {
+        TypePusher tp = null;
+        for (TypePusher typePusher : listTypePushers) {
+            if (typePusher.loggerTypePusher.id_loggerTypePusher == idxLooger) {
+                tp = typePusher;
+                break;
+            }
+        }
+        return tp;
     }
     // -----------
     private void callComboBoxTypePushers(ActionEvent actionEvent) {

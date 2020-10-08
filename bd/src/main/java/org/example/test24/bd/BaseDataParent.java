@@ -326,22 +326,24 @@ class BaseDataParent implements BaseData {
         String query;
         if (actual) {
             query =
-                    "SELECT " +
+                    " SELECT " +
                             " table_pushers.id_pusher, " +
-                            " table_pushers.date_reg, " +
+                            " table_pushers.date_reg AS date_reg_pushers, " +
                             " logger_pushers.id_loggerPusher, " +
-                            " logger_pushers.date_upd as date_upd_pusher, " +
-                            " logger_pushers.id_loggerUserEdit as id_loggerUserEditPusher, " +
+                            " logger_pushers.date_upd AS date_upd_pushers, " +
+                            " logger_pushers.id_loggerUserEdit AS id_loggerUserEdit_pushers, " +
                             " logger_pushers.namePusher, " +
+                            " type_pushers.id_typePusher, " +
+                            " type_pushers.date_reg AS date_reg_typepushers, " +
                             " logger_type_pushers.id_loggerTypePusher, " +
-                            " logger_type_pushers.data_upd as data_upd_type, " +
-                            " logger_type_pushers.id_loggerUserEdit as id_loggerUserEditType, " +
-                            " logger_type_pushers.id_typePusher, " +
+                            " logger_type_pushers.date_upd AS date_upd_typepushers, " +
+                            " logger_type_pushers.id_loggerUserEdit AS id_loggerUserEdittypepushers, " +
                             " logger_type_pushers.nameType, " +
                             " logger_type_pushers.forceNominal, " +
                             " logger_type_pushers.moveNominal, " +
                             " logger_type_pushers.unclenchingTime, " +
-                            " table_pushers.date_unreg " +
+                            " type_pushers.date_unreg AS date_unreg_typepushers, " +
+                            " table_pushers.date_unreg AS date_unreg_pushers " +
                             " FROM " +
                             " " + baseDat + ".table_pushers " +
                             " INNER JOIN " +
@@ -349,32 +351,38 @@ class BaseDataParent implements BaseData {
                             " ON " +
                             " table_pushers.id_loggerPusher = logger_pushers.id_loggerPusher " +
                             " INNER JOIN " +
+                            " " + baseDat + ".type_pushers " +
+                            " ON " +
+                            " logger_pushers.id_typePusher = type_pushers.id_typePusher " +
+                            " INNER JOIN " +
                             " " + baseDat + ".logger_type_pushers " +
                             " ON " +
-                            " logger_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
+                            " type_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
                             " WHERE " +
                             " table_pushers.date_unreg IS NULL " +
                             " ORDER BY " +
-                            " logger_pushers.namePusher ASC "
+                            " logger_pushers.namePusher "
             ;
         } else {
             query =
-                    "SELECT " +
+                    " SELECT " +
                             " table_pushers.id_pusher, " +
-                            " table_pushers.date_reg, " +
+                            " table_pushers.date_reg AS date_reg_pushers, " +
                             " logger_pushers.id_loggerPusher, " +
-                            " logger_pushers.date_upd as date_upd_pusher, " +
-                            " logger_pushers.id_loggerUserEdit as id_loggerUserEditPusher, " +
+                            " logger_pushers.date_upd AS date_upd_pushers, " +
+                            " logger_pushers.id_loggerUserEdit AS id_loggerUserEdit_pushers, " +
                             " logger_pushers.namePusher, " +
+                            " type_pushers.id_typePusher, " +
+                            " type_pushers.date_reg AS date_reg_typepushers, " +
                             " logger_type_pushers.id_loggerTypePusher, " +
-                            " logger_type_pushers.data_upd as data_upd_type, " +
-                            " logger_type_pushers.id_loggerUserEdit as id_loggerUserEditType, " +
-                            " logger_type_pushers.id_typePusher, " +
+                            " logger_type_pushers.date_upd AS date_upd_typepushers, " +
+                            " logger_type_pushers.id_loggerUserEdit AS id_loggerUserEdittypepushers, " +
                             " logger_type_pushers.nameType, " +
                             " logger_type_pushers.forceNominal, " +
                             " logger_type_pushers.moveNominal, " +
                             " logger_type_pushers.unclenchingTime, " +
-                            " table_pushers.date_unreg " +
+                            " type_pushers.date_unreg AS date_unreg_typepushers, " +
+                            " table_pushers.date_unreg AS date_unreg_pushers " +
                             " FROM " +
                             " " + baseDat + ".table_pushers " +
                             " INNER JOIN " +
@@ -382,11 +390,15 @@ class BaseDataParent implements BaseData {
                             " ON " +
                             " table_pushers.id_loggerPusher = logger_pushers.id_loggerPusher " +
                             " INNER JOIN " +
+                            " " + baseDat + ".type_pushers " +
+                            " ON " +
+                            " logger_pushers.id_typePusher = type_pushers.id_typePusher " +
+                            " INNER JOIN " +
                             " " + baseDat + ".logger_type_pushers " +
                             " ON " +
-                            " logger_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
+                            " type_pushers.id_loggerTypePusher = logger_type_pushers.id_loggerTypePusher " +
                             " ORDER BY " +
-                            " logger_pushers.namePusher ASC "
+                            " logger_pushers.namePusher "
             ;
         }
         result = statement.executeQuery(query);
@@ -395,25 +407,30 @@ class BaseDataParent implements BaseData {
         while (result.next()) {
             listPusher.add(new Pusher(
                     result.getLong("id_pusher"),
-                    result.getTimestamp("date_reg"),
+                    result.getTimestamp("date_reg_pushers"),
                     new LoggerPusher(
                             result.getLong("id_loggerPusher"),
-                            result.getTimestamp("date_upd_pusher"),
-                            result.getLong("id_loggerUserEditPusher"),
+                            result.getTimestamp("date_upd_pushers"),
+                            result.getLong("id_loggerUserEdit_pushers"),
                             result.getLong("id_pusher"),
                             result.getString("namePusher"),
-                            new LoggerTypePusher(
-                                    result.getLong("id_loggerTypePusher"),
-                                    result.getTimestamp("data_upd_type"),
-                                    result.getLong("id_loggerUserEditType"),
-                                    result.getLong("logger_type_pushers.id_typePusher"),
-                                    result.getString("nameType"),
-                                    result.getInt("forceNominal"),
-                                    result.getInt("moveNominal"),
-                                    result.getInt("unclenchingTime")
+                            new TypePusher(
+                                    result.getLong("id_typePusher"),
+                                    result.getTimestamp("date_reg_typepushers"),
+                                    new LoggerTypePusher(
+                                            result.getLong("id_loggerTypePusher"),
+                                            result.getTimestamp("date_upd_typepushers"),
+                                            result.getLong("id_loggerUserEdit_pushers"),
+                                            result.getLong("id_typePusher"),
+                                            result.getString("nameType"),
+                                            result.getInt("forceNominal"),
+                                            result.getInt("moveNominal"),
+                                            result.getInt("unclenchingTime")
+                                    ),
+                                    result.getTimestamp("date_unreg_typepushers")
                             )
                     ),
-                    result.getTimestamp("date_unreg")
+                    result.getTimestamp("date_unreg_pushers")
             ));
         }
         try {
@@ -940,7 +957,7 @@ class BaseDataParent implements BaseData {
                                 " type_pushers.id_typePusher, " +
                                 " type_pushers.date_reg, " +
                                 " logger_type_pushers.id_loggerTypePusher, " +
-                                " logger_type_pushers.data_upd, " +
+                                " logger_type_pushers.date_upd, " +
                                 " logger_type_pushers.id_loggerUserEdit, " +
                                 " logger_type_pushers.nameType, " +
                                 " logger_type_pushers.forceNominal, " +
@@ -964,7 +981,7 @@ class BaseDataParent implements BaseData {
                                 " type_pushers.id_typePusher, " +
                                 " type_pushers.date_reg, " +
                                 " logger_type_pushers.id_loggerTypePusher, " +
-                                " logger_type_pushers.data_upd, " +
+                                " logger_type_pushers.date_upd, " +
                                 " logger_type_pushers.id_loggerUserEdit, " +
                                 " logger_type_pushers.nameType, " +
                                 " logger_type_pushers.forceNominal, " +
@@ -993,7 +1010,7 @@ class BaseDataParent implements BaseData {
                                 result.getTimestamp("date_reg"),
                                 new LoggerTypePusher(
                                         result.getLong("id_loggerTypePusher"),
-                                        result.getTimestamp("data_upd"),
+                                        result.getTimestamp("date_upd"),
                                         result.getLong("id_loggerUserEdit"),
                                         result.getLong("id_typePusher"),
                                         result.getString("nameType"),
@@ -1023,4 +1040,15 @@ class BaseDataParent implements BaseData {
         } catch (SQLException throwables) { }
         return list.toArray(new TypePusher[0]);
     }
+
+    @Override
+    public BaseData cloneNewBase(String base) {
+        BaseData baseData = new BaseDataParent(connection, base);
+        return baseData;
+    }
+    protected BaseDataParent(Connection connection, String base) {
+        this.connection = connection;
+        this.baseDat = base;
+    }
+    protected BaseDataParent() {}
 }
