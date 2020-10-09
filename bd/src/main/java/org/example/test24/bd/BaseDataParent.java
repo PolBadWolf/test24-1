@@ -33,6 +33,8 @@ class BaseDataParent implements BaseData {
     // открытие соединение с БД
     @Override
     public void openConnect(Parameters parameters) throws BaseDataException { }
+    @Override
+    public String getCurrentBase() { return baseDat; }
     // ===================================================================================================
     // чтение списка БД
     @Override

@@ -55,14 +55,16 @@ public interface BaseData {
     // ===================================================
     // открытие соединение с БД
     void openConnect(Parameters parameters) throws BaseDataException;
+    String getCurrentBase();
     // чтение списка БД
     String[] getListBase() throws BaseDataException;
-    // чтение списка пользователей
-    User[] getListUsers(boolean actual) throws BaseDataException;
     // проверка структуры БД
     boolean checkStructureBd(String base) throws BaseDataException;
+    // чтение списка пользователей
+    User[] getListUsers(boolean actual) throws BaseDataException;
     // установка нового пароля пользователю
     void setNewUserPassword(long id_loggerUserEdit, User user, String newPassword) throws BaseDataException;
+
     // запись нового пользователя
     void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws BaseDataException;
     // деактивация пользователя
