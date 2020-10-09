@@ -267,15 +267,12 @@ class BaseDataParent implements BaseData {
     // чтение списка толкателей ****
     @Override
     public Pusher[] getListPushers(boolean actual) throws Exception {
-        //if (1==1) throw new Exception("НЕ РЕАЛИЗОВАНО !!!!!!!!!!!!!!!!!!");
-        if (connection == null) throw new Exception("соединение не установлено");
-        boolean fl = connection.isClosed();
-        if (fl) throw new Exception("соединение закрыто");
+        internalCheckConnect();
+        internalAutoCommit(true);
 
         Statement statement;
         ResultSet result;
         // запрос на список толкателей
-        String tab = "table_pushers";
         statement = connection.createStatement();
         // запрос
         String query;
