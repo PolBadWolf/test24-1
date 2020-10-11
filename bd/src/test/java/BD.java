@@ -1,5 +1,6 @@
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.TypeBaseDate;
+import org.example.test24.bd.usertypes.Pusher;
 import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
 import org.junit.Assert;
@@ -226,4 +227,19 @@ public class BD {
         System.out.println();
     }
 
+    @Test
+    public void _14_getListPushers() throws Exception {
+        System.out.println("getListPushers(actual):");
+        BaseData conn = getConn();
+        Pusher[] listPushers = conn.getListPushers(true);
+        for (Pusher pusher : listPushers) {
+            System.out.println(pusher.id_pusher + ":" +
+                    pusher.loggerPusher.id_loggerPusher + ":" +
+                    pusher.loggerPusher.namePusher + " ==> " +
+                    pusher.loggerPusher.typePusher.id_typePusher + ":" +
+                    pusher.loggerPusher.typePusher.loggerTypePusher.nameType
+            );
+        }
+        System.out.println();
+    }
 }
