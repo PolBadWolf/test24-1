@@ -441,7 +441,7 @@ class BaseDataParent implements BaseData {
     // ===================================================================================================
     // деактивация пользователя
     @Override
-    public void deativateUser(long id_loggerUserEdit, User user) throws BaseDataException {
+    public void deleteUser(long id_loggerUserEdit, User user) throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(false);
         PreparedStatement preparedStatementLogger;

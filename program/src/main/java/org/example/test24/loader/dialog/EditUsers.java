@@ -330,7 +330,7 @@ public class EditUsers extends JFrame {
     private void deactiveSelectUser() {
         // выбранная строка
         try {
-            connBD.deativateUser(
+            connBD.deleteUser(
                     callBack.getCurrentUser().id_loggerUser,
                     editUser
             );

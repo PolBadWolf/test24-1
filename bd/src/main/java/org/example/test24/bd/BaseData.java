@@ -62,19 +62,19 @@ public interface BaseData {
     boolean checkStructureBd(String base) throws BaseDataException;
     // чтение списка пользователей
     User[] getListUsers(boolean actual) throws BaseDataException;
-    // установка нового пароля пользователю
-    void setNewUserPassword(long id_loggerUserEdit, User user, String newPassword) throws BaseDataException;
-
     // запись нового пользователя
     void writeNewUser(long id_loggerUserEdit, String sunName, String password, int rang) throws BaseDataException;
-    // деактивация пользователя
-    void deativateUser(long id_loggerUserEdit, User user) throws BaseDataException;
+    // установка нового пароля пользователю
+    void setNewUserPassword(long id_loggerUserEdit, User user, String newPassword) throws BaseDataException;
     // обновление данных о пользователе
     void updateDataUser(User editUser, long id_loggerUserEdit, String surName, String password, int rang) throws BaseDataException;
-    // запись замера
-    void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
+    // деактивация пользователя
+    void deleteUser(long id_loggerUserEdit, User user) throws BaseDataException;
     // запись нового типа толкателя
     void writeNewTypePusher(long id_loggerUser, String nameType, int forceNominal, int moveNominal, int unclenchingTime) throws BaseDataException;
+
+    // запись замера
+    void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
     // обновление типа толкателя
     void updateTypePusher(TypePusher typePusher, long id_loggerUser, String nameType, int forceNominal, int moveNominal, int unclenchingTime) throws BaseDataException;
     // деактивация типа толкателя
