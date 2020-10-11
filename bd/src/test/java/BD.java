@@ -1,5 +1,6 @@
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.TypeBaseDate;
+import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -35,6 +36,20 @@ public class BD {
         for (User user : listUsers) {
             if (user.surName.equals(sampleName)) {
                 target[0] = user;
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private boolean searchTypePusher(String testRecord, TypePusher[] listTypePushers, TypePusher[] target) {
+        if (testRecord == null || listTypePushers == null || target == null) return true;
+        if (testRecord.length() == 0 || target.length !=1) return true;
+        boolean flag = true;
+        for (TypePusher typePusher : listTypePushers) {
+            if (typePusher.loggerTypePusher.nameType.equals(testRecord)) {
+                target[0] = typePusher;
                 flag = false;
                 break;
             }
@@ -136,6 +151,26 @@ public class BD {
         System.out.println("writeNewTypePusher: ");
         BaseData conn = getConn();
         conn.writeNewTypePusher(0, nameTestUser1, 100, 90, 9);
+        System.out.println("ok");
+    }
+
+    @Test
+    public void _9_getListTypePushers() throws Exception {
+        System.out.println("getListTypePushers:");
+        BaseData conn = getConn();
+        TypePusher[] listTypePushers = conn.getListTypePushers(true);
+        TypePusher typePusher;
+        for (int i = 0; i < listTypePushers.length; i++) {
+            typePusher = listTypePushers[i];
+            System.out.println(typePusher.id_typePusher + ":" + typePusher.loggerTypePusher.id_loggerTypePusher + ":" + typePusher.loggerTypePusher.nameType);
+        }
+        System.out.println("ok");
+    }
+
+    @Test
+    public void _10_updateTypePusher() throws Exception {
+        System.out.println("updateTypePusher:");
+        BaseData conn = getConn();
         System.out.println("ok");
     }
 
