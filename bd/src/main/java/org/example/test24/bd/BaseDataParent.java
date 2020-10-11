@@ -729,7 +729,7 @@ class BaseDataParent implements BaseData {
     }
     // деактивация типа толкателя
     @Override
-    public void deativateTypePusher(long id_loggerUser, TypePusher typePusher) throws BaseDataException {
+    public void deleteTypePusher(long id_loggerUser, TypePusher typePusher) throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(false);
         //

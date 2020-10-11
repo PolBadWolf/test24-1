@@ -58,7 +58,7 @@ public class BD {
     }
     
     @Test
-    public void _1_getListBase() throws Exception {
+    public void _01_getListBase() throws Exception {
         System.out.println("getListBase:");
         String[] list = null;
         list = getConn().getListBase();
@@ -68,7 +68,7 @@ public class BD {
     }
 
     @Test
-    public void _2_checkStructureBd() throws Exception {
+    public void _02_checkStructureBd() throws Exception {
         System.out.println("checkStructureBd:");
         BaseData conn = getConn();
         boolean result = conn.checkStructureBd(conn.getCurrentBase());
@@ -78,7 +78,7 @@ public class BD {
     }
 
     @Test
-    public void _3_writeNewUser() throws Exception {
+    public void _03_writeNewUser() throws Exception {
         System.out.println("writeNewUser:");
         BaseData conn = getConn();
         String pass = "11";
@@ -89,7 +89,7 @@ public class BD {
     }
 
     @Test
-    public void _4_getListUsers_actual() throws Exception {
+    public void _04_getListUsers_actual() throws Exception {
         System.out.println("getListUsers(true):");
         BaseData conn = getConn();
         User[] listUser = conn.getListUsers(true);
@@ -100,7 +100,7 @@ public class BD {
     }
 
     @Test
-    public void _5_setNewUserPassword() throws Exception {
+    public void _05_setNewUserPassword() throws Exception {
         System.out.println("setNewUserPassword замена пароля:");
         BaseData conn = getConn();
         User[] listUsers = conn.getListUsers(true);
@@ -114,7 +114,7 @@ public class BD {
     }
 
     @Test
-    public void _6_updateDataUser() throws Exception {
+    public void _06_updateDataUser() throws Exception {
         System.out.println("updateDataUser");
         BaseData conn = getConn();
         User[] listUsers = conn.getListUsers(true);
@@ -127,7 +127,7 @@ public class BD {
     }
 
     @Test
-    public void _7_deleteUser() throws Exception {
+    public void _07_deleteUser() throws Exception {
         System.out.println("deleteUser");
         BaseData conn =getConn();
         User[] target = new User[1];
@@ -147,7 +147,7 @@ public class BD {
     }
 
     @Test
-    public void _8_writeNewTypePusher() throws Exception {
+    public void _08_writeNewTypePusher() throws Exception {
         System.out.println("writeNewTypePusher: ");
         BaseData conn = getConn();
         conn.writeNewTypePusher(0, testRecord1, 100, 90, 9);
@@ -155,7 +155,7 @@ public class BD {
     }
 
     @Test
-    public void _9_getListTypePushers() throws Exception {
+    public void _09_getListTypePushers() throws Exception {
         System.out.println("getListTypePushers:");
         BaseData conn = getConn();
         TypePusher[] listTypePushers = conn.getListTypePushers(true);
