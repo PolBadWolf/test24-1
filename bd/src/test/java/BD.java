@@ -161,6 +161,7 @@ public class BD {
         BaseData conn = getConn();
         conn.writeNewTypePusher(0, testRecord1, 100, 90, 9);
         System.out.println("ok");
+        System.out.println();
     }
 
     @Test
@@ -174,6 +175,7 @@ public class BD {
             System.out.println(typePusher.id_typePusher + ":" + typePusher.loggerTypePusher.id_loggerTypePusher + ":" + typePusher.loggerTypePusher.nameType);
         }
         System.out.println("ok");
+        System.out.println();
     }
 
     @Test
@@ -186,6 +188,7 @@ public class BD {
         TypePusher typePusher = target[0];
         conn.updateTypePusher(typePusher, 0, testRecord2, 101, 88, 7);
         System.out.println("ok");
+        System.out.println();
     }
 
     @Test
@@ -205,7 +208,22 @@ public class BD {
             System.out.println("delete " + typePusher.id_typePusher + ":" + typePusher.loggerTypePusher.id_loggerTypePusher + ":" + typePusher.loggerTypePusher.nameType);
         }
         System.out.println("ok");
+        System.out.println();
     }
 
+    @Test
+    public void _13_getListTypePushers() throws Exception {
+        System.out.println("getListTypePushers:");
+        BaseData conn = getConn();
+        TypePusher[] listTypePushers = conn.getListTypePushers(false);
+        TypePusher typePusher;
+        for (int i = 0; i < listTypePushers.length; i++) {
+            typePusher = listTypePushers[i];
+            System.out.println(typePusher.id_typePusher + ":" + typePusher.loggerTypePusher.id_loggerTypePusher + ":" + typePusher.loggerTypePusher.nameType +
+                    "  <==>  " + (typePusher.date_unreg == null ? "NULL" : typePusher.date_unreg.toString()));
+        }
+        System.out.println("ok");
+        System.out.println();
+    }
 
 }
