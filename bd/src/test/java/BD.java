@@ -147,7 +147,16 @@ public class BD {
     }
 
     @Test
-    public void _08_writeNewTypePusher() throws Exception {
+    public void _08_getListUsers_all() throws Exception {
+        System.out.println("getListUsers(false):");
+        BaseData conn = getConn();
+        User[] listUser = conn.getListUsers(false);
+        Arrays.stream(listUser).forEach(System.out::println);
+        System.out.println();
+    }
+
+    @Test
+    public void _09_writeNewTypePusher() throws Exception {
         System.out.println("writeNewTypePusher: ");
         BaseData conn = getConn();
         conn.writeNewTypePusher(0, testRecord1, 100, 90, 9);
@@ -155,7 +164,7 @@ public class BD {
     }
 
     @Test
-    public void _09_getListTypePushers() throws Exception {
+    public void _10_getListTypePushers() throws Exception {
         System.out.println("getListTypePushers:");
         BaseData conn = getConn();
         TypePusher[] listTypePushers = conn.getListTypePushers(true);
@@ -168,7 +177,7 @@ public class BD {
     }
 
     @Test
-    public void _10_updateTypePusher() throws Exception {
+    public void _11_updateTypePusher() throws Exception {
         System.out.println("updateTypePusher:");
         BaseData conn = getConn();
         TypePusher[] listTypePushers = conn.getListTypePushers(true);
@@ -180,12 +189,23 @@ public class BD {
     }
 
     @Test
-    public void _19_getListUsers_all() throws Exception {
-        System.out.println("getListUsers(false):");
+    public void _12_deleteTypePusher() throws Exception {
+        System.out.println("deleteTypePusher:");
         BaseData conn = getConn();
-        User[] listUser = conn.getListUsers(false);
-        Arrays.stream(listUser).forEach(System.out::println);
-        System.out.println();
+        TypePusher[] target = new TypePusher[1];
+        TypePusher typePusher;
+        while (!searchTypePusher(testRecord1, conn.getListTypePushers(true), target)) {
+            typePusher = target[0];
+            conn.deleteTypePusher(0, typePusher);
+            System.out.println("delete " + typePusher.id_typePusher + ":" + typePusher.loggerTypePusher.id_loggerTypePusher + ":" + typePusher.loggerTypePusher.nameType);
+        }
+        while (!searchTypePusher(testRecord2, conn.getListTypePushers(true), target)) {
+            typePusher = target[0];
+            conn.deleteTypePusher(0, typePusher);
+            System.out.println("delete " + typePusher.id_typePusher + ":" + typePusher.loggerTypePusher.id_loggerTypePusher + ":" + typePusher.loggerTypePusher.nameType);
+        }
+        System.out.println("ok");
     }
+
 
 }
