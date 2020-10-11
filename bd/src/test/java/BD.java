@@ -12,8 +12,8 @@ import java.util.Arrays;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BD {
     protected static BaseData conn;
-    static String nameTestUser1 = "test-record1";
-    static String nameTestUser2 = "test-record2";
+    static String testRecord1 = "test-record1";
+    static String testRecord2 = "test-record2";
 
     private static BaseData getConn() throws Exception {
         if (conn == null) {
@@ -83,8 +83,8 @@ public class BD {
         BaseData conn = getConn();
         String pass = "11";
         int rang = (1 << User.RANG_USERS) | (1 << User.RANG_PUSHERS);
-        conn.writeNewUser(0, nameTestUser1, pass, rang);
-        System.out.println("создан пользователь: \"" + nameTestUser1 + "\" с паролем \"" + pass + "\"");
+        conn.writeNewUser(0, testRecord1, pass, rang);
+        System.out.println("создан пользователь: \"" + testRecord1 + "\" с паролем \"" + pass + "\"");
         System.out.println();
     }
 
@@ -105,7 +105,7 @@ public class BD {
         BaseData conn = getConn();
         User[] listUsers = conn.getListUsers(true);
         User[] target = new User[1];
-        if (searchUser(nameTestUser1, listUsers, target)) new Exception("ошибка поиска пользователя");
+        if (searchUser(testRecord1, listUsers, target)) new Exception("ошибка поиска пользователя");
         User user = target[0];
         String password = "12";
         conn.setNewUserPassword(0, user, password);
@@ -119,9 +119,9 @@ public class BD {
         BaseData conn = getConn();
         User[] listUsers = conn.getListUsers(true);
         User[] target = new User[1];
-        if (searchUser(nameTestUser1, listUsers, target)) new Exception("ошибка поиска пользователя");
+        if (searchUser(testRecord1, listUsers, target)) new Exception("ошибка поиска пользователя");
         User user = target[0];
-        conn.updateDataUser(user, 0, nameTestUser2, user.userPassword, user.rang);
+        conn.updateDataUser(user, 0, testRecord2, user.userPassword, user.rang);
         System.out.println("ok");
         System.out.println();
     }
@@ -132,12 +132,12 @@ public class BD {
         BaseData conn =getConn();
         User[] target = new User[1];
         User user;
-        while (!searchUser(nameTestUser1, conn.getListUsers(true), target)) {
+        while (!searchUser(testRecord1, conn.getListUsers(true), target)) {
             user = target[0];
             conn.deleteUser(0, user);
             System.out.println(" delete \"" + user.id_user + ":" + user.id_loggerUser + ":" + user.surName + "\"");
         }
-        while (!searchUser(nameTestUser2, conn.getListUsers(true), target)) {
+        while (!searchUser(testRecord2, conn.getListUsers(true), target)) {
             user = target[0];
             conn.deleteUser(0, user);
             System.out.println(" delete \"" + user.id_user + ":" + user.id_loggerUser + ":" + user.surName + "\"");
@@ -150,7 +150,7 @@ public class BD {
     public void _8_writeNewTypePusher() throws Exception {
         System.out.println("writeNewTypePusher: ");
         BaseData conn = getConn();
-        conn.writeNewTypePusher(0, nameTestUser1, 100, 90, 9);
+        conn.writeNewTypePusher(0, testRecord1, 100, 90, 9);
         System.out.println("ok");
     }
 
@@ -171,6 +171,11 @@ public class BD {
     public void _10_updateTypePusher() throws Exception {
         System.out.println("updateTypePusher:");
         BaseData conn = getConn();
+        TypePusher[] listTypePushers = conn.getListTypePushers(true);
+        TypePusher[] target = new TypePusher[1];
+        if (searchTypePusher(testRecord1, listTypePushers, target)) new Exception("ошибка поиска типа пользователя");
+        TypePusher typePusher = target[0];
+        conn.updateTypePusher(typePusher, 0, testRecord2, 101, 88, 7);
         System.out.println("ok");
     }
 
