@@ -114,7 +114,7 @@ class TuningFrame {
         BaseData.Config config = BaseData.Config.create();
         Status result;
         try { result = config.load();
-        } catch (Exception e) {
+        } catch (BaseDataException e) {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
             config.setDefault();
             result = Status.CONFIG_LOAD_ERROR;

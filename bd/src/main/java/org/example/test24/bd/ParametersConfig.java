@@ -15,11 +15,11 @@ public class ParametersConfig implements BaseData.Config {
     }
 
     @Override
-    public Status load() throws Exception {
+    public Status load() throws BaseDataException {
         Status status;
         Properties properties = new Properties();
         try { properties.load(new BufferedReader(new FileReader(fileNameConfig)));
-        } catch (IOException e) { throw new Exception(e);
+        } catch (IOException e) { throw new BaseDataException(e, Status.PARAMETERS_ERROR);
         }
         portName = properties.getProperty("CommPort", "COM2").toUpperCase();
         try {

@@ -310,7 +310,7 @@ public class StartFrame {
         // чтение конфигурации
         BaseData.Config config = BaseData.Config.create();
         try { config.load();
-        } catch (Exception e) {
+        } catch (BaseDataException e) {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
             config.setDefault();
         }
