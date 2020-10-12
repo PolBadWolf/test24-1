@@ -18,12 +18,10 @@ import static org.example.test24.lib.MyLogger.myLog;
 public class EditPushers {
     interface CallBack {
         void messageCloseEditUsers(boolean newData);
-        long getCurrentId_loggerUser();
     }
 
     // ***************************
     private JFrame frame;
-    private JLabel jLabel1;
     private JButton buttonEditTypePushers;
     private JButton buttonDelete;
     private JButton buttonEdit;
@@ -32,10 +30,6 @@ public class EditPushers {
     private JScrollPane scrollPushers;
     private JTable tablePushers;
     private JPanel panelTypePushers;
-    private JLabel jLabel2;
-    private JLabel jLabel3;
-    private JLabel jLabel4;
-    private JLabel jLabel5;
     private JComboBox<TypePusher> comboBoxTypePushers;
     private JTextField textForce;
     private JTextField textMove;
@@ -50,11 +44,11 @@ public class EditPushers {
     private Pusher[] listPushers;
     private TypePusher[] listTypePushers;
     private SelectComboBox2Table_Top<TypePusher> typePusherSelectComboBox2Table;
-    private SaveEnableComponents saveEnableComponents;
+    private final SaveEnableComponents saveEnableComponents;
     private Pusher editPusher;
     private boolean newData;
 
-    public EditPushers(EditPushers.CallBack callBack, BaseData connBD, long currentId_loggerUserEdit) {
+    public EditPushers(EditPushers.CallBack callBack, BaseData connBD, long currentId_loggerUserEdit) throws BaseDataException {
         this.callBack = callBack;
         this.connBD = connBD;
         this.currentId_loggerUserEdit = currentId_loggerUserEdit;
@@ -65,7 +59,7 @@ public class EditPushers {
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "ошибка получения списка толкателей", e);
             // в этом месте выход
-            //return;
+            throw new BaseDataException("редактирование толкателей", e, Status.SQL_TRANSACTION_ERROR);
         }
         // инициация компонентов
         initComponents();
@@ -107,7 +101,7 @@ public class EditPushers {
     // ----
     // загрузка списка типа толкателей
     private Pusher[] getListPushers() throws BaseDataException {
-        Pusher[] listPushers = new Pusher[0];
+        Pusher[] listPushers;
         try {
             listPushers = connBD.getListPushers(true);
         } catch (Exception exception) {
@@ -122,7 +116,7 @@ public class EditPushers {
         frame.setPreferredSize(new Dimension(640, 480));
         frame.setLayout(null);
         //
-        jLabel1 = CreateComponents.getLabel("Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 200, 230, 210, 25, true, true);
+        JLabel jLabel1 = CreateComponents.getLabel("Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 200, 230, 210, 25, true, true);
         textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 410, 230,200, 25, null, null, true, true);
         buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 30, 275, 120, 25, this::callButtonDelete, true, true);
         buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 30, 315, 120, 25, null, true, true);
@@ -136,7 +130,6 @@ public class EditPushers {
                     public int getRowCount() {
                         if (listPushers == null) return 0;
                         return listPushers.length;
-                        //return super.getRowCount();
                     }
 
                     @Override
@@ -194,10 +187,10 @@ public class EditPushers {
         frame.add(scrollPushers);
         //
         panelTypePushers = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "Параметры типа толкателя", 190, 260, 420, 170, true, true);
-        jLabel2 = CreateComponents.getLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 20, 28, 190, 25, true, true);
-        jLabel3 = CreateComponents.getLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 18), 20, 65, 190, 25, true, true);
-        jLabel4 = CreateComponents.getLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 18), 20, 104, 190, 25, true, true);
-        jLabel5 = CreateComponents.getLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 18), 20, 138, 210, 25, true, true);
+        JLabel jLabel2 = CreateComponents.getLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 20, 28, 190, 25, true, true);
+        JLabel jLabel3 = CreateComponents.getLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 18), 20, 65, 190, 25, true, true);
+        JLabel jLabel4 = CreateComponents.getLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 18), 20, 104, 190, 25, true, true);
+        JLabel jLabel5 = CreateComponents.getLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 18), 20, 138, 210, 25, true, true);
         comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 220, 28, 190, 25,
               true,
                 null,
@@ -253,16 +246,6 @@ public class EditPushers {
         textRegNumber.setText(editPusher.loggerPusher.namePusher);
         comboBoxTypePushers.setSelectedItem(editPusher.loggerPusher.typePusher);
     }
-    /*private TypePusher selectTypePusher(TypePusher[] listTypePushers, long idxLooger) {
-        TypePusher tp = null;
-        for (TypePusher typePusher : listTypePushers) {
-            if (typePusher.loggerTypePusher.id_loggerTypePusher == idxLooger) {
-                tp = typePusher;
-                break;
-            }
-        }
-        return tp;
-    }*/
     // -----------
     private void clearFields() {
         textRegNumber.setText("");
@@ -310,6 +293,7 @@ public class EditPushers {
         }
         try {
             connBD.deletePusher(0, editPusher);
+            newData = true;
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "ошибка удаления толкателя");
             MySwingUtil.showMessage(frame, "ошибка БД", "ошибка удаления толкателя", 10_000, o -> {
@@ -362,6 +346,7 @@ public class EditPushers {
         // добавление
         try {
             connBD.writeNewPusher(currentId_loggerUserEdit, updateRegNumber, updateId_TypePusher);
+            newData = true;
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "запись нового толкателя в БД", e);
             MySwingUtil.showMessage(frame, "ошибка БД", "Запись нового толкателя", 10_000, o -> {

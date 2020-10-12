@@ -695,26 +695,34 @@ public class StartFrame {
     }
     // обработка редактирование толкателей
     private void callEditPushers(ActionEvent e) {
-        //myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
         saveEnableComponentsStartFrame.save();
         saveEnableComponentsStartFrame.offline();
         pusherSelectComboBox2Table.setLock(true);
-        new Thread(() -> SwingUtilities.invokeLater(() -> new EditPushers(
-                new EditPushers.CallBack() {
-                    @Override
-                    public void messageCloseEditUsers(boolean newData) {
-                        saveEnableComponentsStartFrame.restore();
-                        frame.requestFocus();
-                        pusherSelectComboBox2Table.setLock(false);
-                    }
-                    @Override
-                    public long getCurrentId_loggerUser() {
-                        return 0;
-                    }
-                },
-                connBD,
-                ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
-        )), "create edit pushers").start();
+        new Thread(() -> SwingUtilities.invokeLater(() -> {
+            try {
+                new EditPushers(
+                        new EditPushers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers(boolean newData) {
+                                saveEnableComponentsStartFrame.restore();
+                                frame.requestFocus();
+                                pusherSelectComboBox2Table.setLock(false);
+                            }
+                        },
+                        connBD,
+                        ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
+                );
+            } catch (BaseDataException bde) {
+                myLog.log(Level.SEVERE, "ошибка редактирования толкателей", bde);
+                MySwingUtil.showMessage(frame, "редактор толкателей", "ошибка редактирования толкателей",
+                        5_000, o -> {
+                            saveEnableComponentsStartFrame.restore();
+                            frame.requestFocus();
+                            pusherSelectComboBox2Table.setLock(false);
+                        }
+                );
+            }
+        }), "create edit pushers").start();
     }
     // ===========================================================================
 }
