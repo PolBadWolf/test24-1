@@ -570,18 +570,15 @@ public class StartFrame {
             return;
         }
         try {
-            connBD.setNewUserPassword(currentUser, newPassword);
+            connBD.setNewUserPassword(currentUser.id_loggerUser, currentUser, newPassword);
             currentUser.userPassword = newPassword;
-            if (!newPassword.equals(((User) comboBoxUsers.getSelectedItem()).userPassword)) {
-                myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
-            }
         } catch (Exception e) {
-            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка записи в БД", 5_000, o -> {
+            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка установки нового пароля", 5_000, o -> {
                 buttonSetPassword.setEnabled(true);
                 frame.requestFocus();
             });
             buttonSetPassword.setEnabled(false);
-            myLog.log(Level.SEVERE, "ошибка сохранения нового пароля", e);
+            myLog.log(Level.SEVERE, "ошибка установки нового пароля", e);
         }
         fieldPassword.setText("");
     }

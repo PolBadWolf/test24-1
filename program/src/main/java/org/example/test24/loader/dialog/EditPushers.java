@@ -122,7 +122,7 @@ public class EditPushers {
         //
         jLabel1 = CreateComponents.getLabel("Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 200, 230, 210, 25, true, true);
         textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 410, 230,200, 25, null, null, true, true);
-        buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 30, 275, 120, 25, null, true, true);
+        buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 30, 275, 120, 25, this::callButtonDelete, true, true);
         buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 30, 315, 120, 25, null, true, true);
         buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", Font.PLAIN, 14), 30, 355, 120, 25, this::callButtonAdd, true, true);
         buttonEditTypePushers = CreateComponents.getButton("Тип.Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 30, 395, 120, 25, this::callButtonEditTypePushers, true, true);
@@ -251,7 +251,7 @@ public class EditPushers {
         textRegNumber.setText(editPusher.loggerPusher.namePusher);
         comboBoxTypePushers.setSelectedItem(editPusher.loggerPusher.typePusher);
     }
-    private TypePusher selectTypePusher(TypePusher[] listTypePushers, long idxLooger) {
+    /*private TypePusher selectTypePusher(TypePusher[] listTypePushers, long idxLooger) {
         TypePusher tp = null;
         for (TypePusher typePusher : listTypePushers) {
             if (typePusher.loggerTypePusher.id_loggerTypePusher == idxLooger) {
@@ -260,14 +260,29 @@ public class EditPushers {
             }
         }
         return tp;
+    }*/
+    // -----------
+    private void clearFields() {
+        textRegNumber.setText("");
+        comboBoxTypePushers.setSelectedItem(null);
+    }
+    private boolean refreshListPushers() {
+        try {
+            listPushers = connBD.getListPushers(true);
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "обновление списка толкателей", e);
+            MySwingUtil.showMessage(frame, "ошибка БД", "обновление списка толкателей", 10_000, o -> {
+                frame.requestFocus();
+            });
+            return true;
+        }
+        editPusher = null;
+        tablePushers.updateUI();
+        return false;
     }
     // -----------
     private void callComboBoxTypePushers(ActionEvent actionEvent) {
-        /*if (itemEvent != null) {
-            if (itemEvent.getStateChange() == ItemEvent.SELECTED) return;
-        }*/
         try {
-            //TypePusher tp = typePusherSelectComboBox2Table.getResultFist();
             TypePusher tp = (TypePusher) comboBoxTypePushers.getSelectedItem();
             textForce.setText(String.valueOf(tp.loggerTypePusher.forceNominal));
             textMove.setText(String.valueOf(tp.loggerTypePusher.moveNominal));
@@ -278,8 +293,84 @@ public class EditPushers {
             textUnclenching.setText("");
         }
     }
+    private void callButtonDelete(ActionEvent actionEvent) {
+        if (
+                textRegNumber.getText().length() == 0 ||
+                        comboBoxTypePushers.getSelectedItem() == null
+        ) {
+            saveEnableComponents.save();
+            saveEnableComponents.offline();
+            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
+                saveEnableComponents.restore();
+                frame.requestFocus();
+            });
+            return;
+        }
+        try {
+            connBD.deletePusher(0, editPusher);
+        } catch (BaseDataException e) {
+            myLog.log(Level.SEVERE, "ошибка удаления толкателя");
+            MySwingUtil.showMessage(frame, "ошибка БД", "ошибка удаления толкателя", 10_000, o -> {
+                frame.requestFocus();
+            });
+            return;
+        }
+        // очистка полей
+        clearFields();
+        // обновление записей
+        refreshListPushers();
+    }
     private void callButtonAdd(ActionEvent actionEvent) {
-
+        if (
+                textRegNumber.getText().length() == 0 ||
+                        comboBoxTypePushers.getSelectedItem() == null
+        ) {
+            saveEnableComponents.save();
+            saveEnableComponents.offline();
+            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
+                saveEnableComponents.restore();
+                frame.requestFocus();
+            });
+            return;
+        }
+        // заменяемые данные
+        String updateRegNumber = textRegNumber.getText();
+        long updateId_TypePusher = ((TypePusher) comboBoxTypePushers.getSelectedItem()).id_typePusher;
+        // проверка на повтор
+        {
+            boolean flAgain = false;
+            for (int i = 0; i < listPushers.length; i++) {
+                if (!updateRegNumber.equals(listPushers[i].loggerPusher.namePusher)) continue;
+                flAgain = true;
+                break;
+            }
+            if (flAgain) {
+                saveEnableComponents.save();
+                saveEnableComponents.offline();
+                MySwingUtil.showMessage(frame,
+                        "редактирование списка толкателей",
+                        "такой толкатель уже существует",
+                        5_000, o -> {
+                            saveEnableComponents.restore();
+                            frame.requestFocus();
+                        });
+                return;
+            }
+        }
+        // добавление
+        try {
+            connBD.writeNewPusher(currentId_loggerUserEdit, updateRegNumber, updateId_TypePusher);
+        } catch (BaseDataException e) {
+            myLog.log(Level.SEVERE, "запись нового толкателя в БД", e);
+            MySwingUtil.showMessage(frame, "ошибка БД", "Запись нового толкателя", 10_000, o -> {
+                frame.requestFocus();
+            });
+            return;
+        }
+        // очистка полей
+        clearFields();
+        // обновление записей
+        refreshListPushers();
     }
     private void callButtonEditTypePushers(ActionEvent actionEvent) {
         saveEnableComponents.save();
