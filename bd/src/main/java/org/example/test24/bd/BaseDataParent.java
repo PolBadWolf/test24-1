@@ -954,7 +954,7 @@ class BaseDataParent implements BaseData {
     }
     // удаление толкателя
     @Override
-    public void deactivatePusher(long id_loggerUser, long id_pusher) throws BaseDataException {
+    public void deletePusher(long id_loggerUser, long id_pusher) throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(false);
         //

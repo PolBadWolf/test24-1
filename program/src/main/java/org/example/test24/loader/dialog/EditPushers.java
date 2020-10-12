@@ -307,7 +307,7 @@ public class EditPushers {
             return;
         }
         try {
-            connBD.deactivatePusher(0, editPusher.id_pusher);
+            connBD.deletePusher(0, editPusher.id_pusher);
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "ошибка удаления толкателя");
             MySwingUtil.showMessage(frame, "ошибка БД", "ошибка удаления толкателя", 10_000, o -> {
