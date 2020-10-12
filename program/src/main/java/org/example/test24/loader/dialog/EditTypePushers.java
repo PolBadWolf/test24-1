@@ -199,7 +199,7 @@ public class EditTypePushers {
     private void buttonDeleteAction(ActionEvent e) {
         if (editTypePusher == null) return;
         try {
-            connBD.deativateTypePusher(currentId_loggerUserEdit, editTypePusher);
+            connBD.deleteTypePusher(currentId_loggerUserEdit, editTypePusher);
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
             return;
