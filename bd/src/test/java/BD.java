@@ -315,4 +315,20 @@ public class BD {
         System.out.println("end del");
         System.out.println();
     }
+
+    @Test
+    public void _18_getListPushers() throws Exception {
+        System.out.println("getListPushers(all): ");
+        BaseData conn = getConn();
+        Pusher[] listPushers = conn.getListPushers(false);
+        for (Pusher pusher : listPushers) {
+            System.out.println(pusher.id_pusher + ":" +
+                    pusher.loggerPusher.id_loggerPusher + ":" +
+                    pusher.loggerPusher.namePusher + " ==> " +
+                    pusher.loggerPusher.typePusher.id_typePusher + ":" +
+                    pusher.loggerPusher.typePusher.loggerTypePusher.nameType
+            );
+        }
+        System.out.println();
+    }
 }
