@@ -98,19 +98,20 @@ public class StartFrame {
         if (typeBaseDate == TypeBaseDate.ERROR) { throw new ParametersSqlException("ошибка типа базы данных", Status.BASE_TYPE_ERROR, null); }
         BaseData.Parameters parameters;
         try { parameters = BaseData.Parameters.create(typeBaseDate);
-        } catch (Exception e) { throw new ParametersSqlException(e, ((BaseDataException) e).getStatus(), null);
+        } catch (BaseDataException e) { throw new ParametersSqlException(e, e.getStatus(), null);
         }
         Status result;
         // загрузка параметров БД
-        try {
-            result = parameters.load();
-            if (result != Status.OK) { throw new ParametersSqlException(
-                        "ошибка загрузка параметров соединения с БД: ",
-                        result,
-                        parameters);
-            }
-        } catch (Exception e) { throw (ParametersSqlException) e;
+        try { result = parameters.load();
+        } catch (BaseDataException e) { result = Status.ERROR;
         }
+        //
+        if (result != Status.OK) { throw new ParametersSqlException(
+                "ошибка загрузка параметров соединения с БД: ",
+                result,
+                parameters);
+        }
+        //
         return parameters;
     }
 
@@ -145,9 +146,9 @@ public class StartFrame {
         // загрузить параметры
         parameters = null;
         try { parameters = getParametersBaseData(typeBaseDate);
-        } catch (Exception e) {
+        } catch (ParametersSqlException e) {
             myLog.log(Level.WARNING, "ошибка получения параметров подключения к БД", e);
-            parameters = ((ParametersSqlException) e).getParameters();
+            parameters = e.getParameters();
             return;
         }
         // создание соединения
@@ -308,7 +309,7 @@ public class StartFrame {
         //------------------------------
         // чтение конфигурации
         BaseData.Config config = BaseData.Config.create();
-        try { config.load1();
+        try { config.load();
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
             config.setDefault();
@@ -701,13 +702,10 @@ public class StartFrame {
         new Thread(() -> SwingUtilities.invokeLater(() -> {
             try {
                 new EditPushers(
-                        new EditPushers.CallBack() {
-                            @Override
-                            public void messageCloseEditUsers(boolean newData) {
-                                saveEnableComponentsStartFrame.restore();
-                                frame.requestFocus();
-                                pusherSelectComboBox2Table.setLock(false);
-                            }
+                        newData -> {
+                            saveEnableComponentsStartFrame.restore();
+                            frame.requestFocus();
+                            pusherSelectComboBox2Table.setLock(false);
                         },
                         connBD,
                         ((User) comboBoxUsers.getSelectedItem()).id_loggerUser

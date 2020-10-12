@@ -31,7 +31,7 @@ class TuningFrame {
     BaseData.Parameters parametersSql;
     BaseData connBD;
 
-    private SaveEnableComponents saveEnableComponents;
+    private final SaveEnableComponents saveEnableComponents;
 
     // ************** флаги ************
     // соединение с БД установлено
@@ -43,11 +43,6 @@ class TuningFrame {
     boolean flagTestBaseData;
     boolean flagTestCommPort;
     boolean flagNewCorrectData;
-
-
-    private CommPort.PortStat chCheckCommPort = CommPort.PortStat.INITCODE_NOTEXIST;
-    private boolean flCheckParamSql = false;
-    //private boolean flCheckListBd = false;
 
     // =============================================================================================================
     protected TuningFrame(CallBack callBack)
@@ -61,7 +56,7 @@ class TuningFrame {
         configProg = loadConfigProg();
         try {
             parametersSql = loadParametersSql(configProg.getTypeBaseData());
-        } catch (Exception e) {
+        } catch (BaseDataException e) {
             parametersSql = ((ParametersSqlException) e).getParameters();
             myLog.log(Level.WARNING, "загрузка параметров", e);
             flInit = false;
@@ -91,13 +86,11 @@ class TuningFrame {
         } else {
             listBaseBD = new String[0];
         }
-        //lockBegin = true;
         // конструктор окна
         frameConstructor();
 
         // установка компонентов в начальное положение
         setComponentsBegin();
-        //lockBegin = false;
         //
         saveEnableComponents = new SaveEnableComponents(new Component[]{
                 frameTuning,
@@ -120,8 +113,7 @@ class TuningFrame {
     private BaseData.Config loadConfigProg() {
         BaseData.Config config = BaseData.Config.create();
         Status result;
-        try {
-            result = config.load1();
+        try { result = config.load();
         } catch (Exception e) {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", e);
             config.setDefault();
@@ -135,16 +127,20 @@ class TuningFrame {
     }
     // =============================================================================================================
     // загрузка параметров подключения к БД
-    private BaseData.Parameters loadParametersSql(TypeBaseDate typeBaseDate) throws BaseDataException
+    private BaseData.Parameters loadParametersSql(TypeBaseDate typeBaseDate) throws ParametersSqlException
     {
-        if (typeBaseDate == null) throw new BaseDataException("не задан тип БД", Status.BASE_TYPE_NO_SELECT);
-        if (typeBaseDate == TypeBaseDate.ERROR)  throw new BaseDataException("ошибочный тип БД", Status.BASE_TYPE_ERROR);
+        if (typeBaseDate == null) throw new ParametersSqlException("не задан тип БД", Status.BASE_TYPE_NO_SELECT, null);
+        if (typeBaseDate == TypeBaseDate.ERROR)  throw new ParametersSqlException("ошибочный тип БД", Status.BASE_TYPE_ERROR, null);
         //
-        BaseData.Parameters parameters = BaseData.Parameters.create(typeBaseDate);
+        BaseData.Parameters parameters;
+        try { parameters = BaseData.Parameters.create(typeBaseDate);
+        } catch (BaseDataException e) { throw new ParametersSqlException("получение параметров БД", e, Status.PARAMETERS_LOAD_ERROR, null);
+        }
         Status result;
-        result = parameters.load();
-        if (result != Status.OK) {
-            throw new BaseDataException("загрузка параметров соединения с БД", new Exception(result.toString()), Status.PARAMETERS_ERROR);
+        try { result = parameters.load();
+        } catch (BaseDataException e) { throw new ParametersSqlException("получение параметров БД", e, Status.PARAMETERS_LOAD_ERROR, parameters);
+        }
+        if (result != Status.OK) { throw new ParametersSqlException("получение параметров БД", Status.PARAMETERS_LOAD_ERROR, parameters);
         }
         //
         return parameters;
@@ -153,16 +149,12 @@ class TuningFrame {
     // подключение к БД
     private BaseData connectBD(BaseData.Parameters parametersSql) throws BaseDataException {
         BaseData baseData;
-        try {
-            baseData = BaseData.create(parametersSql);
-        } catch (BaseDataException e) {
-            throw new BaseDataException("соединение с БД", e, e.getStatus());
+        try { baseData = BaseData.create(parametersSql);
+        } catch (BaseDataException e) { throw new BaseDataException("соединение с БД", e, e.getStatus());
         }
         //
-        try {
-            baseData.openConnect(parametersSql);
-        } catch (BaseDataException e) {
-            throw new BaseDataException("соединение с БД", e, e.getStatus());
+        try { baseData.openConnect(parametersSql);
+        } catch (BaseDataException e) { throw new BaseDataException("соединение с БД", e, e.getStatus());
         }
         return baseData;
     }
@@ -190,16 +182,13 @@ class TuningFrame {
         flagLockActions = true;
         // ком порт
         setComponentCommPort(CommPort.getListPortsName(), configProg.getPortName());
-        //labelPortCurrent.setText(commPortName);
         textCommPortStatus.setText("");
 //        // БД
         setComponentBaseData(parametersSql);
-        //textTypeBdStatus.setText(parametersSql.getTypeBaseDate().toString());
 //        // список БД
         try { MyUtil.loadToComboBox(listBaseBD, comboBoxListBd, false, parametersSql.getDataBase()); } catch (Exception e) {
             myLog.log(Level.WARNING, "начальная инициализация компонентов", e);
         }
-//        //
 //        // установка начального состояния кнопок по основным параметрам
         buttonTest.setEnabled(true);
         flagLockActions = false;
@@ -219,8 +208,6 @@ class TuningFrame {
         fieldParamServerPassword.setText(parametersSql.getPassword());
     }
     private void frameConstructor() {
-        /*frameTuning = getFrameTuning("настройка", 640, 480);
-        frameTuning.setResizable(false);*/
         frameTuning = CreateComponents.getFrame("настройка", 640, 480, false, null, new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -267,7 +254,6 @@ class TuningFrame {
             panelTypeBd.add(CreateComponents.getLabel("тип базы данных: ", new Font("Tahoma", Font.BOLD, 12),
                     10,10, 140, 30, true, true));
 
-            //comboBoxTypeBd = getComboBoxTypeBd(6, 50, 150, 20); // callSelectTypeBase(comboBox);
             comboBoxTypeBd = CreateComponents.getComboBox(new Font("Dialog", Font.BOLD, 11),
                     6, 50, 150, 20, false, null, this::callSelectTypeBase, true, true);
             flagLockActions = true;
@@ -364,212 +350,13 @@ class TuningFrame {
         frameTuning.setResizable(false);
         frameTuning.setVisible(true);
     }
-    private JFrame getFrameTuning(String title, int width, int height) {
-        JFrame frame = new JFrame(title);
-        Dimension size = new Dimension(width, height);
-        frame.setSize(size);
-        frame.setPreferredSize(size);
-        frame.setLayout(null);
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-/*                if (editUsers != null) {
-                    editUsers.closeFromParent();
-                }*/
-                e.getWindow().removeAll();
-                closeFrame();
-            }
-        });
-        return frame;
-    }
-
-    private JComboBox<TypeBaseDate> getComboBoxTypeBd(int x, int y, int width, int height) {
-        JComboBox<TypeBaseDate> comboBox = new JComboBox<>();
-        comboBox.setBounds(x, y, width, height);
-        comboBox.addItem(TypeBaseDate.MS_SQL);
-        comboBox.addItem(TypeBaseDate.MY_SQL);
-        comboBox.addActionListener(e -> {
-            callSelectTypeBase(e);
-        });
-        return comboBox;
-    }
-    // закрытие окна
-    private void closeFrame() {
-        if (frameTuning != null) {
-            try {
-                frameTuning.getContentPane().removeAll();
-                frameTuning.removeAll();
-                frameTuning.setVisible(false);
-                frameTuning.dispose();
-                frameTuning = null;
-            } catch (java.lang.Throwable e) {
-                System.out.println(e.getMessage());
-            }
-            callBack.messageCloseTuning(flagNewCorrectData);
-        }
-    } // ****************
     // ======
-    // статус основных параметров
-    private void checkStatusComp() {
-        {
-            String portName = (String) comboBoxCommPort.getSelectedItem();
-            CommPort commPort = null; //callBack MC.getCommPort();
-            CommPort.PortStat ch = commPort.open(null, portName, BAUD.baud57600);
-            if (ch == CommPort.PortStat.INITCODE_OK) {
-                commPort.close();
-            }
-            chCheckCommPort = ch;
-        }   // статус ком порта
-        {
-            // тип текущей БД
-            String typeBd = (String) comboBoxTypeBd.getSelectedItem();
-            //загрузка параметров с выбранным типом
-            /*parametersSql = new ParametersSql2(
-                    BaseData1.getNameFileParametrsSql(
-                            typeBd,
-                            callBack MC.getFilesNameSql()
-                    )
-            );*/
-            try {
-                //parametersSql.load();
-                // параметры БД удачно прочитались
-                flCheckParamSql = true;
-            } catch (Exception e) {
-                System.out.println("ошибка чтения параметров SQL: " + e.getMessage());
-                // параметры БД плохие
-                flCheckParamSql = false;
-                // структура плохая
-                //flCheckSql = false;
-            }
-            // доступ к БД
-            try {
-                /*flCheckSql = BaseData1.testStuctBase(
-                        (String) comboBoxTypeBd.getSelectedItem(),
-                        fieldParamServerIP.getText(),
-                        fieldParamServerPort.getText(),
-                        fieldParamServerLogin.getText(),
-                        fieldParamServerPassword.getText(),
-                        (String) comboBoxListBd.getSelectedItem()
-                );*/
-            } catch (java.lang.Throwable e) {
-                System.out.println("ошибка параметров SQL: " + e.getMessage());
-                //flCheckSql = false;
-            }
-        }   // структура БД
-    }
-    private boolean checkStatusFile() {
-        {
-            String portName = (String) comboBoxCommPort.getSelectedItem();
-            CommPort commPort = null; //callBack MC.getCommPort();
-            CommPort.PortStat ch = commPort.open(null, portName, BAUD.baud57600);
-            if (ch == CommPort.PortStat.INITCODE_OK) {
-                commPort.close();
-            }
-            chCheckCommPort = ch;
-        }   // статус ком порта
-        {
-            // тип текущей БД
-            //String typeBd = "";
-//            String typeBd = parameters[0];
-            //String typeBd = callBack MC.loadConfigTypeBaseData().getTypeBaseDataString();
-            //загрузка параметров с выбранным типом
-            /*parametersSql = new ParametersSql2(
-                    BaseData1.getNameFileParametrsSql(
-                            typeBd,
-                            callBack MC.getFilesNameSql()
-                    )
-            );*/
-            boolean flCheckParamSql;
-            try {
-                //parametersSql.load();
-                // параметры БД удачно прочитались
-                flCheckParamSql = true;
-            } catch (Exception e) {
-                System.out.println("ошибка чтения параметров SQL: " + e.getMessage());
-                // параметры БД плохие
-                flCheckParamSql = false;
-                // структура плохая
-                //flCheckSql = false;
-            }
-            // доступ к БД
-            if (flCheckParamSql) {
-                try {
-                    /*flCheckSql = BaseData1.testStuctBase(
-                            (String) comboBoxTypeBd.getSelectedItem(),
-                            fieldParamServerIP.getText(),
-                            fieldParamServerPort.getText(),
-                            fieldParamServerLogin.getText(),
-                            fieldParamServerPassword.getText(),
-                            (String) comboBoxListBd.getSelectedItem()
-                    );*/
-                } catch (java.lang.Throwable e) {
-                    System.out.println("ошибка параметров SQL: " + e.getMessage());
-                    //flCheckSql = false;
-                }
-            } else {
-                //flCheckSql = false;
-            }
-        }   // структура БД
-        return false;
-    }
-    // выдача статуса основных параметров
-    private void outStatus() {
-        {
-            String portName, statusText;
-            switch (chCheckCommPort.getCodePortStat()) {
-                case CommPort.INITCODE_OK:
-                    portName = (String) comboBoxCommPort.getSelectedItem();
-                    statusText = "ok";
-                    break;
-                case CommPort.INITCODE_NOTEXIST:
-//                    portName = parameters[1];
-                    portName = ""; //callBack MC.loadConfigCommPort();
-                    statusText = "порт не найден";
-                    break;
-                case CommPort.INITCODE_ERROROPEN:
-//                    portName = parameters[1];
-                    portName = ""; //callBack MC.loadConfigCommPort();
-                    statusText = "ошибка открытия";
-                    break;
-                default:
-                    portName = "";
-                    statusText = "";
-            }
-            labelPortCurrent.setText(portName);
-            textCommPortStatus.setText(statusText);
-        }   // выдача статуса comm port
-        {
-            if (!flCheckParamSql) {
-                textTypeBdStatus.setText("Error parametrs BD");
-                return;
-            }
-            /*if (flCheckSql) {
-                textTypeBdStatus.setText("BD ok");
-            } else {
-                textTypeBdStatus.setText("Error structure BD");
-            }*/
-        }   // выдача статуса БД
-    }
     // >>>>>>>>>>>>>>>>>>>>>>
-    // разрешение кнопки тест
-    protected void buttonTestEnable(boolean enabled) {
-        buttonTest.setEnabled(enabled);
-    }
     protected void buttonEditEnable(boolean enabled) {
         buttonEditUsers.setEnabled(enabled);
         buttonEditPushers.setEnabled(enabled);
     }
     // <<<<<<<<<<<<<<<<<<<<<<
-    // выбран тип БД
-    private void selectTypeBase(JComboBox comboBox) {
-        //if (lockBegin)  return;
-        checkStatusComp();
-        outStatus();
-        //сохранить
-        if (flCheckParamSql) {
-            //callBack MC.saveConfigTypeBaseData(BaseData2.typeBaseDataCode((String) comboBox.getSelectedItem()));
-        }
-    }
     // нажатие кнопки редактирование пользователей
     private void callPushButtonEditUsers(ActionEvent actionEvent) {
         if (!flagTestBaseData) {
@@ -579,38 +366,30 @@ class TuningFrame {
         }
         saveEnableComponents.save();
         saveEnableComponents.offline();
-        new Thread(() -> {
-            SwingUtilities.invokeLater(() -> {
-                new EditUsers(
-                        connBD.cloneNewBase((String) comboBoxListBd.getSelectedItem()),
-                        new EditUsers.CallBack() {
-                            @Override
-                            public void messageCloseEditUsers(boolean newData) {
-                                if (newData) {
-                                    // здесь перезагрузка списка пользователей (новые данные)
-                                }
-                                saveEnableComponents.restore();
-                                frameTuning.requestFocus();
-                            }
-                            // текущий активный пользователь
-                            @Override
-                            public User getCurrentUser() {
-                                User user = new User(
-                                        0,
-                                        new Date(),
-                                        0,
-                                        new Date(),
-                                        0,
-                                        "lockAdmin",
-                                        "",
-                                        3,
-                                        null
-                                );
-                                return user;
-                            }
-                        });
-            });
-        }, "create edit users").start();
+        new Thread(() -> SwingUtilities.invokeLater(() -> new EditUsers(
+                connBD.cloneNewBase((String) comboBoxListBd.getSelectedItem()),
+                new EditUsers.CallBack() {
+                    @Override
+                    public void messageCloseEditUsers(boolean newData) {
+                        saveEnableComponents.restore();
+                        frameTuning.requestFocus();
+                    }
+                    // текущий активный пользователь
+                    @Override
+                    public User getCurrentUser() {
+                        return new User(
+                                0,
+                                new Date(),
+                                0,
+                                new Date(),
+                                0,
+                                "lockAdmin",
+                                "",
+                                3,
+                                null
+                        );
+                    }
+                })), "create edit users").start();
     }
     private void callPushButtonEditPushers(ActionEvent actionEvent) {
         if (!flagTestBaseData) {
@@ -620,31 +399,26 @@ class TuningFrame {
         }
         saveEnableComponents.save();
         saveEnableComponents.offline();
-        new Thread(()->{
-            SwingUtilities.invokeLater(()->{
-                try {
-                    new EditPushers(
-                            new EditPushers.CallBack() {
-                                @Override
-                                public void messageCloseEditUsers(boolean newData) {
-                                    saveEnableComponents.restore();
-                                    frameTuning.requestFocus();
-                                }
-                            },
-                            connBD.cloneNewBase((String) comboBoxListBd.getSelectedItem()),
-                            0
-                    );
-                } catch (BaseDataException bde) {
-                    myLog.log(Level.SEVERE, "ошибка редактирования толкателей", bde);
-                    MySwingUtil.showMessage(frameTuning, "редактор толкателей", "ошибка редактирования толкателей",
-                            5_000, o -> {
-                                saveEnableComponents.restore();
-                                frameTuning.requestFocus();
-                            }
-                    );
-                }
-            });
-        },"create edit pushers").start();
+        new Thread(()-> SwingUtilities.invokeLater(()->{
+            try {
+                new EditPushers(
+                        newData -> {
+                            saveEnableComponents.restore();
+                            frameTuning.requestFocus();
+                        },
+                        connBD.cloneNewBase((String) comboBoxListBd.getSelectedItem()),
+                        0
+                );
+            } catch (BaseDataException bde) {
+                myLog.log(Level.SEVERE, "ошибка редактирования толкателей", bde);
+                MySwingUtil.showMessage(frameTuning, "редактор толкателей", "ошибка редактирования толкателей",
+                        5_000, o -> {
+                            saveEnableComponents.restore();
+                            frameTuning.requestFocus();
+                        }
+                );
+            }
+        }),"create edit pushers").start();
     }
     // ========================================================================
     // ===== компоненты JFrame =======
@@ -744,7 +518,7 @@ class TuningFrame {
             //MySwingUtil.showMessage(frameTuning, "тест соединения с БД", "выберите базу", 8_000);
             textTypeBdStatus.setText("выберите базу");
             flagLockActions = true;
-            try { MyUtil.<String>loadToComboBox(
+            try { MyUtil.loadToComboBox(
                     conn.getListBase(),
                     comboBoxListBd,
                     false,
@@ -793,11 +567,7 @@ class TuningFrame {
             default:
                 textCommPortStatus.setText("неизвестная ошибка");
         }
-        if (stat.getCodePortStat() == CommPort.INITCODE_OK) {
-            flagTestCommPort = true;
-        } else {
-            flagTestCommPort = false;
-        }
+        flagTestCommPort = stat.getCodePortStat() == CommPort.INITCODE_OK;
     }
     // ========================================================================
     private void callPushButtonSave(ActionEvent actionEvent) {

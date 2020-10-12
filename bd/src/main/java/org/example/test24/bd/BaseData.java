@@ -33,7 +33,7 @@ public interface BaseData {
     // ==================== CONFIG ====================
     interface Config {
         static Config create() { return new ParametersConfig(); }
-        Status load1() throws Exception;
+        Status load() throws Exception;
         Status save() throws BaseDataException;
         void setDefault();
         String getPortName();

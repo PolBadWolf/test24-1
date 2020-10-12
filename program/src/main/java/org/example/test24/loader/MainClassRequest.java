@@ -24,13 +24,14 @@ class MainClassRequest {
     private volatile ParametersConfig parametersConfig = null;
     // =============== запросы ==================
     // загрузка начальной конфигурации
-    protected ParametersConfig getParametersConfig() {
+    /*protected ParametersConfig getParametersConfig() {
         if (parametersConfig != null) return parametersConfig;
         parametersConfig = new ParametersConfig();
-        if (parametersConfig.load() != ParametersConfig.Diagnostic.OK) {
+        if (parametersConfig.load1() != ParametersConfig.Diagnostic.OK) {
                 parametersConfig.setDefault();
         }
         return parametersConfig;
     }
+    */
     // ************************************************
 }
