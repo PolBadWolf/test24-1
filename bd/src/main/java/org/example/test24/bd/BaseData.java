@@ -71,7 +71,7 @@ public interface BaseData {
     // деактивация пользователя
     void deleteUser(long id_loggerUserEdit, User user) throws BaseDataException;
     // запись нового типа толкателя
-    void writeNewTypePusher(long id_loggerUser, String nameType, int forceNominal, int moveNominal, int unclenchingTime) throws BaseDataException;
+    long writeNewTypePusher(long id_loggerUser, String nameType, int forceNominal, int moveNominal, int unclenchingTime) throws BaseDataException;
     // чтение списока типов толкателей
     TypePusher[] getListTypePushers(boolean actual) throws BaseDataException;
     // обновление типа толкателя
@@ -80,13 +80,15 @@ public interface BaseData {
     void deleteTypePusher(long id_loggerUser, TypePusher typePusher) throws BaseDataException;
     // чтение списка толкателей
     Pusher[] getListPushers(boolean actual) throws Exception;
+    // запись нового толкателя
+    long writeNewPusher(long id_loggerUser, String regNumber, long id_typePusher) throws BaseDataException;
+    // обновление толкателя
+    void updatePusher(Pusher pusher, long id_loggerUser, String regNumber, long id_typePusher) throws BaseDataException;
 
     // запись замера
     void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
     //
     BaseData cloneNewBase(String base);
-    // запись нового толкателя
-    void writeNewPusher(long id_loggerUser, String regNumber, long id_typePusher) throws BaseDataException;
     // удаление толкателя
     void deactivatePusher(long id_loggerUser, long id_pusher) throws BaseDataException;
 }

@@ -605,7 +605,7 @@ class BaseDataParent implements BaseData {
     }
     // запись нового типа толкателя
     @Override
-    public void writeNewTypePusher(long id_loggerUser, String nameType, int forceNominal, int moveNominal, int unclenchingTime) throws BaseDataException {
+    public long writeNewTypePusher(long id_loggerUser, String nameType, int forceNominal, int moveNominal, int unclenchingTime) throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(false);
         String query;
@@ -613,6 +613,8 @@ class BaseDataParent implements BaseData {
         PreparedStatement preStatementPusherType;
         PreparedStatement preStatementLogger;
         PreparedStatement preStatementUpdate;
+        long id_typePusher;
+        long id_loggerTypePusher;
         // время записи
         java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
         //
@@ -626,7 +628,7 @@ class BaseDataParent implements BaseData {
             preStatementPusherType.setTimestamp(1, timestamp);
             preStatementPusherType.setLong(2, 0);
             preStatementPusherType.executeUpdate();
-            long id_typePusher = ((ClientPreparedStatement) preStatementPusherType).getLastInsertID();
+            id_typePusher = ((ClientPreparedStatement) preStatementPusherType).getLastInsertID();
             // создание записи в журнале типа толкателя
             query = "INSERT INTO " + baseDat + ".pusherstype_logger " +
                     " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime) " +
@@ -641,7 +643,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setInt(6, moveNominal);
             preStatementLogger.setInt(7, unclenchingTime);
             preStatementLogger.executeUpdate();
-            long id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
+            id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
             //
             preStatementUpdate = connection.prepareStatement(
                     "UPDATE " + baseDat + ".pusherstype " +
@@ -666,6 +668,7 @@ class BaseDataParent implements BaseData {
             preStatementPusherType.close();
             preStatementUpdate.close();
         } catch (SQLException throwables) { }
+        return id_typePusher;
     }
     // обновление типа толкателя
     @Override
@@ -881,7 +884,7 @@ class BaseDataParent implements BaseData {
     protected BaseDataParent() {}
     // запись нового толкателя
     @Override
-    public void writeNewPusher(long id_loggerUser, String regNumber, long id_typePusher) throws BaseDataException {
+    public long writeNewPusher(long id_loggerUser, String regNumber, long id_typePusher) throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(false);
         //
@@ -891,6 +894,8 @@ class BaseDataParent implements BaseData {
         PreparedStatement preparedStatementPusher;
         PreparedStatement preparedStatementLoggerPusher;
         PreparedStatement preparedStatementPusherUpdate;
+        long id_pusher;
+        long id_loggerPusher;
         // время записи
         java.sql.Timestamp timestamp = new Timestamp(new java.util.Date().getTime());
         //
@@ -904,7 +909,7 @@ class BaseDataParent implements BaseData {
             preparedStatementPusher.setTimestamp(1, timestamp);
             preparedStatementPusher.setLong(2, 0);
             preparedStatementPusher.executeUpdate();
-            long id_pusher = ((ClientPreparedStatement) preparedStatementPusher).getLastInsertID();
+            id_pusher = ((ClientPreparedStatement) preparedStatementPusher).getLastInsertID();
             // запись в журнале
             query = "INSERT INTO " + baseDat + " .pushers_logger " +
                     " (date_upd, id_loggerUserEdit, id_pusher, namePusher, id_typePusher) " +
@@ -917,7 +922,7 @@ class BaseDataParent implements BaseData {
             preparedStatementLoggerPusher.setString(4, regNumber);
             preparedStatementLoggerPusher.setLong(5, id_typePusher);
             preparedStatementLoggerPusher.executeUpdate();
-            long id_loggerPusher = ((ClientPreparedStatement) preparedStatementLoggerPusher).getLastInsertID();
+            id_loggerPusher = ((ClientPreparedStatement) preparedStatementLoggerPusher).getLastInsertID();
             // обновление индификатора
             query = "UPDATE " + baseDat + ".pushers " +
                     " SET " +
@@ -945,6 +950,7 @@ class BaseDataParent implements BaseData {
             preparedStatementPusherUpdate.close();
         } catch (SQLException throwables) {
         }
+        return id_pusher;
     }
     // удаление толкателя
     @Override
@@ -981,6 +987,100 @@ class BaseDataParent implements BaseData {
             }
         }
     }
+    // обновление толкателя
+    @Override
+    public void updatePusher(Pusher pusher, long id_loggerUserEdit, String regNumber, long id_typePusher) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(false);
+
+        PreparedStatement preStatementLogger;
+        PreparedStatement preStatementUpdate;
+        Statement statementTypePusher;
+        long id_loggerPusher;
+
+        java.sql.Timestamp timestamp = new Timestamp(new Date().getTime());
+        try {
+            preStatementLogger = connection.prepareStatement(
+                    "INSERT INTO " + baseDat + ".pushers_logger" +
+                            " (date_upd, id_loggerUserEdit, id_pusher, namePusher, id_typePusher) " +
+                            " VALUES(?, ?, ?, ?, ?) "
+            );
+            preStatementLogger.setTimestamp(1, timestamp);
+            preStatementLogger.setLong(2, id_loggerUserEdit);
+            preStatementLogger.setLong(3, pusher.id_pusher);
+            preStatementLogger.setString(4, regNumber);
+            preStatementLogger.setLong(5, pusher.loggerPusher.typePusher.id_typePusher);
+            preStatementLogger.executeUpdate();
+            id_loggerPusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
+            //
+            preStatementUpdate = connection.prepareStatement(
+                    "UPDATE " + baseDat + ".pushers " +
+                            " SET " +
+                            " id_loggerPusher = ? " +
+                            " WHERE id_pusher = ? "
+            );
+            preStatementUpdate.setLong(1, id_loggerPusher);
+            preStatementUpdate.setLong(2, pusher.id_pusher);
+            preStatementUpdate.executeUpdate();
+            //
+            statementTypePusher = connection.createStatement();
+            String query =
+                    "SELECT " +
+                            " pusherstype.id_typePusher, " +
+                            " pusherstype.date_reg, " +
+                            " pusherstype_logger.id_loggerTypePusher, " +
+                            " pusherstype_logger.date_upd, " +
+                            " pusherstype_logger.id_loggerUserEdit, " +
+                            " pusherstype_logger.nameType, " +
+                            " pusherstype_logger.forceNominal, " +
+                            " pusherstype_logger.moveNominal, " +
+                            " pusherstype_logger.unclenchingTime, " +
+                            " pusherstype.date_unreg " +
+                            " FROM " + baseDat + ".pusherstype " +
+                            " INNER JOIN " + baseDat + ".pusherstype_logger " +
+                            " ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
+                            " WHERE " +
+                            " pusherstype.id_typePusher = " + pusher.id_pusher
+            ;
+            ResultSet result = statementTypePusher.executeQuery(query);
+            result.next();
+            //
+            pusher.loggerPusher.id_loggerPusher = id_loggerPusher;
+            pusher.loggerPusher.date_upd = timestamp;
+            pusher.loggerPusher.id_loggerUserEdit = id_loggerUserEdit;
+            pusher.loggerPusher.namePusher = regNumber;
+            pusher.loggerPusher.typePusher = new TypePusher(
+                    result.getLong("id_typePusher"),
+                    result.getTimestamp("date_reg"),
+                    new LoggerTypePusher(
+                            result.getLong("id_loggerTypePusher"),
+                            result.getTimestamp("date_upd"),
+                            result.getLong("id_loggerUserEdit"),
+                            result.getLong("id_typePusher"),
+                            result.getString("nameType"),
+                            result.getInt("forceNominal"),
+                            result.getInt("moveNominal"),
+                            result.getInt("unclenchingTime")
+                    ),
+                    result.getTimestamp("date_unreg")
+            );
+            //
+            connection.commit();
+        } catch (SQLException e) {
+            try { connection.rollback();
+            } catch (SQLException se) {
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
+            }
+            throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            preStatementLogger.close();
+            statementTypePusher.close();
+            preStatementUpdate.close();
+        } catch (SQLException throwables) { }
+    }
+
+    // -----
     protected void internalCheckConnect() throws BaseDataException {
         if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
         boolean fl = false;

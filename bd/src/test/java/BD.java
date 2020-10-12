@@ -46,11 +46,25 @@ public class BD {
 
     private boolean searchTypePusher(String testRecord, TypePusher[] listTypePushers, TypePusher[] target) {
         if (testRecord == null || listTypePushers == null || target == null) return true;
-        if (testRecord.length() == 0 || target.length !=1) return true;
+        if (testRecord.length() == 0 || target.length != 1) return true;
         boolean flag = true;
         for (TypePusher typePusher : listTypePushers) {
             if (typePusher.loggerTypePusher.nameType.equals(testRecord)) {
                 target[0] = typePusher;
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private boolean searchPusher(String testRecord, Pusher[] listPushers, Pusher[] target) {
+        if (testRecord == null || listPushers == null || target == null) return true;
+        if (testRecord.length() == 0 || target.length != 1) return true;
+        boolean flag = true;
+        for (Pusher pusher : listPushers) {
+            if (pusher.loggerPusher.namePusher.equals(testRecord)) {
+                target[0] = pusher;
                 flag = false;
                 break;
             }
@@ -240,6 +254,31 @@ public class BD {
                     pusher.loggerPusher.typePusher.loggerTypePusher.nameType
             );
         }
+        System.out.println();
+    }
+
+    @Test
+    public void _15_writeNewPusher() throws Exception {
+        System.out.println("writeNewPusher");
+        BaseData conn = getConn();
+        long id_typePusher = conn.writeNewTypePusher(0, testRecord1, 222, 22, 2);
+        long id_pusher = conn.writeNewPusher(0, testRecord1, id_typePusher);
+        Assert.assertTrue(id_pusher > 0);
+        System.out.println("ok");
+        System.out.println();
+    }
+
+    @Test
+    public void _16_updatePusher() throws Exception {
+        System.out.println("updatePusher: ");
+        BaseData conn = getConn();
+        Pusher[] listPushers = conn.getListPushers(true);
+        Pusher[] target = new Pusher[1];
+        Pusher pusher;
+        if (searchPusher(testRecord1, listPushers, target)) throw new Exception("толкателей не найдено");
+        pusher = target[0];
+        conn.updatePusher(pusher, 0, testRecord2, pusher.loggerPusher.typePusher.id_typePusher);
+        System.out.println("ok");
         System.out.println();
     }
 }
