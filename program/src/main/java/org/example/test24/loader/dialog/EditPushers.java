@@ -382,27 +382,29 @@ public class EditPushers {
                 new EditTypePushers(
                         new EditTypePushers.CallBack() {
                             @Override
-                            public void messageCloseEditUsers(boolean newData) {
+                            public void messageCloseEditTypePushers(boolean newData) {
                                 saveEnableComponents.restore();
-                                // обновление данных по типам толкатей
-                                typePusherSelectComboBox2Table.setLock(true);
-                                try {
-                                    listTypePushers = connBD.getListTypePushers(true);
-                                    MyUtil.loadToComboBox(
-                                            listTypePushers,
-                                            comboBoxTypePushers,
-                                            true,
-                                            null
-                                    );
-                                    typePusherSelectComboBox2Table.setCollections(listTypePushers);
-                                    newData = true;
-                                } catch (BaseDataException e) {
-                                    e.printStackTrace();
-                                } catch (Exception exception) {
-                                    exception.printStackTrace();
+                                if  (newData) {
+                                    // обновление данных по типам толкатей
+                                    typePusherSelectComboBox2Table.setLock(true);
+                                    try {
+                                        listTypePushers = connBD.getListTypePushers(true);
+                                        MyUtil.loadToComboBox(
+                                                listTypePushers,
+                                                comboBoxTypePushers,
+                                                true,
+                                                null
+                                        );
+                                        typePusherSelectComboBox2Table.setCollections(listTypePushers);
+                                        newData = true;
+                                    } catch (BaseDataException e) {
+                                        e.printStackTrace();
+                                    } catch (Exception exception) {
+                                        exception.printStackTrace();
+                                    }
+                                    comboBoxTypePushers.setSelectedIndex(-1);
+                                    typePusherSelectComboBox2Table.setLock(false);
                                 }
-                                comboBoxTypePushers.setSelectedIndex(-1);
-                                typePusherSelectComboBox2Table.setLock(false);
                                 frame.requestFocus();
                             }
                         },

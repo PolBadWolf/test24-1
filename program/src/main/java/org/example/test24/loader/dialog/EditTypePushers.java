@@ -23,7 +23,7 @@ import static org.example.test24.lib.MyLogger.myLog;
 
 public class EditTypePushers {
     interface CallBack {
-        void messageCloseEditUsers(boolean newData);
+        void messageCloseEditTypePushers(boolean newData);
     }
 
     // ***********************************************************************
@@ -179,7 +179,7 @@ public class EditTypePushers {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                callBack.messageCloseEditUsers(newData);
+                callBack.messageCloseEditTypePushers(newData);
                 super.windowClosing(e);
             }
         });
