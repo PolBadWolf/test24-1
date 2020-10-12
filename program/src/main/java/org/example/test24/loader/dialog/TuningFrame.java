@@ -5,6 +5,7 @@ import org.example.test24.RS232.BAUD;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.swing.CreateComponents;
+import org.example.test24.lib.swing.MySwingUtil;
 import org.example.test24.lib.swing.MyUtil;
 import org.example.test24.lib.swing.SaveEnableComponents;
 
@@ -621,21 +622,27 @@ class TuningFrame {
         saveEnableComponents.offline();
         new Thread(()->{
             SwingUtilities.invokeLater(()->{
-                new EditPushers(
-                        new EditPushers.CallBack() {
-                            @Override
-                            public void messageCloseEditUsers() {
+                try {
+                    new EditPushers(
+                            new EditPushers.CallBack() {
+                                @Override
+                                public void messageCloseEditUsers(boolean newData) {
+                                    saveEnableComponents.restore();
+                                    frameTuning.requestFocus();
+                                }
+                            },
+                            connBD.cloneNewBase((String) comboBoxListBd.getSelectedItem()),
+                            0
+                    );
+                } catch (BaseDataException bde) {
+                    myLog.log(Level.SEVERE, "ошибка редактирования толкателей", bde);
+                    MySwingUtil.showMessage(frameTuning, "редактор толкателей", "ошибка редактирования толкателей",
+                            5_000, o -> {
                                 saveEnableComponents.restore();
                                 frameTuning.requestFocus();
                             }
-                            @Override
-                            public long getCurrentId_loggerUser() {
-                                return 0;
-                            }
-                        },
-                        connBD.cloneNewBase((String) comboBoxListBd.getSelectedItem()),
-                        0
-                        );
+                    );
+                }
             });
         },"create edit pushers").start();
     }

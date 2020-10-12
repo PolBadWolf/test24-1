@@ -23,16 +23,11 @@ import static org.example.test24.lib.MyLogger.myLog;
 
 public class EditTypePushers {
     interface CallBack {
-        void messageCloseEditUsers(boolean newData);
+        void messageCloseEditTypePushers(boolean newData);
     }
 
     // ***********************************************************************
     private JFrame frame;
-    private JLabel jLabel1;
-    private JLabel jLabel2;
-    private JLabel jLabel3;
-    private JLabel jLabel4;
-    private JScrollPane scrollPane;
     private JTable tableTypePushers;
     private JTextField textName;
     private JTextField textForce;
@@ -51,11 +46,13 @@ public class EditTypePushers {
     private TypePusher editTypePusher = null;
     private long currentId_loggerUserEdit;
     SaveEnableComponents saveEnableComponents;
+    private boolean newData;
 
     public EditTypePushers(CallBack callBack, BaseData connBD, long currentId_loggerUserEdit) {
         this.callBack = callBack;
         this.connBD = connBD;
         this.currentId_loggerUserEdit = currentId_loggerUserEdit;
+        newData = false;
 //        currentId_loggerUserEdit = callBack.getCurrentId_loggerUser();
         // загрузка списка типа толкателей
         try {
@@ -93,13 +90,13 @@ public class EditTypePushers {
         frame.setPreferredSize(new Dimension(640, 480));
         frame.setLayout(null);
         // ---- надписи
-        jLabel1 = CreateComponents.getLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 120, 230, 210, 24, true, true);
+        JLabel jLabel1 = CreateComponents.getLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 120, 230, 210, 24, true, true);
         frame.add(jLabel1);
-        jLabel2 = CreateComponents.getLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 16), 30, 310, 190, 24, true, true);
+        JLabel jLabel2 = CreateComponents.getLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 16), 30, 310, 190, 24, true, true);
         frame.add(jLabel2);
-        jLabel3 = CreateComponents.getLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 16), 40, 350, 140, 24, true, true);
+        JLabel jLabel3 = CreateComponents.getLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 16), 40, 350, 140, 24, true, true);
         frame.add(jLabel3);
-        jLabel4 = CreateComponents.getLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 16), 40, 385, 140, 24, true, true);
+        JLabel jLabel4 = CreateComponents.getLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 16), 40, 385, 140, 24, true, true);
         frame.add(jLabel4);
         // ---- поля ввода данных
         textName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 30, 270,400, 24, null, null, true, true);
@@ -169,7 +166,7 @@ public class EditTypePushers {
                 true,
                 true
         );
-        scrollPane = CreateComponents.getScrollPane(0, 0, 640, 220, tableTypePushers, true, true);
+        JScrollPane scrollPane = CreateComponents.getScrollPane(0, 0, 640, 220, tableTypePushers, true, true);
         frame.add(scrollPane);
         // ----
         frame.pack();
@@ -177,7 +174,7 @@ public class EditTypePushers {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                callBack.messageCloseEditUsers(true);
+                callBack.messageCloseEditTypePushers(newData);
                 super.windowClosing(e);
             }
         });
@@ -199,14 +196,9 @@ public class EditTypePushers {
     private void buttonDeleteAction(ActionEvent e) {
         if (editTypePusher == null) return;
         try {
-            connBD.deativateTypePusher(currentId_loggerUserEdit, editTypePusher);
-        } catch (BaseDataException baseDataException) {
-            baseDataException.printStackTrace();
-            return;
-        }
-        // обновить список
-        try {
+            connBD.deleteTypePusher(currentId_loggerUserEdit, editTypePusher);
             listTypePushers = getListTypePushers();
+            newData = true;
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
             return;
@@ -273,6 +265,7 @@ public class EditTypePushers {
                     v_move,
                     v_unclenching
             );
+            newData = true;
             tableTypePushers.updateUI();
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
@@ -333,6 +326,7 @@ public class EditTypePushers {
                     v_move,
                     v_unclenching
             );
+            newData = true;
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
         } finally {

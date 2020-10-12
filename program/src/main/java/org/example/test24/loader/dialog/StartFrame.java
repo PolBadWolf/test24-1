@@ -570,18 +570,15 @@ public class StartFrame {
             return;
         }
         try {
-            connBD.setNewUserPassword(currentUser, newPassword);
+            connBD.setNewUserPassword(currentUser.id_loggerUser, currentUser, newPassword);
             currentUser.userPassword = newPassword;
-            if (!newPassword.equals(((User) comboBoxUsers.getSelectedItem()).userPassword)) {
-                myLog.log(Level.SEVERE, "ПАРОЛЬ НЕ ПЕРЕШЕЛ !!!!", new Exception("пароль не перешел"));
-            }
         } catch (Exception e) {
-            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка записи в БД", 5_000, o -> {
+            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка установки нового пароля", 5_000, o -> {
                 buttonSetPassword.setEnabled(true);
                 frame.requestFocus();
             });
             buttonSetPassword.setEnabled(false);
-            myLog.log(Level.SEVERE, "ошибка сохранения нового пароля", e);
+            myLog.log(Level.SEVERE, "ошибка установки нового пароля", e);
         }
         fieldPassword.setText("");
     }
@@ -698,26 +695,34 @@ public class StartFrame {
     }
     // обработка редактирование толкателей
     private void callEditPushers(ActionEvent e) {
-        //myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("редактирование толкателей"));
         saveEnableComponentsStartFrame.save();
         saveEnableComponentsStartFrame.offline();
         pusherSelectComboBox2Table.setLock(true);
-        new Thread(() -> SwingUtilities.invokeLater(() -> new EditPushers(
-                new EditPushers.CallBack() {
-                    @Override
-                    public void messageCloseEditUsers() {
-                        saveEnableComponentsStartFrame.restore();
-                        frame.requestFocus();
-                        pusherSelectComboBox2Table.setLock(false);
-                    }
-                    @Override
-                    public long getCurrentId_loggerUser() {
-                        return 0;
-                    }
-                },
-                connBD,
-                ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
-        )), "create edit pushers").start();
+        new Thread(() -> SwingUtilities.invokeLater(() -> {
+            try {
+                new EditPushers(
+                        new EditPushers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers(boolean newData) {
+                                saveEnableComponentsStartFrame.restore();
+                                frame.requestFocus();
+                                pusherSelectComboBox2Table.setLock(false);
+                            }
+                        },
+                        connBD,
+                        ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
+                );
+            } catch (BaseDataException bde) {
+                myLog.log(Level.SEVERE, "ошибка редактирования толкателей", bde);
+                MySwingUtil.showMessage(frame, "редактор толкателей", "ошибка редактирования толкателей",
+                        5_000, o -> {
+                            saveEnableComponentsStartFrame.restore();
+                            frame.requestFocus();
+                            pusherSelectComboBox2Table.setLock(false);
+                        }
+                );
+            }
+        }), "create edit pushers").start();
     }
     // ===========================================================================
 }
