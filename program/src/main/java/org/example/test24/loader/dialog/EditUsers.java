@@ -7,7 +7,6 @@ import org.example.test24.lib.swing.FilterSortField2Table;
 import org.example.test24.lib.swing.MySwingUtil;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
@@ -23,13 +22,13 @@ public class EditUsers extends JFrame {
         User getCurrentUser();
     }
     // объект обратного вызова
-    private CallBack callBack;
+    private final CallBack callBack;
     // события изменения
     private boolean flagEventEdit;
     // объект доступа к БД
-    private BaseData connBD;
+    private final BaseData connBD;
     // активный пользователь
-    private User activetUser;
+    private final User activetUser;
     private User editUser = null;
     private User[] listUsers = null; // полный список пользователей
     private User[] tablUsers = null; // список без активного пользователя
@@ -38,7 +37,7 @@ public class EditUsers extends JFrame {
 
 
 
-    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public EditUsers(BaseData connBD, CallBack callBack) {
         this.connBD = connBD;
@@ -86,7 +85,7 @@ public class EditUsers extends JFrame {
                 null, null, true, true);
         add(fieldSearch);
 
-        userFilterSortField2Table = new FilterSortField2Table<User>(
+        userFilterSortField2Table = new FilterSortField2Table<>(
                 fieldSearch,
                 table,
                 tablUsers,
@@ -117,8 +116,8 @@ public class EditUsers extends JFrame {
                         editUser = tablUsers[rowIndex];
                         fieldSurName.setText(editUser.surName);
                         fieldPassword.setText(editUser.userPassword);
-                        checkUsers.setSelected((editUser.rang & (1 << User.RANG_USERS)) != 0 );
-                        checkPushers.setSelected((editUser.rang & (1 << User.RANG_PUSHERS)) != 0 );
+                        checkUsers.setSelected((editUser.rang & (1 << User.RANG_USERS)) != 0);
+                        checkPushers.setSelected((editUser.rang & (1 << User.RANG_PUSHERS)) != 0);
                         table.clearSelection();
                         onButtonEdit();
                     }
@@ -414,57 +413,5 @@ public class EditUsers extends JFrame {
     JLabel label_search;
     JScrollPane scroll_table;
     JTable table;
-    // ------------------------------------------
-    class SimpleTableModel extends AbstractTableModel {
-        final int column_name = 0;
-        final int column_datereg = 2;
-        final int column_rang = 1;
-        final String[] columnsName = new String[]{
-                "ФИО",
-                "ранг",
-                "регистрация"
-        };
-
-        @Override
-        public int getRowCount() {
-            int row = 0;
-            if (tablUsers != null) {
-                row = tablUsers.length;
-            }
-            return row;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 3;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            String text = "";
-            if (tablUsers != null) {
-                switch (columnIndex) {
-                    case column_name:
-                        text = tablUsers[rowIndex].surName;
-                        break;
-                    case column_datereg:
-                        text = dateFormat.format(tablUsers[rowIndex].date_reg);
-                        break;
-                    case column_rang:
-                        text = "";
-                        if ((tablUsers[rowIndex].rang & 1 << User.RANG_USERS) != 0) text += "П";
-                        if ((tablUsers[rowIndex].rang & 1 << User.RANG_PUSHERS) != 0) text += "Т";
-                        break;
-                    default:
-                }
-            }
-            return text;
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            return columnsName[column];
-        }
-    }
     // ------------------------------------------
 }
