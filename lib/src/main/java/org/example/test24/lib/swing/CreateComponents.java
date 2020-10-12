@@ -1,5 +1,7 @@
 package org.example.test24.lib.swing;
 
+import com.sun.javafx.logging.JFRInputEvent;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
@@ -73,9 +75,8 @@ public class CreateComponents {
     }
     // ---
     public static JButton getButton(String text, Font font, int x, int y, int width, int height, ActionListener listener, boolean visible, boolean enable) {
-        JButton button = new JButton();
+        JButton button = new JButton(text);
         button.setFont(font);
-        button.setText(text);
         button.setBounds(x, y, width, height);
         if (listener != null) button.addActionListener(listener);
         button.setVisible(visible);

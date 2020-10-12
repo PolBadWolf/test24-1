@@ -1,0 +1,4 @@
+#config
+#Fri Oct 09 09:21:32 YEKT 2020
+DataBase=MY_SQL
+CommPort=COM1
