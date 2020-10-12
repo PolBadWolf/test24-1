@@ -954,38 +954,54 @@ class BaseDataParent implements BaseData {
     }
     // удаление толкателя
     @Override
-    public void deletePusher(long id_loggerUser, long id_pusher) throws BaseDataException {
+    public void deletePusher(long id_loggerUserEdit, Pusher pusher) throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(false);
         //
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preStatementLogger;
+        PreparedStatement preStatementUpdate;
+        long id_loggerPusher;
+        //
         java.sql.Timestamp timestamp = new Timestamp(new Date().getTime());
         try {
-            preparedStatement = connection.prepareStatement(
-                    "UPDATE " + baseDat + ".table_pushers " +
+            preStatementLogger = connection.prepareStatement(
+                    "INSERT INTO " + baseDat + ".pushers_logger " +
+                            " (date_upd, id_loggerUserEdit, id_pusher, namePusher, id_typePusher) " +
+                            " VALUES(?, ?, ?, ?, ?) "
+            );
+            preStatementLogger.setTimestamp(1, timestamp);
+            preStatementLogger.setLong(2, id_loggerUserEdit);
+            preStatementLogger.setLong(3, pusher.id_pusher);
+            preStatementLogger.setString(4, pusher.loggerPusher.namePusher);
+            preStatementLogger.setLong(5, pusher.loggerPusher.typePusher.id_typePusher);
+            preStatementLogger.executeUpdate();
+            id_loggerPusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
+            //
+            preStatementUpdate = connection.prepareStatement(
+                    "UPDATE " + baseDat + ".pushers " +
                             " SET " +
+                            " id_loggerPusher = ?, " +
                             " date_unreg = ? " +
                             " WHERE id_pusher = ? "
             );
-            preparedStatement.setTimestamp(1, timestamp);
-            preparedStatement.setLong(2, id_pusher);
-            preparedStatement.executeUpdate();
+            preStatementUpdate.setLong(1, id_loggerPusher);
+            preStatementUpdate.setTimestamp(2, timestamp);
+            preStatementUpdate.setLong(3, pusher.id_pusher);
+            preStatementUpdate.executeUpdate();
+            //
             connection.commit();
         } catch (SQLException e) {
             try {
                 connection.rollback();
-            } catch (SQLException sqe) {
-                e = new SQLException("ошибка отмены транзакции: " + sqe.getMessage(), e);
+            } catch (SQLException se) {
+                e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
             throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException throwables) {
-                }
-            }
         }
+        try {
+            preStatementLogger.close();
+            preStatementUpdate.close();
+        } catch (SQLException throwables) { }
     }
     // обновление толкателя
     @Override

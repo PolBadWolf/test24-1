@@ -281,4 +281,38 @@ public class BD {
         System.out.println("ok");
         System.out.println();
     }
+
+    @Test
+    public void _17_deletePusher() throws Exception {
+        System.out.println("deletePusher:");
+        BaseData conn = getConn();
+        Pusher[] target = new Pusher[1];
+        Pusher pusher;
+        while (!searchPusher(testRecord1, conn.getListPushers(true), target)) {
+            pusher = target[0];
+            conn.deletePusher(0, pusher);
+            System.out.println(
+                    pusher.id_pusher + ":" +
+                            pusher.loggerPusher.id_loggerPusher + ":" +
+                            pusher.loggerPusher.namePusher + " ==> " +
+                            pusher.loggerPusher.typePusher.id_typePusher + ":" +
+                            pusher.loggerPusher.typePusher.loggerTypePusher.id_loggerTypePusher + ":" +
+                            pusher.loggerPusher.typePusher.loggerTypePusher.nameType
+            );
+        }
+        while (!searchPusher(testRecord2, conn.getListPushers(true), target)) {
+            pusher = target[0];
+            conn.deletePusher(0, pusher);
+            System.out.println(
+                    pusher.id_pusher + ":" +
+                            pusher.loggerPusher.id_loggerPusher + ":" +
+                            pusher.loggerPusher.namePusher + " ==> " +
+                            pusher.loggerPusher.typePusher.id_typePusher + ":" +
+                            pusher.loggerPusher.typePusher.loggerTypePusher.id_loggerTypePusher + ":" +
+                            pusher.loggerPusher.typePusher.loggerTypePusher.nameType
+            );
+        }
+        System.out.println("end del");
+        System.out.println();
+    }
 }
