@@ -83,19 +83,21 @@ public class EditPushers {
         // загрузка типов компонентов
         try {
             listTypePushers = connBD.getListTypePushers(true);
-            MyUtil.loadToComboBox(
-                    listTypePushers,
-                    comboBoxTypePushers,
-                    true,
-                    null
-            );
+            try {
+                MyUtil.loadToComboBox(
+                        listTypePushers,
+                        comboBoxTypePushers,
+                        true,
+                        null
+                );
+            } catch (Exception e) {
+                throw new BaseDataException(e, Status.ERROR);
+            }
             typePusherSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxTypePushers, tableFindTypePushers, listTypePushers, 7, null);
             callComboBoxTypePushers(null);
             typePusherSelectComboBox2Table.setLock(false);
         } catch (BaseDataException e) {
             e.printStackTrace();
-        } catch (Exception exception) {
-            exception.printStackTrace();
         }
     }
     // ----
@@ -256,9 +258,9 @@ public class EditPushers {
             listPushers = connBD.getListPushers(true);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "обновление списка толкателей", e);
-            MySwingUtil.showMessage(frame, "ошибка БД", "обновление списка толкателей", 10_000, o -> {
-                frame.requestFocus();
-            });
+            MySwingUtil.showMessage(frame, "ошибка БД", "обновление списка толкателей",
+                    10_000, o -> frame.requestFocus()
+            );
             return true;
         }
         editPusher = null;
@@ -278,7 +280,7 @@ public class EditPushers {
             textUnclenching.setText("");
         }
     }
-    private void callButtonDelete(ActionEvent actionEvent) {
+    private boolean checkComponentsEdit() {
         if (
                 textRegNumber.getText().length() == 0 ||
                         comboBoxTypePushers.getSelectedItem() == null
@@ -289,16 +291,18 @@ public class EditPushers {
                 saveEnableComponents.restore();
                 frame.requestFocus();
             });
-            return;
+            return true;
         }
+        return false;
+    }
+    private void callButtonDelete(ActionEvent actionEvent) {
+        if (checkComponentsEdit()) return;
         try {
             connBD.deletePusher(0, editPusher);
             newData = true;
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "ошибка удаления толкателя");
-            MySwingUtil.showMessage(frame, "ошибка БД", "ошибка удаления толкателя", 10_000, o -> {
-                frame.requestFocus();
-            });
+            MySwingUtil.showMessage(frame, "ошибка БД", "ошибка удаления толкателя", 10_000, o -> frame.requestFocus());
             return;
         }
         // очистка полей
@@ -307,26 +311,15 @@ public class EditPushers {
         refreshListPushers();
     }
     private void callButtonAdd(ActionEvent actionEvent) {
-        if (
-                textRegNumber.getText().length() == 0 ||
-                        comboBoxTypePushers.getSelectedItem() == null
-        ) {
-            saveEnableComponents.save();
-            saveEnableComponents.offline();
-            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
-                saveEnableComponents.restore();
-                frame.requestFocus();
-            });
-            return;
-        }
+        if (checkComponentsEdit()) return;
         // заменяемые данные
         String updateRegNumber = textRegNumber.getText();
         long updateId_TypePusher = ((TypePusher) comboBoxTypePushers.getSelectedItem()).id_typePusher;
         // проверка на повтор
         {
             boolean flAgain = false;
-            for (int i = 0; i < listPushers.length; i++) {
-                if (!updateRegNumber.equals(listPushers[i].loggerPusher.namePusher)) continue;
+            for (Pusher pusher : listPushers) {
+                if (!updateRegNumber.equals(pusher.loggerPusher.namePusher)) continue;
                 flAgain = true;
                 break;
             }
@@ -349,9 +342,7 @@ public class EditPushers {
             newData = true;
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "запись нового толкателя в БД", e);
-            MySwingUtil.showMessage(frame, "ошибка БД", "Запись нового толкателя", 10_000, o -> {
-                frame.requestFocus();
-            });
+            MySwingUtil.showMessage(frame, "ошибка БД", "Запись нового толкателя", 10_000, o -> frame.requestFocus());
             return;
         }
         // очистка полей
@@ -362,41 +353,36 @@ public class EditPushers {
     private void callButtonEditTypePushers(ActionEvent actionEvent) {
         saveEnableComponents.save();
         saveEnableComponents.offline();
-        new Thread(()->{
-            SwingUtilities.invokeLater(()->{
-                new EditTypePushers(
-                        new EditTypePushers.CallBack() {
-                            @Override
-                            public void messageCloseEditTypePushers(boolean newData) {
-                                saveEnableComponents.restore();
-                                if  (newData) {
-                                    // обновление данных по типам толкатей
-                                    typePusherSelectComboBox2Table.setLock(true);
-                                    try {
-                                        listTypePushers = connBD.getListTypePushers(true);
-                                        MyUtil.loadToComboBox(
-                                                listTypePushers,
-                                                comboBoxTypePushers,
-                                                true,
-                                                null
-                                        );
-                                        typePusherSelectComboBox2Table.setCollections(listTypePushers);
-                                        newData = true;
-                                    } catch (BaseDataException e) {
-                                        e.printStackTrace();
-                                    } catch (Exception exception) {
-                                        exception.printStackTrace();
-                                    }
-                                    comboBoxTypePushers.setSelectedIndex(-1);
-                                    typePusherSelectComboBox2Table.setLock(false);
-                                }
-                                frame.requestFocus();
+        new Thread(()-> SwingUtilities.invokeLater(()-> new EditTypePushers(
+                newData -> {
+                    saveEnableComponents.restore();
+                    if  (newData) {
+                        // обновление данных по типам толкатей
+                        typePusherSelectComboBox2Table.setLock(true);
+                        try {
+                            listTypePushers = connBD.getListTypePushers(true);
+                            try {
+                                MyUtil.loadToComboBox(
+                                        listTypePushers,
+                                        comboBoxTypePushers,
+                                        true,
+                                        null
+                                );
+                            } catch (Exception e) {
+                                throw new BaseDataException(e, Status.ERROR);
                             }
-                        },
-                        connBD,
-                        currentId_loggerUserEdit
-                );
-            });
-        }, "create type pushers").start();
+                            typePusherSelectComboBox2Table.setCollections(listTypePushers);
+                            EditPushers.this.newData = true;
+                        } catch (BaseDataException e) {
+                            e.printStackTrace();
+                        }
+                        comboBoxTypePushers.setSelectedIndex(-1);
+                        typePusherSelectComboBox2Table.setLock(false);
+                    }
+                    frame.requestFocus();
+                },
+                connBD,
+                currentId_loggerUserEdit
+        )), "create type pushers").start();
     }
 }
