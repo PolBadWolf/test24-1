@@ -51,11 +51,13 @@ public class EditTypePushers {
     private TypePusher editTypePusher = null;
     private long currentId_loggerUserEdit;
     SaveEnableComponents saveEnableComponents;
+    private boolean newData;
 
     public EditTypePushers(CallBack callBack, BaseData connBD, long currentId_loggerUserEdit) {
         this.callBack = callBack;
         this.connBD = connBD;
         this.currentId_loggerUserEdit = currentId_loggerUserEdit;
+        newData = false;
 //        currentId_loggerUserEdit = callBack.getCurrentId_loggerUser();
         // загрузка списка типа толкателей
         try {
@@ -177,7 +179,7 @@ public class EditTypePushers {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                callBack.messageCloseEditUsers(true);
+                callBack.messageCloseEditUsers(newData);
                 super.windowClosing(e);
             }
         });
@@ -200,13 +202,8 @@ public class EditTypePushers {
         if (editTypePusher == null) return;
         try {
             connBD.deleteTypePusher(currentId_loggerUserEdit, editTypePusher);
-        } catch (BaseDataException baseDataException) {
-            baseDataException.printStackTrace();
-            return;
-        }
-        // обновить список
-        try {
             listTypePushers = getListTypePushers();
+            newData = true;
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
             return;
@@ -273,6 +270,7 @@ public class EditTypePushers {
                     v_move,
                     v_unclenching
             );
+            newData = true;
             tableTypePushers.updateUI();
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
@@ -333,6 +331,7 @@ public class EditTypePushers {
                     v_move,
                     v_unclenching
             );
+            newData = true;
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
         } finally {

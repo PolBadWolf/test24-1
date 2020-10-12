@@ -702,7 +702,7 @@ public class StartFrame {
         new Thread(() -> SwingUtilities.invokeLater(() -> new EditPushers(
                 new EditPushers.CallBack() {
                     @Override
-                    public void messageCloseEditUsers() {
+                    public void messageCloseEditUsers(boolean newData) {
                         saveEnableComponentsStartFrame.restore();
                         frame.requestFocus();
                         pusherSelectComboBox2Table.setLock(false);

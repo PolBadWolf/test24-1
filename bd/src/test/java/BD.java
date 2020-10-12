@@ -314,6 +314,7 @@ public class BD {
         }
         System.out.println("end del");
         System.out.println();
+        _12_deleteTypePusher();
     }
 
     @Test
@@ -326,7 +327,8 @@ public class BD {
                     pusher.loggerPusher.id_loggerPusher + ":" +
                     pusher.loggerPusher.namePusher + " ==> " +
                     pusher.loggerPusher.typePusher.id_typePusher + ":" +
-                    pusher.loggerPusher.typePusher.loggerTypePusher.nameType
+                    pusher.loggerPusher.typePusher.loggerTypePusher.nameType + "\t" +
+                    (pusher.date_unreg == null ? "NULL" : pusher.date_unreg.toString())
             );
         }
         System.out.println();

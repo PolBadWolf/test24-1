@@ -624,7 +624,7 @@ class TuningFrame {
                 new EditPushers(
                         new EditPushers.CallBack() {
                             @Override
-                            public void messageCloseEditUsers() {
+                            public void messageCloseEditUsers(boolean newData) {
                                 saveEnableComponents.restore();
                                 frameTuning.requestFocus();
                             }

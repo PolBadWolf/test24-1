@@ -17,7 +17,7 @@ import static org.example.test24.lib.MyLogger.myLog;
 
 public class EditPushers {
     interface CallBack {
-        void messageCloseEditUsers();
+        void messageCloseEditUsers(boolean newData);
         long getCurrentId_loggerUser();
     }
 
@@ -52,11 +52,13 @@ public class EditPushers {
     private SelectComboBox2Table_Top<TypePusher> typePusherSelectComboBox2Table;
     private SaveEnableComponents saveEnableComponents;
     private Pusher editPusher;
+    private boolean newData;
 
     public EditPushers(EditPushers.CallBack callBack, BaseData connBD, long currentId_loggerUserEdit) {
         this.callBack = callBack;
         this.connBD = connBD;
         this.currentId_loggerUserEdit = currentId_loggerUserEdit;
+        newData = false;
         // загрузка списка толкателей
         try {
             listPushers = getListPushers();
@@ -235,7 +237,7 @@ public class EditPushers {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                callBack.messageCloseEditUsers();
+                callBack.messageCloseEditUsers(newData);
                 frame.removeAll();
                 frame.dispose();
             }
@@ -393,6 +395,7 @@ public class EditPushers {
                                             null
                                     );
                                     typePusherSelectComboBox2Table.setCollections(listTypePushers);
+                                    newData = true;
                                 } catch (BaseDataException e) {
                                     e.printStackTrace();
                                 } catch (Exception exception) {
