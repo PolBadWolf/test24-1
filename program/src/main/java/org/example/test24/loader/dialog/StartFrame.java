@@ -338,7 +338,6 @@ public class StartFrame {
                     null,
                     false,
                     true);
-//            tableFindUsers.setBounds(190, 220, 350, 30);
             tableFindUsers.setBounds(190, comboBoxUsers.getY() + comboBoxUsers.getHeight() + 2, 350, 30);
             //
             comboBoxPusher = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
@@ -356,9 +355,8 @@ public class StartFrame {
                     false,
                     true
             );
-
             //
-            tableFindPushers.setBounds(190, 300, 350, 30);
+            tableFindPushers.setBounds(190, comboBoxPusher.getY() + comboBoxPusher.getHeight() + 2, 350, 30);
 
             frame.add(comboBoxUsers);
             frame.add(tableFindUsers);
@@ -729,13 +727,21 @@ public class StartFrame {
                         new EditPushers.CallBack() {
                             @Override
                             public void messageCloseEditUsers(boolean newData) {
+                                if (newData) {
+                                    // чтение списка толкателей
+                                    try {
+                                        listPushers = connBD.getListPushers(true);
+                                        MyUtil.loadToComboBox(listPushers, comboBoxPusher, false, null);
+                                    } catch (Exception e) { myLog.log(Level.WARNING, "ошибка чтение списка толкателей с БД", e);
+                                    }
+                                }
                                 saveEnableComponentsStartFrame.restore();
                                 frame.requestFocus();
                                 pusherSelectComboBox2Table.setLock(false);
                             }
                         },
                         connBD,
-                        ((User) Objects.requireNonNull(comboBoxUsers.getSelectedItem())).id_loggerUser
+                        ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
                 );
             } catch (BaseDataException bde) {
                 myLog.log(Level.SEVERE, "ошибка редактирования толкателей", bde);
@@ -751,7 +757,10 @@ public class StartFrame {
     }
     //
     private void callSelectPusher(ActionEvent actionEvent) {
-        TypePusher typePusher = ((Pusher) Objects.requireNonNull(comboBoxPusher.getSelectedItem())).loggerPusher.typePusher;
+        Pusher pusher = (Pusher) comboBoxPusher.getSelectedItem();
+        if (pusher == null) return;
+        TypePusher typePusher = pusher.loggerPusher.typePusher;
+        if (typePusher == null) return;
         viewNameTypePusher.setText(typePusher.loggerTypePusher.nameType);
         viewForce.setText(String.valueOf(typePusher.loggerTypePusher.forceNominal));
         viewMove.setText(String.valueOf(typePusher.loggerTypePusher.moveNominal));

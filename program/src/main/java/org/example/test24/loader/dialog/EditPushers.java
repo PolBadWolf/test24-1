@@ -304,6 +304,7 @@ public class EditPushers {
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "ошибка удаления толкателя");
             MySwingUtil.showMessage(frame, "ошибка БД", "ошибка удаления толкателя", 10_000, o -> frame.requestFocus());
+            tablePushers.clearSelection();
             return;
         }
         // очистка полей
@@ -334,6 +335,7 @@ public class EditPushers {
                             saveEnableComponents.restore();
                             frame.requestFocus();
                         });
+                tablePushers.clearSelection();
                 return;
             }
         }
@@ -413,9 +415,12 @@ public class EditPushers {
                             saveEnableComponents.restore();
                             frame.requestFocus();
                         });
+                tablePushers.clearSelection();
                 return;
             }
         }
+        //
+        if (selectPusher.loggerPusher.namePusher.equals(updateRegNumber) && selectPusher.loggerPusher.typePusher.id_typePusher == updateId_TypePusher) return;
         //
         try {
             connBD.updatePusher(selectPusher, currentId_loggerUserEdit, updateRegNumber, updateId_TypePusher);
@@ -431,6 +436,7 @@ public class EditPushers {
                         saveEnableComponents.restore();
                         frame.requestFocus();
                     });
+            tablePushers.clearSelection();
             return;
         } finally {
             clearFields();
