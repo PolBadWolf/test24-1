@@ -176,7 +176,7 @@ class BaseDataParent implements BaseData {
                 new ArrayList(Arrays.asList(
                         "id_dataSpec",
                         "date_upd",
-                        "id_users",
+                        "id_user",
                         "id_pusher"
                 ))
         );
@@ -1072,7 +1072,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setLong(2, id_loggerUserEdit);
             preStatementLogger.setLong(3, pusher.id_pusher);
             preStatementLogger.setString(4, regNumber);
-            preStatementLogger.setLong(5, pusher.loggerPusher.typePusher.id_typePusher);
+            preStatementLogger.setLong(5, pusher.loggerPusher.id_pusher);
             preStatementLogger.executeUpdate();
             id_loggerPusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
             //
@@ -1103,7 +1103,7 @@ class BaseDataParent implements BaseData {
                             " INNER JOIN " + baseDat + ".pusherstype_logger " +
                             " ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
                             " WHERE " +
-                            " pusherstype.id_typePusher = " + pusher.id_pusher
+                            " pusherstype.id_typePusher = " + id_typePusher + " "
             ;
             ResultSet result = statementTypePusher.executeQuery(query);
             result.next();

@@ -331,6 +331,16 @@ public class StartFrame {
                     null,
                     this::callSelectUser,
                     false, true);
+            tableFindUsers = CreateComponents.getTable(200,
+                    null,
+                    null,
+                    null,
+                    null,
+                    false,
+                    true);
+//            tableFindUsers.setBounds(190, 220, 350, 30);
+            tableFindUsers.setBounds(190, comboBoxUsers.getY() + comboBoxUsers.getHeight() + 2, 350, 30);
+            //
             comboBoxPusher = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
                     190, 230, 350, 24, true,
                     null,
@@ -346,23 +356,14 @@ public class StartFrame {
                     false,
                     true
             );
-            tableFindUsers = CreateComponents.getTable(200,
-                    null,
-                    null,
-                    null,
-                    null,
-                    false,
-                    true
-            );
 
             //
             tableFindPushers.setBounds(190, 300, 350, 30);
-            tableFindUsers.setBounds(190, 220, 350, 30);
 
             frame.add(comboBoxUsers);
+            frame.add(tableFindUsers);
             frame.add(comboBoxPusher);
             frame.add(tableFindPushers);
-            frame.add(tableFindUsers);
             tableFindPushers.updateUI();
         } // селекторы
         {
@@ -724,11 +725,14 @@ public class StartFrame {
         pusherSelectComboBox2Table.setLock(true);
         new Thread(() -> SwingUtilities.invokeLater(() -> {
             try {
-                new EditPushers(
-                        newData -> {
-                            saveEnableComponentsStartFrame.restore();
-                            frame.requestFocus();
-                            pusherSelectComboBox2Table.setLock(false);
+                EditPushers editPushers = new EditPushers(
+                        new EditPushers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers(boolean newData) {
+                                saveEnableComponentsStartFrame.restore();
+                                frame.requestFocus();
+                                pusherSelectComboBox2Table.setLock(false);
+                            }
                         },
                         connBD,
                         ((User) Objects.requireNonNull(comboBoxUsers.getSelectedItem())).id_loggerUser
