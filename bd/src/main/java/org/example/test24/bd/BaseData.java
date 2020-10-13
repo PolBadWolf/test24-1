@@ -33,7 +33,7 @@ public interface BaseData {
     // ==================== CONFIG ====================
     interface Config {
         static Config create() { return new ParametersConfig(); }
-        Status load1() throws Exception;
+        Status load() throws BaseDataException;
         Status save() throws BaseDataException;
         void setDefault();
         String getPortName();
@@ -86,6 +86,10 @@ public interface BaseData {
     void updatePusher(Pusher pusher, long id_loggerUser, String regNumber, long id_typePusher) throws BaseDataException;
     // удаление толкателя
     void deletePusher(long id_loggerUser, Pusher pusher) throws BaseDataException;
+    // количество толкателей заданого типа
+    int getCountPushersFromType(long id_typePusher, String[] namePusher) throws BaseDataException;
+    // тип толкателя
+    TypePusher getTypePusher(long id_typePusher) throws BaseDataException;
 
     // запись замера
     void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;

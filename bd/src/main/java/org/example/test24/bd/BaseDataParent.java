@@ -1095,6 +1095,93 @@ class BaseDataParent implements BaseData {
             preStatementUpdate.close();
         } catch (SQLException throwables) { }
     }
+    // -----
+    // количество толкателей заданого типа
+    @Override
+    public int getCountPushersFromType(long id_typePusher, String[] targetNamePusher) throws BaseDataException {
+        if (targetNamePusher.length != 1) new BaseDataException("ошибка указателя имени", Status.ERROR);
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        int count;
+
+        try {
+            statement = connection.createStatement();
+            String query =
+                    "SELECT " +
+                            " COUNT(pushers.id_pusher) AS c, " +
+                            " pushers_logger.namePusher " +
+                            " FROM " + baseDat + ".pushers " +
+                            " INNER JOIN " + baseDat + ".pushers_logger ON pushers.id_loggerPusher = pushers_logger.id_loggerPusher " +
+                            " WHERE " +
+                            " pushers_logger.id_typePusher = " + id_typePusher + " AND " +
+                            " pushers.date_unreg IS NULL ";
+            result = statement.executeQuery(query);
+            result.next();
+            count = result.getInt("c");
+            targetNamePusher[0] = result.getString("namePusher");
+        } catch (SQLException e) { throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException e) { }
+        return count;
+    }
+    // тип толкателя
+    @Override
+    public TypePusher getTypePusher(long id_typePusher) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        TypePusher typePusher;
+        String query = "SELECT "+
+                " pusherstype.id_typePusher, " +
+                " pusherstype.date_reg, " +
+                " pusherstype_logger.id_loggerTypePusher, " +
+                " pusherstype_logger.date_upd, " +
+                " pusherstype_logger.id_loggerUserEdit, " +
+                " pusherstype_logger.nameType, " +
+                " pusherstype_logger.forceNominal, " +
+                " pusherstype_logger.moveNominal, " +
+                " pusherstype_logger.unclenchingTime, " +
+                " pusherstype.date_unreg " +
+                " FROM " + baseDat + ".pusherstype " +
+                " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
+                " WHERE " +
+                " pusherstype.id_typePusher = " + id_typePusher + " ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            result.next();
+        } catch (SQLException e) { throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            typePusher = new TypePusher(
+                    result.getLong("id_typePusher"),
+                    result.getTimestamp("date_reg"),
+                    new LoggerTypePusher(
+                            result.getLong("id_loggerTypePusher"),
+                            result.getTimestamp("date_upd"),
+                            result.getLong("id_loggerUserEdit"),
+                            result.getLong("id_typePusher"),
+                            result.getString("nameType"),
+                            result.getInt("forceNominal"),
+                            result.getInt("moveNominal"),
+                            result.getInt("unclenchingTime")
+                    ),
+                    result.getTimestamp("date_unreg")
+            );
+            result.close();
+            statement.close();
+        } catch (SQLException e) { throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        }
+        return typePusher;
+    }
 
     // -----
     protected void internalCheckConnect() throws BaseDataException {

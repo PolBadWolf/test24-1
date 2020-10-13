@@ -20,7 +20,7 @@ public class BD {
         if (conn == null) {
             // чтение конфига
             BaseData.Config config = BaseData.Config.create();
-            config.load1();
+            config.load();
             TypeBaseDate typeBaseDate = config.getTypeBaseData();
             BaseData.Parameters parameters = BaseData.Parameters.create(typeBaseDate);
             parameters.load();
@@ -314,6 +314,7 @@ public class BD {
         }
         System.out.println("end del");
         System.out.println();
+        _12_deleteTypePusher();
     }
 
     @Test
@@ -326,9 +327,49 @@ public class BD {
                     pusher.loggerPusher.id_loggerPusher + ":" +
                     pusher.loggerPusher.namePusher + " ==> " +
                     pusher.loggerPusher.typePusher.id_typePusher + ":" +
-                    pusher.loggerPusher.typePusher.loggerTypePusher.nameType
+                    pusher.loggerPusher.typePusher.loggerTypePusher.nameType + "\t" +
+                    (pusher.date_unreg == null ? "NULL" : pusher.date_unreg.toString())
             );
         }
+        System.out.println();
+    }
+
+    @Test
+    public void _19_getCountPushersFromType() throws Exception {
+        System.out.println("getCountPushersFromType:");
+        BaseData conn = getConn();
+        long id_typePusher;
+        long id_pusher;
+        int count;
+        TypePusher[] targetTypePusher = new TypePusher[1];
+        String[] targetNamePusher = new String[1];
+        Pusher[] targetPusher = new Pusher[1];
+        // создать тип толкателя
+        id_typePusher = conn.writeNewTypePusher(0, "c_pu", 222, 22, 2);
+        // создать толкатель
+        id_pusher = conn.writeNewPusher(0, "pu_c", id_typePusher);
+        // подсчитать
+        count = conn.getCountPushersFromType(id_typePusher, targetNamePusher);
+        Assert.assertNotEquals(0, count);
+        // удалить тип толкателя
+        while (!searchTypePusher("c_pu", conn.getListTypePushers(true), targetTypePusher)) {
+            conn.deleteTypePusher(0, targetTypePusher[0]);
+        }
+        // подсчитать
+        count = conn.getCountPushersFromType(id_typePusher, targetNamePusher);
+        Assert.assertNotEquals(0, count);
+        // удалить толкатель
+        while (!searchPusher("pu_c", conn.getListPushers(true), targetPusher)) {
+            conn.deletePusher(0, targetPusher[0]);
+        }
+        // создать тип толкателя
+        id_typePusher = conn.writeNewTypePusher(0, "c_pu", 222, 22, 2);
+        // подсчитать
+        count = conn.getCountPushersFromType(id_typePusher, targetNamePusher);
+        Assert.assertEquals(0, count);
+        // удалить тип толкателя
+        conn.deleteTypePusher(0, conn.getTypePusher(id_typePusher));
+        //
         System.out.println();
     }
 }

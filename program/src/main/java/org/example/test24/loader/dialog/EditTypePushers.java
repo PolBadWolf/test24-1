@@ -23,16 +23,11 @@ import static org.example.test24.lib.MyLogger.myLog;
 
 public class EditTypePushers {
     interface CallBack {
-        void messageCloseEditUsers(boolean newData);
+        void messageCloseEditTypePushers(boolean newData);
     }
 
     // ***********************************************************************
     private JFrame frame;
-    private JLabel jLabel1;
-    private JLabel jLabel2;
-    private JLabel jLabel3;
-    private JLabel jLabel4;
-    private JScrollPane scrollPane;
     private JTable tableTypePushers;
     private JTextField textName;
     private JTextField textForce;
@@ -44,18 +39,20 @@ public class EditTypePushers {
     private JButton buttonAdd;
     // ***********************************************************************
 
-    private CallBack callBack;
-    private BaseData connBD;
+    private final CallBack callBack;
+    private final BaseData connBD;
     // список тип толкателей
     private TypePusher[] listTypePushers;
     private TypePusher editTypePusher = null;
-    private long currentId_loggerUserEdit;
+    private final long currentId_loggerUserEdit;
     SaveEnableComponents saveEnableComponents;
+    private boolean newData;
 
     public EditTypePushers(CallBack callBack, BaseData connBD, long currentId_loggerUserEdit) {
         this.callBack = callBack;
         this.connBD = connBD;
         this.currentId_loggerUserEdit = currentId_loggerUserEdit;
+        newData = false;
 //        currentId_loggerUserEdit = callBack.getCurrentId_loggerUser();
         // загрузка списка типа толкателей
         try {
@@ -82,7 +79,7 @@ public class EditTypePushers {
     }
     // загрузка списка типа толкателей
     private TypePusher[] getListTypePushers() throws BaseDataException {
-        TypePusher[] typePushers = new TypePusher[0];
+        TypePusher[] typePushers;
         typePushers = connBD.getListTypePushers(true);
         return typePushers;
     }
@@ -93,31 +90,31 @@ public class EditTypePushers {
         frame.setPreferredSize(new Dimension(640, 480));
         frame.setLayout(null);
         // ---- надписи
-        jLabel1 = CreateComponents.getLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 120, 230, 210, 24, true, true);
+        JLabel jLabel1 = CreateComponents.getLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 120, 230, 210, 24, true, true);
         frame.add(jLabel1);
-        jLabel2 = CreateComponents.getLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 16), 30, 310, 190, 24, true, true);
+        JLabel jLabel2 = CreateComponents.getLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 16), 30, 310, 190, 24, true, true);
         frame.add(jLabel2);
-        jLabel3 = CreateComponents.getLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 16), 40, 350, 140, 24, true, true);
+        JLabel jLabel3 = CreateComponents.getLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 16), 40, 350, 140, 24, true, true);
         frame.add(jLabel3);
-        jLabel4 = CreateComponents.getLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 16), 40, 385, 140, 24, true, true);
+        JLabel jLabel4 = CreateComponents.getLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 16), 40, 385, 140, 24, true, true);
         frame.add(jLabel4);
         // ---- поля ввода данных
-        textName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 30, 270,400, 24, null, null, true, true);
+        textName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 30, 270,400, 24, null, null, true, true);
         frame.add(textName);
-        textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 290, 310, 140, 24, new FilterTextDigit(), null, true, true);
+        textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 310, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textForce);
-        textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 290, 350, 140, 24, new FilterTextDigit(), null, true, true);
+        textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 350, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textMove);
-        textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", 0, 18), 290, 385, 140, 24, new FilterTextDigit(), null, true, true);
+        textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 385, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textUnclenching);
         // ---- кнопки
-        buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", 0, 14), 470, 270, 120, 25, this::buttonDeleteAction, true, true);
+        buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 470, 270, 120, 25, this::buttonDeleteAction, true, true);
         frame.add(buttonDelete);
-        buttonClear = CreateComponents.getButton("Очистить", new Font("Times New Roman", 0, 14), 470, 310, 120, 25, this::buttonClearAction, true, true);
+        buttonClear = CreateComponents.getButton("Очистить", new Font("Times New Roman", Font.PLAIN, 14), 470, 310, 120, 25, this::buttonClearAction, true, true);
         frame.add(buttonClear);
-        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", 0, 14), 470, 350, 120, 25, this::buttonEditAction, true, true);
+        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 470, 350, 120, 25, this::buttonEditAction, true, true);
         frame.add(buttonEdit);
-        buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", 0, 14), 470, 385, 120, 25, this::buttonAddAction, true, true);
+        buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", Font.PLAIN, 14), 470, 385, 120, 25, this::buttonAddAction, true, true);
         frame.add(buttonAdd);
         // ---- таблица
         tableTypePushers = CreateComponents.getTable(
@@ -169,7 +166,7 @@ public class EditTypePushers {
                 true,
                 true
         );
-        scrollPane = CreateComponents.getScrollPane(0, 0, 640, 220, tableTypePushers, true, true);
+        JScrollPane scrollPane = CreateComponents.getScrollPane(0, 0, 640, 220, tableTypePushers, true, true);
         frame.add(scrollPane);
         // ----
         frame.pack();
@@ -177,7 +174,7 @@ public class EditTypePushers {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                callBack.messageCloseEditUsers(true);
+                callBack.messageCloseEditTypePushers(newData);
                 super.windowClosing(e);
             }
         });
@@ -194,19 +191,51 @@ public class EditTypePushers {
             super.replace(fb, offset, length, text, attrs);
         }
     }
+    private boolean checkRepeatTypePusher(String v_typeName, TypePusher[] listTypePushers) {
+        boolean flAgain = false;
+        for (TypePusher typePusher : listTypePushers) {
+            if (!v_typeName.equals(typePusher.loggerTypePusher.nameType)) continue;
+            flAgain = true;
+            break;
+        }
+        if (flAgain) {
+            saveEnableComponents.save();
+            saveEnableComponents.offline();
+            MySwingUtil.showMessage(frame,
+                    "редактирование типа гидротолкателя",
+                    "такой тип уже существует",
+                    5_000,
+                    o -> {
+                        saveEnableComponents.restore();
+                        frame.requestFocus();
+                    }
+            );
+            return true;
+        }
+        return false;
+    }
     // ----------- кнопки
     // button delete
     private void buttonDeleteAction(ActionEvent e) {
         if (editTypePusher == null) return;
+        String[] targetNamePusher = new String[1];
+        // проверка на занятость
+        int countUse;
         try {
+            countUse = connBD.getCountPushersFromType(editTypePusher.id_typePusher, targetNamePusher);
+            if (countUse > 0) {
+                saveEnableComponents.save();
+                saveEnableComponents.offline();
+                MySwingUtil.showMessage(frame, "удаление", "этот тип толкателя используется (" + targetNamePusher[0] + ")"
+                        , 5_000, o -> {
+                    saveEnableComponents.restore();
+                    frame.requestFocus();
+                });
+                return;
+            }
             connBD.deleteTypePusher(currentId_loggerUserEdit, editTypePusher);
-        } catch (BaseDataException baseDataException) {
-            baseDataException.printStackTrace();
-            return;
-        }
-        // обновить список
-        try {
             listTypePushers = getListTypePushers();
+            newData = true;
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
             return;
@@ -220,69 +249,7 @@ public class EditTypePushers {
         clearFields();
         tableTypePushers.getSelectionModel().clearSelection();
     }
-    // button edit
-    private void buttonEditAction(ActionEvent e) {
-        if (editTypePusher == null) return;
-        if (
-                textName.getText().length() == 0
-                || textForce.getText().length() == 0
-                || textMove.getText().length() == 0
-                || textUnclenching.getText().length() == 0
-        ) {
-            saveEnableComponents.save();
-            saveEnableComponents.offline();
-            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
-                saveEnableComponents.restore();
-                frame.requestFocus();
-            });
-            return;
-        }
-        // заменяемые данные
-        String v_typeName = textName.getText();
-        int v_force = Integer.parseInt(textForce.getText());
-        int v_move = Integer.parseInt(textMove.getText());
-        int v_unclenching = Integer.parseInt(textUnclenching.getText());
-        // проверка на повтор
-        if (!v_typeName.equals(editTypePusher.loggerTypePusher.nameType)) {
-            boolean flAgain = false;
-            for (int i = 0; i < listTypePushers.length; i++) {
-                if (!v_typeName.equals(listTypePushers[i].loggerTypePusher.nameType)) continue;
-                flAgain = true;
-                break;
-            }
-            if (flAgain) {
-                saveEnableComponents.save();
-                saveEnableComponents.offline();
-                MySwingUtil.showMessage(frame,
-                        "редактирование типа гидротолкателя",
-                        "такой тип уже существует",
-                        5_000,
-                        o -> {
-                            saveEnableComponents.restore();
-                            frame.requestFocus();
-                        }
-                );
-                return;
-            }
-        }
-        // обновление
-        try {
-            connBD.updateTypePusher(editTypePusher, currentId_loggerUserEdit,
-                    v_typeName,
-                    v_force,
-                    v_move,
-                    v_unclenching
-            );
-            tableTypePushers.updateUI();
-        } catch (BaseDataException baseDataException) {
-            baseDataException.printStackTrace();
-        } finally {
-            clearFields();
-            tableTypePushers.getSelectionModel().clearSelection();
-        }
-    }
-    // button add
-    private void buttonAddAction(ActionEvent e) {
+    private boolean checkEditComponents() {
         if (
                 textName.getText().length() == 0
                         || textForce.getText().length() == 0
@@ -295,36 +262,50 @@ public class EditTypePushers {
                 saveEnableComponents.restore();
                 frame.requestFocus();
             });
-            return;
+            return true;
         }
+        return false;
+    }
+    // button edit
+    private void buttonEditAction(ActionEvent e) {
+        if (editTypePusher == null) return;
+        if (checkEditComponents()) return;
         // заменяемые данные
         String v_typeName = textName.getText();
         int v_force = Integer.parseInt(textForce.getText());
         int v_move = Integer.parseInt(textMove.getText());
         int v_unclenching = Integer.parseInt(textUnclenching.getText());
         // проверка на повтор
-        {
-            boolean flAgain = false;
-            for (int i = 0; i < listTypePushers.length; i++) {
-                if (!v_typeName.equals(listTypePushers[i].loggerTypePusher.nameType)) continue;
-                flAgain = true;
-                break;
-            }
-            if (flAgain) {
-                saveEnableComponents.save();
-                saveEnableComponents.offline();
-                MySwingUtil.showMessage(frame,
-                        "редактирование типа гидротолкателя",
-                        "такой тип уже существует",
-                        5_000,
-                        o -> {
-                            saveEnableComponents.restore();
-                            frame.requestFocus();
-                        }
-                );
-                return;
-            }
+        if (!v_typeName.equals(editTypePusher.loggerTypePusher.nameType)) {
+            if (checkRepeatTypePusher(v_typeName, listTypePushers)) return;
         }
+        // обновление
+        try {
+            connBD.updateTypePusher(editTypePusher, currentId_loggerUserEdit,
+                    v_typeName,
+                    v_force,
+                    v_move,
+                    v_unclenching
+            );
+            newData = true;
+            tableTypePushers.updateUI();
+        } catch (BaseDataException baseDataException) {
+            baseDataException.printStackTrace();
+        } finally {
+            clearFields();
+            tableTypePushers.getSelectionModel().clearSelection();
+        }
+    }
+    // button add
+    private void buttonAddAction(ActionEvent e) {
+        if (checkEditComponents()) return;
+        // заменяемые данные
+        String v_typeName = textName.getText();
+        int v_force = Integer.parseInt(textForce.getText());
+        int v_move = Integer.parseInt(textMove.getText());
+        int v_unclenching = Integer.parseInt(textUnclenching.getText());
+        // проверка на повтор
+        if (checkRepeatTypePusher(v_typeName, listTypePushers)) return;
         // добавление
         try {
             connBD.writeNewTypePusher(currentId_loggerUserEdit,
@@ -333,6 +314,7 @@ public class EditTypePushers {
                     v_move,
                     v_unclenching
             );
+            newData = true;
         } catch (BaseDataException baseDataException) {
             baseDataException.printStackTrace();
         } finally {

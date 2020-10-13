@@ -2,25 +2,27 @@ package org.example.test24.bd;
 
 final class StatusConst {
     final static int STATUS_OK = 0;
-    final static int STATUS_PARAMETERS_LOAD_ERROR = 1;
-    final static int STATUS_PARAMETERS_SAVE_ERROR = 2;
-    final static int STATUS_PARAMETERS_ERROR = 3;
-    final static int STATUS_PARAMETERS_PASSWORD_ERROR = 4;
-    final static int STATUS_BASE_TYPE_ERROR = 5;
-    final static int STATUS_BASE_TYPE_NO_SELECT = 6;
-    final static int STATUS_CONFIG_LOAD_ERROR = 7;
-    final static int STATUS_CONNECT_BASE_TYPE_ERROR = 8;
-    final static int STATUS_CONNECT_DRIVER_ERROR = 9;
-    final static int STATUS_CONNECT_PASS_ERROR = 10;
-    final static int STATUS_CONNECT_BASE_ERROR = 11;
-    final static int STATUS_CONNECT_ERROR = 12;
-    final static int STATUS_CONNECT_NO_CONNECTION = 13;
-    final static int STATUS_CONNECT_CLOSE = 14;
-    final static int STATUS_SQL_TRANSACTION_ERROR = 15;
+    final static int STATUS_ERROR = 1;
+    final static int STATUS_PARAMETERS_LOAD_ERROR = 2;
+    final static int STATUS_PARAMETERS_SAVE_ERROR = 3;
+    final static int STATUS_PARAMETERS_ERROR = 4;
+    final static int STATUS_PARAMETERS_PASSWORD_ERROR = 5;
+    final static int STATUS_BASE_TYPE_ERROR = 6;
+    final static int STATUS_BASE_TYPE_NO_SELECT = 7;
+    final static int STATUS_CONFIG_LOAD_ERROR = 8;
+    final static int STATUS_CONNECT_BASE_TYPE_ERROR = 9;
+    final static int STATUS_CONNECT_DRIVER_ERROR = 10;
+    final static int STATUS_CONNECT_PASS_ERROR = 11;
+    final static int STATUS_CONNECT_BASE_ERROR = 12;
+    final static int STATUS_CONNECT_ERROR = 13;
+    final static int STATUS_CONNECT_NO_CONNECTION = 14;
+    final static int STATUS_CONNECT_CLOSE = 15;
+    final static int STATUS_SQL_TRANSACTION_ERROR = 16;
 }
 
 public enum Status {
     OK                              (StatusConst.STATUS_OK),
+    ERROR                           (StatusConst.STATUS_ERROR),
     PARAMETERS_LOAD_ERROR           (StatusConst.STATUS_PARAMETERS_LOAD_ERROR),
     PARAMETERS_SAVE_ERROR           (StatusConst.STATUS_PARAMETERS_SAVE_ERROR),
     PARAMETERS_ERROR                (StatusConst.STATUS_PARAMETERS_ERROR),
