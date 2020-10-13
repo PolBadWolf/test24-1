@@ -1257,6 +1257,30 @@ class BaseDataParent implements BaseData {
         } catch (SQLException e) {
         }
     }
+    // последний spec
+    @Override
+    public long getLastDataSpec() throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        long id_dataSpec;
+        String query = "SELECT data_spec.id_dataSpec " +
+                " FROM " + baseDat + ".data_spec " +
+                " ORDER BY data_spec.id_dataSpec DESC " +
+                " LIMIT 1 ";
+
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            result.next();
+            id_dataSpec = result.getLong(1);
+        } catch (SQLException e) { throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+
+        return id_dataSpec;
+    }
 
     // -----
     protected void internalCheckConnect() throws BaseDataException {
