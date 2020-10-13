@@ -42,7 +42,6 @@ public class StartFrame {
     private JButton buttonEditUsers;
     private JButton buttonEditPushers;
     //
-    private TuningFrame tuningFrame;
     private JTable tableFindPushers;
     private JTable tableFindUsers;
 
@@ -352,21 +351,21 @@ public class StartFrame {
             frame.add(label4);
             frame.add(label5);
             //
-            jLabel1 = CreateComponents.getLabel("Пользователь : ", new Font("Times New Roman", Font.PLAIN, 14), 100, 195, 90, 16, false, true);
-            jLabel2 = CreateComponents.getLabel("Пароль :", new Font("Times New Roman", Font.PLAIN, 14), 100, 235, 90, 16, false, true);
-            jLabel3 = CreateComponents.getLabel("Толкатель :", new Font("Times New Roman", Font.PLAIN, 14), 100, 270, 90, 16, false, true);
+            jLabel1 = CreateComponents.getLabel("Пользователь : ", new Font("Times New Roman", Font.PLAIN, 14), 100, 155, 90, 16, false, true);
+            jLabel2 = CreateComponents.getLabel("Пароль :", new Font("Times New Roman", Font.PLAIN, 14), 100, 195, 90, 16, false, true);
+            jLabel3 = CreateComponents.getLabel("Толкатель :", new Font("Times New Roman", Font.PLAIN, 14), 100, 230, 90, 16, false, true);
             frame.add(jLabel1);
             frame.add(jLabel2);
             frame.add(jLabel3);
         } // подписи, надписи
         {
             comboBoxUsers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
-                    190, 190, 350, 24, true,
+                    190, 150, 350, 24, true,
                     null,
                     this::callSelectUser,
                     false, true);
             comboBoxPusher = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
-                    190, 270, 350, 24, true,
+                    190, 230, 350, 24, true,
                     null,
                     null,
                     false, true);
@@ -400,17 +399,17 @@ public class StartFrame {
             tableFindPushers.updateUI();
         } // селекторы
         {
-            buttonEnter = CreateComponents.getButton("проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 230, 90, 24, this::callEnter, false, true);
+            buttonEnter = CreateComponents.getButton("проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 190, 90, 24, this::callEnter, false, true);
             buttonWork = CreateComponents.getButton("работа", new Font("Times New Roman", Font.PLAIN, 14), 200, 330, 90, 24, this::callReturnToWork, false, true);
             buttonTuning = CreateComponents.getButton("настройка", new Font("Times New Roman", Font.PLAIN, 14), 190, 370, 116, 24, this::callTuning, false, true);
-            buttonSetPassword = CreateComponents.getButton("новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 230, 116, 24, this::callSetNewPassword, false, true);
+            buttonSetPassword = CreateComponents.getButton("новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 190, 116, 24, this::callSetNewPassword, false, true);
             frame.add(buttonEnter);
             frame.add(buttonWork);
             frame.add(buttonTuning);
             frame.add(buttonSetPassword);
         } // кнопки
         {
-            jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 380, 310, 160, 90,true, true );
+            jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 380, 320, 160, 90,true, true );
             // кнопка редактирования пользователей
             // кнопка редактирования толкателей
             buttonEditUsers = CreateComponents.getButton("Пользователей", new Font("Times New Roman", Font.PLAIN, 14), 20, 20, 120, 24, this::callEditUsers, true, true);
@@ -421,7 +420,7 @@ public class StartFrame {
             frame.add(jPanel1);
             jPanel1.setVisible(false);
         } // панель редактирование
-        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 230,120, 24, null, null, false, true);
+        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 190,120, 24, null, null, false, true);
         frame.add(fieldPassword);
 
         frame.pack();
@@ -467,7 +466,7 @@ public class StartFrame {
             comboBoxPusher.setEnabled(false);
         }
     }
-    private void offInputComponents() {
+/*    private void offInputComponents() {
         jLabel1.setVisible(false);
         jLabel2.setVisible(false);
         comboBoxUsers.setVisible(false);
@@ -476,7 +475,7 @@ public class StartFrame {
         buttonWork.setVisible(false);
         buttonTuning.setVisible(false);
     }
-
+*/
     // проверка встроенного администратор
     private boolean checkIntegratedAdministrator(String surName, String password) {
 //        return  surName.equals("Doc") && password.equals("aUxPMjIzNjA=");
@@ -497,18 +496,25 @@ public class StartFrame {
     // ======================================================
     // обработка ввод
     private void callEnter(ActionEvent e) {
-        User user = null;
+        User user;
+        String surName;
         String password;
-        boolean askLocalAdmin;
         try {
             user = (User) comboBoxUsers.getSelectedItem();
-            askLocalAdmin = false;
         } catch (ClassCastException e2) {
-            askLocalAdmin = true;
+            user = null;
         }
         password = fieldPassword.getText();
-        if (askLocalAdmin) {
-            String surName = (String) comboBoxUsers.getSelectedItem();
+        if (user == null) {
+            surName = (String) comboBoxUsers.getSelectedItem();
+            if (surName == null) {
+                MySwingUtil.showMessage(frame, "ошибка", "пользователь не назначен", 5_000, o-> {
+                    buttonEnter.setEnabled(true);
+                    frame.requestFocus();
+                });
+                myLog.log(Level.WARNING, "попытка входа локальным админом");
+                return;
+            }
             String pass = BaseData.Password.encoding(password);
             // проверка на локального админа
             if (!checkIntegratedAdministrator(surName, pass)) {
@@ -518,7 +524,7 @@ public class StartFrame {
                     buttonEnter.setEnabled(true);
                     frame.requestFocus();
                 });
-                myLog.log(Level.WARNING, "попытка входа локальным админом: " + surName + "/" + password);
+                myLog.log(Level.FINE, "попытка входа локальным админом: " + surName + "/" + password);
                 return;
             }
             fieldPassword.setText("");
@@ -533,7 +539,7 @@ public class StartFrame {
         buttonTuning.setVisible(false);
         // проверка пароля у пользователя из списка (БД)
         if (!user.userPassword.equals(password)) {
-            System.out.println("у пользователя из списка не совпал пароль (" + user.userPassword + ")");
+            myLog.log(Level.FINE, "у пользователя из списка не совпал пароль (" + user.userPassword + ")");
             // отключить кнопки управления
             saveEnableComponentsStartFrame.save();
             saveEnableComponentsStartFrame.offline();
