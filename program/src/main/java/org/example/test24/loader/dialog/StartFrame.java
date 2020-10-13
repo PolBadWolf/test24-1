@@ -71,7 +71,8 @@ public class StartFrame {
     private User[] listUsers = new User[0];
     // список толкателей / = [0] for false
     private Pusher[] listPushers = new Pusher[0];
-
+    // выбранный пользователь
+    private User selectUser;
 
     CallBack callBack;
     JFrame frame;
@@ -500,16 +501,16 @@ public class StartFrame {
     // ======================================================
     // обработка ввод
     private void callEnter(ActionEvent e) {
-        User user;
+        //User selectUser;
         String surName;
         String password;
         try {
-            user = (User) comboBoxUsers.getSelectedItem();
+            selectUser = (User) comboBoxUsers.getSelectedItem();
         } catch (ClassCastException e2) {
-            user = null;
+            selectUser = null;
         }
         password = fieldPassword.getText();
-        if (user == null) {
+        if (selectUser == null) {
             surName = (String) comboBoxUsers.getSelectedItem();
             if (surName == null) {
                 MySwingUtil.showMessage(frame, "ошибка", "пользователь не назначен", 5_000, o-> {
@@ -542,26 +543,26 @@ public class StartFrame {
         // спрятать кнопку настройка
         buttonTuning.setVisible(false);
         // проверка пароля у пользователя из списка (БД)
-        if (!user.userPassword.equals(password)) {
-            myLog.log(Level.FINE, "у пользователя из списка не совпал пароль (" + user.userPassword + ")");
+        if (!selectUser.userPassword.equals(password)) {
+            myLog.log(Level.FINE, "у пользователя из списка не совпал пароль (" + selectUser.userPassword + ")");
             // отключить кнопки управления
             saveEnableComponentsStartFrame.save();
             saveEnableComponentsStartFrame.offline();
-            myLog.log(Level.INFO, "ошибка ввода пароля: " + user.surName + "/" + password);
+            myLog.log(Level.INFO, "ошибка ввода пароля: " + selectUser.surName + "/" + password);
             MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
                 saveEnableComponentsStartFrame.restore();
                 frame.requestFocus();
             });
             return;
         }
-        myLog.log(Level.INFO, "вход пользователем " + user.surName + " с привелегиями " + user.rang);
+        myLog.log(Level.INFO, "вход пользователем " + selectUser.surName + " с привелегиями " + selectUser.rang);
         // разрешение смены пароля
         fieldPassword.setText("");
         buttonSetPassword.setEnabled(true);
         // разрешение на редактирование пользователей
-        buttonEditUsers.setEnabled((user.rang & (1 << User.RANG_USERS)) != 0);
+        buttonEditUsers.setEnabled((selectUser.rang & (1 << User.RANG_USERS)) != 0);
         // разрешение на редактирование толкателей
-        buttonEditPushers.setEnabled((user.rang & (1 << User.RANG_PUSHERS)) != 0);
+        buttonEditPushers.setEnabled((selectUser.rang & (1 << User.RANG_PUSHERS)) != 0);
         // разрешение кнопки работа
         buttonWork.setEnabled(true);
         // разрешение выбора толкателей
@@ -630,6 +631,12 @@ public class StartFrame {
             return;
         }
         // ------------
+        if (selectUser == null) {
+            MySwingUtil.showMessage(frame, "ошибка", "не выбран пользователь", 5_000);
+            myLog.log(Level.INFO, "не выбран пользователь");
+            return;
+        }
+
         //myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("не реализован выход на главную программу"));
         // установить спецификацию
         //frame.removeAll();
@@ -638,10 +645,6 @@ public class StartFrame {
     }
     // обработка настройка
     private void callTuning(ActionEvent e) {
-        /*if (1 == 1) {
-            myLog.log(Level.SEVERE, "СДЕЛАТЬ !!!", new Exception("не реализовано запуск настройки"));
-            return;
-        }*/
         if (statMainWork) {
             // при основной работе нельзя менять параметры БД и порта
             MySwingUtil.showMessage(frame, "Настройка", "при основной работе нельзя менять параметры БД и порта", 10_000);
