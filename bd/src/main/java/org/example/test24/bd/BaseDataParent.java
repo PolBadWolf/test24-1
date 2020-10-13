@@ -154,11 +154,12 @@ class BaseDataParent implements BaseData {
         boolean data, data_spec;
         boolean users, users_logger;
         boolean pushers, logger_pushers;
+        boolean pusherstype, pusherstype_logger;
         data = checkStructureTable(
                 base,
                 "data",
                 new ArrayList(Arrays.asList(
-                        "id",
+                        "id_data",
                         "dateTime",
                         "id_spec",
                         "n_cicle",
@@ -167,6 +168,16 @@ class BaseDataParent implements BaseData {
                         "tik_back",
                         "tik_stop",
                         "dis"
+                ))
+        );
+        data_spec = checkStructureTable(
+                base,
+                "data_spec",
+                new ArrayList(Arrays.asList(
+                        "id_dataSpec",
+                        "date_upd",
+                        "id_users",
+                        "id_pusher"
                 ))
         );
         users = checkStructureTable(
@@ -184,11 +195,11 @@ class BaseDataParent implements BaseData {
                 "users_logger",
                 new ArrayList(Arrays.asList(
                         "id_loggerUser",
-                        "date",
+                        "date_upd",
                         "id_loggerUserEdit",
                         "id_user",
-                        "name",
-                        "password",
+                        "surName",
+                        "userPassword",
                         "rang"
                 ))
         );
@@ -202,7 +213,43 @@ class BaseDataParent implements BaseData {
                         "date_unreg"
                 ))
         );
-        return data && users && pushers;
+        logger_pushers = checkStructureTable(
+                base,
+                "pushers_logger",
+                new ArrayList(Arrays.asList(
+                        "id_loggerPusher",
+                        "date_upd",
+                        "id_loggerUserEdit",
+                        "id_pusher",
+                        "namePusher",
+                        "id_typePusher"
+                ))
+        );
+        pusherstype = checkStructureTable(
+                base,
+                "pusherstype",
+                new ArrayList(Arrays.asList(
+                        "id_typePusher",
+                        "date_reg",
+                        "id_loggerTypePusher",
+                        "date_unreg"
+                ))
+        );
+        pusherstype_logger = checkStructureTable(
+                base,
+                "pusherstype_logger",
+                new ArrayList(Arrays.asList(
+                       "id_loggerTypePusher",
+                       "date_upd",
+                        "id_loggerUserEdit",
+                        "id_typePusher",
+                        "nameType",
+                        "forceNominal",
+                        "moveNominal",
+                        "unclenchingTime"
+                ))
+        );
+        return data && data_spec && users && users_logger && pushers && logger_pushers && pusherstype && pusherstype_logger;
     }
     // проверка структуры таблицы
     protected boolean checkStructureTable(String base, String table, ArrayList<String> listColumns) {
