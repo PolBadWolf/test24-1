@@ -90,6 +90,8 @@ public interface BaseData {
     int getCountPushersFromType(long id_typePusher, String[] namePusher) throws BaseDataException;
     // тип толкателя
     TypePusher getTypePusher(long id_typePusher) throws BaseDataException;
+    // новые параметры spec
+    void writeDataSpec(long id_user, long id_pusher) throws BaseDataException;
 
     // запись замера
     void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;

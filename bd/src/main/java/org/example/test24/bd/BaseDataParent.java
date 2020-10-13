@@ -1229,6 +1229,34 @@ class BaseDataParent implements BaseData {
         }
         return typePusher;
     }
+    // новые параметры spec
+    @Override
+    public void writeDataSpec(long id_user, long id_pusher) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(false);
+
+        PreparedStatement preStatement;
+        java.sql.Timestamp timestamp = new Timestamp(new Date().getTime());
+        //
+        try {
+            preStatement = connection.prepareStatement(
+                    "INSERT INTO " + baseDat + ".data_spec " +
+                            " (date_upd, id_user, id_pusher) " +
+                            " VALUES(?, ?, ?) "
+            );
+            preStatement.setTimestamp(1, timestamp);
+            preStatement.setLong(2, id_user);
+            preStatement.setLong(3, id_pusher);
+            preStatement.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) { try { connection.rollback();
+        } catch (SQLException se) { e = new SQLException("ошибка отмены транзакции" + se.getMessage(), e);
+        } throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try { preStatement.close();
+        } catch (SQLException e) {
+        }
+    }
 
     // -----
     protected void internalCheckConnect() throws BaseDataException {
