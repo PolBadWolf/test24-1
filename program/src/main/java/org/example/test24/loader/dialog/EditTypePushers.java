@@ -218,7 +218,21 @@ public class EditTypePushers {
     // button delete
     private void buttonDeleteAction(ActionEvent e) {
         if (editTypePusher == null) return;
+        String[] targetNamePusher = new String[1];
+        // проверка на занятость
+        int countUse;
         try {
+            countUse = connBD.getCountPushersFromType(editTypePusher.id_typePusher, targetNamePusher);
+            if (countUse > 0) {
+                saveEnableComponents.save();
+                saveEnableComponents.offline();
+                MySwingUtil.showMessage(frame, "удаление", "этот тип толкателя используется (" + targetNamePusher[0] + ")"
+                        , 5_000, o -> {
+                    saveEnableComponents.restore();
+                    frame.requestFocus();
+                });
+                return;
+            }
             connBD.deleteTypePusher(currentId_loggerUserEdit, editTypePusher);
             listTypePushers = getListTypePushers();
             newData = true;

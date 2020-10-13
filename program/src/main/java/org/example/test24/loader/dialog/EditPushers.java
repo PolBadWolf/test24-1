@@ -361,6 +361,7 @@ public class EditPushers {
                         typePusherSelectComboBox2Table.setLock(true);
                         try {
                             listTypePushers = connBD.getListTypePushers(true);
+                            if (refreshListPushers()) new BaseDataException("ошибка обновления списка толкателей", Status.ERROR);
                             try {
                                 MyUtil.loadToComboBox(
                                         listTypePushers,
