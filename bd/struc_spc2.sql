@@ -56,7 +56,7 @@ CREATE TABLE `pushers`  (
   `id_loggerPusher` int NULL DEFAULT NULL COMMENT 'указатель на данные по толкателю',
   `date_unreg` datetime(0) NULL DEFAULT NULL COMMENT 'дата деактивации толкателя',
   PRIMARY KEY (`id_pusher`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for pushers_logger
@@ -70,7 +70,7 @@ CREATE TABLE `pushers_logger`  (
   `namePusher` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'инвентарный номер толкателя',
   `id_typePusher` int NOT NULL COMMENT 'индификатор типа толкателя',
   PRIMARY KEY (`id_loggerPusher`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 96 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for pusherstype
@@ -83,7 +83,7 @@ CREATE TABLE `pusherstype`  (
   `date_unreg` datetime(0) NULL DEFAULT NULL COMMENT 'дата деактивации типа',
   PRIMARY KEY (`id_typePusher`) USING BTREE,
   INDEX `id_loggerTypePusher`(`id_loggerTypePusher`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 58 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for pusherstype_logger
@@ -101,7 +101,7 @@ CREATE TABLE `pusherstype_logger`  (
   PRIMARY KEY (`id_loggerTypePusher`, `id_typePusher`) USING BTREE,
   INDEX `id_typePusher`(`id_typePusher`) USING BTREE,
   INDEX `id_loggerTypePusher`(`id_loggerTypePusher`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 116 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for users
@@ -113,7 +113,7 @@ CREATE TABLE `users`  (
   `id_loggerUser` int NOT NULL,
   `date_unreg` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`id_user`, `id_loggerUser`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for users_logger
@@ -128,6 +128,6 @@ CREATE TABLE `users_logger`  (
   `userPassword` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
   `rang` int NULL DEFAULT NULL,
   PRIMARY KEY (`id_loggerUser`, `id_user`, `id_loggerUserEdit`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 87 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -121,7 +121,7 @@ public class EditPushers {
         JLabel jLabel1 = CreateComponents.getLabel("Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 200, 230, 210, 25, true, true);
         textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 410, 230,200, 25, null, null, true, true);
         buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 30, 275, 120, 25, this::callButtonDelete, true, true);
-        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 30, 315, 120, 25, null, true, true);
+        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 30, 315, 120, 25, this::callButtonEditPusher, true, true);
         buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", Font.PLAIN, 14), 30, 355, 120, 25, this::callButtonAdd, true, true);
         buttonEditTypePushers = CreateComponents.getButton("Тип.Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 30, 395, 120, 25, this::callButtonEditTypePushers, true, true);
         // ---- таблица
@@ -252,6 +252,7 @@ public class EditPushers {
     private void clearFields() {
         textRegNumber.setText("");
         comboBoxTypePushers.setSelectedItem(null);
+        tablePushers.clearSelection();
     }
     private boolean refreshListPushers() {
         try {
@@ -303,6 +304,7 @@ public class EditPushers {
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "ошибка удаления толкателя");
             MySwingUtil.showMessage(frame, "ошибка БД", "ошибка удаления толкателя", 10_000, o -> frame.requestFocus());
+            tablePushers.clearSelection();
             return;
         }
         // очистка полей
@@ -333,6 +335,7 @@ public class EditPushers {
                             saveEnableComponents.restore();
                             frame.requestFocus();
                         });
+                tablePushers.clearSelection();
                 return;
             }
         }
@@ -385,5 +388,59 @@ public class EditPushers {
                 connBD,
                 currentId_loggerUserEdit
         )), "create type pushers").start();
+    }
+    // редактирование
+    private void callButtonEditPusher(ActionEvent actionEvent) {
+        if (checkComponentsEdit()) return;
+        // заменяемые данные
+        Pusher selectPusher = listPushers[tablePushers.getSelectedRow()];
+        String updateRegNumber = textRegNumber.getText();
+        long updateId_TypePusher = ((TypePusher) comboBoxTypePushers.getSelectedItem()).id_typePusher;
+        // проверка на повтор
+        if (!selectPusher.loggerPusher.namePusher.equals(updateRegNumber)) {
+            boolean flag = false;
+            for (Pusher pusher : listPushers) {
+                if (pusher.id_pusher == selectPusher.id_pusher) continue;
+                if (!pusher.loggerPusher.namePusher.equals(updateRegNumber)) continue;
+                flag = true;
+                break;
+            }
+            if (flag) {
+                saveEnableComponents.save();
+                saveEnableComponents.offline();
+                MySwingUtil.showMessage(frame,
+                        "редактирование списка толкателей",
+                        "толкатель с таким именем уже существует",
+                        5_000, o -> {
+                            saveEnableComponents.restore();
+                            frame.requestFocus();
+                        });
+                tablePushers.clearSelection();
+                return;
+            }
+        }
+        //
+        if (selectPusher.loggerPusher.namePusher.equals(updateRegNumber) && selectPusher.loggerPusher.typePusher.id_typePusher == updateId_TypePusher) return;
+        //
+        try {
+            connBD.updatePusher(selectPusher, currentId_loggerUserEdit, updateRegNumber, updateId_TypePusher);
+            EditPushers.this.newData = true;
+        } catch (BaseDataException e) {
+            myLog.log(Level.SEVERE, "ошибка редактирования толкателей", e);
+            saveEnableComponents.save();
+            saveEnableComponents.offline();
+            MySwingUtil.showMessage(frame,
+                    "редактирование списка толкателей",
+                    "ошибка редактирования толкателей",
+                    5_000, o -> {
+                        saveEnableComponents.restore();
+                        frame.requestFocus();
+                    });
+            tablePushers.clearSelection();
+            return;
+        } finally {
+            clearFields();
+        }
+        //
     }
 }
