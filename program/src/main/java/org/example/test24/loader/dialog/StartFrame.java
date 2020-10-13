@@ -3,12 +3,14 @@ package org.example.test24.loader.dialog;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
 import org.example.test24.bd.usertypes.Pusher;
+import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.swing.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -44,6 +46,16 @@ public class StartFrame {
     //
     private JTable tableFindPushers;
     private JTable tableFindUsers;
+    //
+    private JTextField viewNameTypePusher;
+    private JTextField viewForce;
+    private JTextField viewMove;
+    private JTextField viewUnclenching;
+    //
+    private JLabel viewLabelNameTypePusher;
+    private JLabel viewLabelForce;
+    private JLabel viewLabelMove;
+    private JLabel viewLabelUnclenching;
 
     // ===============================================
     //             флаги
@@ -367,7 +379,7 @@ public class StartFrame {
             comboBoxPusher = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
                     190, 230, 350, 24, true,
                     null,
-                    null,
+                    this::callSelectPusher,
                     false, true);
             tableFindPushers = CreateComponents.getTable(200,
                     null,
@@ -420,6 +432,44 @@ public class StartFrame {
             frame.add(jPanel1);
             jPanel1.setVisible(false);
         } // панель редактирование
+        {
+            viewNameTypePusher = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
+                    new Font("Time New Roman", Font.PLAIN, 14),
+                    40, 286, 120, 25,
+                    null, null, false, true, false);
+            viewLabelNameTypePusher = CreateComponents.getLabel("Тип толкателя",
+                    new Font("Time New Roman", Font.PLAIN, 14),
+                    52, 260, 120, 25, false,true);
+            viewForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
+                    new Font("Time New Roman", Font.PLAIN, 14),
+                    180, 286, 120, 25,
+                    null, null, false, true, false);
+            viewLabelForce = CreateComponents.getLabel("Ном.усилие(кг)",
+                    new Font("Time New Roman", Font.PLAIN, 14),
+                    188, 260, 120, 25, false,true);
+            viewMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
+                    new Font("Time New Roman", Font.PLAIN, 14),
+                    320, 286, 120, 25,
+                    null, null, false, true, false);
+            viewLabelMove = CreateComponents.getLabel("Ном.ход (мм)",
+                    new Font("Time New Roman", Font.PLAIN, 14),
+                    338, 260, 120, 25, false,true);
+            viewUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
+                    new Font("Time New Roman", Font.PLAIN, 14),
+                    460, 286, 120, 25,
+                    null, null, false, true, false);
+            viewLabelUnclenching = CreateComponents.getLabel("Время разж.(сек)",
+                    new Font("Time New Roman", Font.PLAIN, 14),
+                    465, 260, 120, 25, false,true);
+            frame.add(viewNameTypePusher);
+            frame.add(viewLabelNameTypePusher);
+            frame.add(viewForce);
+            frame.add(viewLabelForce);
+            frame.add(viewMove);
+            frame.add(viewLabelMove);
+            frame.add(viewUnclenching);
+            frame.add(viewLabelUnclenching);
+        }
         fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 190,120, 24, null, null, false, true);
         frame.add(fieldPassword);
 
@@ -457,6 +507,16 @@ public class StartFrame {
         buttonSetPassword.setEnabled(false);
         buttonEditUsers.setEnabled(false);
         buttonEditPushers.setEnabled(false);
+        //
+        viewNameTypePusher.setVisible(true);
+        viewLabelNameTypePusher.setVisible(true);
+        viewForce.setVisible(true);
+        viewLabelForce.setVisible(true);
+        viewMove.setVisible(true);
+        viewLabelMove.setVisible(true);
+        viewUnclenching.setVisible(true);
+        viewLabelUnclenching.setVisible(true);
+        //
         if (statMainWork) {
             buttonWork.setEnabled(true);
             comboBoxPusher.setEnabled(true);
@@ -466,16 +526,6 @@ public class StartFrame {
             comboBoxPusher.setEnabled(false);
         }
     }
-/*    private void offInputComponents() {
-        jLabel1.setVisible(false);
-        jLabel2.setVisible(false);
-        comboBoxUsers.setVisible(false);
-        fieldPassword.setVisible(false);
-        buttonEnter.setVisible(false);
-        buttonWork.setVisible(false);
-        buttonTuning.setVisible(false);
-    }
-*/
     // проверка встроенного администратор
     private boolean checkIntegratedAdministrator(String surName, String password) {
 //        return  surName.equals("Doc") && password.equals("aUxPMjIzNjA=");
@@ -566,6 +616,15 @@ public class StartFrame {
     // обработка новый пароль
     private void callSetNewPassword(ActionEvent f) {
         User currentUser = (User) comboBoxUsers.getSelectedItem();
+        if (currentUser == null) {
+            MySwingUtil.showMessage(frame, "установка нового пароля", "пользователь не выбран", 5_000, o -> {
+                buttonSetPassword.setEnabled(true);
+                frame.requestFocus();
+            });
+            buttonSetPassword.setEnabled(false);
+            myLog.log(Level.WARNING, "попытка установки пароля пустым пользователем ");
+            return;
+        }
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
             MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> {
@@ -714,7 +773,7 @@ public class StartFrame {
                             pusherSelectComboBox2Table.setLock(false);
                         },
                         connBD,
-                        ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
+                        ((User) Objects.requireNonNull(comboBoxUsers.getSelectedItem())).id_loggerUser
                 );
             } catch (BaseDataException bde) {
                 myLog.log(Level.SEVERE, "ошибка редактирования толкателей", bde);
@@ -727,6 +786,14 @@ public class StartFrame {
                 );
             }
         }), "create edit pushers").start();
+    }
+    //
+    private void callSelectPusher(ActionEvent actionEvent) {
+        TypePusher typePusher = ((Pusher) Objects.requireNonNull(comboBoxPusher.getSelectedItem())).loggerPusher.typePusher;
+        viewNameTypePusher.setText(typePusher.loggerTypePusher.nameType);
+        viewForce.setText(String.valueOf(typePusher.loggerTypePusher.forceNominal));
+        viewMove.setText(String.valueOf(typePusher.loggerTypePusher.moveNominal));
+        viewUnclenching.setText(String.valueOf(typePusher.loggerTypePusher.unclenchingTime));
     }
     // ===========================================================================
 }
