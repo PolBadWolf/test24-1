@@ -20,7 +20,7 @@ public class BD {
         if (conn == null) {
             // чтение конфига
             BaseData.Config config = BaseData.Config.create();
-            config.load1();
+            config.load();
             TypeBaseDate typeBaseDate = config.getTypeBaseData();
             BaseData.Parameters parameters = BaseData.Parameters.create(typeBaseDate);
             parameters.load();
