@@ -28,8 +28,11 @@ public class MainClass extends MainClassRequest {
             startFrame = StartFrame.main(
                     false,
                     new StartFrame.CallBack() {
+                        @Override
+                        public void messageCloseStartFrame() {
 
-            });
+                        }
+                    });
         } catch (Exception exception) {
             startFrame = null;
         }

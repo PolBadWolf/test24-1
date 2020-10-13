@@ -154,11 +154,12 @@ class BaseDataParent implements BaseData {
         boolean data, data_spec;
         boolean users, users_logger;
         boolean pushers, logger_pushers;
+        boolean pusherstype, pusherstype_logger;
         data = checkStructureTable(
                 base,
                 "data",
                 new ArrayList(Arrays.asList(
-                        "id",
+                        "id_data",
                         "dateTime",
                         "id_spec",
                         "n_cicle",
@@ -167,6 +168,16 @@ class BaseDataParent implements BaseData {
                         "tik_back",
                         "tik_stop",
                         "dis"
+                ))
+        );
+        data_spec = checkStructureTable(
+                base,
+                "data_spec",
+                new ArrayList(Arrays.asList(
+                        "id_dataSpec",
+                        "date_upd",
+                        "id_users",
+                        "id_pusher"
                 ))
         );
         users = checkStructureTable(
@@ -184,11 +195,11 @@ class BaseDataParent implements BaseData {
                 "users_logger",
                 new ArrayList(Arrays.asList(
                         "id_loggerUser",
-                        "date",
+                        "date_upd",
                         "id_loggerUserEdit",
                         "id_user",
-                        "name",
-                        "password",
+                        "surName",
+                        "userPassword",
                         "rang"
                 ))
         );
@@ -202,7 +213,43 @@ class BaseDataParent implements BaseData {
                         "date_unreg"
                 ))
         );
-        return data && users && pushers;
+        logger_pushers = checkStructureTable(
+                base,
+                "pushers_logger",
+                new ArrayList(Arrays.asList(
+                        "id_loggerPusher",
+                        "date_upd",
+                        "id_loggerUserEdit",
+                        "id_pusher",
+                        "namePusher",
+                        "id_typePusher"
+                ))
+        );
+        pusherstype = checkStructureTable(
+                base,
+                "pusherstype",
+                new ArrayList(Arrays.asList(
+                        "id_typePusher",
+                        "date_reg",
+                        "id_loggerTypePusher",
+                        "date_unreg"
+                ))
+        );
+        pusherstype_logger = checkStructureTable(
+                base,
+                "pusherstype_logger",
+                new ArrayList(Arrays.asList(
+                       "id_loggerTypePusher",
+                       "date_upd",
+                        "id_loggerUserEdit",
+                        "id_typePusher",
+                        "nameType",
+                        "forceNominal",
+                        "moveNominal",
+                        "unclenchingTime"
+                ))
+        );
+        return data && data_spec && users && users_logger && pushers && logger_pushers && pusherstype && pusherstype_logger;
     }
     // проверка структуры таблицы
     protected boolean checkStructureTable(String base, String table, ArrayList<String> listColumns) {
@@ -1094,6 +1141,145 @@ class BaseDataParent implements BaseData {
             statementTypePusher.close();
             preStatementUpdate.close();
         } catch (SQLException throwables) { }
+    }
+    // -----
+    // количество толкателей заданого типа
+    @Override
+    public int getCountPushersFromType(long id_typePusher, String[] targetNamePusher) throws BaseDataException {
+        if (targetNamePusher.length != 1) new BaseDataException("ошибка указателя имени", Status.ERROR);
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        int count;
+
+        try {
+            statement = connection.createStatement();
+            String query =
+                    "SELECT " +
+                            " COUNT(pushers.id_pusher) AS c, " +
+                            " pushers_logger.namePusher " +
+                            " FROM " + baseDat + ".pushers " +
+                            " INNER JOIN " + baseDat + ".pushers_logger ON pushers.id_loggerPusher = pushers_logger.id_loggerPusher " +
+                            " WHERE " +
+                            " pushers_logger.id_typePusher = " + id_typePusher + " AND " +
+                            " pushers.date_unreg IS NULL ";
+            result = statement.executeQuery(query);
+            result.next();
+            count = result.getInt("c");
+            targetNamePusher[0] = result.getString("namePusher");
+        } catch (SQLException e) { throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException e) { }
+        return count;
+    }
+    // тип толкателя
+    @Override
+    public TypePusher getTypePusher(long id_typePusher) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        TypePusher typePusher;
+        String query = "SELECT "+
+                " pusherstype.id_typePusher, " +
+                " pusherstype.date_reg, " +
+                " pusherstype_logger.id_loggerTypePusher, " +
+                " pusherstype_logger.date_upd, " +
+                " pusherstype_logger.id_loggerUserEdit, " +
+                " pusherstype_logger.nameType, " +
+                " pusherstype_logger.forceNominal, " +
+                " pusherstype_logger.moveNominal, " +
+                " pusherstype_logger.unclenchingTime, " +
+                " pusherstype.date_unreg " +
+                " FROM " + baseDat + ".pusherstype " +
+                " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
+                " WHERE " +
+                " pusherstype.id_typePusher = " + id_typePusher + " ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            result.next();
+        } catch (SQLException e) { throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            typePusher = new TypePusher(
+                    result.getLong("id_typePusher"),
+                    result.getTimestamp("date_reg"),
+                    new LoggerTypePusher(
+                            result.getLong("id_loggerTypePusher"),
+                            result.getTimestamp("date_upd"),
+                            result.getLong("id_loggerUserEdit"),
+                            result.getLong("id_typePusher"),
+                            result.getString("nameType"),
+                            result.getInt("forceNominal"),
+                            result.getInt("moveNominal"),
+                            result.getInt("unclenchingTime")
+                    ),
+                    result.getTimestamp("date_unreg")
+            );
+            result.close();
+            statement.close();
+        } catch (SQLException e) { throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        }
+        return typePusher;
+    }
+    // новые параметры spec
+    @Override
+    public void writeDataSpec(long id_user, long id_pusher) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(false);
+
+        PreparedStatement preStatement;
+        java.sql.Timestamp timestamp = new Timestamp(new Date().getTime());
+        //
+        try {
+            preStatement = connection.prepareStatement(
+                    "INSERT INTO " + baseDat + ".data_spec " +
+                            " (date_upd, id_user, id_pusher) " +
+                            " VALUES(?, ?, ?) "
+            );
+            preStatement.setTimestamp(1, timestamp);
+            preStatement.setLong(2, id_user);
+            preStatement.setLong(3, id_pusher);
+            preStatement.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) { try { connection.rollback();
+        } catch (SQLException se) { e = new SQLException("ошибка отмены транзакции" + se.getMessage(), e);
+        } throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try { preStatement.close();
+        } catch (SQLException e) {
+        }
+    }
+    // последний spec
+    @Override
+    public long getLastDataSpec() throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        long id_dataSpec;
+        String query = "SELECT data_spec.id_dataSpec " +
+                " FROM " + baseDat + ".data_spec " +
+                " ORDER BY data_spec.id_dataSpec DESC " +
+                " LIMIT 1 ";
+
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            result.next();
+            id_dataSpec = result.getLong(1);
+        } catch (SQLException e) { throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
+        }
+
+        return id_dataSpec;
     }
 
     // -----
