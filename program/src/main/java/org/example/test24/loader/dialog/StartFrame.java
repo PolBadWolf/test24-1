@@ -18,7 +18,7 @@ import static org.example.test24.lib.MyLogger.myLog;
 public class StartFrame {
     static StartFrame startFrame;
     public interface CallBack {
-
+        void messageCloseStartFrame();
     }
     // ----------------------------------
     // title
@@ -268,52 +268,6 @@ public class StartFrame {
         loadAndSetBeginParameters2();
         userSelectComboBox2Table.setLock(false);
         // ********************
-        /*try {
-            Date date = new Date();
-            connBD.writeNewTypePusher(
-                    0,
-                    "BE-2",
-                    120,
-                    40,
-                    10
-             );
-        } catch (BaseDataException e) {
-            e.printStackTrace();
-        }*/
-        /*try {
-            TypePusher[] typePushers = connBD.getListTypePushers(false);
-            int a = 5;
-        } catch (BaseDataException e) {
-            e.printStackTrace();
-        }*/
-        /*new Thread(()->{
-            SwingUtilities.invokeLater(()->{
-                new EditTypePushers(
-                        new EditTypePushers.CallBack() {
-                            @Override
-                            public long getCurrentId_loggerUser() {
-                                return 0L;
-                            }
-                        },
-                        connBD
-                );
-            });
-        }).start();*/
-        /*new Thread(()->{
-            SwingUtilities.invokeLater(()->{
-                new EditPushers(
-                        new EditPushers.CallBack() {
-                            @Override
-                            public long getCurrentId_loggerUser() {
-                                return 0;
-                            }
-                        },
-                        connBD,
-                        0L
-                );
-            });
-        }).start();*/
-        // ********************
     }
     private void loadAndSetBeginParameters() {
         // загрузка параметров соединения с БД
@@ -534,14 +488,14 @@ public class StartFrame {
     // разрешение кнопки работа
     private boolean permissionWork() {
         // флаг целостности структуры БД
-        if (!flagStructureIntegrity) return false;
+        if (!flagStructureIntegrity) return true;
         // проверка доступности ком порта
-        if (!flagAvailabilityCommPort) return false;
+        if (!flagAvailabilityCommPort) return true;
         // список пользователей / = [0] for false
-        if (listUsers.length == 0) return false;
+        if (listUsers.length == 0) return true;
         // список толкателей / = [0] for false
-        if (listPushers.length == 0) return false;
-        return true;
+        if (listPushers.length == 0) return true;
+        return false;
     }
     // ======================================================
     // обработка ввод
@@ -670,13 +624,14 @@ public class StartFrame {
     }
     // обработка "работа"
     private void callReturnToWork(ActionEvent e) {
-        if (!permissionWork()) {
+        if (permissionWork()) {
             MySwingUtil.showMessage(frame, "ошибка", "нет готовности системы", 5_000);
             myLog.log(Level.INFO, "нет готовности системы");
             return;
         }
         // ------------
-        myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("не реализован выход на главную программу"));
+        //myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("не реализован выход на главную программу"));
+        // установить спецификацию
         //frame.removeAll();
         //frame.dispose();
         //callBack.closeFrame();
