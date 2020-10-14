@@ -93,36 +93,4 @@ public class MainClass {
 
     // ===============================================
 
-
-
-    // загрузка конфигурации
-    /*private ParametersConfig.Diagnostic requestParametersConfig(String fileNameConfig, Consumer<ParametersConfig> parametersConfig) {
-        ParametersConfig parameters = new ParametersConfig(fileNameConfig);
-        ParametersConfig.Diagnostic result = parameters.load();
-        if (parametersConfig != null) parametersConfig.accept(parameters);
-        return result;
-    }*/
-
-    private void errorCommMessage(int checkComm, CommPort commPort) {
-        switch (checkComm) {
-            case CommPort.INITCODE_ERROROPEN:
-                System.out.println("ошибка открытия порта");
-                break;
-            case CommPort.INITCODE_NOTEXIST:
-                System.out.println("указанный порт отсутствует");
-                System.out.println("имеющиеся порты в системе:");
-                for (String name : CommPort.getListPortsName()) {
-                    System.out.println(name);
-                }
-                break;
-        }
-    }
-
-    private boolean checkCommPort(String portName) {
-        CommPort.PortStat ch =  commPort.open(null, portName, BAUD.baud57600);
-        commPort.close();
-        return ch == CommPort.PortStat.INITCODE_OK;
-    }
-
-
 }
