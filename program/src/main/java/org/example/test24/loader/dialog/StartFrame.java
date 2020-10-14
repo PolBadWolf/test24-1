@@ -270,6 +270,7 @@ public class StartFrame {
         }
         loadAndSetBeginParameters2();
         userSelectComboBox2Table.setLock(false);
+        pusherSelectComboBox2Table.setLock(false);
         // ********************
     }
     private void loadAndSetBeginParameters() {
