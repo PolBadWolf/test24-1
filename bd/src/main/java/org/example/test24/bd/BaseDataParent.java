@@ -1072,7 +1072,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setLong(2, id_loggerUserEdit);
             preStatementLogger.setLong(3, pusher.id_pusher);
             preStatementLogger.setString(4, regNumber);
-            preStatementLogger.setLong(5, pusher.loggerPusher.id_pusher);
+            preStatementLogger.setLong(5, id_typePusher);
             preStatementLogger.executeUpdate();
             id_loggerPusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
             //
