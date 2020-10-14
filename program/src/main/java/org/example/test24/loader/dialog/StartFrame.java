@@ -11,7 +11,6 @@ import org.example.test24.lib.swing.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Objects;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -19,7 +18,7 @@ import static org.example.test24.lib.MyLogger.myLog;
 public class StartFrame {
     static StartFrame startFrame;
     public interface CallBack {
-        void messageCloseStartFrame();
+        void messageCloseStartFrame(BaseData conn);
     }
     // ----------------------------------
     // title
@@ -78,7 +77,7 @@ public class StartFrame {
     private Pusher selectPusher;
 
     CallBack callBack;
-    JFrame frame;
+    public JFrame frame;
     private SelectComboBox2Table_Top<User> userSelectComboBox2Table;
     private SelectComboBox2Table_Top<Pusher> pusherSelectComboBox2Table;
 
@@ -104,7 +103,7 @@ public class StartFrame {
     protected StartFrame(boolean statMainWork, CallBack callBack) {
         // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
         this.statMainWork = statMainWork;
-        //this.callBack = callBack;
+        this.callBack = callBack;
     }
 
 
@@ -300,9 +299,9 @@ public class StartFrame {
         try { MyUtil.loadToComboBox(listPushers, comboBoxPusher, false, null);
         } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }
-        if (statMainWork) {
+        /*if (statMainWork) {
             // здесь загрузка текущего пользователя и толкателя, если потребуется
-        }
+        }*/
         // -------
     }
 
@@ -661,11 +660,9 @@ public class StartFrame {
                 return;
             }
         }
-        //myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("не реализован выход на главную программу"));
-        // установить спецификацию
-        //frame.removeAll();
-        //frame.dispose();
-        //callBack.closeFrame();
+        frame.removeAll();
+        frame.dispose();
+        callBack.messageCloseStartFrame(connBD);
     }
     // обработка настройка
     private void callTuning(ActionEvent e) {
