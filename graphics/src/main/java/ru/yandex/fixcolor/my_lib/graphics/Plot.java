@@ -127,7 +127,7 @@ public class Plot {
 
             while (onWork) {
                 try {
-                    datQueue = paintQueue.poll(1, TimeUnit.MILLISECONDS);
+                    datQueue = paintQueue.poll(1, TimeUnit.SECONDS);
                     if (datQueue == null)   {
                         Thread.sleep(1);
                         continue;
@@ -183,6 +183,12 @@ public class Plot {
                 Thread.yield();
             }
             super.finalize();
+        }
+        public void close() {
+            onWork = false;
+            while (!thisThread.isAlive()) {
+                Thread.yield();
+            }
         }
 
         private void __rePaint(ArrayList<NewDataClass> datGraph) {
@@ -423,6 +429,10 @@ public class Plot {
 
         myPaint = new MyPaint();
         myPaint.start();
+    }
+
+    public void close() {
+        myPaint.close();
     }
 
     public void setFieldBackColor(Color fieldBackColor) {

@@ -2,6 +2,7 @@ package org.example.test24.loader.dialog;
 
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
+import org.example.test24.bd.usertypes.DataSpec;
 import org.example.test24.bd.usertypes.Pusher;
 import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
@@ -10,7 +11,6 @@ import org.example.test24.lib.swing.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Objects;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -18,7 +18,7 @@ import static org.example.test24.lib.MyLogger.myLog;
 public class StartFrame {
     static StartFrame startFrame;
     public interface CallBack {
-        void messageCloseStartFrame();
+        void messageCloseStartFrame(BaseData conn);
     }
     // ----------------------------------
     // title
@@ -73,9 +73,11 @@ public class StartFrame {
     private Pusher[] listPushers = new Pusher[0];
     // выбранный пользователь
     private User selectUser;
+    // выбранный толкатель
+    private Pusher selectPusher;
 
     CallBack callBack;
-    JFrame frame;
+    public JFrame frame;
     private SelectComboBox2Table_Top<User> userSelectComboBox2Table;
     private SelectComboBox2Table_Top<Pusher> pusherSelectComboBox2Table;
 
@@ -101,7 +103,7 @@ public class StartFrame {
     protected StartFrame(boolean statMainWork, CallBack callBack) {
         // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
         this.statMainWork = statMainWork;
-        //this.callBack = callBack;
+        this.callBack = callBack;
     }
 
 
@@ -268,6 +270,7 @@ public class StartFrame {
         }
         loadAndSetBeginParameters2();
         userSelectComboBox2Table.setLock(false);
+        pusherSelectComboBox2Table.setLock(false);
         // ********************
     }
     private void loadAndSetBeginParameters() {
@@ -297,9 +300,9 @@ public class StartFrame {
         try { MyUtil.loadToComboBox(listPushers, comboBoxPusher, false, null);
         } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }
-        if (statMainWork) {
+        /*if (statMainWork) {
             // здесь загрузка текущего пользователя и толкателя, если потребуется
-        }
+        }*/
         // -------
     }
 
@@ -635,12 +638,32 @@ public class StartFrame {
             myLog.log(Level.INFO, "не выбран пользователь");
             return;
         }
-
-        //myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("не реализован выход на главную программу"));
-        // установить спецификацию
-        //frame.removeAll();
-        //frame.dispose();
-        //callBack.closeFrame();
+        if (selectPusher == null) {
+            MySwingUtil.showMessage(frame, "ошибка", "не выбран толкатель", 5_000);
+            myLog.log(Level.INFO, "не выбран толкатель");
+            return;
+        }
+        long id_user = selectUser.id_user;
+        long id_pusher = selectPusher.id_pusher;
+        DataSpec dataSpec;
+        try { dataSpec = connBD.getLastDataSpec();
+        } catch (BaseDataException b) {
+            MySwingUtil.showMessage(frame, "параметры работы", "ошибка доступа к БД", 5_000);
+            myLog.log(Level.SEVERE, "ошибка доступа к БД", b);
+            return;
+        }
+        if (dataSpec == null || dataSpec.id_user != id_user || dataSpec.id_pusher != id_pusher) {
+            try {
+                connBD.writeDataSpec(id_user, id_pusher);
+            } catch (BaseDataException b) {
+                MySwingUtil.showMessage(frame, "параметры работы", "ошибка доступа к БД", 5_000);
+                myLog.log(Level.SEVERE, "ошибка доступа к БД", b);
+                return;
+            }
+        }
+        frame.removeAll();
+        frame.dispose();
+        callBack.messageCloseStartFrame(connBD);
     }
     // обработка настройка
     private void callTuning(ActionEvent e) {
@@ -757,9 +780,9 @@ public class StartFrame {
     }
     //
     private void callSelectPusher(ActionEvent actionEvent) {
-        Pusher pusher = (Pusher) comboBoxPusher.getSelectedItem();
-        if (pusher == null) return;
-        TypePusher typePusher = pusher.loggerPusher.typePusher;
+        selectPusher = (Pusher) comboBoxPusher.getSelectedItem();
+        if (selectPusher == null) return;
+        TypePusher typePusher = selectPusher.loggerPusher.typePusher;
         if (typePusher == null) return;
         viewNameTypePusher.setText(typePusher.loggerTypePusher.nameType);
         viewForce.setText(String.valueOf(typePusher.loggerTypePusher.forceNominal));

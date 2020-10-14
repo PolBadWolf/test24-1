@@ -1,6 +1,7 @@
 package org.example.test24.bd;
 
 import com.mysql.cj.jdbc.ClientPreparedStatement;
+import com.mysql.cj.jdbc.result.ResultSetImpl;
 import org.example.test24.bd.usertypes.*;
 
 import java.sql.*;
@@ -1072,7 +1073,7 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setLong(2, id_loggerUserEdit);
             preStatementLogger.setLong(3, pusher.id_pusher);
             preStatementLogger.setString(4, regNumber);
-            preStatementLogger.setLong(5, pusher.loggerPusher.id_pusher);
+            preStatementLogger.setLong(5, id_typePusher);
             preStatementLogger.executeUpdate();
             id_loggerPusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
             //
@@ -1259,7 +1260,7 @@ class BaseDataParent implements BaseData {
     }
     // последний spec
     @Override
-    public long getLastDataSpec() throws BaseDataException {
+    public long getIdLastDataSpec() throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(true);
 
@@ -1278,10 +1279,39 @@ class BaseDataParent implements BaseData {
             id_dataSpec = result.getLong(1);
         } catch (SQLException e) { throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
         }
-
         return id_dataSpec;
     }
+    public DataSpec getLastDataSpec() throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
 
+        Statement statement;
+        ResultSet result;
+        DataSpec dataSpec = null;
+        String query = "SELECT id_dataSpec, date_upd, id_user, id_pusher " +
+                " FROM " + baseDat + ".data_spec " +
+                " ORDER BY id_dataSpec DESC " +
+                " LIMIT 1 ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            if (!((ResultSetImpl) result).getRows().isEmpty()) {
+                result.next();
+                dataSpec = new DataSpec(
+                        result.getLong("id_dataSpec"),
+                        result.getLong("id_user"),
+                        result.getLong("id_pusher"),
+                        result.getTimestamp("date_upd")
+                );
+            }
+        } catch (SQLException e) { throw new BaseDataException("получение последней спецификации", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException e) { }
+        return dataSpec;
+    }
     // -----
     protected void internalCheckConnect() throws BaseDataException {
         if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }

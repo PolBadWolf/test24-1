@@ -182,6 +182,9 @@ class RunningClass implements Runner {
 
     @Override
     public void Close() {
-
+        plot.allDataClear();
+        plot.removeAllTrends();
+        plot.close();
+        plot = null;
     }
 }
