@@ -17,7 +17,6 @@ public class MainClass {
     protected ScreenFx screenFx;
     protected Runner runner;
     protected CommPort commPort;
-    protected StartFrame startFrame;
     //
     private boolean statMainWork;
     BaseData connBd;
@@ -33,7 +32,7 @@ public class MainClass {
         // создание основных объектов
         screenFx = ScreenFx.init(o->screenCloser());
         runner = Runner.main(o->runnerCloser());
-        commPort = CommPort.main();
+        //commPort = CommPort.main();
 
         // пуск
         puskStartFrame();
@@ -52,7 +51,7 @@ public class MainClass {
     }
     private void puskStartFrame() {
         try {
-            startFrame = StartFrame.main(statMainWork, new StartFrame.CallBack() {
+            StartFrame.main(statMainWork, new StartFrame.CallBack() {
                 @Override
                 public void messageCloseStartFrame(BaseData conn) {
                     statMainWork = true;
@@ -79,7 +78,6 @@ public class MainClass {
             runner.Close();
             runner = null;
         }
-        System.exit(0);
     }
     private void screenCloser() {
         close();
