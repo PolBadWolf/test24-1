@@ -1,5 +1,6 @@
 package org.example.test24.bd;
 
+import org.example.test24.bd.usertypes.DataSpec;
 import org.example.test24.bd.usertypes.Pusher;
 import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
@@ -93,7 +94,8 @@ public interface BaseData {
     // новые параметры spec
     void writeDataSpec(long id_user, long id_pusher) throws BaseDataException;
     // последний spec
-    long getLastDataSpec() throws BaseDataException;
+    long getIdLastDataSpec() throws BaseDataException;
+    DataSpec getLastDataSpec() throws BaseDataException;
 
     // запись замера
     void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;

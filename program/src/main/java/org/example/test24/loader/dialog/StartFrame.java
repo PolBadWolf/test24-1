@@ -2,6 +2,7 @@ package org.example.test24.loader.dialog;
 
 import org.example.test24.RS232.CommPort;
 import org.example.test24.bd.*;
+import org.example.test24.bd.usertypes.DataSpec;
 import org.example.test24.bd.usertypes.Pusher;
 import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
@@ -73,6 +74,8 @@ public class StartFrame {
     private Pusher[] listPushers = new Pusher[0];
     // выбранный пользователь
     private User selectUser;
+    // выбранный толкатель
+    private Pusher selectPusher;
 
     CallBack callBack;
     JFrame frame;
@@ -635,7 +638,29 @@ public class StartFrame {
             myLog.log(Level.INFO, "не выбран пользователь");
             return;
         }
-
+        if (selectPusher == null) {
+            MySwingUtil.showMessage(frame, "ошибка", "не выбран толкатель", 5_000);
+            myLog.log(Level.INFO, "не выбран толкатель");
+            return;
+        }
+        long id_user = selectUser.id_user;
+        long id_pusher = selectPusher.id_pusher;
+        DataSpec dataSpec;
+        try { dataSpec = connBD.getLastDataSpec();
+        } catch (BaseDataException b) {
+            MySwingUtil.showMessage(frame, "параметры работы", "ошибка доступа к БД", 5_000);
+            myLog.log(Level.SEVERE, "ошибка доступа к БД", b);
+            return;
+        }
+        if (dataSpec == null || dataSpec.id_user != id_user || dataSpec.id_pusher != id_pusher) {
+            try {
+                connBD.writeDataSpec(id_user, id_pusher);
+            } catch (BaseDataException b) {
+                MySwingUtil.showMessage(frame, "параметры работы", "ошибка доступа к БД", 5_000);
+                myLog.log(Level.SEVERE, "ошибка доступа к БД", b);
+                return;
+            }
+        }
         //myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("не реализован выход на главную программу"));
         // установить спецификацию
         //frame.removeAll();
@@ -757,9 +782,9 @@ public class StartFrame {
     }
     //
     private void callSelectPusher(ActionEvent actionEvent) {
-        Pusher pusher = (Pusher) comboBoxPusher.getSelectedItem();
-        if (pusher == null) return;
-        TypePusher typePusher = pusher.loggerPusher.typePusher;
+        selectPusher = (Pusher) comboBoxPusher.getSelectedItem();
+        if (selectPusher == null) return;
+        TypePusher typePusher = selectPusher.loggerPusher.typePusher;
         if (typePusher == null) return;
         viewNameTypePusher.setText(typePusher.loggerTypePusher.nameType);
         viewForce.setText(String.valueOf(typePusher.loggerTypePusher.forceNominal));
