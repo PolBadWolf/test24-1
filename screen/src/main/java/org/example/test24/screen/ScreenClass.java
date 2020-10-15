@@ -6,16 +6,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 public class ScreenClass extends Application implements ScreenFx {
-    private static Consumer closer;
+    private static Closer closer;
+    public static Stage stage;
 
-    public ScreenClass(Consumer closer) {
+    public ScreenClass(Closer closer) {
         this.closer = closer;
     }
+
     public ScreenClass() {
     }
 
@@ -41,16 +43,39 @@ public class ScreenClass extends Application implements ScreenFx {
         primaryStage.setScene(new Scene(root));
         primaryStage.setTitle("title fx window");
         primaryStage.show();
+        stage = primaryStage;
+//        Thread.sleep(10_000_000L);
     }
 
     @Override
     public void exitApp() {
-        Platform.exit();
+        //Platform.exit();
     }
 
     @Override
     public void stop() throws Exception {
-        closer.accept(null);
-        super.stop();
+        closer.close();
+        //super.stop();
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        boolean[] flWait = new boolean[] {true};
+        Platform.runLater(()->{
+            Stage window = (Stage) stage.getScene().getWindow();
+            if (visible) {
+                window.show();
+            } else {
+                window.hide();
+            }
+            flWait[0] = false;
+        });
+        while (flWait[0]) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

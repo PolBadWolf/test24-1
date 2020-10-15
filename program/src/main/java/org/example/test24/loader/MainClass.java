@@ -1,5 +1,6 @@
 package org.example.test24.loader;
 
+import javafx.application.Platform;
 import org.example.test24.lib.MyLogger;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.CommPort;
@@ -7,6 +8,7 @@ import org.example.test24.RS232.BAUD;
 import org.example.test24.loader.dialog.StartFrame;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
+import org.example.test24.screen.ScreenClass;
 import org.example.test24.screen.ScreenFx;
 
 import java.util.logging.Level;
@@ -19,7 +21,9 @@ public class MainClass {
     protected CommPort commPort;
     //
     private boolean statMainWork;
-    BaseData connBd;
+    private BaseData connBd;
+    private String commPortName;
+    //
     public static void main(String[] args) {
         new MyLogger(Level.ALL, Level.OFF);
         Thread.currentThread().setName("Main class thread");
@@ -30,33 +34,37 @@ public class MainClass {
     }
     private void start() {
         // создание основных объектов
-        screenFx = ScreenFx.init(o->screenCloser());
-        runner = Runner.main(o->runnerCloser());
-        //commPort = CommPort.main();
-
+        screenFx = ScreenFx.init(() -> close());
+        screenFx.main();
+        /*while (MainFrame.mainFrame == null) {
+            Thread.yield();
+        }*/
+        screenFx.main();
+        commPort = CommPort.main();
         // пуск
         puskStartFrame();
     }
     private void cont() {
         System.out.println("start ?");
         // тут вызов основной формы
-        screenFx.main();
-        while (MainFrame.mainFrame == null) {
+        runner = Runner.main(o->runnerCloser());
+        //screenFx.setVisible(true);
+        while (!ScreenClass.stage.isShowing()) {
             Thread.yield();
         }
         runner.init(connBd, commPort, MainFrame.mainFrame);
+        commPort.open(runner::reciveRsPush, commPortName, BAUD.baud57600);
         //commPort.ReciveStart();
-        // возврат в настройки
-        //puskStartFrame();
     }
     private void puskStartFrame() {
         try {
             StartFrame.main(statMainWork, new StartFrame.CallBack() {
                 @Override
-                public void messageCloseStartFrame(BaseData conn) {
+                public void messageCloseStartFrame(BaseData conn, String commPortName) {
                     statMainWork = true;
                     connBd = conn;
-                    new Thread(()->cont()).start();
+                    MainClass.this.commPortName = commPortName;
+                    new Thread(() -> MainClass.this.cont()).start();
                 }
             });
         } catch (Exception exception) {
@@ -66,26 +74,25 @@ public class MainClass {
     }
     // ===============================================
     private void close() {
-        if (screenFx != null) {
-            screenFx.exitApp();
-            screenFx = null;
-        }
-        if (commPort != null) {
-            commPort.close();
-            commPort = null;
-        }
-        if (runner != null) {
-            runner.Close();
-            runner = null;
-        }
-    }
-    private void screenCloser() {
-        close();
+        new Thread(()->{
+            if (commPort != null) {
+                commPort.close();
+                //commPort = null;
+            }
+            if (runner != null) {
+                runner.Close();
+                runner = null;
+            }
+            if (screenFx != null) {
+//                screenFx.exitApp();
+//                screenFx = null;
+//                screenFx.setVisible(false);
+            }
+            // возврат в настройки
+            puskStartFrame();
+        }, "restart").start();
     }
     private void runnerCloser() {
-        close();
-    }
-    private void commPortCloser() {
         close();
     }
 

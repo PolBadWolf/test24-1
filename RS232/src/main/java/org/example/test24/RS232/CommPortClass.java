@@ -98,7 +98,7 @@ class CommPortClass implements CommPort {
 
         try {
             if (threadRS != null) {
-                while (!threadRS.isAlive()) {
+                while (threadRS.isAlive()) {
                     Thread.yield();
                 }
             }
@@ -148,7 +148,12 @@ class CommPortClass implements CommPort {
                     headBuffer[i] = headBuffer[i + 1];
                 }
 
-                num = port.readBytes(headBuffer, 1, headBufferLenght - 1);
+                try {
+                    num = port.readBytes(headBuffer, 1, headBufferLenght - 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    e = null;
+                }
 
                 if (num < 0) {
                     onCycle = -1;
