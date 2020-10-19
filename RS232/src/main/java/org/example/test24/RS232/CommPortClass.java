@@ -161,6 +161,7 @@ class CommPortClass implements CommPort {
                 }
 
                 if (num == 0) {
+                    if (onCycle < 0) continue;
                     onCycle = 1;
                     try {
                         Thread.sleep(1);
@@ -170,6 +171,7 @@ class CommPortClass implements CommPort {
                     continue;
                 }
 
+                if (onCycle < 0) continue;
                 onCycle = 0;
 
                 if (headBuffer[0] != (byte)0xe6)    continue;
@@ -195,10 +197,12 @@ class CommPortClass implements CommPort {
                 }
 
                 if (num == 0) {
+                    if (onCycle < 0) continue;
                     onCycle = 1;
                     continue;
                 }
 
+                if (onCycle < 0) continue;
                 onCycle = 0;
                 lenghtReciveSumm += num;
             }

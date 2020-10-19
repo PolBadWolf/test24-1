@@ -87,6 +87,7 @@ public interface BaseData {
     void updatePusher(Pusher pusher, long id_loggerUser, String regNumber, long id_typePusher) throws BaseDataException;
     // удаление толкателя
     void deletePusher(long id_loggerUser, Pusher pusher) throws BaseDataException;
+    long getIdTypePusherFromIdPusher(long id_pusher) throws BaseDataException;
     // количество толкателей заданого типа
     int getCountPushersFromType(long id_typePusher, String[] namePusher) throws BaseDataException;
     // тип толкателя

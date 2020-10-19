@@ -1,7 +1,5 @@
 package org.example.test24.loader;
 
-import javafx.application.Platform;
-import org.example.test24.allinterface.screen.MainFrame_interface;
 import org.example.test24.lib.MyLogger;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.CommPort;
@@ -9,7 +7,6 @@ import org.example.test24.RS232.BAUD;
 import org.example.test24.loader.dialog.StartFrame;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
-import org.example.test24.screen.ScreenClass;
 import org.example.test24.screen.ScreenFx;
 
 import java.util.logging.Level;
@@ -21,7 +18,6 @@ public class MainClass {
     protected Runner runner;
     protected CommPort commPort;
     //
-    private boolean statMainWork;
     private BaseData connBd;
     private String commPortName;
     //
@@ -31,18 +27,21 @@ public class MainClass {
         new MainClass().start();
     }
     protected MainClass() {
-        statMainWork = false;
     }
     private void start() {
         // стар фрейм
         try {
-            StartFrame.main(statMainWork, new StartFrame.CallBack() {
+            StartFrame.main(false, new StartFrame.CallBack() {
                 @Override
                 public void messageCloseStartFrame(BaseData conn, String commPortName) {
-                    statMainWork = true;
                     connBd = conn;
                     MainClass.this.commPortName = commPortName;
                     new Thread(() -> MainClass.this.startFx()).start();
+                }
+
+                @Override
+                public void messageSetNewData() {
+
                 }
             });
         } catch (Exception exception) {
@@ -68,7 +67,29 @@ public class MainClass {
     }
 
     private void newTestPuser() {
-        commPort.ReciveStop();
+        new Thread(()->{
+            commPort.ReciveStop();
+            // стар фрейм
+            try {
+                StartFrame.main(true, new StartFrame.CallBack() {
+                    @Override
+                    public void messageCloseStartFrame(BaseData conn, String commPortName) {
+//                    connBd = conn;
+//                    MainClass.this.commPortName = commPortName;
+//                    new Thread(() -> MainClass.this.startFx()).start();
+                    }
+
+                    @Override
+                    public void messageSetNewData() {
+                        runner.fillFields();
+                        commPort.ReciveStart();
+                    }
+                });
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                System.exit(-100);
+            }
+        }, "st fr").start();
     }
 
     private void cont() {

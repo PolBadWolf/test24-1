@@ -1143,6 +1143,37 @@ class BaseDataParent implements BaseData {
             preStatementUpdate.close();
         } catch (SQLException throwables) { }
     }
+
+    @Override
+    public long getIdTypePusherFromIdPusher(long id_pusher) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+        //
+        Statement statement = null;
+        ResultSet result = null;
+        String query;
+        long id_typePusher = -1;
+
+        try {
+            statement = connection.createStatement();
+            query = "SELECT pushers_logger.id_typePusher " +
+                    " FROM " + baseDat + ".pushers " +
+                    " INNER JOIN " + baseDat + ".pushers_logger ON pushers.id_loggerPusher = pushers_logger.id_loggerPusher " +
+                    " WHERE pushers.id_pusher = " + id_pusher;
+            result = statement.executeQuery(query);
+            result.next();
+            id_typePusher = result.getLong("id_typePusher");
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка получения id в журнале типов толкателей", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) {
+        }
+        return id_typePusher;
+    }
+
     // -----
     // количество толкателей заданого типа
     @Override

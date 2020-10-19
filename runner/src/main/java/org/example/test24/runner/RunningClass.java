@@ -2,10 +2,14 @@ package org.example.test24.runner;
 
 import javafx.scene.paint.Color;
 import org.example.test24.bd.BaseData;
+import org.example.test24.bd.BaseDataException;
+import org.example.test24.bd.usertypes.DataSpec;
 import org.example.test24.bd.usertypes.MyBlob;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.bd.DistClass;
-import org.example.test24.allinterface.screen.MainFrame_interface;
+import org.example.test24.bd.usertypes.TypePusher;
+import org.example.test24.screen.MainFrame;
+import org.example.test24.screen.MainFrame_interface;
 import ru.yandex.fixcolor.my_lib.graphics.Plot;
 
 import java.util.ArrayList;
@@ -62,6 +66,19 @@ class RunningClass implements Runner {
         plot.setZoomX(0, 5_000 / 5);
         plot.setZoomXlenghtAuto(true);
         plot.setZoomXbeginAuto(false);
+        fillFields();
+    }
+
+    @Override
+    public void fillFields() {
+        try {
+            DataSpec dataSpec = bdSql.getLastDataSpec();
+            long id_typePusher = bdSql.getIdTypePusherFromIdPusher(dataSpec.id_pusher);
+            TypePusher typePusher = bdSql.getTypePusher(id_typePusher);
+            MainFrame.mainFrame.setFieldsTypePusher(typePusher);
+        } catch (BaseDataException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

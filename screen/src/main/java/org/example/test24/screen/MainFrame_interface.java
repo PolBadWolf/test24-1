@@ -1,7 +1,8 @@
-package org.example.test24.allinterface.screen;
+package org.example.test24.screen;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
+import org.example.test24.bd.usertypes.TypePusher;
 
 public interface MainFrame_interface {
     interface CallBack {
@@ -14,4 +15,5 @@ public interface MainFrame_interface {
     Canvas getCanvas();
     void label2_txt(String text);
     void setCallBack(CallBack callBack);
+    void setFieldsTypePusher(TypePusher typePusher);
 }

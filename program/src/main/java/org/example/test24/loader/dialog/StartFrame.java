@@ -19,6 +19,7 @@ public class StartFrame {
     static StartFrame startFrame;
     public interface CallBack {
         void messageCloseStartFrame(BaseData conn, String commPortName);
+        void messageSetNewData();
     }
     // ----------------------------------
     // title
@@ -677,16 +678,20 @@ public class StartFrame {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
             config.setDefault();
         }
-        callBack.messageCloseStartFrame(connBD, config.getPortName());
+        if (statMainWork) {
+            callBack.messageSetNewData();
+        } else {
+            callBack.messageCloseStartFrame(connBD, config.getPortName());
+        }
     }
     // обработка настройка
     private void callTuning(ActionEvent e) {
-        /*if (statMainWork) {
+        if (statMainWork) {
             // при основной работе нельзя менять параметры БД и порта
             MySwingUtil.showMessage(frame, "Настройка", "при основной работе нельзя менять параметры БД и порта", 10_000);
             buttonTuning.setVisible(false);
             return;
-        }*/
+        }
         // отключение управления
         saveEnableComponentsStartFrame.save();
         saveEnableComponentsStartFrame.offline();

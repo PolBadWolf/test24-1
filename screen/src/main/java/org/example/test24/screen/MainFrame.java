@@ -7,10 +7,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import org.example.test24.allinterface.screen.MainFrame_interface;
+import org.example.test24.bd.usertypes.TypePusher;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -85,11 +84,21 @@ public class MainFrame implements Initializable, MainFrame_interface {
     }
 
     public void exitOnAction(ActionEvent actionEvent) {
-
+        callBack.buttonExit_onAction();
     }
 
     @Override
     public void setCallBack(CallBack callBack) {
         this.callBack = callBack;
+    }
+
+    @Override
+    public void setFieldsTypePusher(TypePusher typePusher) {
+        Platform.runLater(()->{
+            set_TypePusher.setText(typePusher.loggerTypePusher.nameType);
+            set_Force.setText(String.valueOf(typePusher.loggerTypePusher.forceNominal));
+            set_Move.setText(String.valueOf(typePusher.loggerTypePusher.moveNominal));
+            set_Unclenching.setText(String.valueOf(typePusher.loggerTypePusher.unclenchingTime));
+        });
     }
 }
