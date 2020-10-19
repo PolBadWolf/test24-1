@@ -2,11 +2,13 @@ package org.example.test24.screen;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 
@@ -44,12 +46,18 @@ public class ScreenClass extends Application implements ScreenFx {
         primaryStage.setTitle("title fx window");
         primaryStage.show();
         stage = primaryStage;
-//        Thread.sleep(10_000_000L);
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                event.consume();
+                primaryStage.show();
+            }
+        });
     }
 
     @Override
     public void exitApp() {
-        //Platform.exit();
+        Platform.exit();
     }
 
     @Override

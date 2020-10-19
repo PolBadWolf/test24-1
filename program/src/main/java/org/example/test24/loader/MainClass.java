@@ -1,6 +1,7 @@
 package org.example.test24.loader;
 
 import javafx.application.Platform;
+import org.example.test24.allinterface.screen.MainFrame_interface;
 import org.example.test24.lib.MyLogger;
 import org.example.test24.bd.*;
 import org.example.test24.RS232.CommPort;
@@ -33,30 +34,7 @@ public class MainClass {
         statMainWork = false;
     }
     private void start() {
-        // создание основных объектов
-        screenFx = ScreenFx.init(() -> close());
-        screenFx.main();
-        /*while (MainFrame.mainFrame == null) {
-            Thread.yield();
-        }*/
-        screenFx.main();
-        commPort = CommPort.main();
-        // пуск
-        puskStartFrame();
-    }
-    private void cont() {
-        System.out.println("start ?");
-        // тут вызов основной формы
-        runner = Runner.main(o->runnerCloser());
-        //screenFx.setVisible(true);
-        while (!ScreenClass.stage.isShowing()) {
-            Thread.yield();
-        }
-        runner.init(connBd, commPort, MainFrame.mainFrame);
-        commPort.open(runner::reciveRsPush, commPortName, BAUD.baud57600);
-        //commPort.ReciveStart();
-    }
-    private void puskStartFrame() {
+        // стар фрейм
         try {
             StartFrame.main(statMainWork, new StartFrame.CallBack() {
                 @Override
@@ -64,13 +42,45 @@ public class MainClass {
                     statMainWork = true;
                     connBd = conn;
                     MainClass.this.commPortName = commPortName;
-                    new Thread(() -> MainClass.this.cont()).start();
+                    new Thread(() -> MainClass.this.startFx()).start();
                 }
             });
         } catch (Exception exception) {
             exception.printStackTrace();
             System.exit(-100);
         }
+    }
+    private void startFx() {
+        // создание основных объектов
+        screenFx = ScreenFx.init(() -> close());
+        runner = Runner.main(o->runnerCloser());
+        commPort = CommPort.main();
+        // вызов основной формы
+        screenFx.main();
+        while (MainFrame.mainFrame == null) {
+            Thread.yield();
+        }
+        MainFrame.mainFrame.setCallBack(this::newTestPuser);
+        // пуск регистрации
+        runner.init(connBd, commPort, MainFrame.mainFrame);
+        commPort.open(runner::reciveRsPush, commPortName, BAUD.baud57600);
+        commPort.ReciveStart();
+    }
+
+    private void newTestPuser() {
+        commPort.ReciveStop();
+    }
+
+    private void cont() {
+        System.out.println("start ?");
+        if (MainFrame.mainFrame == null) {
+            screenFx.main();
+        }
+        while (MainFrame.mainFrame == null) {
+            Thread.yield();
+        }
+    }
+    private void puskStartFrame() {
     }
     // ===============================================
     private void close() {
@@ -88,8 +98,6 @@ public class MainClass {
 //                screenFx = null;
 //                screenFx.setVisible(false);
             }
-            // возврат в настройки
-            puskStartFrame();
         }, "restart").start();
     }
     private void runnerCloser() {
