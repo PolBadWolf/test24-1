@@ -7,14 +7,15 @@ import org.example.test24.bd.usertypes.DataSpec;
 import org.example.test24.bd.usertypes.MyBlob;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.bd.DistClass;
-import org.example.test24.bd.usertypes.TypePusher;
+import org.example.test24.bd.usertypes.Pusher;
+import org.example.test24.lib.MyLogger;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.MainFrame_interface;
 import ru.yandex.fixcolor.my_lib.graphics.Plot;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 class RunningClass implements Runner {
     private Consumer closer;
@@ -73,9 +74,8 @@ class RunningClass implements Runner {
     public void fillFields() {
         try {
             DataSpec dataSpec = bdSql.getLastDataSpec();
-            long id_typePusher = bdSql.getIdTypePusherFromIdPusher(dataSpec.id_pusher);
-            TypePusher typePusher = bdSql.getTypePusher(id_typePusher);
-            MainFrame.mainFrame.setFieldsTypePusher(typePusher);
+            Pusher pusher = bdSql.getPusher(dataSpec.id_pusher);
+            MainFrame.mainFrame.setFieldsSamplePusher(pusher);
         } catch (BaseDataException e) {
             e.printStackTrace();
         }
@@ -105,10 +105,20 @@ class RunningClass implements Runner {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     mainFrame.label1_txt("MANUAL_STOP");
                     System.out.println("count = " + distanceOut.size());
-                    bdSql.writeDataDist(new Date(), n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
-                } catch (java.lang.Throwable e) {
-                    e = null;
+                    bdSql.writeDataDist(n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                } catch (BaseDataException e) {
+                    MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
                 }
+                int moveBegin = 0, moveEnd = 0, move, timeUnClenching;
+                DistClass distClass;
+                for (int i = 0; i < distanceOut.size(); i++) {
+                    distClass = distanceOut.get(i);
+                    if (distClass.tik == tik0) moveBegin = distClass.distance;
+                    if (distClass.tik == tik_shelf) moveEnd = distClass.distance;
+                }
+                move = Math.abs(moveBegin - moveEnd);
+                timeUnClenching = Math.abs(tik0 - tik_shelf);
+                mainFrame.setFieldsMeasuredPusher(n_cicle, ves, move, timeUnClenching);
                 n_cicle = 0;
             break;
             case TypePack.MANUAL_FORWARD:
@@ -137,9 +147,9 @@ class RunningClass implements Runner {
                 try {
                     tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
                     System.out.println("count = " + distanceOut.size());
-                    bdSql.writeDataDist(new Date(), n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
-                } catch (java.lang.Throwable e) {
-                    e = null;
+                    bdSql.writeDataDist(n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+                } catch (BaseDataException e) {
+                    MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
                 }
                 break;
             case TypePack.CYCLE_FORWARD:

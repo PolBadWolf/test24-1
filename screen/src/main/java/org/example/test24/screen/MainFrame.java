@@ -9,13 +9,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import org.example.test24.bd.usertypes.TypePusher;
+import org.example.test24.bd.usertypes.Pusher;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainFrame implements Initializable, MainFrame_interface {
     public static MainFrame mainFrame = null;
+    private GraphicsContext gc = null;
+    private CallBack callBack;
     public Button buttonExit;
     public TextField state;
     public TextField get_Force;
@@ -26,19 +28,15 @@ public class MainFrame implements Initializable, MainFrame_interface {
     public TextField set_Move;
     public TextField get_Unclenching;
     public TextField set_Unclenching;
-
-    private GraphicsContext gc = null;
-    private CallBack callBack;
-    public Canvas canvas;
-
+    public TextField set_Pusher;
     public Label label1;
     public Label label2;
+    public Canvas canvas;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mainFrame = this;
         gc = canvas.getGraphicsContext2D();
-        //Platform.runLater(()->);
     }
 
     @Override
@@ -69,7 +67,7 @@ public class MainFrame implements Initializable, MainFrame_interface {
     }
 
     @Override
-    public double getHeighCanvas() {
+    public double getHeightCanvas() {
         return canvas.getHeight();
     }
 
@@ -93,12 +91,21 @@ public class MainFrame implements Initializable, MainFrame_interface {
     }
 
     @Override
-    public void setFieldsTypePusher(TypePusher typePusher) {
+    public void setFieldsSamplePusher(Pusher pusher) {
         Platform.runLater(()->{
-            set_TypePusher.setText(typePusher.loggerTypePusher.nameType);
-            set_Force.setText(String.valueOf(typePusher.loggerTypePusher.forceNominal));
-            set_Move.setText(String.valueOf(typePusher.loggerTypePusher.moveNominal));
-            set_Unclenching.setText(String.valueOf(typePusher.loggerTypePusher.unclenchingTime));
+            set_Pusher.setText(pusher.loggerPusher.namePusher);
+            set_TypePusher.setText(pusher.loggerPusher.typePusher.loggerTypePusher.nameType);
+            set_Force.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.forceNominal));
+            set_Move.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.moveNominal));
+            set_Unclenching.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.unclenchingTime));
+        });
+    }
+
+    @Override
+    public void setFieldsMeasuredPusher(int n_cicle, int ves, int move, int timeUnClenching) {
+        Platform.runLater(()->{
+            get_Move.setText(String.valueOf(move));
+            get_Unclenching.setText(String.valueOf(((float) timeUnClenching) / 1_000));
         });
     }
 }
