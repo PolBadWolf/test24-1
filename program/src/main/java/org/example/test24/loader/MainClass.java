@@ -36,7 +36,7 @@ public class MainClass {
                 public void messageCloseStartFrame(BaseData conn, String commPortName) {
                     connBd = conn;
                     MainClass.this.commPortName = commPortName;
-                    new Thread(() -> MainClass.this.startFx()).start();
+                    new Thread(() -> MainClass.this.startFx(), "start fx").start();
                 }
 
                 @Override

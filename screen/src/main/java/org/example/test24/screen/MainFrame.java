@@ -19,10 +19,10 @@ public class MainFrame implements Initializable, MainFrame_interface {
     private GraphicsContext gc = null;
     private CallBack callBack;
     public Button buttonExit;
+    public TextField l_nCicle;
     public TextField state;
     public TextField get_Force;
     public TextField set_Force;
-    public TextField get_TypePusher;
     public TextField set_TypePusher;
     public TextField get_Move;
     public TextField set_Move;
@@ -104,6 +104,7 @@ public class MainFrame implements Initializable, MainFrame_interface {
     @Override
     public void setFieldsMeasuredPusher(int n_cicle, int ves, int move, int timeUnClenching) {
         Platform.runLater(()->{
+            l_nCicle.setText(String.valueOf(n_cicle));
             get_Move.setText(String.valueOf(move));
             get_Unclenching.setText(String.valueOf(((float) timeUnClenching) / 1_000));
         });
