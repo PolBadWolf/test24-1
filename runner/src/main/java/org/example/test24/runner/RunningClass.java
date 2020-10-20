@@ -88,6 +88,8 @@ class RunningClass implements Runner {
                 + ((bytes[2] & 0x000000ff) <<  8 )
                 + ((bytes[3] & 0x000000ff) << 16 )
                 + ((bytes[4] & 0x000000ff) << 24 );
+        int moveBegin, moveEnd, move, timeUnClenching;
+        DistClass distClass;
 
         switch (b) {
             case TypePack.MANUAL_ALARM:
@@ -109,8 +111,8 @@ class RunningClass implements Runner {
                 } catch (BaseDataException e) {
                     MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
                 }
-                int moveBegin = 0, moveEnd = 0, move, timeUnClenching;
-                DistClass distClass;
+                moveBegin = 0;
+                moveEnd = 0;
                 for (int i = 0; i < distanceOut.size(); i++) {
                     distClass = distanceOut.get(i);
                     if (distClass.tik == tik0) moveBegin = distClass.distance;
@@ -151,6 +153,16 @@ class RunningClass implements Runner {
                 } catch (BaseDataException e) {
                     MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
                 }
+                moveBegin = 0;
+                moveEnd = 0;
+                for (int i = 0; i < distanceOut.size(); i++) {
+                    distClass = distanceOut.get(i);
+                    if (distClass.tik == tik0) moveBegin = distClass.distance;
+                    if (distClass.tik == tik_shelf) moveEnd = distClass.distance;
+                }
+                move = Math.abs(moveBegin - moveEnd);
+                timeUnClenching = Math.abs(tik0 - tik_shelf);
+                mainFrame.setFieldsMeasuredPusher(n_cicle, ves, move, timeUnClenching);
                 break;
             case TypePack.CYCLE_FORWARD:
                 mainFrame.label1_txt("CYCLE_FORWARD");
