@@ -11,7 +11,7 @@ public interface MainFrame_interface {
     }
     void canvas_Clear(Color backColor);
     void canvas_Line(Color lineColor, double lineWidth, double x0, double y0, double x, double y);
-    void label1_txt(String text);
+    void outStatusWork(String text);
     double getHeightCanvas();
     Canvas getCanvas();
     void label2_txt(String text);

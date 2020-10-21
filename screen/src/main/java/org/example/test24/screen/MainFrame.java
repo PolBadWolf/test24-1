@@ -29,7 +29,6 @@ public class MainFrame implements Initializable, MainFrame_interface {
     public TextField get_Unclenching;
     public TextField set_Unclenching;
     public TextField set_Pusher;
-    public Label label1;
     public Label label2;
     public Canvas canvas;
 
@@ -62,8 +61,8 @@ public class MainFrame implements Initializable, MainFrame_interface {
     }
 
     @Override
-    public void label1_txt(String text) {
-        Platform.runLater( ()->label1.setText(text) );
+    public void outStatusWork(String text) {
+        Platform.runLater( ()->state.setText(text) );
     }
 
     @Override

@@ -93,24 +93,24 @@ class RunningClass implements Runner {
 
         switch (b) {
             case TypePack.MANUAL_ALARM:
-                mainFrame.label1_txt("MANUAL_ALARM");
+                mainFrame.outStatusWork("MANUAL_ALARM");
                 reciveOn = false;
                 break;
             case TypePack.MANUAL_BACK:
-                mainFrame.label1_txt("MANUAL_BACK");
+                mainFrame.outStatusWork("MANUAL_BACK");
                 tik_back = tik;
                 break;
             case TypePack.MANUAL_STOP:
                 reciveOn = false;
                 if (n_cicle > 0) n_cicle++;
-                mainFrame.label1_txt("MANUAL_STOP");
+                mainFrame.outStatusWork("MANUAL_STOP");
                 System.out.println("count = " + distanceOut.size());
                 //
                 sendOutData();
                 n_cicle = 0;
                 break;
             case TypePack.MANUAL_FORWARD:
-                mainFrame.label1_txt("MANUAL_FORWARD");
+                mainFrame.outStatusWork("MANUAL_FORWARD");
                 distanceOut.clear();
 
                 plot.allDataClear();
@@ -118,18 +118,18 @@ class RunningClass implements Runner {
                 reciveOn = true;
                 break;
             case TypePack.MANUAL_SHELF:
-                mainFrame.label1_txt("MANUAL_SHELF");
+                mainFrame.outStatusWork("MANUAL_SHELF");
                 tik_shelf = tik;
                 break;
             case TypePack.CYCLE_ALARM:
-                mainFrame.label1_txt("CYCLE_ALARM");
+                mainFrame.outStatusWork("CYCLE_ALARM");
                 break;
             case TypePack.CYCLE_BACK:
-                mainFrame.label1_txt("CYCLE_BACK");
+                mainFrame.outStatusWork("CYCLE_BACK");
                 tik_back = tik;
                 break;
             case TypePack.CYCLE_DELAY:
-                mainFrame.label1_txt("CYCLE_DELAY");
+                mainFrame.outStatusWork("CYCLE_DELAY");
                 reciveOn = false;
                 n_cicle++;
                 System.out.println("count = " + distanceOut.size());
@@ -137,7 +137,7 @@ class RunningClass implements Runner {
                 sendOutData();
                 break;
             case TypePack.CYCLE_FORWARD:
-                mainFrame.label1_txt("CYCLE_FORWARD");
+                mainFrame.outStatusWork("CYCLE_FORWARD");
                 distanceOut.clear();
 
                 plot.allDataClear();
@@ -145,7 +145,7 @@ class RunningClass implements Runner {
                 reciveOn = true;
                 break;
             case TypePack.CYCLE_SHELF:
-                mainFrame.label1_txt("CYCLE_SHELF");
+                mainFrame.outStatusWork("CYCLE_SHELF");
                 tik_shelf = tik;
                 break;
             case TypePack.CURENT_DATA:

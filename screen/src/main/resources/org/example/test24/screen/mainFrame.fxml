@@ -10,8 +10,7 @@
 
 <AnchorPane prefHeight="800.0" prefWidth="1024" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.test24.screen.MainFrame">
     <children>
-        <Label fx:id="label1" layoutX="250.0" layoutY="27.0" text="Label" />
-        <Label fx:id="label2" layoutX="404.0" layoutY="27.0" text="Label" />
+        <Label fx:id="label2" layoutX="62.0" layoutY="757.0" text="Label" />
       <Pane layoutX="12.0" layoutY="74.0" prefHeight="600.0" prefWidth="1000.0">
          <children>
               <Canvas fx:id="canvas" height="600.0" layoutX="6.0" width="1000.0" />
@@ -59,10 +58,10 @@
             <Font name="Times New Roman" size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="state" editable="false" layoutX="863.0" layoutY="719.0" prefHeight="25.0" prefWidth="94.0" />
-      <Button fx:id="buttonExit" layoutX="957.0" layoutY="15.0" mnemonicParsing="false" onAction="#exitOnAction" prefHeight="25.0" prefWidth="53.0" text="Exit" />
+      <TextField fx:id="state" editable="false" layoutX="863.0" layoutY="719.0" prefHeight="25.0" prefWidth="110.0" />
+      <Button fx:id="buttonExit" layoutX="957.0" layoutY="15.0" mnemonicParsing="false" onAction="#exitOnAction" prefHeight="25.0" prefWidth="53.0" text="Menu" />
       <TextField fx:id="set_Pusher" editable="false" layoutX="22.0" layoutY="719.0" prefHeight="25.0" prefWidth="118.0" />
-      <TextField fx:id="l_nCicle" editable="false" layoutX="863.0" layoutY="753.0" prefHeight="25.0" prefWidth="94.0" />
+      <TextField fx:id="l_nCicle" editable="false" layoutX="863.0" layoutY="753.0" prefHeight="25.0" prefWidth="110.0" />
     </children>
 
 </AnchorPane>

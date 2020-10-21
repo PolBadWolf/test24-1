@@ -613,7 +613,7 @@ class BaseDataParent implements BaseData {
             statement = connection.prepareStatement(
                     "INSERT INTO " + baseDat + ".data " +
                             " (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, forceNominal, moveNominal, unclenchingTime, dataMeasured) " +
-                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             );
             statement.setTimestamp(1, timestamp);
             statement.setLong(2, id_spec);
