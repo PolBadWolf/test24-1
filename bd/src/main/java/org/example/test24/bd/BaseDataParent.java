@@ -167,7 +167,10 @@ class BaseDataParent implements BaseData {
                         "tik_shelf",
                         "tik_back",
                         "tik_stop",
-                        "dis"
+                        "forceNominal",
+                        "moveNominal",
+                        "unclenchingTime",
+                        "dataMeasured"
                 ))
         );
         data_spec = checkStructureTable(
@@ -586,7 +589,8 @@ class BaseDataParent implements BaseData {
     }
     // запись измерений
     @Override
-    public void writeDataDist(int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException {
+    public void writeDataDist(int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop,
+                              int forceNominal, int moveNominal, int unclenchingTime, Blob dataMeasured) throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(false);
         //
@@ -608,7 +612,7 @@ class BaseDataParent implements BaseData {
             // запись
             statement = connection.prepareStatement(
                     "INSERT INTO " + baseDat + ".data " +
-                            " (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, dis) " +
+                            " (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, forceNominal, moveNominal, unclenchingTime, dataMeasured) " +
                             " VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
             );
             statement.setTimestamp(1, timestamp);
@@ -618,7 +622,10 @@ class BaseDataParent implements BaseData {
             statement.setInt(5, tik_shelf);
             statement.setInt(6, tik_back);
             statement.setInt(7, tik_stop);
-            statement.setBlob(8, distance);
+            statement.setInt(8, forceNominal);
+            statement.setInt(9, moveNominal);
+            statement.setInt(10, unclenchingTime);
+            statement.setBlob(11, dataMeasured);
             statement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {

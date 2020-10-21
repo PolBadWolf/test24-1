@@ -216,14 +216,15 @@ class RunningClass implements Runner {
         }
         int moveMeasure = Math.abs(moveMeasureBegin - moveMeasureEnd);
         //
-        int timeUnClenching = Math.abs(tik0 - tik_shelf);
+        int timeUnClenching = Math.abs(distanceOut.get(0).tik - tik_shelf);
         // ****** out screen ******
         mainFrame.setFieldsMeasuredPusher(n_cicle, forceMeasure, moveMeasure, timeUnClenching);
         // ***** out to bd *****
         try {
             tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
             System.out.println("count = " + distanceOut.size());
-            bdSql.writeDataDist(n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+            bdSql.writeDataDist(n_cicle, ves, tik_shelf, tik_back, tik_stop,
+                    forceMeasure, moveMeasure, timeUnClenching, new MyBlob(distanceOut));
         } catch (BaseDataException e) {
             MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
         }

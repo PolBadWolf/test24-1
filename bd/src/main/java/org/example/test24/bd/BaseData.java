@@ -101,7 +101,8 @@ public interface BaseData {
     DataSpec getLastDataSpec() throws BaseDataException;
 
     // запись замера
-    void writeDataDist(int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
+    void writeDataDist(int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop,
+                       int forceNominal, int moveNominal, int unclenchingTime, Blob dataMeasured) throws BaseDataException;
     //
     BaseData cloneNewBase(String base);
 }
