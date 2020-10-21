@@ -19,6 +19,7 @@ public class MainFrame implements Initializable, MainFrame_interface {
     private GraphicsContext gc = null;
     private CallBack callBack;
     public Button buttonExit;
+    public Button buttonArchive;
     public TextField l_nCicle;
     public TextField state;
     public TextField get_Force;
@@ -108,5 +109,9 @@ public class MainFrame implements Initializable, MainFrame_interface {
             get_Move.setText(String.valueOf(moveMeasure));
             get_Unclenching.setText(String.valueOf(((float) timeUnClenching) / 1_000));
         });
+    }
+
+    public void archiveOnAction(ActionEvent actionEvent) {
+        callBack.startViewArchive();
     }
 }

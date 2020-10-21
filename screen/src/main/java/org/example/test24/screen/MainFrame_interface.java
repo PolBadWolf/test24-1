@@ -2,12 +2,14 @@ package org.example.test24.screen;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
+import org.example.test24.bd.BaseData;
 import org.example.test24.bd.usertypes.Pusher;
 import org.example.test24.bd.usertypes.TypePusher;
 
 public interface MainFrame_interface {
     interface CallBack {
         void buttonExit_onAction();
+        void startViewArchive();
     }
     void canvas_Clear(Color backColor);
     void canvas_Line(Color lineColor, double lineWidth, double x0, double y0, double x, double y);

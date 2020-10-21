@@ -5,10 +5,13 @@ import org.example.test24.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.loader.dialog.StartFrame;
+import org.example.test24.loader.dialog.ViewArchive;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
+import org.example.test24.screen.MainFrame_interface;
 import org.example.test24.screen.ScreenFx;
 
+import javax.swing.*;
 import java.util.logging.Level;
 
 
@@ -59,7 +62,21 @@ public class MainClass {
         while (MainFrame.mainFrame == null) {
             Thread.yield();
         }
-        MainFrame.mainFrame.setCallBack(this::newTestPuser);
+        MainFrame.mainFrame.setCallBack(new MainFrame_interface.CallBack() {
+            @Override
+            public void buttonExit_onAction() {
+                newTestPuser();
+            }
+
+            @Override
+            public void startViewArchive() {
+                new Thread(()->{
+                    SwingUtilities.invokeLater(()->{
+                        new ViewArchive(connBd);
+                    });
+                }, "start arhive").start();
+            }
+        });
         // пуск регистрации
         runner.init(connBd, commPort, MainFrame.mainFrame);
         commPort.open(runner::reciveRsPush, commPortName, BAUD.baud57600);
