@@ -103,26 +103,12 @@ class RunningClass implements Runner {
             case TypePack.MANUAL_STOP:
                 reciveOn = false;
                 if (n_cicle > 0) n_cicle++;
-                try {
-                    tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
-                    mainFrame.label1_txt("MANUAL_STOP");
-                    System.out.println("count = " + distanceOut.size());
-                    bdSql.writeDataDist(n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
-                } catch (BaseDataException e) {
-                    MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
-                }
-                moveBegin = 0;
-                moveEnd = 0;
-                for (int i = 0; i < distanceOut.size(); i++) {
-                    distClass = distanceOut.get(i);
-                    if (distClass.tik == tik0) moveBegin = distClass.distance;
-                    if (distClass.tik == tik_shelf) moveEnd = distClass.distance;
-                }
-                move = Math.abs(moveBegin - moveEnd);
-                timeUnClenching = Math.abs(tik0 - tik_shelf);
-                mainFrame.setFieldsMeasuredPusher(n_cicle, ves, move, timeUnClenching);
+                mainFrame.label1_txt("MANUAL_STOP");
+                System.out.println("count = " + distanceOut.size());
+                //
+                sendOutData();
                 n_cicle = 0;
-            break;
+                break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.label1_txt("MANUAL_FORWARD");
                 distanceOut.clear();
@@ -146,23 +132,9 @@ class RunningClass implements Runner {
                 mainFrame.label1_txt("CYCLE_DELAY");
                 reciveOn = false;
                 n_cicle++;
-                try {
-                    tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
-                    System.out.println("count = " + distanceOut.size());
-                    bdSql.writeDataDist(n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
-                } catch (BaseDataException e) {
-                    MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
-                }
-                moveBegin = 0;
-                moveEnd = 0;
-                for (int i = 0; i < distanceOut.size(); i++) {
-                    distClass = distanceOut.get(i);
-                    if (distClass.tik == tik0) moveBegin = distClass.distance;
-                    if (distClass.tik == tik_shelf) moveEnd = distClass.distance;
-                }
-                move = Math.abs(moveBegin - moveEnd);
-                timeUnClenching = Math.abs(tik0 - tik_shelf);
-                mainFrame.setFieldsMeasuredPusher(n_cicle, ves, move, timeUnClenching);
+                System.out.println("count = " + distanceOut.size());
+                //
+                sendOutData();
                 break;
             case TypePack.CYCLE_FORWARD:
                 mainFrame.label1_txt("CYCLE_FORWARD");
@@ -179,8 +151,11 @@ class RunningClass implements Runner {
             case TypePack.CURENT_DATA:
                 if (reciveOn) {
                     paintTrends(bytes);
-                    int dist = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
-                    distanceOut.add(new DistClass(tik, dist));
+                    {
+                        int dist = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+                        int ves = (bytes[7 + 0] & 0xff) + ((bytes[7 + 1] & 0xff) << 8);
+                        distanceOut.add(new DistClass(tik, dist, ves));
+                    }
                 }
                 break;
             case TypePack.VES:
@@ -225,5 +200,33 @@ class RunningClass implements Runner {
         plot.removeAllTrends();
         plot.close();
         plot = null;
+    }
+
+    void sendOutData () {
+        // force
+        int idxMid = distanceOut.size() / 2;
+        int forceMeasure = distanceOut.get(idxMid).ves - ves;
+        // move
+        int moveMeasureBegin = distanceOut.get(0).distance;
+        int moveMeasureEnd = 0;
+        DistClass distClass;
+        for (int i = 0; i < distanceOut.size(); i++) {
+            distClass = distanceOut.get(i);
+            if (distClass.tik == tik_shelf) moveMeasureEnd = distClass.distance;
+        }
+        int moveMeasure = Math.abs(moveMeasureBegin - moveMeasureEnd);
+        //
+        int timeUnClenching = Math.abs(tik0 - tik_shelf);
+        // ****** out screen ******
+        mainFrame.setFieldsMeasuredPusher(n_cicle, forceMeasure, moveMeasure, timeUnClenching);
+        // ***** out to bd *****
+        try {
+            tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
+            System.out.println("count = " + distanceOut.size());
+            bdSql.writeDataDist(n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
+        } catch (BaseDataException e) {
+            MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
+        }
+
     }
 }

@@ -102,10 +102,11 @@ public class MainFrame implements Initializable, MainFrame_interface {
     }
 
     @Override
-    public void setFieldsMeasuredPusher(int n_cicle, int ves, int move, int timeUnClenching) {
+    public void setFieldsMeasuredPusher(int n_cicle, int forceMeasure, int moveMeasure, int timeUnClenching) {
         Platform.runLater(()->{
             l_nCicle.setText(String.valueOf(n_cicle));
-            get_Move.setText(String.valueOf(move));
+            get_Force.setText(String.valueOf(forceMeasure));
+            get_Move.setText(String.valueOf(moveMeasure));
             get_Unclenching.setText(String.valueOf(((float) timeUnClenching) / 1_000));
         });
     }

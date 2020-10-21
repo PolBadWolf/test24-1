@@ -17,5 +17,5 @@ public interface MainFrame_interface {
     void label2_txt(String text);
     void setCallBack(CallBack callBack);
     void setFieldsSamplePusher(Pusher pusher);
-    void setFieldsMeasuredPusher(int n_cicle, int ves, int move, int timeUnClenching);
+    void setFieldsMeasuredPusher(int n_cicle, int forceMeasure, int moveMeasure, int timeUnClenching);
 }

@@ -25,14 +25,16 @@ public class MyBlob implements Blob {
         origLen = len;
     }
 
-    public MyBlob(ArrayList<DistClass> distance) {
-        len = distance.size();
-        buf = new byte[(int) len * 6];
+    public MyBlob(ArrayList<DistClass> dataMeasured) {
+        final int lenghtUnit = 8;
+        len = dataMeasured.size();
+        buf = new byte[(int) len * lenghtUnit];
         for (int i = 0; i < len; i++) {
-            Converts.IntToBytes(distance.get(i).tik, buf, 4, i * 6 + 0 );
-            Converts.IntToBytes(distance.get(i).distance, buf, 2, i * 6 + 4 );
+            Converts.IntToBytes(dataMeasured.get(i).tik, buf, 4, i * lenghtUnit + 0 );
+            Converts.IntToBytes(dataMeasured.get(i).distance, buf, 2, i * lenghtUnit + 4 );
+            Converts.IntToBytes(dataMeasured.get(i).ves, buf, 2, i * lenghtUnit + 6 );
         }
-        origLen = len = len * 6;
+        origLen = len = len * lenghtUnit;
     }
 
     @Override
