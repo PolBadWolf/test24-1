@@ -7,25 +7,25 @@ import org.example.test24.lib.MyLogger;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-public class ShMounth extends Shablon {
-    public ShMounth(String name, int idx) {
+public class ShDate extends Shablon {
+    public ShDate(String name, int idx) {
         super(name, idx);
     }
 
-    public ShMounth(String name, int idx, int level) {
+    public ShDate(String name, int idx, int level) {
         super(name, idx, level);
     }
-    public static ArrayList<Shablon> getListMounth(BaseData conn, String sample) {
+    public static ArrayList<Shablon> getListDates(BaseData conn, String sample) {
         ArrayList<String> listConn;
         ArrayList<Shablon> list = new ArrayList<>();
         try {
-            listConn = conn.getListFromMounth(sample);
+            listConn = conn.getListFromDates(sample);
         } catch (BaseDataException e) {
             MyLogger.myLog.log(Level.SEVERE, "получение списка месяцев", e);
             return list;
         }
         for (int i = 0; i < listConn.size(); i++) {
-            list.add(new ShMounth(listConn.get(i), i, 1));
+            list.add(new ShDate(listConn.get(i), i, 2));
         }
         return list;
     }

@@ -1464,7 +1464,36 @@ class BaseDataParent implements BaseData {
         String query = "SELECT DISTINCT " +
                 " DATE_FORMAT(datas.dateTime, '%Y-%m') AS list" +
                 " FROM " + baseDat + ".datas " +
-                " WHERE DATE_FORMAT(datas.dateTime, '%Y') = " + year + " " +
+                " WHERE DATE_FORMAT(datas.dateTime, '%Y') = '" + year + "' " +
+                " ORDER BY datas.id_data ASC ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            while (result.next()) {
+                list.add(result.getString("list"));
+            }
+        } catch (SQLException e) {
+            throw new BaseDataException("список месяцев", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) { }
+        return list;
+    }
+
+    @Override
+    public ArrayList<String> getListFromDates(String mounth) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        ArrayList<String> list = new ArrayList<>();
+        String query = "SELECT DISTINCT " +
+                " DATE_FORMAT(datas.dateTime, '%Y-%m-%d') AS list" +
+                " FROM " + baseDat + ".datas " +
+                " WHERE DATE_FORMAT(datas.dateTime, '%Y-%m') = '" + mounth + "' " +
                 " ORDER BY datas.id_data ASC ";
         try {
             statement = connection.createStatement();

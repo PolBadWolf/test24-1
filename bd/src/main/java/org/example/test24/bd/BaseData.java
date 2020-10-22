@@ -109,5 +109,6 @@ public interface BaseData {
     // =========================
     ArrayList<String> getListFromYear() throws BaseDataException;
     ArrayList<String> getListFromMounth(String year) throws BaseDataException;
+    ArrayList<String> getListFromDates(String mounth) throws BaseDataException;
     // =========================
 }

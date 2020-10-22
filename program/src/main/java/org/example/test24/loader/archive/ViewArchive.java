@@ -100,11 +100,15 @@ public class ViewArchive {
             if (o == root) return;
             Shablon comp = (Shablon) o;
             ArrayList<Shablon> x;
-            if (comp.getLevel() > 0) return;
+            if (comp.getLevel() > 1) return;
             if (comp.children.size() > 0) return;
             switch (comp.getLevel()) {
                 case 0:
                     x = ShMounth.getListMounth(conn, comp.getName());
+                    comp.children = x;
+                    break;
+                case 1:
+                    x = ShDate.getListDates(conn, comp.getName());
                     comp.children = x;
                     break;
             }
