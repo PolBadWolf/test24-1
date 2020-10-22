@@ -1,6 +1,7 @@
 package org.example.test24.loader.archive;
 
 import org.example.test24.bd.BaseData;
+import org.example.test24.bd.BaseDataException;
 import org.example.test24.lib.swing.CreateComponents;
 
 import javax.swing.*;
@@ -10,6 +11,7 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import java.util.ArrayList;
 
 public class ViewArchive {
     private BaseData conn;
@@ -38,7 +40,14 @@ public class ViewArchive {
         frame.setVisible(true);
     }
     class MyTreeModel implements TreeModel, TreeWillExpandListener {
+        private ArrayList<Shablon> nodes;
+
         public MyTreeModel() {
+            try {
+                nodes = ShYear.getListYear(conn);
+            } catch (BaseDataException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -47,13 +56,17 @@ public class ViewArchive {
         }
 
         @Override
-        public Object getChild(Object parent, int index) {
-            return null;
+        public Object getChild(Object node, int index) {
+            if (node == root)
+                return nodes.get(index);
+            return ((Shablon) node).children.get(index);
         }
 
         @Override
-        public int getChildCount(Object parent) {
-            return 0;
+        public int getChildCount(Object node) {
+            if (node == root)
+                return nodes.size();
+            return ((Shablon) node).children.size();
         }
 
         @Override
@@ -83,7 +96,18 @@ public class ViewArchive {
 
         @Override
         public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
-
+            Object o = event.getPath().getLastPathComponent();
+            if (o == root) return;
+            Shablon comp = (Shablon) o;
+            ArrayList<Shablon> x;
+            if (comp.getLevel() > 0) return;
+            if (comp.children.size() > 0) return;
+            switch (comp.getLevel()) {
+                case 0:
+                    x = ShMounth.getListMounth(conn, comp.getName());
+                    comp.children = x;
+                    break;
+            }
         }
 
         @Override

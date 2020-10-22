@@ -6,6 +6,7 @@ import org.example.test24.bd.usertypes.TypePusher;
 import org.example.test24.bd.usertypes.User;
 
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 
@@ -105,4 +106,8 @@ public interface BaseData {
                        int forceNominal, int moveNominal, int unclenchingTime, Blob dataMeasured) throws BaseDataException;
     //
     BaseData cloneNewBase(String base);
+    // =========================
+    ArrayList<String> getListFromYear() throws BaseDataException;
+    ArrayList<String> getListFromMounth(String year) throws BaseDataException;
+    // =========================
 }
