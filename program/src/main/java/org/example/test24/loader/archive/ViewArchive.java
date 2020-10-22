@@ -1,4 +1,4 @@
-package org.example.test24.loader.dialog;
+package org.example.test24.loader.archive;
 
 import org.example.test24.bd.BaseData;
 import org.example.test24.lib.swing.CreateComponents;

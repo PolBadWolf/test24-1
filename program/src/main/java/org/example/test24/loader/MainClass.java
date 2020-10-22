@@ -5,7 +5,7 @@ import org.example.test24.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.loader.dialog.StartFrame;
-import org.example.test24.loader.dialog.ViewArchive;
+import org.example.test24.loader.archive.ViewArchive;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.MainFrame_interface;
