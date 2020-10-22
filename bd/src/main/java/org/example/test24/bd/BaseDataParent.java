@@ -157,7 +157,7 @@ class BaseDataParent implements BaseData {
         boolean pusherstype, pusherstype_logger;
         data = checkStructureTable(
                 base,
-                "data",
+                "datas",
                 new ArrayList(Arrays.asList(
                         "id_data",
                         "dateTime",
@@ -611,7 +611,7 @@ class BaseDataParent implements BaseData {
             long id_spec = resultSpec.getLong(1);
             // запись
             statement = connection.prepareStatement(
-                    "INSERT INTO " + baseDat + ".data " +
+                    "INSERT INTO " + baseDat + ".datas " +
                             " (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, forceNominal, moveNominal, unclenchingTime, dataMeasured) " +
                             " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             );
