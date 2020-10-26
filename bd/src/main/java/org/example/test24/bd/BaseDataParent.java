@@ -1521,6 +1521,7 @@ class BaseDataParent implements BaseData {
         ArrayList<DataUnit> list = new ArrayList<>();
         String query = "SELECT " +
                 " datas.id_data, " +
+                " datas.n_cicle, " +
                 " pushers_logger.namePusher, " +
                 " pusherstype_logger.nameType " +
                 " FROM " + baseDat + ".datas " +
@@ -1538,6 +1539,7 @@ class BaseDataParent implements BaseData {
                 list.add(
                         new DataUnit(
                                 result.getLong("id_data"),
+                                result.getInt("n_cicle"),
                                 result.getString("namePusher"),
                                 result.getString("nameType")
                         )
