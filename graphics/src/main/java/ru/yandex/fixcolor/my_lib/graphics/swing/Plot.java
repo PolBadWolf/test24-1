@@ -366,29 +366,28 @@ public class Plot {
 
             double x, y, polLineWidth = netLineWidth / 2;
 
-            gc.setColor(netLineColor);
             gc.setStroke(new BasicStroke(netLineWidth));
-            gc.setColor(Color.YELLOW);
 
             // x
             kX = (Math.ceil(levelXlenghtMax / xStep) * xStep) / (width - fieldWidth);
             int xNd = (int) Math.ceil(levelXbegin / xStep);
-//            gc.setTextAlign(TextAlignment.CENTER);
             for (int i = 1; i < xN - 1 + xNd ; i++) {
                 x = (i * xSize / (xN -1)) + fieldWidth - (levelXbegin / kX);
                 if (x < fieldWidth)     continue;
                 if (x > width) {
                     continue;
                 }
+                gc.setColor(netLineColor);
                 gc.drawLine((int) x, (int) polLineWidth, (int) x, (int) (ySize - polLineWidth));
-//                double tmp = (double) Math.round(i * xCena * 1000) / 1000;
-//                gc.fillText(String.valueOf(tmp), x, ySize + 20 );
+                double tmp = (double) Math.round(i * xCena * 1000) / 1000;
+                gc.setColor(Color.YELLOW);
+                double polWidthString = gc.getFontMetrics().stringWidth(String.valueOf(tmp)) / 2;
+                gc.drawString(String.valueOf(tmp), (int) (x - polWidthString), (int) (ySize + 20));
             }
 
             // y
             double kp = ySize / y_level;
             int iK;
-//          gc.setTextAlign(TextAlignment.RIGHT);
             for (int i = 0; i < yN; i++) {
                 iK = (i + yNk) * yStep;
                 y = kp * (iK - levelYmin);
@@ -399,12 +398,13 @@ public class Plot {
                     break;
                 }
                 y = ySize - y;
+                gc.setColor(netLineColor);
                 gc.drawLine((int) (fieldWidth + polLineWidth), (int) y, (int) (width - polLineWidth), (int) y);
-//                gc.fillText(String.valueOf(iK), fieldWidth - 10, y + 5);
+                gc.setColor(Color.YELLOW);
+                double widthString = gc.getFontMetrics().stringWidth(String.valueOf(iK));
+                gc.drawString(String.valueOf(iK), (int) (fieldWidth - widthString - 10), (int) (y + 5));
             }
-
             panelGraph.repaint();
-            MyLogger.myLog.log(Level.ALL, "рисование сетки - реализовать", new Exception());
         }
 
     }
@@ -433,6 +433,7 @@ public class Plot {
 
     public void close() {
         myPaint.close();
+        panelGraph.closeBI(); // ????
     }
     private class JMyPane extends JPanel {
         private BufferedImage bufferedImage = null;
