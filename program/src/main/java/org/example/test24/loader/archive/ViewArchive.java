@@ -23,8 +23,6 @@ public class ViewArchive {
     private String root = "Архив";
     private JFrame frame;
     private JPanel panelMain;
-    private JPanel panelCanvas;
-    private Canvas canvas;
     private Plot plot;
     private JTree tree;
     private JScrollPane scrollPane;
@@ -36,13 +34,6 @@ public class ViewArchive {
         frame = CreateComponents.getFrame("View Archive", 1024, 800, false, null, null);
         panelMain = CreateComponents.getPanel(null, null, null, 0, 0, 700, 760,true, true);
         frame.add(panelMain);
-        panelCanvas = CreateComponents.getPanel(null, null, null, 0, 200, 700, 460,true, true);
-        panelMain.add(panelCanvas);
-        canvas = new Canvas();
-        canvas.setSize(700, 460);
-        panelCanvas.add(canvas);
-        //
-        //
         myTreeModel = new MyTreeModel();
         tree = new JTree(myTreeModel);
         tree.setEditable(false);
@@ -52,6 +43,21 @@ public class ViewArchive {
         scrollPane.setBounds(700, 0, 300, 760);
         frame.add(scrollPane);
         frame.setVisible(true);
+        frame.pack();
+        //
+        plot = new Plot(panelMain, 0, 200, 700, 460, 50, 50);
+        plot.addTrend(Color.WHITE, 2);
+        plot.setNetLineColor(Plot.DARKGREEN);
+        plot.setNetLineWidth(1.0);
+
+        plot.clearScreen();
+
+        plot.setZoomY(0, 1024);
+        plot.setZoomYauto(false);
+
+        plot.setZoomX(0, 5_000 / 5);
+        plot.setZoomXlenghtAuto(true);
+        plot.setZoomXbeginAuto(false);
     }
     class MyTreeModel implements TreeModel, TreeWillExpandListener, TreeSelectionListener {
         private ArrayList<Shablon> nodes;

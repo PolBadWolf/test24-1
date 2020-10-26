@@ -1,11 +1,9 @@
 package ru.yandex.fixcolor.my_lib.graphics.swing;
 
-import javafx.application.Platform;
-import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
 import org.example.test24.lib.MyLogger;
-
+import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -13,22 +11,26 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class Plot {
-    private Graphics gc;
+    public static final Color LIGHTGREEN = new Color(144, 238, 144);
+    public static final Color DARKGREEN = new Color(0, 100, 0);
+    // ====================
+    private JMyPane panelGraph;
+    private Graphics2D gc;
 
     // размер холста
-    private double width;
-    private double height;
+    private int width;
+    private int height;
 
     //          поля
     // ширина
-    private double fieldWidth;
-    private double fieldHeight;
+    private int fieldWidth;
+    private int fieldHeight;
     // цвет фона
     private Color fieldBackColor = Color.GRAY;
     // цвет рамки
-    private Color fieldFrameLineColor = Color.LIGHTGREEN;
+    private Color fieldFrameLineColor = LIGHTGREEN;
     // ширина рамки
-    private double fieldFrameLineWidth = 3.0;
+    private float fieldFrameLineWidth = 3.0f;
 
     //          окно
     // цвет фона
@@ -36,7 +38,7 @@ public class Plot {
 
     //          сетка
     // цвет линий сетки
-    private Color netLineColor = Color.DARKGREEN;
+    private Color netLineColor = DARKGREEN;
     // ширина линий сетки
     private double netLineWidth = 1.0;
 
@@ -82,7 +84,7 @@ public class Plot {
             gc.strokePolyline(x, y, lenght);
             gc.stroke();
             gc.closePath();*/
-            MyLogger.myLog.log(Level.ALL, "рисование - реализовать !");
+            MyLogger.myLog.log(Level.ALL, "рисование - реализовать !", new Exception());
         }
     }
 
@@ -135,13 +137,14 @@ public class Plot {
                     }
                     switch (datQueue.command) {
                         case ClearFields:
-                            Platform.runLater(this::__clearFields);
+                            //Platform.runLater(this::__clearFields);
+                            __clearFields();
                             break;
                         case ClearWindow:
-                            Platform.runLater(this::__clearWindow);
+                            //Platform.runLater(this::__clearWindow);
                             break;
                         case PaintNet:
-                            Platform.runLater(this::__paintNet);
+                            //Platform.runLater(this::__paintNet);
                             break;
                         case RePaint:
                             __rePaint(datQueue.datGraph);
@@ -289,44 +292,39 @@ public class Plot {
             }
             if (levelYlenghtMax < 100)  levelYlenghtMax = 100;
 
-            Platform.runLater(()->{
+            /*Platform.runLater(()->{
                 __clearFields();
                 __clearWindow();
                 __paintNet();
                 for (int i = 1; i < nItemsMass + 1; i++) {
                     trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i], dropLenght);
                 }
-            });
+            });*/
             busy = false;
         }
 
         private void __clearFields() {
-            /*
-            gc.beginPath();
-
-            gc.setFill(fieldBackColor);
+            gc.setColor(fieldBackColor);
             gc.fillRect(0, 0, fieldWidth, height);
             gc.fillRect(0, height - fieldHeight, width, height);
 
-            double polFrameLineWidth = fieldFrameLineWidth / 2;
-            double[] x = {
+            int polFrameLineWidth = (int) (fieldFrameLineWidth / 2);
+            int[] x = {
                     fieldWidth - polFrameLineWidth,
                     fieldWidth - polFrameLineWidth,
                     width - polFrameLineWidth
             };
-            double[] y = {
+            int[] y = {
                     0,
                     height - fieldHeight + polFrameLineWidth,
                     height - fieldHeight + polFrameLineWidth
             };
 
-            gc.setStroke(fieldFrameLineColor);
-            gc.setLineWidth(fieldFrameLineWidth);
-            gc.strokePolyline(x, y, x.length);
-
-            gc.closePath();
-            gc.stroke();*/
-            MyLogger.myLog.log(Level.ALL, "очистка поля - реализовать");
+            gc.setColor(fieldFrameLineColor);
+            gc.setStroke(new BasicStroke(fieldFrameLineWidth));
+            gc.drawPolyline(x, y, x.length);
+            panelGraph.repaint();
+            MyLogger.myLog.log(Level.ALL, "очистка поля - реализовать", new Exception());
         }
 
         private void __clearWindow() {
@@ -336,7 +334,7 @@ public class Plot {
             gc.fillRect(fieldWidth, 0, width, height - fieldHeight);
             gc.closePath();
             gc.stroke();*/
-            MyLogger.myLog.log(Level.ALL, "очистка окна - реализовать");
+            MyLogger.myLog.log(Level.ALL, "очистка окна - реализовать", new Exception());
         }
 
         private void __paintNet() {
@@ -417,17 +415,24 @@ public class Plot {
 
             gc.closePath();
             gc.stroke();*/
-            MyLogger.myLog.log(Level.ALL, "рисование сетки - реализовать");
+            MyLogger.myLog.log(Level.ALL, "рисование сетки - реализовать", new Exception());
         }
 
     }
 
-    public Plot(Canvas canvas, double fieldWidth, double fieldHeight) {
+    public Plot(JComponent parent, int x, int y, int width, int height, int fieldWidth, int fieldHeight) {
+        panelGraph = new JMyPane();
+        panelGraph.setLayout(null);
+        panelGraph.setBounds(x, y, width, height);
+        parent.add(panelGraph);
+        panelGraph.createBI();
+        gc = panelGraph.getGraphics2D();
+        //
+        this.width = width;
+        this.height = height;
         this.fieldWidth = fieldWidth;
         this.fieldHeight = fieldHeight;
-        width = canvas.getWidth();
-        height = canvas.getHeight();
-        gc = canvas.getGraphics();
+        //
         trends = new ArrayList<>();
         dataGraphics = new ArrayList<>();
         newData = new NewDataClass(0);
@@ -440,6 +445,38 @@ public class Plot {
     public void close() {
         myPaint.close();
     }
+    private class JMyPane extends JPanel {
+        private BufferedImage bufferedImage = null;
+        private Graphics2D graphics2D = null;
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (bufferedImage != null) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.drawRenderedImage(bufferedImage, null);
+            }
+        }
+        public void createBI() {
+            bufferedImage = new BufferedImage(super.getWidth(), super.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            graphics2D = bufferedImage.createGraphics();
+        }
+        public void closeBI() {
+            if (graphics2D != null) {
+                graphics2D.dispose();
+                graphics2D = null;
+            }
+            if (bufferedImage != null) {
+                bufferedImage.flush();
+                bufferedImage = null;
+            }
+        }
+
+        public Graphics2D getGraphics2D() {
+            if (graphics2D == null) createBI();
+            return graphics2D;
+        }
+    }
 
     public void setFieldBackColor(Color fieldBackColor) {
         this.fieldBackColor = fieldBackColor;
@@ -449,19 +486,19 @@ public class Plot {
         return fieldBackColor;
     }
 
-    public void setFieldWidth(double fieldWidth) {
+    public void setFieldWidth(int fieldWidth) {
         this.fieldWidth = fieldWidth;
     }
 
-    public double getFieldWidth() {
+    public int getFieldWidth() {
         return fieldWidth;
     }
 
-    public void setFieldHeight(double fieldHeight) {
+    public void setFieldHeight(int fieldHeight) {
         this.fieldHeight = fieldHeight;
     }
 
-    public double getFieldHeight() {
+    public int getFieldHeight() {
         return fieldHeight;
     }
 
@@ -473,7 +510,7 @@ public class Plot {
         return fieldFrameLineColor;
     }
 
-    public void setFieldFrameLineWidth(double fieldFrameLineWidth) {
+    public void setFieldFrameLineWidth(float fieldFrameLineWidth) {
         this.fieldFrameLineWidth = fieldFrameLineWidth;
     }
 
