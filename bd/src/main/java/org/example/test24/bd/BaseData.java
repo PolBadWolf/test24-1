@@ -1,11 +1,9 @@
 package org.example.test24.bd;
 
-import org.example.test24.bd.usertypes.DataSpec;
-import org.example.test24.bd.usertypes.Pusher;
-import org.example.test24.bd.usertypes.TypePusher;
-import org.example.test24.bd.usertypes.User;
+import org.example.test24.bd.usertypes.*;
 
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 
@@ -87,6 +85,9 @@ public interface BaseData {
     void updatePusher(Pusher pusher, long id_loggerUser, String regNumber, long id_typePusher) throws BaseDataException;
     // удаление толкателя
     void deletePusher(long id_loggerUser, Pusher pusher) throws BaseDataException;
+    // чтение данных о толкателе
+    Pusher getPusher(long id_pusher) throws BaseDataException;
+    long getIdTypePusherFromIdPusher(long id_pusher) throws BaseDataException;
     // количество толкателей заданого типа
     int getCountPushersFromType(long id_typePusher, String[] namePusher) throws BaseDataException;
     // тип толкателя
@@ -98,7 +99,16 @@ public interface BaseData {
     DataSpec getLastDataSpec() throws BaseDataException;
 
     // запись замера
-    void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException;
+    void writeDataDist(int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop,
+                       int forceNominal, int moveNominal, int unclenchingTime, Blob dataMeasured) throws BaseDataException;
     //
     BaseData cloneNewBase(String base);
+    // чтение замера
+    DataUnitMeasured getDataMeasured(long id_data) throws BaseDataException;
+    // =========================
+    ArrayList<String> getListFromYear() throws BaseDataException;
+    ArrayList<String> getListFromMounth(String year) throws BaseDataException;
+    ArrayList<String> getListFromDates(String mounth) throws BaseDataException;
+    ArrayList<DataUnit> getListFromPusherChecks(String date) throws BaseDataException;
+    // =========================
 }

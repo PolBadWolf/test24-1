@@ -1,8 +1,8 @@
 package org.example.test24.runner;
 
 import org.example.test24.RS232.CommPort;
-import org.example.test24.allinterface.screen.MainFrame_interface;
 import org.example.test24.bd.BaseData;
+import org.example.test24.screen.MainFrame_interface;
 
 import java.util.function.Consumer;
 
@@ -15,6 +15,7 @@ public interface Runner {
     }
 
     void init(BaseData bdSql, CommPort commPort, MainFrame_interface mainFrame);
+    void fillFields();
     void reciveRsPush(byte[] bytes, int lenght);
 
     void Suspended();

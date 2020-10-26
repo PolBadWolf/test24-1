@@ -11,7 +11,6 @@ import org.example.test24.lib.swing.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Objects;
 import java.util.logging.Level;
 
 import static org.example.test24.lib.MyLogger.myLog;
@@ -19,7 +18,8 @@ import static org.example.test24.lib.MyLogger.myLog;
 public class StartFrame {
     static StartFrame startFrame;
     public interface CallBack {
-        void messageCloseStartFrame();
+        void messageCloseStartFrame(BaseData conn, String commPortName);
+        void messageSetNewData();
     }
     // ----------------------------------
     // title
@@ -58,6 +58,8 @@ public class StartFrame {
     private JLabel viewLabelMove;
     private JLabel viewLabelUnclenching;
 
+    private Canvas canvas;
+
     // ===============================================
     //             флаги
     // основной модуль запущен
@@ -78,7 +80,7 @@ public class StartFrame {
     private Pusher selectPusher;
 
     CallBack callBack;
-    JFrame frame;
+    public JFrame frame;
     private SelectComboBox2Table_Top<User> userSelectComboBox2Table;
     private SelectComboBox2Table_Top<Pusher> pusherSelectComboBox2Table;
 
@@ -104,7 +106,7 @@ public class StartFrame {
     protected StartFrame(boolean statMainWork, CallBack callBack) {
         // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
         this.statMainWork = statMainWork;
-        //this.callBack = callBack;
+        this.callBack = callBack;
     }
 
 
@@ -271,6 +273,7 @@ public class StartFrame {
         }
         loadAndSetBeginParameters2();
         userSelectComboBox2Table.setLock(false);
+        pusherSelectComboBox2Table.setLock(false);
         // ********************
     }
     private void loadAndSetBeginParameters() {
@@ -300,9 +303,9 @@ public class StartFrame {
         try { MyUtil.loadToComboBox(listPushers, comboBoxPusher, false, null);
         } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }
-        if (statMainWork) {
+        /*if (statMainWork) {
             // здесь загрузка текущего пользователя и толкателя, если потребуется
-        }
+        }*/
         // -------
     }
 
@@ -376,6 +379,11 @@ public class StartFrame {
             frame.add(buttonWork);
             frame.add(buttonTuning);
             frame.add(buttonSetPassword);
+
+            JPanel panel = new JPanel();
+            panel.setBounds(50, 50, 300, 300);
+
+            canvas = new Canvas();
         } // кнопки
         {
             jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 380, 320, 160, 90,true, true );
@@ -427,7 +435,7 @@ public class StartFrame {
             frame.add(viewUnclenching);
             frame.add(viewLabelUnclenching);
         }
-        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 190,120, 24, null, null, false, true);
+        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 190,120, 24, null, this::callEnter, false, true);
         frame.add(fieldPassword);
 
         frame.pack();
@@ -661,11 +669,20 @@ public class StartFrame {
                 return;
             }
         }
-        //myLog.log(Level.SEVERE, "НАДО СДЕЛАТЬ !!!", new Exception("не реализован выход на главную программу"));
-        // установить спецификацию
-        //frame.removeAll();
-        //frame.dispose();
-        //callBack.closeFrame();
+        frame.removeAll();
+        frame.dispose();
+        // чтение конфигурации
+        BaseData.Config config = BaseData.Config.create();
+        try { config.load();
+        } catch (BaseDataException be) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
+            config.setDefault();
+        }
+        if (statMainWork) {
+            callBack.messageSetNewData();
+        } else {
+            callBack.messageCloseStartFrame(connBD, config.getPortName());
+        }
     }
     // обработка настройка
     private void callTuning(ActionEvent e) {

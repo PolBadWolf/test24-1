@@ -1,4 +1,4 @@
-package ru.yandex.fixcolor.my_lib.graphics;
+package ru.yandex.fixcolor.my_lib.graphics.fx;
 
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
@@ -12,17 +12,16 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class Plot {
-    private Canvas canvas;
     private GraphicsContext gc;
 
     // размер холста
-    private double width = 0;
-    private double height = 0;
+    private double width;
+    private double height;
 
     //          поля
     // ширина
-    private double fieldWidth = 0;
-    private double fieldHeight = 0;
+    private double fieldWidth;
+    private double fieldHeight;
     // цвет фона
     private Color fieldBackColor = Color.GRAY;
     // цвет рамки
@@ -127,7 +126,7 @@ public class Plot {
 
             while (onWork) {
                 try {
-                    datQueue = paintQueue.poll(1, TimeUnit.MILLISECONDS);
+                    datQueue = paintQueue.poll(1, TimeUnit.SECONDS);
                     if (datQueue == null)   {
                         Thread.sleep(1);
                         continue;
@@ -183,6 +182,12 @@ public class Plot {
                 Thread.yield();
             }
             super.finalize();
+        }
+        public void close() {
+            onWork = false;
+            while (!thisThread.isAlive()) {
+                Thread.yield();
+            }
         }
 
         private void __rePaint(ArrayList<NewDataClass> datGraph) {
@@ -410,7 +415,6 @@ public class Plot {
     }
 
     public Plot(Canvas canvas, double fieldWidth, double fieldHeight) {
-        this.canvas = canvas;
         this.fieldWidth = fieldWidth;
         this.fieldHeight = fieldHeight;
         width = canvas.getWidth();
@@ -423,6 +427,10 @@ public class Plot {
 
         myPaint = new MyPaint();
         myPaint.start();
+    }
+
+    public void close() {
+        myPaint.close();
     }
 
     public void setFieldBackColor(Color fieldBackColor) {

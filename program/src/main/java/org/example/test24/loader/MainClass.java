@@ -5,102 +5,143 @@ import org.example.test24.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.loader.dialog.StartFrame;
+import org.example.test24.loader.archive.ViewArchive;
 import org.example.test24.runner.Runner;
+import org.example.test24.screen.MainFrame;
+import org.example.test24.screen.MainFrame_interface;
 import org.example.test24.screen.ScreenFx;
 
+import javax.swing.*;
 import java.util.logging.Level;
 
 
-public class MainClass extends MainClassRequest {
+public class MainClass {
+    // модули
+    protected ScreenFx screenFx;
+    protected Runner runner;
+    protected CommPort commPort;
+    //
+    private BaseData connBd;
+    private String commPortName;
+    //
     public static void main(String[] args) {
         new MyLogger(Level.ALL, Level.OFF);
         Thread.currentThread().setName("Main class thread");
         new MainClass().start();
     }
+    protected MainClass() {
+    }
     private void start() {
+        // стар фрейм
+        try {
+            StartFrame.main(false, new StartFrame.CallBack() {
+                @Override
+                public void messageCloseStartFrame(BaseData conn, String commPortName) {
+                    connBd = conn;
+                    MainClass.this.commPortName = commPortName;
+                    new Thread(() -> MainClass.this.startFx(), "start fx").start();
+                }
+
+                @Override
+                public void messageSetNewData() {
+
+                }
+            });
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            System.exit(-100);
+        }
+    }
+    private void startFx() {
         // создание основных объектов
-        screenFx = ScreenFx.init(o->screenCloser());
+        screenFx = ScreenFx.init(() -> close());
         runner = Runner.main(o->runnerCloser());
         commPort = CommPort.main();
-
-        // пуск
-        try {
-            startFrame = StartFrame.main(
-                    false,
-                    new StartFrame.CallBack() {
-                        @Override
-                        public void messageCloseStartFrame() {
-
-                        }
-                    });
-        } catch (Exception exception) {
-            startFrame = null;
-        }
-
-        /*screenFx.main();
+        // вызов основной формы
+        screenFx.main();
         while (MainFrame.mainFrame == null) {
             Thread.yield();
         }
-        runner.init(bdSql, commPort, MainFrame.mainFrame);
-        commPort.ReciveStart();*/
+        MainFrame.mainFrame.setCallBack(new MainFrame_interface.CallBack() {
+            @Override
+            public void buttonExit_onAction() {
+                newTestPuser();
+            }
+
+            @Override
+            public void startViewArchive() {
+                new Thread(()->{
+                    SwingUtilities.invokeLater(()->{
+                        new ViewArchive(connBd);
+                    });
+                }, "start arhive").start();
+            }
+        });
+        // пуск регистрации
+        runner.init(connBd, commPort, MainFrame.mainFrame);
+        commPort.open(runner::reciveRsPush, commPortName, BAUD.baud57600);
+        commPort.ReciveStart();
+    }
+
+    private void newTestPuser() {
+        new Thread(()->{
+            commPort.ReciveStop();
+            // стар фрейм
+            try {
+                StartFrame.main(true, new StartFrame.CallBack() {
+                    @Override
+                    public void messageCloseStartFrame(BaseData conn, String commPortName) {
+//                    connBd = conn;
+//                    MainClass.this.commPortName = commPortName;
+//                    new Thread(() -> MainClass.this.startFx()).start();
+                    }
+
+                    @Override
+                    public void messageSetNewData() {
+                        runner.fillFields();
+                        commPort.ReciveStart();
+                    }
+                });
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                System.exit(-100);
+            }
+        }, "st fr").start();
+    }
+
+    private void cont() {
+        System.out.println("start ?");
+        if (MainFrame.mainFrame == null) {
+            screenFx.main();
+        }
+        while (MainFrame.mainFrame == null) {
+            Thread.yield();
+        }
+    }
+    private void puskStartFrame() {
     }
     // ===============================================
     private void close() {
-        if (screenFx != null) {
-            screenFx.exitApp();
-            screenFx = null;
-        }
-        if (commPort != null) {
-            commPort.close();
-            commPort = null;
-        }
-        if (runner != null) {
-            runner.Close();
-            runner = null;
-        }
-        System.exit(0);
-    }
-    private void screenCloser() {
-        close();
+        new Thread(()->{
+            if (commPort != null) {
+                commPort.close();
+                //commPort = null;
+            }
+            if (runner != null) {
+                runner.Close();
+                runner = null;
+            }
+            if (screenFx != null) {
+//                screenFx.exitApp();
+//                screenFx = null;
+//                screenFx.setVisible(false);
+            }
+        }, "restart").start();
     }
     private void runnerCloser() {
         close();
     }
-    private void commPortCloser() {
-        close();
-    }
 
     // ===============================================
-
-
-
-    // загрузка конфигурации
-    /*private ParametersConfig.Diagnostic requestParametersConfig(String fileNameConfig, Consumer<ParametersConfig> parametersConfig) {
-        ParametersConfig parameters = new ParametersConfig(fileNameConfig);
-        ParametersConfig.Diagnostic result = parameters.load();
-        if (parametersConfig != null) parametersConfig.accept(parameters);
-        return result;
-    }*/
-
-    private void errorCommMessage(int checkComm, CommPort commPort) {
-        switch (checkComm) {
-            case CommPort.INITCODE_ERROROPEN:
-                System.out.println("ошибка открытия порта");
-                break;
-            case CommPort.INITCODE_NOTEXIST:
-                System.out.println("указанный порт отсутствует");
-                System.out.println("имеющиеся порты в системе:");
-                for (String name : CommPort.getListPortsName()) {
-                    System.out.println(name);
-                }
-                break;
-        }
-    }
-
-    private boolean checkCommPort(String portName) {
-        CommPort.PortStat ch =  commPort.open(null, portName, BAUD.baud57600);
-        commPort.close();
-        return ch == CommPort.PortStat.INITCODE_OK;
-    }
 
 }

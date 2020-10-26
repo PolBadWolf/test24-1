@@ -3,15 +3,15 @@
 
  Source Server         : 12
  Source Server Type    : MySQL
- Source Server Version : 80020
+ Source Server Version : 80021
  Source Host           : localhost:3306
- Source Schema         : spc5
+ Source Schema         : bas4
 
  Target Server Type    : MySQL
- Target Server Version : 80020
+ Target Server Version : 80021
  File Encoding         : 65001
 
- Date: 13/10/2020 16:37:41
+ Date: 21/10/2020 14:42:04
 */
 
 SET NAMES utf8mb4;
@@ -30,7 +30,10 @@ CREATE TABLE `data`  (
   `tik_shelf` int NULL DEFAULT NULL,
   `tik_back` int NULL DEFAULT NULL,
   `tik_stop` int NULL DEFAULT NULL,
-  `dis` longblob NULL,
+  `forceNominal` int NULL DEFAULT NULL,
+  `moveNominal` int NULL DEFAULT NULL,
+  `unclenchingTime` int NULL DEFAULT NULL,
+  `dataMeasured` longblob NULL,
   PRIMARY KEY (`id_data`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 

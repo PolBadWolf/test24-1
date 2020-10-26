@@ -2,20 +2,24 @@ package org.example.test24.screen;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 public class ScreenClass extends Application implements ScreenFx {
-    private static Consumer closer;
+    private static Closer closer;
+    public static Stage stage;
 
-    public ScreenClass(Consumer closer) {
+    public ScreenClass(Closer closer) {
         this.closer = closer;
     }
+
     public ScreenClass() {
     }
 
@@ -41,6 +45,14 @@ public class ScreenClass extends Application implements ScreenFx {
         primaryStage.setScene(new Scene(root));
         primaryStage.setTitle("title fx window");
         primaryStage.show();
+        stage = primaryStage;
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                event.consume();
+                primaryStage.show();
+            }
+        });
     }
 
     @Override
@@ -50,7 +62,28 @@ public class ScreenClass extends Application implements ScreenFx {
 
     @Override
     public void stop() throws Exception {
-        closer.accept(null);
-        super.stop();
+        closer.close();
+        //super.stop();
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        boolean[] flWait = new boolean[] {true};
+        Platform.runLater(()->{
+            Stage window = (Stage) stage.getScene().getWindow();
+            if (visible) {
+                window.show();
+            } else {
+                window.hide();
+            }
+            flWait[0] = false;
+        });
+        while (flWait[0]) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
