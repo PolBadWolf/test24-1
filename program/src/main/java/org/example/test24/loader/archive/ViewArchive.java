@@ -5,9 +5,7 @@ import org.example.test24.bd.BaseDataException;
 import org.example.test24.lib.swing.CreateComponents;
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeWillExpandListener;
+import javax.swing.event.*;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -34,12 +32,13 @@ public class ViewArchive {
         tree = new JTree(myTreeModel);
         tree.setEditable(false);
         tree.addTreeWillExpandListener(myTreeModel);
+        tree.addTreeSelectionListener(myTreeModel);
         scrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBounds(700, 0, 300, 760);
         frame.add(scrollPane);
         frame.setVisible(true);
     }
-    class MyTreeModel implements TreeModel, TreeWillExpandListener {
+    class MyTreeModel implements TreeModel, TreeWillExpandListener, TreeSelectionListener {
         private ArrayList<Shablon> nodes;
 
         public MyTreeModel() {
@@ -131,6 +130,14 @@ public class ViewArchive {
         @Override
         public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
 
+        }
+
+        @Override
+        public void valueChanged(TreeSelectionEvent e) {
+            Object node = e.getNewLeadSelectionPath().getLastPathComponent();
+            if (node == root) return;
+            int level = ((Shablon) node).getLevel();
+            if (level < 3) return;
         }
     }
 }
