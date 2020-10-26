@@ -137,11 +137,10 @@ public class Plot {
                     }
                     switch (datQueue.command) {
                         case ClearFields:
-                            //Platform.runLater(this::__clearFields);
                             __clearFields();
                             break;
                         case ClearWindow:
-                            //Platform.runLater(this::__clearWindow);
+                            __clearWindow();
                             break;
                         case PaintNet:
                             //Platform.runLater(this::__paintNet);
@@ -324,17 +323,12 @@ public class Plot {
             gc.setStroke(new BasicStroke(fieldFrameLineWidth));
             gc.drawPolyline(x, y, x.length);
             panelGraph.repaint();
-            MyLogger.myLog.log(Level.ALL, "очистка поля - реализовать", new Exception());
         }
 
         private void __clearWindow() {
-            /*
-            gc.beginPath();
-            gc.setFill(windowBackColor);
+            gc.setColor(windowBackColor);
             gc.fillRect(fieldWidth, 0, width, height - fieldHeight);
-            gc.closePath();
-            gc.stroke();*/
-            MyLogger.myLog.log(Level.ALL, "очистка окна - реализовать", new Exception());
+            panelGraph.repaint();
         }
 
         private void __paintNet() {
