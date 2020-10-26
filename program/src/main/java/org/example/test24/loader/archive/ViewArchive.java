@@ -1,5 +1,7 @@
 package org.example.test24.loader.archive;
 
+import org.example.test24.allinterface.bd.DistClass;
+import org.example.test24.allinterface.bd.MeasuredBlobDecoder;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.usertypes.DataUnitMeasured;
@@ -12,6 +14,7 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.sql.Blob;
 import java.util.ArrayList;
 
 public class ViewArchive {
@@ -163,6 +166,28 @@ public class ViewArchive {
         try {
             measured = conn.getDataMeasured(id);
         } catch (BaseDataException e) {
+            e.printStackTrace();
+            return;
+        }
+        MeasuredBlobDecoder blobDecoder = null;
+        DistClass distClass;
+        int tik0, x;
+        try {
+            blobDecoder = new MeasuredBlobDecoder(measured.dataMeasured);
+            distClass = blobDecoder.get(0);
+            tik0 = distClass.tik;
+            plot.allDataClear();
+            plot.clearScreen();
+            for (int i = 0; i < blobDecoder.lenght(); i++) {
+                distClass = blobDecoder.get(i);
+                x = (short)((distClass.tik - tik0) / 5);
+                plot.newDataX(x);
+                plot.newDataTrend(0, (short) distClass.distance);
+                //plot.newDataTrend(1, ves);
+                plot.newDataPush();
+                plot.rePaint();
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
         int a = 5;

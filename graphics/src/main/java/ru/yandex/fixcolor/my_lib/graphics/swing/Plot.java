@@ -70,20 +70,24 @@ public class Plot {
 
     private class Trend {
         private Color lineColor;
-        private double lineWidth = 2.0;
+        private float lineWidth = 2.0f;
 
-        public Trend(Color lineColor, double lineWidth) {
+        public Trend(Color lineColor, float lineWidth) {
             this.lineColor = lineColor;
             this.lineWidth = lineWidth;
         }
 
-        public void rePaint(double[] x, double[] y, int lenght) {
+        public void rePaint(int[] x, int[] y, int lenght) {
             /*gc.beginPath();
             gc.setStroke(lineColor);
             gc.setLineWidth(lineWidth);
             gc.strokePolyline(x, y, lenght);
             gc.stroke();
             gc.closePath();*/
+            gc.setColor(lineColor);
+            gc.setStroke(new BasicStroke(lineWidth));
+            gc.drawPolyline(x, y, lenght);
+            panelGraph.repaint();
             MyLogger.myLog.log(Level.ALL, "рисование - реализовать !", new Exception());
         }
     }
@@ -99,10 +103,10 @@ public class Plot {
     }
 
     private class DatXindx {
-        public double x;
+        public int x;
         public int indx;
 
-        public DatXindx(double x, int indx) {
+        public DatXindx(int x, int indx) {
             this.x = x;
             this.indx = indx;
         }
@@ -259,14 +263,14 @@ public class Plot {
                 curX = Math.round(((tmpShort.getxPos().doubleValue() - levelXbegin) / kX) + fieldWidth);
                 if ((curX - oldX) < 2)  continue;
                 oldX = curX;
-                xIndxes.add(new DatXindx(curX, i));
+                xIndxes.add(new DatXindx((int) curX, i));
             }
 
             double y;
             double yMin = levelYbegin, yMax = 0;
 
             int dropLenght = xIndxes.size();
-            double[][] massGraphcs = cirkMassive.next();
+            int[][] massGraphcs = cirkMassive.next();
             for (int i = 0; i < dropLenght; i++) {
                 // x
                 massGraphcs[0][i] = xIndxes.get(i).x;
@@ -276,7 +280,7 @@ public class Plot {
                     Short[] trendsLocal = tmpShort.getZnTrends();
                     y = trendsLocal[j].doubleValue() - levelYmin;
                     if (y < 0)  y = 0;
-                    massGraphcs[j + 1][i] = vys - y / kY;
+                    massGraphcs[j + 1][i] = (int) (vys - y / kY);
                     if (!levelYauto)    continue;
                     if (yMin > trendsLocal[j].doubleValue())   yMin = trendsLocal[j].doubleValue();
                     if (yMax < trendsLocal[j].doubleValue())   yMax = trendsLocal[j].doubleValue();
@@ -626,9 +630,10 @@ public class Plot {
         if (busy)   return;
         busy = true;
         myPaint.rePaint(dataGraphics);
+        panelGraph.repaint();
     }
     // ----
-    public void addTrend(Color lineColor, double lineWidth) {
+    public void addTrend(Color lineColor, float lineWidth) {
         trends.add(new Trend(lineColor, lineWidth));
         //newData = new Short[trends.size() + 1];
         newData = new NewDataClass(trends.size());
@@ -677,20 +682,20 @@ public class Plot {
     }
 
     private class CirkMassive {
-        private double[][][] massInt;
+        private int[][][] massInt;
         private int indx;
 
         public CirkMassive() {
-            massInt = new double[2][][];
+            massInt = new int[2][][];
             indx = 0;
         }
 
         public void init(int ch, int n) {
-            massInt[0] = new double[ch][n];
-            massInt[1] = new double[ch][n];
+            massInt[0] = new int[ch][n];
+            massInt[1] = new int[ch][n];
         }
 
-        public double[][] next() {
+        public int[][] next() {
             indx++;
             if (indx > 1)   indx = 0;
             return massInt[indx];
