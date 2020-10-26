@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class ShDate extends Shablon {
-    public ShDate(String name, int idx) {
+    public ShDate(String name, long idx) {
         super(name, idx);
     }
 
-    public ShDate(String name, int idx, int level) {
+    public ShDate(String name, long idx, int level) {
         super(name, idx, level);
     }
     public static ArrayList<Shablon> getListDates(BaseData conn, String sample) {

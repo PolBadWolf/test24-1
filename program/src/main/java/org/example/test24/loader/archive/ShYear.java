@@ -6,11 +6,11 @@ import org.example.test24.bd.BaseDataException;
 import java.util.ArrayList;
 
 public class ShYear extends Shablon {
-    public ShYear(String name, int idx) {
+    public ShYear(String name, long idx) {
         super(name, idx);
     }
 
-    public ShYear(String name, int idx, int level) {
+    public ShYear(String name, long idx, int level) {
         super(name, idx, level);
     }
 

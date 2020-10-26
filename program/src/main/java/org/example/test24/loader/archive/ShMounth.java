@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class ShMounth extends Shablon {
-    public ShMounth(String name, int idx) {
+    public ShMounth(String name, long idx) {
         super(name, idx);
     }
 
-    public ShMounth(String name, int idx, int level) {
+    public ShMounth(String name, long idx, int level) {
         super(name, idx, level);
     }
     public static ArrayList<Shablon> getListMounth(BaseData conn, String sample) {

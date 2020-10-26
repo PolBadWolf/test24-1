@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class ShCheck extends Shablon {
-    public ShCheck(String name, int idx) {
+    public ShCheck(String name, long idx) {
         super(name, idx);
     }
 
-    public ShCheck(String name, int idx, int level) {
+    public ShCheck(String name, long idx, int level) {
         super(name, idx, level);
     }
 
@@ -30,8 +30,8 @@ public class ShCheck extends Shablon {
         }
         for (int i = 0; i < listConn.size(); i++) {
             dataUnit = listConn.get(i);
-            name = String.valueOf(i) + ": " + dataUnit.pusherName + "/" + dataUnit.typeName;
-            list.add(new ShCheck(name, i, 3));
+            name = String.valueOf(i + 1) + ": " + dataUnit.pusherName + "/" + dataUnit.typeName;
+            list.add(new ShCheck(name, dataUnit.data_id, 3));
         }
         return list;
     }

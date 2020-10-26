@@ -4,16 +4,16 @@ import java.util.ArrayList;
 
 public class Shablon {
     protected String name;
-    protected int idx;
+    protected long idx;
     protected int level;
     public ArrayList<Shablon> children = new ArrayList<>();
 
-    public Shablon(String name, int idx) {
+    public Shablon(String name, long idx) {
         this.name = name;
         this.idx = idx;
     }
 
-    public Shablon(String name, int idx, int level) {
+    public Shablon(String name, long idx, int level) {
         this.name = name;
         this.idx = idx;
         this.level = level;
@@ -32,7 +32,7 @@ public class Shablon {
         return name;
     }
 
-    public int getIdx() {
+    public long getIdx() {
         return idx;
     }
 

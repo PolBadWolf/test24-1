@@ -125,7 +125,7 @@ public class ViewArchive {
             if (o == root) return;
             Shablon comp = (Shablon) o;
             ArrayList<Shablon> x;
-            if (comp.getLevel() > 3) return;
+            if (comp.getLevel() > 2) return;
             if (comp.children.size() > 0) return;
             switch (comp.getLevel()) {
                 case 0:
@@ -139,11 +139,6 @@ public class ViewArchive {
                 case 2:
                     x = ShCheck.getListChecks(conn, comp.getName());
                     comp.children = x;
-                    break;
-                case 3:
-                    int ind = comp.idx;
-                    String n = comp.name;
-
                     break;
             }
         }
@@ -159,6 +154,10 @@ public class ViewArchive {
             if (node == root) return;
             int level = ((Shablon) node).getLevel();
             if (level < 3) return;
+            showPusher(((Shablon) node).idx);
         }
+    }
+    private void showPusher(long id) {
+
     }
 }
