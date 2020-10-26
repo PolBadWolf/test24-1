@@ -12,6 +12,14 @@
     <groupId>ru.yandex.fixcolor.my_lib</groupId>
     <artifactId>graphics</artifactId>
     <version>1.1.0</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.example.test24</groupId>
+            <artifactId>lib</artifactId>
+            <version>1.0.1</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 
 </project>

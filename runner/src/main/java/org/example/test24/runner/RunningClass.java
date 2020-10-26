@@ -2,15 +2,20 @@ package org.example.test24.runner;
 
 import javafx.scene.paint.Color;
 import org.example.test24.bd.BaseData;
+import org.example.test24.bd.BaseDataException;
+import org.example.test24.bd.usertypes.DataSpec;
 import org.example.test24.bd.usertypes.MyBlob;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.allinterface.bd.DistClass;
-import org.example.test24.allinterface.screen.MainFrame_interface;
-import ru.yandex.fixcolor.my_lib.graphics.Plot;
+import org.example.test24.bd.usertypes.Pusher;
+import org.example.test24.lib.MyLogger;
+import org.example.test24.screen.MainFrame;
+import org.example.test24.screen.MainFrame_interface;
+import ru.yandex.fixcolor.my_lib.graphics.fx.Plot;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 class RunningClass implements Runner {
     private Consumer closer;
@@ -62,6 +67,18 @@ class RunningClass implements Runner {
         plot.setZoomX(0, 5_000 / 5);
         plot.setZoomXlenghtAuto(true);
         plot.setZoomXbeginAuto(false);
+        fillFields();
+    }
+
+    @Override
+    public void fillFields() {
+        try {
+            DataSpec dataSpec = bdSql.getLastDataSpec();
+            Pusher pusher = bdSql.getPusher(dataSpec.id_pusher);
+            MainFrame.mainFrame.setFieldsSamplePusher(pusher);
+        } catch (BaseDataException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -71,31 +88,29 @@ class RunningClass implements Runner {
                 + ((bytes[2] & 0x000000ff) <<  8 )
                 + ((bytes[3] & 0x000000ff) << 16 )
                 + ((bytes[4] & 0x000000ff) << 24 );
+        int moveBegin, moveEnd, move, timeUnClenching;
+        DistClass distClass;
 
         switch (b) {
             case TypePack.MANUAL_ALARM:
-                mainFrame.label1_txt("MANUAL_ALARM");
+                mainFrame.outStatusWork("MANUAL_ALARM");
                 reciveOn = false;
                 break;
             case TypePack.MANUAL_BACK:
-                mainFrame.label1_txt("MANUAL_BACK");
+                mainFrame.outStatusWork("MANUAL_BACK");
                 tik_back = tik;
                 break;
             case TypePack.MANUAL_STOP:
                 reciveOn = false;
                 if (n_cicle > 0) n_cicle++;
-                try {
-                    tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
-                    mainFrame.label1_txt("MANUAL_STOP");
-                    System.out.println("count = " + distanceOut.size());
-                    bdSql.writeDataDist(new Date(), n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
-                } catch (java.lang.Throwable e) {
-                    e = null;
-                }
+                mainFrame.outStatusWork("MANUAL_STOP");
+                System.out.println("count = " + distanceOut.size());
+                //
+                sendOutData();
                 n_cicle = 0;
-            break;
+                break;
             case TypePack.MANUAL_FORWARD:
-                mainFrame.label1_txt("MANUAL_FORWARD");
+                mainFrame.outStatusWork("MANUAL_FORWARD");
                 distanceOut.clear();
 
                 plot.allDataClear();
@@ -103,30 +118,26 @@ class RunningClass implements Runner {
                 reciveOn = true;
                 break;
             case TypePack.MANUAL_SHELF:
-                mainFrame.label1_txt("MANUAL_SHELF");
+                mainFrame.outStatusWork("MANUAL_SHELF");
                 tik_shelf = tik;
                 break;
             case TypePack.CYCLE_ALARM:
-                mainFrame.label1_txt("CYCLE_ALARM");
+                mainFrame.outStatusWork("CYCLE_ALARM");
                 break;
             case TypePack.CYCLE_BACK:
-                mainFrame.label1_txt("CYCLE_BACK");
+                mainFrame.outStatusWork("CYCLE_BACK");
                 tik_back = tik;
                 break;
             case TypePack.CYCLE_DELAY:
-                mainFrame.label1_txt("CYCLE_DELAY");
+                mainFrame.outStatusWork("CYCLE_DELAY");
                 reciveOn = false;
                 n_cicle++;
-                try {
-                    tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
-                    System.out.println("count = " + distanceOut.size());
-                    bdSql.writeDataDist(new Date(), n_cicle, ves, tik_shelf, tik_back, tik_stop, new MyBlob(distanceOut));
-                } catch (java.lang.Throwable e) {
-                    e = null;
-                }
+                System.out.println("count = " + distanceOut.size());
+                //
+                sendOutData();
                 break;
             case TypePack.CYCLE_FORWARD:
-                mainFrame.label1_txt("CYCLE_FORWARD");
+                mainFrame.outStatusWork("CYCLE_FORWARD");
                 distanceOut.clear();
 
                 plot.allDataClear();
@@ -134,14 +145,17 @@ class RunningClass implements Runner {
                 reciveOn = true;
                 break;
             case TypePack.CYCLE_SHELF:
-                mainFrame.label1_txt("CYCLE_SHELF");
+                mainFrame.outStatusWork("CYCLE_SHELF");
                 tik_shelf = tik;
                 break;
             case TypePack.CURENT_DATA:
                 if (reciveOn) {
                     paintTrends(bytes);
-                    int dist = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
-                    distanceOut.add(new DistClass(tik, dist));
+                    {
+                        int dist = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+                        int ves = (bytes[7 + 0] & 0xff) + ((bytes[7 + 1] & 0xff) << 8);
+                        distanceOut.add(new DistClass(tik, dist, ves));
+                    }
                 }
                 break;
             case TypePack.VES:
@@ -186,5 +200,34 @@ class RunningClass implements Runner {
         plot.removeAllTrends();
         plot.close();
         plot = null;
+    }
+
+    void sendOutData () {
+        // force
+        int idxMid = distanceOut.size() / 2;
+        int forceMeasure = distanceOut.get(idxMid).ves - ves;
+        // move
+        int moveMeasureBegin = distanceOut.get(0).distance;
+        int moveMeasureEnd = 0;
+        DistClass distClass;
+        for (int i = 0; i < distanceOut.size(); i++) {
+            distClass = distanceOut.get(i);
+            if (distClass.tik == tik_shelf) moveMeasureEnd = distClass.distance;
+        }
+        int moveMeasure = Math.abs(moveMeasureBegin - moveMeasureEnd);
+        //
+        int timeUnClenching = Math.abs(distanceOut.get(0).tik - tik_shelf);
+        // ****** out screen ******
+        mainFrame.setFieldsMeasuredPusher(n_cicle, forceMeasure, moveMeasure, timeUnClenching);
+        // ***** out to bd *****
+        try {
+            tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
+            System.out.println("count = " + distanceOut.size());
+            bdSql.writeDataDist(n_cicle, ves, tik_shelf, tik_back, tik_stop,
+                    forceMeasure, moveMeasure, timeUnClenching, new MyBlob(distanceOut));
+        } catch (BaseDataException e) {
+            MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
+        }
+
     }
 }

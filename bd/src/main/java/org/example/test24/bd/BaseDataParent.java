@@ -56,8 +56,7 @@ class BaseDataParent implements BaseData {
         try {
             statement = connection.createStatement();
             if (actual) {
-                query =
-                        "SELECT " +
+                query = "SELECT " +
                                 " users.id_user, " +
                                 " users.date_reg, " +
                                 " users_logger.id_loggerUser, " +
@@ -158,7 +157,7 @@ class BaseDataParent implements BaseData {
         boolean pusherstype, pusherstype_logger;
         data = checkStructureTable(
                 base,
-                "data",
+                "datas",
                 new ArrayList(Arrays.asList(
                         "id_data",
                         "dateTime",
@@ -168,7 +167,10 @@ class BaseDataParent implements BaseData {
                         "tik_shelf",
                         "tik_back",
                         "tik_stop",
-                        "dis"
+                        "forceNominal",
+                        "moveNominal",
+                        "unclenchingTime",
+                        "dataMeasured"
                 ))
         );
         data_spec = checkStructureTable(
@@ -587,52 +589,43 @@ class BaseDataParent implements BaseData {
     }
     // запись измерений
     @Override
-    public void writeDataDist(Date date, int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop, Blob distance) throws BaseDataException {
-        if (connection == null) throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION);
-        boolean fl = false;
-        try {
-            fl = connection.isClosed();
-        } catch (SQLException e) {
-            throw new BaseDataException("соединение не установлено", e, Status.CONNECT_NO_CONNECTION);
-        }
-        if (fl) throw new BaseDataException("соединение закрыто", Status.CONNECT_CLOSE);
+    public void writeDataDist(int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop,
+                              int forceNominal, int moveNominal, int unclenchingTime, Blob dataMeasured) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(false);
         //
-        PreparedStatement statement = null;
-        Statement statementReadSpec = null;
-        boolean saveAutoCommit = false;
-        //
-        try {
-            saveAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-            connection.setTransactionIsolation(connection.TRANSACTION_SERIALIZABLE);
-        } catch (SQLException e) {
-            throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
-        }
+        Statement statementReadSpec;
+        PreparedStatement statement;
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(new java.util.Date().getTime());
         //
         try {
             // чтение последнего id spec
+            statementReadSpec = connection.createStatement();
             ResultSet resultSpec = statementReadSpec.executeQuery(
-                    "SELECT table_spec.id " +
-                            " FROM " + baseDat + ".table_spec " +
-                            " ORDER BY table_spec.id DESC " +
+                    "SELECT data_spec.id_dataSpec " +
+                            " FROM " + baseDat + ".data_spec " +
+                            " ORDER BY data_spec.id_dataSpec DESC " +
                             " LIMIT 1 "
             );
             resultSpec.next();
             long id_spec = resultSpec.getLong(1);
             // запись
             statement = connection.prepareStatement(
-                    "INSERT INTO " + baseDat + ".table_Data " +
-                            " (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, dis) " +
-                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+                    "INSERT INTO " + baseDat + ".datas " +
+                            " (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, forceNominal, moveNominal, unclenchingTime, dataMeasured) " +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             );
-            statement.setTimestamp(1, new java.sql.Timestamp(date.getTime()) );
+            statement.setTimestamp(1, timestamp);
             statement.setLong(2, id_spec);
             statement.setInt(3, n_cicle);
             statement.setInt(4, ves);
             statement.setInt(5, tik_shelf);
             statement.setInt(6, tik_back);
             statement.setInt(7, tik_stop);
-            statement.setBlob(8, distance);
+            statement.setInt(8, forceNominal);
+            statement.setInt(9, moveNominal);
+            statement.setInt(10, unclenchingTime);
+            statement.setBlob(11, dataMeasured);
             statement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
@@ -641,9 +634,6 @@ class BaseDataParent implements BaseData {
                 e = new SQLException("ошибка отмены транзакции: " + se.getMessage(), e);
             }
             throw new BaseDataException(e, Status.SQL_TRANSACTION_ERROR);
-        } finally {
-            try { connection.setAutoCommit(saveAutoCommit);
-            } catch (SQLException throwables) { }
         }
         //
         try {
@@ -1143,6 +1133,108 @@ class BaseDataParent implements BaseData {
             preStatementUpdate.close();
         } catch (SQLException throwables) { }
     }
+    // чтение данных о толкателе
+    @Override
+    public Pusher getPusher(long id_pusher) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+        //
+        Statement statement = null;
+        ResultSet result = null;
+        String query;
+        Pusher pusher = null;
+        //
+        try {
+            query = "SELECT " +
+                    " pushers.id_pusher, " +
+                    " pushers.date_reg AS pusher_dateReg, " +
+                    " pushers_logger.id_loggerPusher, " +
+                    " pushers_logger.date_upd AS pusher_dateUpd, " +
+                    " pushers_logger.id_loggerUserEdit AS pusher_IdLoggerUserEdit, " +
+                    " pushers_logger.namePusher, " +
+                    " pusherstype.id_typePusher, " +
+                    " pusherstype.date_reg AS typePusher_dateReg, " +
+                    " pusherstype_logger.id_loggerTypePusher, " +
+                    " pusherstype_logger.date_upd AS typePusher_dateUpd, " +
+                    " pusherstype_logger.id_loggerUserEdit AS typePusher_IdLoggerUserEdit, " +
+                    " pusherstype_logger.nameType, " +
+                    " pusherstype_logger.forceNominal, " +
+                    " pusherstype_logger.moveNominal, " +
+                    " pusherstype_logger.unclenchingTime, " +
+                    " pusherstype.date_unreg AS typePusher_dateUnreg, " +
+                    " pushers.date_unreg AS pusher_dateUnreg " +
+                    " FROM " + baseDat + ".pushers " +
+                    " INNER JOIN " + baseDat + ".pushers_logger ON pushers.id_loggerPusher = pushers_logger.id_loggerPusher " +
+                    " INNER JOIN " + baseDat + ".pusherstype ON pushers_logger.id_typePusher = pusherstype.id_typePusher " +
+                    " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher" +
+                    " WHERE " +
+                    " pushers.id_pusher = " + id_pusher;
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            result.next();
+            pusher = new Pusher(
+                    result.getLong("id_pusher"),
+                    result.getTimestamp("pusher_dateReg"),
+                    new LoggerPusher(
+                            result.getLong("id_loggerPusher"),
+                            result.getTimestamp("pusher_dateUpd"),
+                            result.getLong("pusher_IdLoggerUserEdit"),
+                            result.getLong("id_pusher"),
+                            result.getString("namePusher"),
+                            new TypePusher(
+                                    result.getLong("id_typePusher"),
+                                    result.getTimestamp("typePusher_dateReg"),
+                                    new LoggerTypePusher(
+                                            result.getLong("id_loggerTypePusher"),
+                                            result.getTimestamp("typePusher_dateUpd"),
+                                            result.getLong("typePusher_IdLoggerUserEdit"),
+                                            result.getLong("id_typePusher"),
+                                            result.getString("nameType"),
+                                            result.getInt("forceNominal"),
+                                            result.getInt("moveNominal"),
+                                            result.getInt("unclenchingTime")
+                                    ),
+                                    result.getTimestamp("typePusher_dateUnreg")
+                            )
+                    ),
+                    result.getTimestamp("pusher_dateUnreg")
+            );
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return pusher;
+    }
+
+    @Override
+    public long getIdTypePusherFromIdPusher(long id_pusher) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+        //
+        Statement statement = null;
+        ResultSet result = null;
+        String query;
+        long id_typePusher = -1;
+
+        try {
+            statement = connection.createStatement();
+            query = "SELECT pushers_logger.id_typePusher " +
+                    " FROM " + baseDat + ".pushers " +
+                    " INNER JOIN " + baseDat + ".pushers_logger ON pushers.id_loggerPusher = pushers_logger.id_loggerPusher " +
+                    " WHERE pushers.id_pusher = " + id_pusher;
+            result = statement.executeQuery(query);
+            result.next();
+            id_typePusher = result.getLong("id_typePusher");
+        } catch (SQLException e) {
+            throw new BaseDataException("ошибка получения id в журнале типов толкателей", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) {
+        }
+        return id_typePusher;
+    }
+
     // -----
     // количество толкателей заданого типа
     @Override
@@ -1330,5 +1422,191 @@ class BaseDataParent implements BaseData {
         } catch (SQLException e) {
             throw new BaseDataException("ошибка инициации транзакции", e, Status.SQL_TRANSACTION_ERROR);
         }
+    }
+    // ==========
+
+    @Override
+    public ArrayList<String> getListFromYear() throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        ArrayList<String> list = new ArrayList<>();
+        String query = "SELECT DISTINCT " +
+                " DATE_FORMAT(datas.dateTime, '%Y') AS lYYYY" +
+                " FROM " + baseDat + ".datas " +
+                " ORDER BY datas.id_data ASC ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            while (result.next()) {
+                list.add(result.getString("lYYYY"));
+            }
+        } catch (SQLException e) {
+            throw new BaseDataException("список годов", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException e) { }
+        return list;
+    }
+
+    @Override
+    public ArrayList<String> getListFromMounth(String year) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        ArrayList<String> list = new ArrayList<>();
+        String query = "SELECT DISTINCT " +
+                " DATE_FORMAT(datas.dateTime, '%Y-%m') AS list" +
+                " FROM " + baseDat + ".datas " +
+                " WHERE DATE_FORMAT(datas.dateTime, '%Y') = '" + year + "' " +
+                " ORDER BY datas.id_data ASC ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            while (result.next()) {
+                list.add(result.getString("list"));
+            }
+        } catch (SQLException e) {
+            throw new BaseDataException("список месяцев", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) { }
+        return list;
+    }
+
+    @Override
+    public ArrayList<String> getListFromDates(String mounth) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        ArrayList<String> list = new ArrayList<>();
+        String query = "SELECT DISTINCT " +
+                " DATE_FORMAT(datas.dateTime, '%Y-%m-%d') AS list" +
+                " FROM " + baseDat + ".datas " +
+                " WHERE DATE_FORMAT(datas.dateTime, '%Y-%m') = '" + mounth + "' " +
+                " ORDER BY datas.id_data ASC ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            while (result.next()) {
+                list.add(result.getString("list"));
+            }
+        } catch (SQLException e) {
+            throw new BaseDataException("список месяцев", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) { }
+        return list;
+    }
+
+    @Override
+    public ArrayList<DataUnit> getListFromPusherChecks(String date) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        ArrayList<DataUnit> list = new ArrayList<>();
+        String query = "SELECT " +
+                " datas.id_data, " +
+                " pushers_logger.namePusher, " +
+                " pusherstype_logger.nameType " +
+                " FROM " + baseDat + ".datas " +
+                " INNER JOIN " + baseDat + ".data_spec ON datas.id_spec = data_spec.id_dataSpec " +
+                " INNER JOIN " + baseDat + ".pushers ON data_spec.id_pusher = pushers.id_pusher " +
+                " INNER JOIN " + baseDat + ".pushers_logger ON pushers.id_loggerPusher = pushers_logger.id_loggerPusher " +
+                " INNER JOIN " + baseDat + ".pusherstype ON pushers_logger.id_typePusher = pusherstype.id_typePusher " +
+                " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
+                " WHERE DATE_FORMAT(datas.dateTime, '%Y-%m-%d') = '" + date + "' " +
+                " ORDER BY datas.id_data ASC ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            while (result.next()) {
+                list.add(
+                        new DataUnit(
+                                result.getLong("id_data"),
+                                result.getString("namePusher"),
+                                result.getString("nameType")
+                        )
+                );
+            }
+        } catch (SQLException e) {
+            throw new BaseDataException("список проверенных толкателей", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) {        }
+        return list;
+    }
+// ==========
+
+    @Override
+    public DataUnitMeasured getDataMeasured(long id_data) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        DataUnitMeasured dataUnitMeasured;
+        String query = "SELECT " +
+                " datas.id_data, " +
+                " datas.dateTime, " +
+                " datas.id_spec, " +
+                " datas.n_cicle, " +
+                " datas.ves, " +
+                " datas.tik_shelf, " +
+                " datas.tik_back, " +
+                " datas.tik_stop, " +
+                " datas.forceNominal, " +
+                " datas.moveNominal, " +
+                " datas.unclenchingTime, " +
+                " datas.dataMeasured, " +
+                " data_spec.id_user, " +
+                " data_spec.id_pusher " +
+                " FROM " + baseDat + ".datas " +
+                " INNER JOIN " + baseDat + ".data_spec ON datas.id_spec = data_spec.id_dataSpec " +
+                " WHERE datas.id_data = '" + id_data + "' ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            result.next();
+            dataUnitMeasured = new DataUnitMeasured(
+                    result.getLong("id_data"),
+                    result.getTimestamp("dateTime"),
+                    result.getLong("id_spec"),
+                    result.getInt("n_cicle"),
+                    result.getInt("ves"),
+                    result.getInt("tik_shelf"),
+                    result.getInt("tik_back"),
+                    result.getInt("tik_stop"),
+                    result.getInt("forceNominal"),
+                    result.getInt("moveNominal"),
+                    result.getInt("unclenchingTime"),
+                    result.getBlob("dataMeasured"),
+                    result.getLong("id_user"),
+                    result.getLong("id_pusher")
+            );
+        } catch (SQLException e) {
+            throw new BaseDataException("измеренные данные", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) { }
+        return dataUnitMeasured;
     }
 }

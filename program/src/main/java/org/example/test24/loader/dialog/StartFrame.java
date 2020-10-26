@@ -18,7 +18,8 @@ import static org.example.test24.lib.MyLogger.myLog;
 public class StartFrame {
     static StartFrame startFrame;
     public interface CallBack {
-        void messageCloseStartFrame(BaseData conn);
+        void messageCloseStartFrame(BaseData conn, String commPortName);
+        void messageSetNewData();
     }
     // ----------------------------------
     // title
@@ -56,6 +57,8 @@ public class StartFrame {
     private JLabel viewLabelForce;
     private JLabel viewLabelMove;
     private JLabel viewLabelUnclenching;
+
+    private Canvas canvas;
 
     // ===============================================
     //             флаги
@@ -376,6 +379,11 @@ public class StartFrame {
             frame.add(buttonWork);
             frame.add(buttonTuning);
             frame.add(buttonSetPassword);
+
+            JPanel panel = new JPanel();
+            panel.setBounds(50, 50, 300, 300);
+
+            canvas = new Canvas();
         } // кнопки
         {
             jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 380, 320, 160, 90,true, true );
@@ -427,7 +435,7 @@ public class StartFrame {
             frame.add(viewUnclenching);
             frame.add(viewLabelUnclenching);
         }
-        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 190,120, 24, null, null, false, true);
+        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 190,120, 24, null, this::callEnter, false, true);
         frame.add(fieldPassword);
 
         frame.pack();
@@ -663,7 +671,18 @@ public class StartFrame {
         }
         frame.removeAll();
         frame.dispose();
-        callBack.messageCloseStartFrame(connBD);
+        // чтение конфигурации
+        BaseData.Config config = BaseData.Config.create();
+        try { config.load();
+        } catch (BaseDataException be) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
+            config.setDefault();
+        }
+        if (statMainWork) {
+            callBack.messageSetNewData();
+        } else {
+            callBack.messageCloseStartFrame(connBD, config.getPortName());
+        }
     }
     // обработка настройка
     private void callTuning(ActionEvent e) {
