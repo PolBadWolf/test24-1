@@ -1,9 +1,6 @@
 package org.example.test24.bd;
 
-import org.example.test24.bd.usertypes.DataSpec;
-import org.example.test24.bd.usertypes.Pusher;
-import org.example.test24.bd.usertypes.TypePusher;
-import org.example.test24.bd.usertypes.User;
+import org.example.test24.bd.usertypes.*;
 
 import java.sql.Blob;
 import java.util.ArrayList;
@@ -110,5 +107,6 @@ public interface BaseData {
     ArrayList<String> getListFromYear() throws BaseDataException;
     ArrayList<String> getListFromMounth(String year) throws BaseDataException;
     ArrayList<String> getListFromDates(String mounth) throws BaseDataException;
+    ArrayList<DataUnit> getListFromPusherChecks(String date) throws BaseDataException;
     // =========================
 }

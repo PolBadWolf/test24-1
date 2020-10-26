@@ -1510,5 +1510,47 @@ class BaseDataParent implements BaseData {
         } catch (SQLException throwables) { }
         return list;
     }
+
+    @Override
+    public ArrayList<DataUnit> getListFromPusherChecks(String date) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        ArrayList<DataUnit> list = new ArrayList<>();
+        String query = "SELECT " +
+                " datas.id_data, " +
+                " pushers_logger.namePusher, " +
+                " pusherstype_logger.nameType " +
+                " FROM " + baseDat + ".datas " +
+                " INNER JOIN " + baseDat + ".data_spec ON datas.id_spec = data_spec.id_dataSpec " +
+                " INNER JOIN " + baseDat + ".pushers ON data_spec.id_pusher = pushers.id_pusher " +
+                " INNER JOIN " + baseDat + ".pushers_logger ON pushers.id_loggerPusher = pushers_logger.id_loggerPusher " +
+                " INNER JOIN " + baseDat + ".pusherstype ON pushers_logger.id_typePusher = pusherstype.id_typePusher " +
+                " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
+                " WHERE DATE_FORMAT(datas.dateTime, '%Y-%m-%d') = '" + date + "' " +
+                " ORDER BY datas.id_data ASC ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            while (result.next()) {
+                list.add(
+                        new DataUnit(
+                                result.getLong("id_data"),
+                                result.getString("namePusher"),
+                                result.getString("nameType")
+                        )
+                );
+            }
+        } catch (SQLException e) {
+            throw new BaseDataException("список проверенных толкателей", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) {        }
+        return list;
+    }
 // ==========
 }

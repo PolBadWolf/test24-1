@@ -71,7 +71,12 @@ public class ViewArchive {
 
         @Override
         public boolean isLeaf(Object node) {
-            return false;
+            if (node == root) return false;
+            boolean leaf = false;
+            if (((Shablon) node).getLevel() == 3) {
+                leaf = true;
+            }
+            return leaf;
         }
 
         @Override
@@ -100,7 +105,7 @@ public class ViewArchive {
             if (o == root) return;
             Shablon comp = (Shablon) o;
             ArrayList<Shablon> x;
-            if (comp.getLevel() > 1) return;
+            if (comp.getLevel() > 3) return;
             if (comp.children.size() > 0) return;
             switch (comp.getLevel()) {
                 case 0:
@@ -110,6 +115,15 @@ public class ViewArchive {
                 case 1:
                     x = ShDate.getListDates(conn, comp.getName());
                     comp.children = x;
+                    break;
+                case 2:
+                    x = ShCheck.getListChecks(conn, comp.getName());
+                    comp.children = x;
+                    break;
+                case 3:
+                    int ind = comp.idx;
+                    String n = comp.name;
+
                     break;
             }
         }
