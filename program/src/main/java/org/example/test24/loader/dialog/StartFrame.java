@@ -534,7 +534,7 @@ public class StartFrame {
             // проверка на локального админа
             if (!checkIntegratedAdministrator(surName, pass)) {
                 buttonEnter.setEnabled(false);
-                buttonTuning.setVisible(false);
+                buttonOffForErrorPass();
                 MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
                     buttonEnter.setEnabled(true);
                     frame.requestFocus();
@@ -556,6 +556,7 @@ public class StartFrame {
         if (!selectUser.userPassword.equals(password)) {
             myLog.log(Level.FINE, "у пользователя из списка не совпал пароль (" + selectUser.userPassword + ")");
             // отключить кнопки управления
+            buttonOffForErrorPass();
             saveEnableComponentsStartFrame.save();
             saveEnableComponentsStartFrame.offline();
             myLog.log(Level.INFO, "ошибка ввода пароля: " + selectUser.surName + "/" + password);
@@ -577,6 +578,13 @@ public class StartFrame {
         buttonWork.setEnabled(true);
         // разрешение выбора толкателей
         comboBoxPusher.setEnabled(true);
+    }
+    private void buttonOffForErrorPass() {
+        buttonTuning.setVisible(false);
+        buttonWork.setEnabled(false);
+        buttonEditPushers.setEnabled(false);
+        buttonEditUsers.setEnabled(false);
+        buttonSetPassword.setEnabled(false);
     }
     // обработка новый пароль
     private void callSetNewPassword(ActionEvent f) {
