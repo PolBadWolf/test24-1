@@ -185,8 +185,8 @@ public class ViewArchive {
                 plot.newDataTrend(0, (short) distClass.distance);
                 //plot.newDataTrend(1, ves);
                 plot.newDataPush();
-                plot.rePaint();
             }
+            plot.rePaint();
         } catch (Exception e) {
             e.printStackTrace();
         }
