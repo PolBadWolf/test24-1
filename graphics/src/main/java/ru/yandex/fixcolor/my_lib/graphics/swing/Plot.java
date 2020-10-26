@@ -1,28 +1,28 @@
 package ru.yandex.fixcolor.my_lib.graphics.swing;
 
 import javafx.application.Platform;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import org.example.test24.lib.MyLogger;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class Plot {
-    private Canvas canvas;
-    private GraphicsContext gc;
+    private Graphics gc;
 
     // размер холста
-    private double width = 0;
-    private double height = 0;
+    private double width;
+    private double height;
 
     //          поля
     // ширина
-    private double fieldWidth = 0;
-    private double fieldHeight = 0;
+    private double fieldWidth;
+    private double fieldHeight;
     // цвет фона
     private Color fieldBackColor = Color.GRAY;
     // цвет рамки
@@ -76,12 +76,13 @@ public class Plot {
         }
 
         public void rePaint(double[] x, double[] y, int lenght) {
-            gc.beginPath();
+            /*gc.beginPath();
             gc.setStroke(lineColor);
             gc.setLineWidth(lineWidth);
             gc.strokePolyline(x, y, lenght);
             gc.stroke();
-            gc.closePath();
+            gc.closePath();*/
+            MyLogger.myLog.log(Level.ALL, "рисование - реализовать !");
         }
     }
 
@@ -300,6 +301,7 @@ public class Plot {
         }
 
         private void __clearFields() {
+            /*
             gc.beginPath();
 
             gc.setFill(fieldBackColor);
@@ -323,18 +325,22 @@ public class Plot {
             gc.strokePolyline(x, y, x.length);
 
             gc.closePath();
-            gc.stroke();
+            gc.stroke();*/
+            MyLogger.myLog.log(Level.ALL, "очистка поля - реализовать");
         }
 
         private void __clearWindow() {
+            /*
             gc.beginPath();
             gc.setFill(windowBackColor);
             gc.fillRect(fieldWidth, 0, width, height - fieldHeight);
             gc.closePath();
-            gc.stroke();
+            gc.stroke();*/
+            MyLogger.myLog.log(Level.ALL, "очистка окна - реализовать");
         }
 
         private void __paintNet() {
+            /*
             double xSize = width - fieldWidth;
             double ySize = height - fieldHeight;
 
@@ -410,18 +416,18 @@ public class Plot {
             }
 
             gc.closePath();
-            gc.stroke();
+            gc.stroke();*/
+            MyLogger.myLog.log(Level.ALL, "рисование сетки - реализовать");
         }
 
     }
 
     public Plot(Canvas canvas, double fieldWidth, double fieldHeight) {
-        this.canvas = canvas;
         this.fieldWidth = fieldWidth;
         this.fieldHeight = fieldHeight;
         width = canvas.getWidth();
         height = canvas.getHeight();
-        gc = canvas.getGraphicsContext2D();
+        gc = canvas.getGraphics();
         trends = new ArrayList<>();
         dataGraphics = new ArrayList<>();
         newData = new NewDataClass(0);
