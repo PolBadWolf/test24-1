@@ -291,14 +291,12 @@ public class Plot {
             }
             if (levelYlenghtMax < 100)  levelYlenghtMax = 100;
 
-            /*Platform.runLater(()->{
-                __clearFields();
-                __clearWindow();
-                __paintNet();
-                for (int i = 1; i < nItemsMass + 1; i++) {
-                    trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i], dropLenght);
-                }
-            });*/
+            __clearFields();
+            __clearWindow();
+            __paintNet();
+            for (int i = 1; i < nItemsMass + 1; i++) {
+                trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i], dropLenght);
+            }
             busy = false;
         }
 
