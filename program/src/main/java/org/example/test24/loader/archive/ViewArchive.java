@@ -3,12 +3,14 @@ package org.example.test24.loader.archive;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.lib.swing.CreateComponents;
+import ru.yandex.fixcolor.my_lib.graphics.Plot;
 
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class ViewArchive {
@@ -20,6 +22,10 @@ public class ViewArchive {
 
     private String root = "Архив";
     private JFrame frame;
+    private JPanel panelMain;
+    private JPanel panelCanvas;
+    private Canvas canvas;
+    private Plot plot;
     private JTree tree;
     private JScrollPane scrollPane;
     private MyTreeModel myTreeModel;
@@ -28,6 +34,15 @@ public class ViewArchive {
     }
     private void initComponents() {
         frame = CreateComponents.getFrame("View Archive", 1024, 800, false, null, null);
+        panelMain = CreateComponents.getPanel(null, null, null, 0, 0, 700, 760,true, true);
+        frame.add(panelMain);
+        panelCanvas = CreateComponents.getPanel(null, null, null, 0, 200, 700, 460,true, true);
+        panelMain.add(panelCanvas);
+        canvas = new Canvas();
+        canvas.setSize(700, 460);
+        panelCanvas.add(canvas);
+        //
+        //
         myTreeModel = new MyTreeModel();
         tree = new JTree(myTreeModel);
         tree.setEditable(false);
