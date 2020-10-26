@@ -78,17 +78,10 @@ public class Plot {
         }
 
         public void rePaint(int[] x, int[] y, int lenght) {
-            /*gc.beginPath();
-            gc.setStroke(lineColor);
-            gc.setLineWidth(lineWidth);
-            gc.strokePolyline(x, y, lenght);
-            gc.stroke();
-            gc.closePath();*/
             gc.setColor(lineColor);
             gc.setStroke(new BasicStroke(lineWidth));
             gc.drawPolyline(x, y, lenght);
             panelGraph.repaint();
-            MyLogger.myLog.log(Level.ALL, "рисование - реализовать !", new Exception());
         }
     }
 
@@ -630,7 +623,7 @@ public class Plot {
         if (busy)   return;
         busy = true;
         myPaint.rePaint(dataGraphics);
-        panelGraph.repaint();
+        //panelGraph.repaint();
     }
     // ----
     public void addTrend(Color lineColor, float lineWidth) {
