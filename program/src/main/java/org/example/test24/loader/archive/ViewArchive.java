@@ -48,7 +48,7 @@ public class ViewArchive {
         plot = new Plot(panelMain, 0, 200, 700, 460, 50, 50);
         plot.addTrend(Color.WHITE, 2);
         plot.setNetLineColor(Plot.DARKGREEN);
-        plot.setNetLineWidth(1.0);
+        plot.setNetLineWidth(1.0f);
 
         plot.clearScreen();
 

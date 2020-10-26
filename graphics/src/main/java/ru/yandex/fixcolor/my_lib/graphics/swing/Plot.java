@@ -40,7 +40,7 @@ public class Plot {
     // цвет линий сетки
     private Color netLineColor = DARKGREEN;
     // ширина линий сетки
-    private double netLineWidth = 1.0;
+    private float netLineWidth = 1.0f;
 
     private int     indexBegin = 0;
     private double  levelXbegin = 0.0;
@@ -143,7 +143,7 @@ public class Plot {
                             __clearWindow();
                             break;
                         case PaintNet:
-                            //Platform.runLater(this::__paintNet);
+                            __paintNet();
                             break;
                         case RePaint:
                             __rePaint(datQueue.datGraph);
@@ -332,7 +332,6 @@ public class Plot {
         }
 
         private void __paintNet() {
-            /*
             double xSize = width - fieldWidth;
             double ySize = height - fieldHeight;
 
@@ -367,31 +366,29 @@ public class Plot {
 
             double x, y, polLineWidth = netLineWidth / 2;
 
-            gc.beginPath();
-            gc.setStroke(netLineColor);
-            gc.setLineWidth(netLineWidth);
-            gc.setFill(Color.YELLOW);
-            gc.setTextAlign(TextAlignment.CENTER);
+            gc.setColor(netLineColor);
+            gc.setStroke(new BasicStroke(netLineWidth));
+            gc.setColor(Color.YELLOW);
 
             // x
             kX = (Math.ceil(levelXlenghtMax / xStep) * xStep) / (width - fieldWidth);
             int xNd = (int) Math.ceil(levelXbegin / xStep);
+//            gc.setTextAlign(TextAlignment.CENTER);
             for (int i = 1; i < xN - 1 + xNd ; i++) {
                 x = (i * xSize / (xN -1)) + fieldWidth - (levelXbegin / kX);
                 if (x < fieldWidth)     continue;
                 if (x > width) {
                     continue;
                 }
-                gc.moveTo(x,  polLineWidth);
-                gc.lineTo(x, ySize - polLineWidth);
-                double tmp = (double) Math.round(i * xCena * 1000) / 1000;
-                gc.fillText(String.valueOf(tmp), x, ySize + 20 );
+                gc.drawLine((int) x, (int) polLineWidth, (int) x, (int) (ySize - polLineWidth));
+//                double tmp = (double) Math.round(i * xCena * 1000) / 1000;
+//                gc.fillText(String.valueOf(tmp), x, ySize + 20 );
             }
 
             // y
-            gc.setTextAlign(TextAlignment.RIGHT);
             double kp = ySize / y_level;
             int iK;
+//          gc.setTextAlign(TextAlignment.RIGHT);
             for (int i = 0; i < yN; i++) {
                 iK = (i + yNk) * yStep;
                 y = kp * (iK - levelYmin);
@@ -402,13 +399,11 @@ public class Plot {
                     break;
                 }
                 y = ySize - y;
-                gc.moveTo(fieldWidth + polLineWidth, y);
-                gc.lineTo(width - polLineWidth, y);
-                gc.fillText(String.valueOf(iK), fieldWidth - 10, y + 5);
+                gc.drawLine((int) (fieldWidth + polLineWidth), (int) y, (int) (width - polLineWidth), (int) y);
+//                gc.fillText(String.valueOf(iK), fieldWidth - 10, y + 5);
             }
 
-            gc.closePath();
-            gc.stroke();*/
+            panelGraph.repaint();
             MyLogger.myLog.log(Level.ALL, "рисование сетки - реализовать", new Exception());
         }
 
@@ -520,11 +515,11 @@ public class Plot {
         return netLineColor;
     }
 
-    public void setNetLineWidth(double netLineWidth) {
+    public void setNetLineWidth(float netLineWidth) {
         this.netLineWidth = netLineWidth;
     }
 
-    public double getNetLineWidth() {
+    public float getNetLineWidth() {
         return netLineWidth;
     }
 
