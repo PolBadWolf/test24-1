@@ -1,4 +1,4 @@
-package ru.yandex.fixcolor.my_lib.graphics;
+package ru.yandex.fixcolor.my_lib.graphics.swing;
 
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
@@ -154,7 +154,7 @@ public class Plot {
                 } catch (InterruptedException e) {
                     System.out.println("o!@# Plot.java MyPaint run() poll()\r" + e.toString());
                     break;
-                } catch (java.lang.Throwable th) {
+                } catch (Throwable th) {
                     th.printStackTrace();
                 }
             }
@@ -249,7 +249,7 @@ public class Plot {
             for (int i = indexBegin; i < indexEnd; i++) {
                 try {
                     tmpShort = datGraph.get(i);
-                } catch (java.lang.Throwable e) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
                 if (tmpShort.getxPos() >= (levelXbegin + levelXlenghtMax)) break;

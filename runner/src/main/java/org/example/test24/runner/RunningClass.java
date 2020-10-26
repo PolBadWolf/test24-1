@@ -11,7 +11,7 @@ import org.example.test24.bd.usertypes.Pusher;
 import org.example.test24.lib.MyLogger;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.MainFrame_interface;
-import ru.yandex.fixcolor.my_lib.graphics.Plot;
+import ru.yandex.fixcolor.my_lib.graphics.fx.Plot;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;

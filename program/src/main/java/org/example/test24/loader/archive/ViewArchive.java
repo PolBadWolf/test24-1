@@ -3,7 +3,7 @@ package org.example.test24.loader.archive;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.lib.swing.CreateComponents;
-import ru.yandex.fixcolor.my_lib.graphics.Plot;
+import ru.yandex.fixcolor.my_lib.graphics.fx.Plot;
 
 import javax.swing.*;
 import javax.swing.event.*;
