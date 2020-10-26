@@ -1553,4 +1553,60 @@ class BaseDataParent implements BaseData {
         return list;
     }
 // ==========
+
+    @Override
+    public DataUnitMeasured getDataMeasured(long id_data) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        DataUnitMeasured dataUnitMeasured;
+        String query = "SELECT " +
+                " datas.id_data, " +
+                " datas.dateTime, " +
+                " datas.id_spec, " +
+                " datas.n_cicle, " +
+                " datas.ves, " +
+                " datas.tik_shelf, " +
+                " datas.tik_back, " +
+                " datas.tik_stop, " +
+                " datas.forceNominal, " +
+                " datas.moveNominal, " +
+                " datas.unclenchingTime, " +
+                " datas.dataMeasured, " +
+                " data_spec.id_user, " +
+                " data_spec.id_pusher " +
+                " FROM " + baseDat + ".datas " +
+                " INNER JOIN " + baseDat + ".data_spec ON datas.id_spec = data_spec.id_dataSpec " +
+                " WHERE datas.id_data = '" + id_data + "' ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            result.next();
+            dataUnitMeasured = new DataUnitMeasured(
+                    result.getLong("id_data"),
+                    result.getTimestamp("dateTime"),
+                    result.getLong("id_spec"),
+                    result.getInt("n_cicle"),
+                    result.getInt("ves"),
+                    result.getInt("tik_shelf"),
+                    result.getInt("tik_back"),
+                    result.getInt("tik_stop"),
+                    result.getInt("forceNominal"),
+                    result.getInt("moveNominal"),
+                    result.getInt("unclenchingTime"),
+                    result.getBlob("dataMeasured"),
+                    result.getLong("id_user"),
+                    result.getLong("id_pusher")
+            );
+        } catch (SQLException e) {
+            throw new BaseDataException("измеренные данные", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) { }
+        return dataUnitMeasured;
+    }
 }

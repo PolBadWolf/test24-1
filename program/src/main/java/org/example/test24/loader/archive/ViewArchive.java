@@ -2,6 +2,7 @@ package org.example.test24.loader.archive;
 
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
+import org.example.test24.bd.usertypes.DataUnitMeasured;
 import org.example.test24.lib.swing.CreateComponents;
 import ru.yandex.fixcolor.my_lib.graphics.swing.Plot;
 
@@ -158,6 +159,12 @@ public class ViewArchive {
         }
     }
     private void showPusher(long id) {
-
+        DataUnitMeasured measured;
+        try {
+            measured = conn.getDataMeasured(id);
+        } catch (BaseDataException e) {
+            e.printStackTrace();
+        }
+        int a = 5;
     }
 }

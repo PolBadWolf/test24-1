@@ -1,5 +1,6 @@
 package org.example.test24.bd.usertypes;
 
+import java.sql.Blob;
 import java.util.Date;
 
 public class DataUnitMeasured {
@@ -14,13 +15,13 @@ public class DataUnitMeasured {
     public int forceNominal;
     public int moveNominal;
     public int unclenchingTime;
-    public MyBlob dataMeasured;
+    public Blob dataMeasured;
     public long id_user;
     public long id_pusher;
 
     public DataUnitMeasured(long id_data, Date dateTime, long id_spec, int n_cicle, int ves, int tik_shelf,
                             int tik_back, int tik_stop, int forceNominal, int moveNominal, int unclenchingTime,
-                            MyBlob dataMeasured, long id_user, long id_pusher) {
+                            Blob dataMeasured, long id_user, long id_pusher) {
         this.id_data = id_data;
         this.dateTime = dateTime;
         this.id_spec = id_spec;

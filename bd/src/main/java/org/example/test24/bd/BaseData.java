@@ -103,6 +103,8 @@ public interface BaseData {
                        int forceNominal, int moveNominal, int unclenchingTime, Blob dataMeasured) throws BaseDataException;
     //
     BaseData cloneNewBase(String base);
+    // чтение замера
+    DataUnitMeasured getDataMeasured(long id_data) throws BaseDataException;
     // =========================
     ArrayList<String> getListFromYear() throws BaseDataException;
     ArrayList<String> getListFromMounth(String year) throws BaseDataException;
