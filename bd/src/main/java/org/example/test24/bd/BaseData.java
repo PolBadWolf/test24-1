@@ -92,6 +92,8 @@ public interface BaseData {
     int getCountPushersFromType(long id_typePusher, String[] namePusher) throws BaseDataException;
     // тип толкателя
     TypePusher getTypePusher(long id_typePusher) throws BaseDataException;
+    // чтение данных о пользователе
+    User getUser(long id_user) throws BaseDataException;
     // новые параметры spec
     void writeDataSpec(long id_user, long id_pusher) throws BaseDataException;
     // последний spec
