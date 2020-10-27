@@ -5,6 +5,9 @@ import org.example.test24.allinterface.bd.MeasuredBlobDecoder;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.usertypes.DataUnitMeasured;
+import org.example.test24.bd.usertypes.Pusher;
+import org.example.test24.bd.usertypes.User;
+import org.example.test24.lib.MyLogger;
 import org.example.test24.lib.swing.CreateComponents;
 import org.example.test24.lib.swing.MLabel;
 import ru.yandex.fixcolor.my_lib.graphics.swing.Plot;
@@ -19,6 +22,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
 
 public class ViewArchive {
     private final BaseData conn;
@@ -178,10 +182,14 @@ public class ViewArchive {
     }
     private void showPusher(long id) {
         DataUnitMeasured measured;
+        User user;
+        Pusher pusherSample;
         try {
             measured = conn.getDataMeasured(id);
+            user = conn.getUser(measured.id_user);
+            pusherSample = conn.getPusher(measured.id_pusher);
         } catch (BaseDataException e) {
-            e.printStackTrace();
+            MyLogger.myLog.log(Level.SEVERE, "визуализация архива", e);
             return;
         }
         // декодер графика
