@@ -28,9 +28,14 @@ public class ShCheck extends Shablon {
             MyLogger.myLog.log(Level.SEVERE, "получение списка толкателей", e);
             return list;
         }
+        int n = 0, n_cicle;
         for (int i = 0; i < listConn.size(); i++) {
             dataUnit = listConn.get(i);
-            name = String.valueOf(i + 1) + ": " + dataUnit.pusherName + "/" + dataUnit.typeName;
+            n_cicle = dataUnit.n_cicle;
+            if (n_cicle < 2) n++;
+            name = String.valueOf(n);
+            if (n_cicle > 0) name += ":" + n_cicle;
+            name += " - " + dataUnit.pusherName + "/" + dataUnit.typeName;
             list.add(new ShCheck(name, dataUnit.data_id, 3));
         }
         return list;
