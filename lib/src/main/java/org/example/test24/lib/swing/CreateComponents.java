@@ -29,14 +29,13 @@ public class CreateComponents {
         Rectangle2D r = parent.getFontMetrics(font).getStringBounds(text, parent.getGraphics());
         int rw = (int) r.getWidth() + 1;
         int rh = (int) r.getHeight() + 1;
-        if (horizontalAlignment == MLabel.POS_CENTER) x = x - (strWidth / 2);
-        if (horizontalAlignment == MLabel.POS_RIGHT) x = x - strWidth;
         MLabel label = new MLabel(horizontalAlignment);
         label.setFont(font);
-        label.setBounds(x, y, rw, rh);
+        label.setBounds(label.corHor(x, strWidth, horizontalAlignment), y, rw, rh);
         label.setText(text);
         label.setVisible(visible);
         label.setEnabled(enable);
+        label.setBeginX(x);
         if (parent != null) parent.add(label);
         return label;
     }

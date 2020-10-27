@@ -15,7 +15,10 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ViewArchive {
     private final BaseData conn;
@@ -55,8 +58,8 @@ public class ViewArchive {
                 800, 700, 80, 30, null, true, false);
         frame.add(buttonPrint);
         //
-        CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок ла-ла-ла", new Font("Times New Roman", Font.PLAIN, 32),
-                350, 10, true, true, MLabel.POS_CENTER);
+//        CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок ла-ла-ла", new Font("Times New Roman", Font.PLAIN, 32),
+//                350, 10, true, true, MLabel.POS_CENTER);
         labelDate = CreateComponents.getLabel(panelMain, "Время измерения", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 40, true, true, MLabel.POS_CENTER);
         //
@@ -181,7 +184,6 @@ public class ViewArchive {
             e.printStackTrace();
             return;
         }
-        labelDate.setFont(labelDate.getFont().deriveFont(30.0f));
         // декодер графика
         MeasuredBlobDecoder blobDecoder;
         DistClass distClass;
@@ -205,9 +207,12 @@ public class ViewArchive {
             e.printStackTrace();
         }
         buttonPrint.setEnabled(true);
-        // здесь вывод данных замера
-        // здесь вывод данных о толкателе
+        // загаловок
+        labelDate.setText("Дата измерения " +
+                (new SimpleDateFormat("dd-MM-yyyy в HH:mm:ss")).format(measured.dateTime));
         // здесь вывод данных о пользователе
+        // здесь вывод данных о толкателе
+        // здесь вывод данных замера
         int a = 5;
     }
 }
