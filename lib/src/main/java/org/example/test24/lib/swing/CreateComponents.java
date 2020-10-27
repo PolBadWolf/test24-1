@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.Rectangle2D;
 
 public class CreateComponents {
     // ---
@@ -21,6 +22,22 @@ public class CreateComponents {
         label.setBounds(x, y, width, height);
         label.setVisible(visible);
         label.setEnabled(enable);
+        return label;
+    }
+    public static MLabel getLabel(JComponent parent, String text, Font font, int x, int y, boolean visible, boolean enable, int horizontalAlignment) {
+        int strWidth = parent.getFontMetrics(font).stringWidth(text);
+        Rectangle2D r = parent.getFontMetrics(font).getStringBounds(text, parent.getGraphics());
+        int rw = (int) r.getWidth() + 1;
+        int rh = (int) r.getHeight() + 1;
+        if (horizontalAlignment == MLabel.POS_CENTER) x = x - (strWidth / 2);
+        if (horizontalAlignment == MLabel.POS_RIGHT) x = x - strWidth;
+        MLabel label = new MLabel(horizontalAlignment);
+        label.setFont(font);
+        label.setBounds(x, y, rw, rh);
+        label.setText(text);
+        label.setVisible(visible);
+        label.setEnabled(enable);
+        if (parent != null) parent.add(label);
         return label;
     }
     // ---

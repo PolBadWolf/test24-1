@@ -6,6 +6,7 @@ import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.usertypes.DataUnitMeasured;
 import org.example.test24.lib.swing.CreateComponents;
+import org.example.test24.lib.swing.MLabel;
 import ru.yandex.fixcolor.my_lib.graphics.swing.Plot;
 
 import javax.swing.*;
@@ -14,22 +15,25 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.sql.Blob;
 import java.util.ArrayList;
 
 public class ViewArchive {
-    private BaseData conn;
+    private final BaseData conn;
     public ViewArchive(BaseData conn) {
         this.conn = conn;
         new Thread(this::start, "thread view archive").start();
     }
 
-    private String root = "Архив";
+    private final String root = "Архив";
     private JFrame frame;
     private JPanel panelMain;
     private Plot plot;
     private JTree tree;
     private JScrollPane scrollPane;
+    // ======
+    private JButton buttonPrint;
+    private MLabel labelDate;
+    // ======
     private MyTreeModel myTreeModel;
     private void start() {
         initComponents();
@@ -44,8 +48,18 @@ public class ViewArchive {
         tree.addTreeWillExpandListener(myTreeModel);
         tree.addTreeSelectionListener(myTreeModel);
         scrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setBounds(700, 0, 300, 760);
+        scrollPane.setBounds(700, 0, 300, 660); // max 760 (800 - 40)
         frame.add(scrollPane);
+        //
+        buttonPrint = CreateComponents.getButton("Печать", new Font("Dialog", Font.PLAIN,12),
+                800, 700, 80, 30, null, true, false);
+        frame.add(buttonPrint);
+        //
+        CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок ла-ла-ла", new Font("Times New Roman", Font.PLAIN, 32),
+                350, 10, true, true, MLabel.POS_CENTER);
+        labelDate = CreateComponents.getLabel(panelMain, "Время измерения", new Font("Times New Roman", Font.PLAIN, 16),
+                350, 40, true, true, MLabel.POS_CENTER);
+        //
         frame.setVisible(true);
         frame.pack();
         //
@@ -124,7 +138,7 @@ public class ViewArchive {
         }
 
         @Override
-        public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+        public void treeWillExpand(TreeExpansionEvent event) {
             Object o = event.getPath().getLastPathComponent();
             if (o == root) return;
             Shablon comp = (Shablon) o;
@@ -148,9 +162,7 @@ public class ViewArchive {
         }
 
         @Override
-        public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
-
-        }
+        public void treeWillCollapse(TreeExpansionEvent event) { }
 
         @Override
         public void valueChanged(TreeSelectionEvent e) {
@@ -169,7 +181,9 @@ public class ViewArchive {
             e.printStackTrace();
             return;
         }
-        MeasuredBlobDecoder blobDecoder = null;
+        labelDate.setFont(labelDate.getFont().deriveFont(30.0f));
+        // декодер графика
+        MeasuredBlobDecoder blobDecoder;
         DistClass distClass;
         int tik0, x;
         try {
@@ -190,6 +204,10 @@ public class ViewArchive {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        buttonPrint.setEnabled(true);
+        // здесь вывод данных замера
+        // здесь вывод данных о толкателе
+        // здесь вывод данных о пользователе
         int a = 5;
     }
 }
