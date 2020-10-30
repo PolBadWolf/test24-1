@@ -1,8 +1,11 @@
 package ru.yandex.fixcolor.my_lib.graphics.swing;
 
 import org.example.test24.lib.MyLogger;
+import org.example.test24.lib.swing.Scale;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -79,9 +82,9 @@ public class Plot {
 
         public void rePaint(int[] x, int[] y, int lenght) {
             gc.setColor(lineColor);
-            gc.setStroke(new BasicStroke(lineWidth));
+            gc.setStroke(new BasicStroke((float) (lineWidth * Scale.scaleUp)));
             gc.drawPolyline(x, y, lenght);
-            panelGraph.repaint();
+//            panelGraph.repaint();
         }
     }
 
@@ -135,12 +138,15 @@ public class Plot {
                     switch (datQueue.command) {
                         case ClearFields:
                             __clearFields();
+                            panelGraph.repaint();
                             break;
                         case ClearWindow:
                             __clearWindow();
+                            panelGraph.repaint();
                             break;
                         case PaintNet:
                             __paintNet();
+                            panelGraph.repaint();
                             break;
                         case RePaint:
                             __rePaint(datQueue.datGraph);
@@ -294,6 +300,7 @@ public class Plot {
             for (int i = 1; i < nItemsMass + 1; i++) {
                 trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i], dropLenght);
             }
+            panelGraph.repaint();
             busy = false;
         }
 
@@ -317,16 +324,19 @@ public class Plot {
             gc.setColor(fieldFrameLineColor);
             gc.setStroke(new BasicStroke(fieldFrameLineWidth));
             gc.drawPolyline(x, y, x.length);
-            panelGraph.repaint();
+            //panelGraph.repaint();
         }
 
         private void __clearWindow() {
             gc.setColor(windowBackColor);
             gc.fillRect(fieldWidth, 0, width, height - fieldHeight);
-            panelGraph.repaint();
+            //panelGraph.repaint();
         }
 
         private void __paintNet() {
+//            AffineTransform at = ((Graphics2D) gc).getTransform();
+//            ((Graphics2D) gc).scale(cosDn, cosDn);
+
             double xSize = width - fieldWidth;
             double ySize = height - fieldHeight;
 
@@ -359,9 +369,9 @@ public class Plot {
             xN = (int) Math.ceil(levelXlenghtMax / xStep) + 1;
             xCena = (double) xStep / 200;
 
-            double x, y, polLineWidth = netLineWidth / 2;
+            double x, y, polLineWidth = Scale.scaleUp * netLineWidth / 2;
 
-            gc.setStroke(new BasicStroke(netLineWidth));
+            gc.setStroke(new BasicStroke((float) (Scale.scaleUp * netLineWidth)));
 
             // x
             kX = (Math.ceil(levelXlenghtMax / xStep) * xStep) / (width - fieldWidth);
@@ -377,7 +387,7 @@ public class Plot {
                 double tmp = (double) Math.round(i * xCena * 1000) / 1000;
                 gc.setColor(Color.YELLOW);
                 double polWidthString = gc.getFontMetrics().stringWidth(String.valueOf(tmp)) / 2;
-                gc.drawString(String.valueOf(tmp), (int) (x - polWidthString), (int) (ySize + 20));
+                gc.drawString(String.valueOf(tmp), (int) (x - polWidthString), (int) (ySize + 20 * Scale.scaleUp));
             }
 
             // y
@@ -397,25 +407,33 @@ public class Plot {
                 gc.drawLine((int) (fieldWidth + polLineWidth), (int) y, (int) (width - polLineWidth), (int) y);
                 gc.setColor(Color.YELLOW);
                 double widthString = gc.getFontMetrics().stringWidth(String.valueOf(iK));
-                gc.drawString(String.valueOf(iK), (int) (fieldWidth - widthString - 10), (int) (y + 5));
+                gc.drawString(String.valueOf(iK), (int) (fieldWidth - widthString - 10 * Scale.scaleUp), (int) (y + 5 * Scale.scaleUp));
             }
-            panelGraph.repaint();
+//            ((Graphics2D) gc).scale(1, 1);
+//            ((Graphics2D) gc).setTransform(at);
+            //panelGraph.repaint();
         }
 
     }
 
     public Plot(JComponent parent, int x, int y, int width, int height, int fieldWidth, int fieldHeight) {
+        this.width = (int) (width * Scale.scaleUp);
+        this.height = (int) (height * Scale.scaleUp);
+        this.fieldWidth = (int) (fieldWidth * Scale.scaleUp);
+        this.fieldHeight = (int) (fieldHeight * Scale.scaleUp);
         panelGraph = new JMyPane();
         panelGraph.setLayout(null);
-        panelGraph.setBounds(x, y, width, height);
+        panelGraph.setBounds(x, y, this.width, this.height);
+        panelGraph.setBackground(parent.getBackground());
         parent.add(panelGraph);
         panelGraph.createBI();
         gc = panelGraph.getGraphics2D();
+        {
+            Font font = gc.getFont();
+            font = font.deriveFont((float) (font.getSize() *  Scale.scaleUp));
+            gc.setFont(font);
+        }
         //
-        this.width = width;
-        this.height = height;
-        this.fieldWidth = fieldWidth;
-        this.fieldHeight = fieldHeight;
         //
         trends = new ArrayList<>();
         dataGraphics = new ArrayList<>();
@@ -437,10 +455,14 @@ public class Plot {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (bufferedImage != null) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.drawRenderedImage(bufferedImage, null);
-            }
+            if (bufferedImage == null) return;
+            Graphics2D g2 = (Graphics2D) g;
+            AffineTransform affineTransform = g2.getTransform();
+            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g2.scale(Scale.scaleDn, Scale.scaleDn);
+            g2.drawRenderedImage(bufferedImage, null);
+            g2.setTransform(affineTransform);
         }
         public void createBI() {
             bufferedImage = new BufferedImage(super.getWidth(), super.getHeight(), BufferedImage.TYPE_INT_ARGB);

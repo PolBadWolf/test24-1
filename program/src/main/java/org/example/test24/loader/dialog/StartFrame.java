@@ -24,6 +24,7 @@ public class StartFrame {
     public interface CallBack {
         void messageCloseStartFrame(BaseData conn, String commPortName);
         void messageSetNewData();
+        void stopSystem();
     }
     // ----------------------------------
     // title
@@ -245,7 +246,7 @@ public class StartFrame {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                e.getWindow().removeAll();
+                callBack.stopSystem();
                 System.exit(2);
             }
         });
@@ -565,7 +566,7 @@ public class StartFrame {
         buttonTuning.setVisible(false);
         // проверка пароля у пользователя из списка (БД)
         if (!selectUser.userPassword.equals(password)) {
-            myLog.log(Level.FINE, "у пользователя из списка не совпал пароль (" + selectUser.userPassword + ")");
+            myLog.log(Level.FINE, " у пользователя из списка не совпал пароль"); //(" + selectUser.userPassword + ")");
             // отключить кнопки управления
             buttonOffForErrorPass();
             saveEnableComponentsStartFrame.save();
