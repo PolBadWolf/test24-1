@@ -59,6 +59,7 @@ public class ViewArchive {
     }
     private void initComponents() {
         frame = CreateComponents.getFrame("View Archive", 1024, 800, false, null, null);
+        frame.setBackground(Color.white);
         panelMain = CreateComponents.getPanelPrintableCap(null, null, null, 0, 0, 700, 760,true, true);
         panelMain.setBackground(Color.white);
         frame.add(panelMain);
@@ -68,11 +69,11 @@ public class ViewArchive {
         tree.addTreeWillExpandListener(myTreeModel);
         tree.addTreeSelectionListener(myTreeModel);
         scrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setBounds(700, 0, 300, 660); // max 760 (800 - 40)
+        scrollPane.setBounds(700, 50, 300, 710); // max 760 (800 - 40)
         frame.add(scrollPane);
         //
         buttonPrint = CreateComponents.getButton("Печать", new Font("Dialog", Font.PLAIN,12),
-                800, 700, 80, 30, this::callButtonPrinterPush, true, false);
+                800, 10, 80, 30, this::callButtonPrinterPush, true, false);
         frame.add(buttonPrint);
         //
         CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок ла-ла-ла", new Font("Times New Roman", Font.PLAIN, 32),
@@ -259,10 +260,10 @@ public class ViewArchive {
         pf.setPaper(paper);
         Book book = new Book();
         book.append(panelMain, pf);
+        printerJob.setPageable(book);
         if (! printerJob.printDialog()) {
             return;
         }
-        printerJob.setPageable(book);
         try {
             printerJob.print();
         } catch (PrinterException e) {
