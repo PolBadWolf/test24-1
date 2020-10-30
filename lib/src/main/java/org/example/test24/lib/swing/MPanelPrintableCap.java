@@ -25,7 +25,7 @@ public class MPanelPrintableCap extends JPanel implements Printable {
             double scale = Scale.minScale(pf.getImageableWidth(), pf.getImageableHeight(), getWidth(), getHeight());
             g2d.scale(scale, scale);
             paintComponent(g2d);
-            paintChildren(g2d);
+            //paintChildren(g2d);
         } finally {
             g2d.setTransform(oldAt);
         }
