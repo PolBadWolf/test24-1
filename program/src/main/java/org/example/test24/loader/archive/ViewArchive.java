@@ -233,6 +233,7 @@ public class ViewArchive {
             MyLogger.myLog.log(Level.SEVERE, "визуализация архива", e);
             return;
         }
+        showComponentsForVisual();
         // декодер графика
         MeasuredBlobDecoder blobDecoder;
         DistClass distClass;
@@ -255,39 +256,41 @@ public class ViewArchive {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        showComponentsForVisual();
-        // заголовок
-        labelDate.setText("Дата измерения " +
-                (new SimpleDateFormat("dd-MM-yyyy в HH:mm:ss")).format(measured.dateTime));
-        // здесь вывод данных о пользователе
-        labelUser.setText("Оператор: " + user.surName);
-        // здесь вывод данных о толкателе
-        labelPusherSampleTitle.setText("Регистрационный номер толкателя: \"" + pusherSample.loggerPusher.namePusher +
-                "\", тип толкателя: \"" + pusherSample.loggerPusher.typePusher.loggerTypePusher.nameType + "\"");
-        //
-        labelPusherSampleForce.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.forceNominal));
-        labelPusherSampleMove.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.moveNominal));
-        labelPusherSampleUnClenchingTime.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.unclenchingTime));
-        // здесь вывод данных замера
-        labelPusherMeasuredForce.setText(String.valueOf(measured.forceNominal));
-        labelPusherMeasuredMove.setText(String.valueOf(measured.moveNominal));
-        labelPusherMeasuredUnClenchingTime.setText(String.valueOf(measured.unclenchingTime));
-        int a = 5;
-        System.out.println(Thread.currentThread());
+        SwingUtilities.invokeLater(() -> {
+            // заголовок
+            labelDate.setText("Дата измерения " +
+                    (new SimpleDateFormat("dd-MM-yyyy в HH:mm:ss")).format(measured.dateTime));
+            // здесь вывод данных о пользователе
+            labelUser.setText("Оператор: " + user.surName);
+            // здесь вывод данных о толкателе
+            labelPusherSampleTitle.setText("Регистрационный номер толкателя: \"" + pusherSample.loggerPusher.namePusher +
+                    "\", тип толкателя: \"" + pusherSample.loggerPusher.typePusher.loggerTypePusher.nameType + "\"");
+            //
+            labelPusherSampleForce.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.forceNominal));
+            labelPusherSampleMove.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.moveNominal));
+            labelPusherSampleUnClenchingTime.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.unclenchingTime));
+            // здесь вывод данных замера
+            labelPusherMeasuredForce.setText(String.valueOf(measured.forceNominal));
+            labelPusherMeasuredMove.setText(String.valueOf(measured.moveNominal));
+            labelPusherMeasuredUnClenchingTime.setText(String.valueOf(measured.unclenchingTime));
+        });
     }
     private void showComponentsForVisual() {
-        buttonPrint.setEnabled(true);
-        // декодер графика
-        labelDate.setVisible(true);
-        labelUser.setVisible(true);
-        labelPusherSampleTitle.setVisible(true);
-        labelGraphTitle.setVisible(true);
-        labelPusherSampleForce.setVisible(true);
-        labelPusherSampleMove.setVisible(true);
-        labelPusherSampleUnClenchingTime.setVisible(true);
-        labelPusherMeasuredForce.setVisible(true);
-        labelPusherMeasuredMove.setVisible(true);
-        labelPusherMeasuredUnClenchingTime.setVisible(true);
+        if (buttonPrint.isEnabled()) return;
+        SwingUtilities.invokeLater(() -> {
+            buttonPrint.setEnabled(true);
+            // декодер графика
+            labelDate.setVisible(true);
+            labelUser.setVisible(true);
+            labelPusherSampleTitle.setVisible(true);
+            labelGraphTitle.setVisible(true);
+            labelPusherSampleForce.setVisible(true);
+            labelPusherSampleMove.setVisible(true);
+            labelPusherSampleUnClenchingTime.setVisible(true);
+            labelPusherMeasuredForce.setVisible(true);
+            labelPusherMeasuredMove.setVisible(true);
+            labelPusherMeasuredUnClenchingTime.setVisible(true);
+        });
     }
     private void callButtonPrinterPush(ActionEvent actionEvent) {
         PrinterJob printerJob = PrinterJob.getPrinterJob();

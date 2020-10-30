@@ -135,25 +135,31 @@ public class Plot {
                         Thread.sleep(1);
                         continue;
                     }
-                    switch (datQueue.command) {
-                        case ClearFields:
-                            __clearFields();
-                            panelGraph.repaint();
-                            break;
-                        case ClearWindow:
-                            __clearWindow();
-                            panelGraph.repaint();
-                            break;
-                        case PaintNet:
-                            __paintNet();
-                            panelGraph.repaint();
-                            break;
-                        case RePaint:
-                            __rePaint(datQueue.datGraph);
-                            break;
-                        default:
-                            System.out.println("o!@# Plot.java MyPaint swith\r what command: " + datQueue.command);
-                    }
+                    DatQueue finalDatQueue = datQueue;
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (finalDatQueue.command) {
+                                case ClearFields:
+                                    __clearFields();
+                                    panelGraph.repaint();
+                                    break;
+                                case ClearWindow:
+                                    __clearWindow();
+                                    panelGraph.repaint();
+                                    break;
+                                case PaintNet:
+                                    __paintNet();
+                                    panelGraph.repaint();
+                                    break;
+                                case RePaint:
+                                    __rePaint(finalDatQueue.datGraph);
+                                    break;
+                                default:
+                                    System.out.println("o!@# Plot.java MyPaint swith\r what command: " + finalDatQueue.command);
+                            }
+                        }
+                    });
                 } catch (IllegalStateException ex) {
                     System.out.println("o!@# Plot.java MyPaint run()\r" + ex.toString());
                     break;
@@ -301,6 +307,7 @@ public class Plot {
                 trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i], dropLenght);
             }
             panelGraph.repaint();
+//            System.out.println(Thread.currentThread());
             busy = false;
         }
 
