@@ -1611,4 +1611,51 @@ class BaseDataParent implements BaseData {
         } catch (SQLException throwables) { }
         return dataUnitMeasured;
     }
+    // чтение данных о пользователе
+    @Override
+    public User getUser(long id_user) throws BaseDataException {
+        internalCheckConnect();
+        internalAutoCommit(true);
+
+        Statement statement;
+        ResultSet result;
+        User user;
+        String query = "SELECT " +
+                " users.id_user, " +
+                " users.date_reg, " +
+                " users_logger.id_loggerUser, " +
+                " users_logger.date_upd, " +
+                " users_logger.id_loggerUserEdit, " +
+                " users_logger.surName, " +
+                " users_logger.userPassword, " +
+                " users_logger.rang, " +
+                " users.date_unreg " +
+                " FROM " + baseDat + ".users " +
+                " INNER JOIN " + baseDat + ".users_logger ON users.id_loggerUser = users_logger.id_loggerUser " +
+                " WHERE users.id_user = '" + id_user + "' " +
+                " LIMIT 1 ";
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+            result.next();
+            user = new User(
+                    result.getLong("id_user"),
+                    result.getTimestamp("date_reg"),
+                    result.getLong("id_loggerUser"),
+                    result.getTimestamp("date_upd"),
+                    result.getLong("id_loggerUserEdit"),
+                    result.getString("surName"),
+                    result.getString("userPassword"),
+                    result.getInt("rang"),
+                    result.getTimestamp("date_unreg")
+            );
+        } catch (SQLException e) {
+            throw new BaseDataException("данные пользователе", e, Status.SQL_TRANSACTION_ERROR);
+        }
+        try {
+            result.close();
+            statement.close();
+        } catch (SQLException throwables) { }
+        return user;
+    }
 }

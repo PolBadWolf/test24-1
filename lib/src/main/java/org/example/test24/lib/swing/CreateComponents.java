@@ -1,7 +1,5 @@
 package org.example.test24.lib.swing;
 
-import com.sun.javafx.logging.JFRInputEvent;
-
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
@@ -9,8 +7,8 @@ import javax.swing.table.TableModel;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.Rectangle2D;
 
 public class CreateComponents {
     // ---
@@ -21,6 +19,21 @@ public class CreateComponents {
         label.setBounds(x, y, width, height);
         label.setVisible(visible);
         label.setEnabled(enable);
+        return label;
+    }
+    public static MLabel getLabel(JComponent parent, String text, Font font, int x, int y, boolean visible, boolean enable, int horizontalAlignment) {
+        int strWidth = parent.getFontMetrics(font).stringWidth(text);
+        Rectangle2D r = parent.getFontMetrics(font).getStringBounds(text, parent.getGraphics());
+        int rw = (int) r.getWidth() + 1;
+        int rh = (int) r.getHeight() + 1;
+        MLabel label = new MLabel(horizontalAlignment);
+        label.setFont(font);
+        label.setBounds(label.corHor(x, strWidth, horizontalAlignment), y, rw, rh);
+        label.setText(text);
+        label.setVisible(visible);
+        label.setEnabled(enable);
+        label.setBeginX(x);
+        if (parent != null) parent.add(label);
         return label;
     }
     // ---
@@ -85,7 +98,7 @@ public class CreateComponents {
     }
     // ---
     public static JTable getTable(int widthLast, TableModel tableModel, ModelTableNameWidth[] nameWidths, DocumentFilter filter, ListSelectionListener listener, boolean visible, boolean enable) {
-        JTable table = new MyJTable();
+        MyJTable table = new MyJTable();
         int autoN = 0;
         String[] titles;
         if (nameWidths == null) titles = new String[0];
@@ -108,19 +121,21 @@ public class CreateComponents {
             autoWidth = widthLast / autoN;
         }
         //
-        ((MyJTable) table).titles = titles;
+        table.titles = titles;
         if (tableModel != null) {
             ((MyTableModel) tableModel).setTitles(titles);
             table.setModel(tableModel);
             table.getTableHeader().setReorderingAllowed(false);
             table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             //
-            int w;
-            TableColumnModel tableColumnModel = table.getColumnModel();
-            for (int i = 0; i < nameWidths.length; i++) {
-                if (nameWidths[i].width < 0) w = autoWidth;
-                else w = nameWidths[i].width;
-                tableColumnModel.getColumn(i).setPreferredWidth(w);
+            if (nameWidths != null) {
+                int w;
+                TableColumnModel tableColumnModel = table.getColumnModel();
+                for (int i = 0; i < nameWidths.length; i++) {
+                    if (nameWidths[i].width < 0) w = autoWidth;
+                    else w = nameWidths[i].width;
+                    tableColumnModel.getColumn(i).setPreferredWidth(w);
+                }
             }
         }
         //
@@ -165,6 +180,21 @@ public class CreateComponents {
     // ---
     public static JPanel getPanel(LayoutManager layoutManager, Font font, String titledBorder, int x, int y, int width, int height, boolean visible, boolean enable) {
         JPanel panel = new JPanel();
+        panel.setLayout(layoutManager);
+        panel.setBorder(BorderFactory.createTitledBorder(
+                javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)),
+                titledBorder,
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+                javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                font
+        ));
+        panel.setBounds(x, y, width, height);
+        panel.setVisible(visible);
+        panel.setEnabled(enable);
+        return panel;
+    }
+    public static MPanelPrintableCap getPanelPrintableCap(LayoutManager layoutManager, Font font, String titledBorder, int x, int y, int width, int height, boolean visible, boolean enable) {
+        MPanelPrintableCap panel = new MPanelPrintableCap();
         panel.setLayout(layoutManager);
         panel.setBorder(BorderFactory.createTitledBorder(
                 javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)),

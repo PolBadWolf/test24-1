@@ -5,38 +5,62 @@ import org.example.test24.allinterface.bd.MeasuredBlobDecoder;
 import org.example.test24.bd.BaseData;
 import org.example.test24.bd.BaseDataException;
 import org.example.test24.bd.usertypes.DataUnitMeasured;
+import org.example.test24.bd.usertypes.Pusher;
+import org.example.test24.bd.usertypes.User;
+import org.example.test24.lib.MyLogger;
 import org.example.test24.lib.swing.CreateComponents;
+import org.example.test24.lib.swing.MLabel;
+import org.example.test24.lib.swing.MPanelPrintableCap;
+import org.example.test24.lib.swing.Scale;
 import ru.yandex.fixcolor.my_lib.graphics.swing.Plot;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.sql.Blob;
+import java.awt.event.ActionEvent;
+import java.awt.print.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 public class ViewArchive {
-    private BaseData conn;
+    // =====================
+    private static final float PG_WIDTH  = Math.round(210.0f * Scale.MM2UNIT_SCR);
+    private static final float PG_HEIGHT = Math.round(297.0f * Scale.MM2UNIT_SCR);
+    private static final float PG_LEFT   = (int) Math.ceil(30.0F * Scale.MM2UNIT_SCR);
+    private static final float PG_RIGHT  = (int) Math.ceil(15.0F * Scale.MM2UNIT_SCR);
+    private static final float PG_TOP    = (int) Math.ceil(20.0F * Scale.MM2UNIT_SCR);
+    private static final float PG_BOTTOM = (int) Math.ceil(20.0F * Scale.MM2UNIT_SCR);
+    // =====================
+    private final BaseData conn;
     public ViewArchive(BaseData conn) {
         this.conn = conn;
         new Thread(this::start, "thread view archive").start();
     }
 
-    private String root = "Архив";
+    private final String root = "Архив";
     private JFrame frame;
-    private JPanel panelMain;
+    private MPanelPrintableCap panelMain;
     private Plot plot;
     private JTree tree;
     private JScrollPane scrollPane;
+    // ======
+    private JButton buttonPrint;
+    private MLabel labelDate;
+    private MLabel labelUser;
+    private MLabel labelPusherSample;
+    private MLabel labelGraphTitle;
+    // ======
     private MyTreeModel myTreeModel;
     private void start() {
         initComponents();
     }
     private void initComponents() {
         frame = CreateComponents.getFrame("View Archive", 1024, 800, false, null, null);
-        panelMain = CreateComponents.getPanel(null, null, null, 0, 0, 700, 760,true, true);
+        panelMain = CreateComponents.getPanelPrintableCap(null, null, null, 0, 0, 700, 760,true, true);
+        panelMain.setBackground(Color.white);
         frame.add(panelMain);
         myTreeModel = new MyTreeModel();
         tree = new JTree(myTreeModel);
@@ -44,12 +68,28 @@ public class ViewArchive {
         tree.addTreeWillExpandListener(myTreeModel);
         tree.addTreeSelectionListener(myTreeModel);
         scrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setBounds(700, 0, 300, 760);
+        scrollPane.setBounds(700, 0, 300, 660); // max 760 (800 - 40)
         frame.add(scrollPane);
+        //
+        buttonPrint = CreateComponents.getButton("Печать", new Font("Dialog", Font.PLAIN,12),
+                800, 700, 80, 30, this::callButtonPrinterPush, true, false);
+        frame.add(buttonPrint);
+        //
+        CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок ла-ла-ла", new Font("Times New Roman", Font.PLAIN, 32),
+                350, 10, true, true, MLabel.POS_CENTER);
+        labelDate = CreateComponents.getLabel(panelMain, "Время измерения", new Font("Times New Roman", Font.PLAIN, 16),
+                350, 40, true, true, MLabel.POS_CENTER);
+        labelUser = CreateComponents.getLabel(panelMain, "user", new Font("Times New Roman", Font.PLAIN, 16),
+                350, 70, true, true, MLabel.POS_CENTER);
+        labelPusherSample = CreateComponents.getLabel(panelMain, "pusher", new Font("Times New Roman", Font.PLAIN, 16),
+                350, 100, true, true, MLabel.POS_CENTER);
+        labelGraphTitle = CreateComponents.getLabel(panelMain, "Динамические характеристики:", new Font("Times New Roman", Font.PLAIN, 16),
+                350, 120, false, true, MLabel.POS_CENTER);
+        //
         frame.setVisible(true);
         frame.pack();
         //
-        plot = new Plot(panelMain, 0, 200, 700, 460, 50, 50);
+        plot = new Plot(panelMain, 1, 140, 698, 460, 50, 50);
         plot.addTrend(Color.WHITE, 2);
         plot.setNetLineColor(Plot.DARKGREEN);
         plot.setNetLineWidth(1.0f);
@@ -63,6 +103,7 @@ public class ViewArchive {
         plot.setZoomXlenghtAuto(true);
         plot.setZoomXbeginAuto(false);
     }
+
     class MyTreeModel implements TreeModel, TreeWillExpandListener, TreeSelectionListener {
         private ArrayList<Shablon> nodes;
 
@@ -124,7 +165,7 @@ public class ViewArchive {
         }
 
         @Override
-        public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+        public void treeWillExpand(TreeExpansionEvent event) {
             Object o = event.getPath().getLastPathComponent();
             if (o == root) return;
             Shablon comp = (Shablon) o;
@@ -148,9 +189,7 @@ public class ViewArchive {
         }
 
         @Override
-        public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
-
-        }
+        public void treeWillCollapse(TreeExpansionEvent event) { }
 
         @Override
         public void valueChanged(TreeSelectionEvent e) {
@@ -163,13 +202,19 @@ public class ViewArchive {
     }
     private void showPusher(long id) {
         DataUnitMeasured measured;
+        User user;
+        Pusher pusherSample;
         try {
             measured = conn.getDataMeasured(id);
+            user = conn.getUser(measured.id_user);
+            pusherSample = conn.getPusher(measured.id_pusher);
         } catch (BaseDataException e) {
-            e.printStackTrace();
+            MyLogger.myLog.log(Level.SEVERE, "визуализация архива", e);
             return;
         }
-        MeasuredBlobDecoder blobDecoder = null;
+        // декодер графика
+        labelGraphTitle.setVisible(true);
+        MeasuredBlobDecoder blobDecoder;
         DistClass distClass;
         int tik0, x;
         try {
@@ -190,6 +235,38 @@ public class ViewArchive {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        buttonPrint.setEnabled(true);
+        // заголовок
+        labelDate.setText("Дата измерения " +
+                (new SimpleDateFormat("dd-MM-yyyy в HH:mm:ss")).format(measured.dateTime));
+        // здесь вывод данных о пользователе
+        labelUser.setText("Оператор: " + user.surName);
+        // здесь вывод данных о толкателе
+        labelPusherSample.setText("Регистрационный номер толкателя: \"" + pusherSample.loggerPusher.namePusher +
+                "\", тип толкателя: \"" + pusherSample.loggerPusher.typePusher.loggerTypePusher.nameType + "\"");
+        // здесь вывод данных замера
         int a = 5;
+    }
+    private void callButtonPrinterPush(ActionEvent actionEvent) {
+        PrinterJob printerJob = PrinterJob.getPrinterJob();
+        PageFormat pf = printerJob.defaultPage();
+        pf.setOrientation(PageFormat.PORTRAIT);
+        Paper paper = pf.getPaper();
+        paper.setSize(PG_WIDTH, PG_HEIGHT);
+        paper.setImageableArea(PG_LEFT, PG_TOP,
+                PG_WIDTH - (PG_LEFT + PG_RIGHT),
+                PG_HEIGHT - (PG_TOP + PG_BOTTOM));
+        pf.setPaper(paper);
+        Book book = new Book();
+        book.append(panelMain, pf);
+        if (! printerJob.printDialog()) {
+            return;
+        }
+        printerJob.setPageable(book);
+        try {
+            printerJob.print();
+        } catch (PrinterException e) {
+            MyLogger.myLog.log(Level.SEVERE, "ошибка при печати", e);
+        }
     }
 }

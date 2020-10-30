@@ -58,6 +58,7 @@ public class ScreenClass extends Application implements ScreenFx {
 
     @Override
     public void exitApp() {
+        MainFrame.mainFrame = null;
         Platform.exit();
     }
 
