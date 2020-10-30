@@ -50,7 +50,13 @@ public class ViewArchive {
     private JButton buttonPrint;
     private MLabel labelDate;
     private MLabel labelUser;
-    private MLabel labelPusherSample;
+    private MLabel labelPusherSampleTitle;
+    private MLabel labelPusherSampleForce;
+    private MLabel labelPusherSampleMove;
+    private MLabel labelPusherSampleUnClenchingTime;
+    private MLabel labelPusherMeasuredForce;
+    private MLabel labelPusherMeasuredMove;
+    private MLabel labelPusherMeasuredUnClenchingTime;
     private MLabel labelGraphTitle;
     // ======
     private MyTreeModel myTreeModel;
@@ -79,13 +85,27 @@ public class ViewArchive {
         CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок ла-ла-ла", new Font("Times New Roman", Font.PLAIN, 32),
                 350, 10, true, true, MLabel.POS_CENTER);
         labelDate = CreateComponents.getLabel(panelMain, "Время измерения", new Font("Times New Roman", Font.PLAIN, 16),
-                350, 40, true, true, MLabel.POS_CENTER);
+                350, 40, false, true, MLabel.POS_CENTER);
         labelUser = CreateComponents.getLabel(panelMain, "user", new Font("Times New Roman", Font.PLAIN, 16),
-                350, 70, true, true, MLabel.POS_CENTER);
-        labelPusherSample = CreateComponents.getLabel(panelMain, "pusher", new Font("Times New Roman", Font.PLAIN, 16),
-                350, 100, true, true, MLabel.POS_CENTER);
+                350, 70, false, true, MLabel.POS_CENTER);
+        labelPusherSampleTitle = CreateComponents.getLabel(panelMain, "pusher", new Font("Times New Roman", Font.PLAIN, 16),
+                350, 100, false, true, MLabel.POS_CENTER);
         labelGraphTitle = CreateComponents.getLabel(panelMain, "Динамические характеристики:", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 120, false, true, MLabel.POS_CENTER);
+        //
+        labelPusherSampleForce = CreateComponents.getLabel(panelMain, "Force", new Font("Times New Roman", Font.PLAIN, 16),
+                200, 640, false, true, MLabel.POS_CENTER);
+        labelPusherSampleMove = CreateComponents.getLabel(panelMain, "Move", new Font("Times New Roman", Font.PLAIN, 16),
+                350, 640, false, true, MLabel.POS_CENTER);
+        labelPusherSampleUnClenchingTime = CreateComponents.getLabel(panelMain, "Time", new Font("Times New Roman", Font.PLAIN, 16),
+                500, 640, false, true, MLabel.POS_CENTER);
+        //
+        labelPusherMeasuredForce = CreateComponents.getLabel(panelMain, "Force-M", new Font("Times New Roman", Font.PLAIN, 16),
+                200, 670, false, true, MLabel.POS_CENTER);
+        labelPusherMeasuredMove = CreateComponents.getLabel(panelMain, "Move-M", new Font("Times New Roman", Font.PLAIN, 16),
+                350, 670, false, true, MLabel.POS_CENTER);
+        labelPusherMeasuredUnClenchingTime = CreateComponents.getLabel(panelMain, "Time-M", new Font("Times New Roman", Font.PLAIN, 16),
+                500, 670, false, true, MLabel.POS_CENTER);
         //
         frame.setVisible(true);
         frame.pack();
@@ -214,7 +234,6 @@ public class ViewArchive {
             return;
         }
         // декодер графика
-        labelGraphTitle.setVisible(true);
         MeasuredBlobDecoder blobDecoder;
         DistClass distClass;
         int tik0, x;
@@ -236,17 +255,39 @@ public class ViewArchive {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        buttonPrint.setEnabled(true);
+        showComponentsForVisual();
         // заголовок
         labelDate.setText("Дата измерения " +
                 (new SimpleDateFormat("dd-MM-yyyy в HH:mm:ss")).format(measured.dateTime));
         // здесь вывод данных о пользователе
         labelUser.setText("Оператор: " + user.surName);
         // здесь вывод данных о толкателе
-        labelPusherSample.setText("Регистрационный номер толкателя: \"" + pusherSample.loggerPusher.namePusher +
+        labelPusherSampleTitle.setText("Регистрационный номер толкателя: \"" + pusherSample.loggerPusher.namePusher +
                 "\", тип толкателя: \"" + pusherSample.loggerPusher.typePusher.loggerTypePusher.nameType + "\"");
+        //
+        labelPusherSampleForce.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.forceNominal));
+        labelPusherSampleMove.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.moveNominal));
+        labelPusherSampleUnClenchingTime.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.unclenchingTime));
         // здесь вывод данных замера
+        labelPusherMeasuredForce.setText(String.valueOf(measured.forceNominal));
+        labelPusherMeasuredMove.setText(String.valueOf(measured.moveNominal));
+        labelPusherMeasuredUnClenchingTime.setText(String.valueOf(measured.unclenchingTime));
         int a = 5;
+        System.out.println(Thread.currentThread());
+    }
+    private void showComponentsForVisual() {
+        buttonPrint.setEnabled(true);
+        // декодер графика
+        labelDate.setVisible(true);
+        labelUser.setVisible(true);
+        labelPusherSampleTitle.setVisible(true);
+        labelGraphTitle.setVisible(true);
+        labelPusherSampleForce.setVisible(true);
+        labelPusherSampleMove.setVisible(true);
+        labelPusherSampleUnClenchingTime.setVisible(true);
+        labelPusherMeasuredForce.setVisible(true);
+        labelPusherMeasuredMove.setVisible(true);
+        labelPusherMeasuredUnClenchingTime.setVisible(true);
     }
     private void callButtonPrinterPush(ActionEvent actionEvent) {
         PrinterJob printerJob = PrinterJob.getPrinterJob();
