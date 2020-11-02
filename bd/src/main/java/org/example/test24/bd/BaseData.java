@@ -1,11 +1,9 @@
 package org.example.test24.bd;
 
-import org.example.test24.bd.usertypes.DataSpec;
-import org.example.test24.bd.usertypes.Pusher;
-import org.example.test24.bd.usertypes.TypePusher;
-import org.example.test24.bd.usertypes.User;
+import org.example.test24.bd.usertypes.*;
 
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 
@@ -94,6 +92,8 @@ public interface BaseData {
     int getCountPushersFromType(long id_typePusher, String[] namePusher) throws BaseDataException;
     // тип толкателя
     TypePusher getTypePusher(long id_typePusher) throws BaseDataException;
+    // чтение данных о пользователе
+    User getUser(long id_user) throws BaseDataException;
     // новые параметры spec
     void writeDataSpec(long id_user, long id_pusher) throws BaseDataException;
     // последний spec
@@ -105,4 +105,12 @@ public interface BaseData {
                        int forceNominal, int moveNominal, int unclenchingTime, Blob dataMeasured) throws BaseDataException;
     //
     BaseData cloneNewBase(String base);
+    // чтение замера
+    DataUnitMeasured getDataMeasured(long id_data) throws BaseDataException;
+    // =========================
+    ArrayList<String> getListFromYear() throws BaseDataException;
+    ArrayList<String> getListFromMounth(String year) throws BaseDataException;
+    ArrayList<String> getListFromDates(String mounth) throws BaseDataException;
+    ArrayList<DataUnit> getListFromPusherChecks(String date) throws BaseDataException;
+    // =========================
 }

@@ -11,17 +11,29 @@
  Target Server Version : 80021
  File Encoding         : 65001
 
- Date: 21/10/2020 14:42:04
+ Date: 26/10/2020 22:56:20
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for data
+-- Table structure for data_spec
 -- ----------------------------
-DROP TABLE IF EXISTS `data`;
-CREATE TABLE `data`  (
+DROP TABLE IF EXISTS `data_spec`;
+CREATE TABLE `data_spec`  (
+  `id_dataSpec` int NOT NULL AUTO_INCREMENT,
+  `date_upd` datetime(0) NULL DEFAULT NULL,
+  `id_user` int NULL DEFAULT NULL,
+  `id_pusher` int NULL DEFAULT NULL,
+  PRIMARY KEY (`id_dataSpec`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Table structure for datas
+-- ----------------------------
+DROP TABLE IF EXISTS `datas`;
+CREATE TABLE `datas`  (
   `id_data` bigint NOT NULL AUTO_INCREMENT,
   `dateTime` datetime(0) NULL DEFAULT NULL,
   `id_spec` bigint NULL DEFAULT NULL,
@@ -35,18 +47,6 @@ CREATE TABLE `data`  (
   `unclenchingTime` int NULL DEFAULT NULL,
   `dataMeasured` longblob NULL,
   PRIMARY KEY (`id_data`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Table structure for data_spec
--- ----------------------------
-DROP TABLE IF EXISTS `data_spec`;
-CREATE TABLE `data_spec`  (
-  `id_dataSpec` int NOT NULL AUTO_INCREMENT,
-  `date_upd` datetime(0) NULL DEFAULT NULL,
-  `id_user` int NULL DEFAULT NULL,
-  `id_pusher` int NULL DEFAULT NULL,
-  PRIMARY KEY (`id_dataSpec`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------

@@ -1,7 +1,0 @@
-#parameters sql
-#Mon Sep 28 11:05:13 YEKT 2020
-Password=TXkqMjIzNjA\=
-Port_Server=3306
-DataBase=spc3
-Url_Server=127.0.0.1
-User=root

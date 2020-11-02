@@ -1,34 +1,39 @@
-package ru.yandex.fixcolor.my_lib.graphics;
+package ru.yandex.fixcolor.my_lib.graphics.swing;
 
-import javafx.application.Platform;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
+import org.example.test24.lib.MyLogger;
+import org.example.test24.lib.swing.Scale;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class Plot {
-    private Canvas canvas;
-    private GraphicsContext gc;
+    public static final Color LIGHTGREEN = new Color(144, 238, 144);
+    public static final Color DARKGREEN = new Color(0, 100, 0);
+    // ====================
+    private JMyPane panelGraph;
+    private Graphics2D gc;
 
     // размер холста
-    private double width = 0;
-    private double height = 0;
+    private int width;
+    private int height;
 
     //          поля
     // ширина
-    private double fieldWidth = 0;
-    private double fieldHeight = 0;
+    private int fieldWidth;
+    private int fieldHeight;
     // цвет фона
     private Color fieldBackColor = Color.GRAY;
     // цвет рамки
-    private Color fieldFrameLineColor = Color.LIGHTGREEN;
+    private Color fieldFrameLineColor = LIGHTGREEN;
     // ширина рамки
-    private double fieldFrameLineWidth = 3.0;
+    private float fieldFrameLineWidth = 3.0f;
 
     //          окно
     // цвет фона
@@ -36,9 +41,9 @@ public class Plot {
 
     //          сетка
     // цвет линий сетки
-    private Color netLineColor = Color.DARKGREEN;
+    private Color netLineColor = DARKGREEN;
     // ширина линий сетки
-    private double netLineWidth = 1.0;
+    private float netLineWidth = 1.0f;
 
     private int     indexBegin = 0;
     private double  levelXbegin = 0.0;
@@ -68,20 +73,18 @@ public class Plot {
 
     private class Trend {
         private Color lineColor;
-        private double lineWidth = 2.0;
+        private float lineWidth = 2.0f;
 
-        public Trend(Color lineColor, double lineWidth) {
+        public Trend(Color lineColor, float lineWidth) {
             this.lineColor = lineColor;
             this.lineWidth = lineWidth;
         }
 
-        public void rePaint(double[] x, double[] y, int lenght) {
-            gc.beginPath();
-            gc.setStroke(lineColor);
-            gc.setLineWidth(lineWidth);
-            gc.strokePolyline(x, y, lenght);
-            gc.stroke();
-            gc.closePath();
+        public void rePaint(int[] x, int[] y, int lenght) {
+            gc.setColor(lineColor);
+            gc.setStroke(new BasicStroke((float) (lineWidth * Scale.scaleUp)));
+            gc.drawPolyline(x, y, lenght);
+//            panelGraph.repaint();
         }
     }
 
@@ -96,10 +99,10 @@ public class Plot {
     }
 
     private class DatXindx {
-        public double x;
+        public int x;
         public int indx;
 
-        public DatXindx(double x, int indx) {
+        public DatXindx(int x, int indx) {
             this.x = x;
             this.indx = indx;
         }
@@ -132,29 +135,38 @@ public class Plot {
                         Thread.sleep(1);
                         continue;
                     }
-                    switch (datQueue.command) {
-                        case ClearFields:
-                            Platform.runLater(this::__clearFields);
-                            break;
-                        case ClearWindow:
-                            Platform.runLater(this::__clearWindow);
-                            break;
-                        case PaintNet:
-                            Platform.runLater(this::__paintNet);
-                            break;
-                        case RePaint:
-                            __rePaint(datQueue.datGraph);
-                            break;
-                        default:
-                            System.out.println("o!@# Plot.java MyPaint swith\r what command: " + datQueue.command);
-                    }
+                    DatQueue finalDatQueue = datQueue;
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (finalDatQueue.command) {
+                                case ClearFields:
+                                    __clearFields();
+                                    panelGraph.repaint();
+                                    break;
+                                case ClearWindow:
+                                    __clearWindow();
+                                    panelGraph.repaint();
+                                    break;
+                                case PaintNet:
+                                    __paintNet();
+                                    panelGraph.repaint();
+                                    break;
+                                case RePaint:
+                                    __rePaint(finalDatQueue.datGraph);
+                                    break;
+                                default:
+                                    System.out.println("o!@# Plot.java MyPaint swith\r what command: " + finalDatQueue.command);
+                            }
+                        }
+                    });
                 } catch (IllegalStateException ex) {
                     System.out.println("o!@# Plot.java MyPaint run()\r" + ex.toString());
                     break;
                 } catch (InterruptedException e) {
                     System.out.println("o!@# Plot.java MyPaint run() poll()\r" + e.toString());
                     break;
-                } catch (java.lang.Throwable th) {
+                } catch (Throwable th) {
                     th.printStackTrace();
                 }
             }
@@ -249,21 +261,21 @@ public class Plot {
             for (int i = indexBegin; i < indexEnd; i++) {
                 try {
                     tmpShort = datGraph.get(i);
-                } catch (java.lang.Throwable e) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
                 if (tmpShort.getxPos() >= (levelXbegin + levelXlenghtMax)) break;
                 curX = Math.round(((tmpShort.getxPos().doubleValue() - levelXbegin) / kX) + fieldWidth);
                 if ((curX - oldX) < 2)  continue;
                 oldX = curX;
-                xIndxes.add(new DatXindx(curX, i));
+                xIndxes.add(new DatXindx((int) curX, i));
             }
 
             double y;
             double yMin = levelYbegin, yMax = 0;
 
             int dropLenght = xIndxes.size();
-            double[][] massGraphcs = cirkMassive.next();
+            int[][] massGraphcs = cirkMassive.next();
             for (int i = 0; i < dropLenght; i++) {
                 // x
                 massGraphcs[0][i] = xIndxes.get(i).x;
@@ -273,7 +285,7 @@ public class Plot {
                     Short[] trendsLocal = tmpShort.getZnTrends();
                     y = trendsLocal[j].doubleValue() - levelYmin;
                     if (y < 0)  y = 0;
-                    massGraphcs[j + 1][i] = vys - y / kY;
+                    massGraphcs[j + 1][i] = (int) (vys - y / kY);
                     if (!levelYauto)    continue;
                     if (yMin > trendsLocal[j].doubleValue())   yMin = trendsLocal[j].doubleValue();
                     if (yMax < trendsLocal[j].doubleValue())   yMax = trendsLocal[j].doubleValue();
@@ -288,53 +300,50 @@ public class Plot {
             }
             if (levelYlenghtMax < 100)  levelYlenghtMax = 100;
 
-            Platform.runLater(()->{
-                __clearFields();
-                __clearWindow();
-                __paintNet();
-                for (int i = 1; i < nItemsMass + 1; i++) {
-                    trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i], dropLenght);
-                }
-            });
+            __clearFields();
+            __clearWindow();
+            __paintNet();
+            for (int i = 1; i < nItemsMass + 1; i++) {
+                trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i], dropLenght);
+            }
+            panelGraph.repaint();
+//            System.out.println(Thread.currentThread());
             busy = false;
         }
 
         private void __clearFields() {
-            gc.beginPath();
-
-            gc.setFill(fieldBackColor);
+            gc.setColor(fieldBackColor);
             gc.fillRect(0, 0, fieldWidth, height);
             gc.fillRect(0, height - fieldHeight, width, height);
 
-            double polFrameLineWidth = fieldFrameLineWidth / 2;
-            double[] x = {
+            int polFrameLineWidth = (int) (fieldFrameLineWidth / 2);
+            int[] x = {
                     fieldWidth - polFrameLineWidth,
                     fieldWidth - polFrameLineWidth,
                     width - polFrameLineWidth
             };
-            double[] y = {
+            int[] y = {
                     0,
                     height - fieldHeight + polFrameLineWidth,
                     height - fieldHeight + polFrameLineWidth
             };
 
-            gc.setStroke(fieldFrameLineColor);
-            gc.setLineWidth(fieldFrameLineWidth);
-            gc.strokePolyline(x, y, x.length);
-
-            gc.closePath();
-            gc.stroke();
+            gc.setColor(fieldFrameLineColor);
+            gc.setStroke(new BasicStroke(fieldFrameLineWidth));
+            gc.drawPolyline(x, y, x.length);
+            //panelGraph.repaint();
         }
 
         private void __clearWindow() {
-            gc.beginPath();
-            gc.setFill(windowBackColor);
+            gc.setColor(windowBackColor);
             gc.fillRect(fieldWidth, 0, width, height - fieldHeight);
-            gc.closePath();
-            gc.stroke();
+            //panelGraph.repaint();
         }
 
         private void __paintNet() {
+//            AffineTransform at = ((Graphics2D) gc).getTransform();
+//            ((Graphics2D) gc).scale(cosDn, cosDn);
+
             double xSize = width - fieldWidth;
             double ySize = height - fieldHeight;
 
@@ -367,13 +376,9 @@ public class Plot {
             xN = (int) Math.ceil(levelXlenghtMax / xStep) + 1;
             xCena = (double) xStep / 200;
 
-            double x, y, polLineWidth = netLineWidth / 2;
+            double x, y, polLineWidth = Scale.scaleUp * netLineWidth / 2;
 
-            gc.beginPath();
-            gc.setStroke(netLineColor);
-            gc.setLineWidth(netLineWidth);
-            gc.setFill(Color.YELLOW);
-            gc.setTextAlign(TextAlignment.CENTER);
+            gc.setStroke(new BasicStroke((float) (Scale.scaleUp * netLineWidth)));
 
             // x
             kX = (Math.ceil(levelXlenghtMax / xStep) * xStep) / (width - fieldWidth);
@@ -384,14 +389,15 @@ public class Plot {
                 if (x > width) {
                     continue;
                 }
-                gc.moveTo(x,  polLineWidth);
-                gc.lineTo(x, ySize - polLineWidth);
+                gc.setColor(netLineColor);
+                gc.drawLine((int) x, (int) polLineWidth, (int) x, (int) (ySize - polLineWidth));
                 double tmp = (double) Math.round(i * xCena * 1000) / 1000;
-                gc.fillText(String.valueOf(tmp), x, ySize + 20 );
+                gc.setColor(Color.YELLOW);
+                double polWidthString = gc.getFontMetrics().stringWidth(String.valueOf(tmp)) / 2;
+                gc.drawString(String.valueOf(tmp), (int) (x - polWidthString), (int) (ySize + 20 * Scale.scaleUp));
             }
 
             // y
-            gc.setTextAlign(TextAlignment.RIGHT);
             double kp = ySize / y_level;
             int iK;
             for (int i = 0; i < yN; i++) {
@@ -404,24 +410,38 @@ public class Plot {
                     break;
                 }
                 y = ySize - y;
-                gc.moveTo(fieldWidth + polLineWidth, y);
-                gc.lineTo(width - polLineWidth, y);
-                gc.fillText(String.valueOf(iK), fieldWidth - 10, y + 5);
+                gc.setColor(netLineColor);
+                gc.drawLine((int) (fieldWidth + polLineWidth), (int) y, (int) (width - polLineWidth), (int) y);
+                gc.setColor(Color.YELLOW);
+                double widthString = gc.getFontMetrics().stringWidth(String.valueOf(iK));
+                gc.drawString(String.valueOf(iK), (int) (fieldWidth - widthString - 10 * Scale.scaleUp), (int) (y + 5 * Scale.scaleUp));
             }
-
-            gc.closePath();
-            gc.stroke();
+//            ((Graphics2D) gc).scale(1, 1);
+//            ((Graphics2D) gc).setTransform(at);
+            //panelGraph.repaint();
         }
 
     }
 
-    public Plot(Canvas canvas, double fieldWidth, double fieldHeight) {
-        this.canvas = canvas;
-        this.fieldWidth = fieldWidth;
-        this.fieldHeight = fieldHeight;
-        width = canvas.getWidth();
-        height = canvas.getHeight();
-        gc = canvas.getGraphicsContext2D();
+    public Plot(JComponent parent, int x, int y, int width, int height, int fieldWidth, int fieldHeight) {
+        this.width = (int) (width * Scale.scaleUp);
+        this.height = (int) (height * Scale.scaleUp);
+        this.fieldWidth = (int) (fieldWidth * Scale.scaleUp);
+        this.fieldHeight = (int) (fieldHeight * Scale.scaleUp);
+        panelGraph = new JMyPane();
+        panelGraph.setLayout(null);
+        panelGraph.setBounds(x, y, this.width, this.height);
+        panelGraph.setBackground(parent.getBackground());
+        parent.add(panelGraph);
+        panelGraph.createBI();
+        gc = panelGraph.getGraphics2D();
+        {
+            Font font = gc.getFont();
+            font = font.deriveFont((float) (font.getSize() *  Scale.scaleUp));
+            gc.setFont(font);
+        }
+        //
+        //
         trends = new ArrayList<>();
         dataGraphics = new ArrayList<>();
         newData = new NewDataClass(0);
@@ -433,6 +453,43 @@ public class Plot {
 
     public void close() {
         myPaint.close();
+        panelGraph.closeBI(); // ????
+    }
+    private class JMyPane extends JPanel {
+        private BufferedImage bufferedImage = null;
+        private Graphics2D graphics2D = null;
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (bufferedImage == null) return;
+            Graphics2D g2 = (Graphics2D) g;
+            AffineTransform affineTransform = g2.getTransform();
+            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g2.scale(Scale.scaleDn, Scale.scaleDn);
+            g2.drawRenderedImage(bufferedImage, null);
+            g2.setTransform(affineTransform);
+        }
+        public void createBI() {
+            bufferedImage = new BufferedImage(super.getWidth(), super.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            graphics2D = bufferedImage.createGraphics();
+        }
+        public void closeBI() {
+            if (graphics2D != null) {
+                graphics2D.dispose();
+                graphics2D = null;
+            }
+            if (bufferedImage != null) {
+                bufferedImage.flush();
+                bufferedImage = null;
+            }
+        }
+
+        public Graphics2D getGraphics2D() {
+            if (graphics2D == null) createBI();
+            return graphics2D;
+        }
     }
 
     public void setFieldBackColor(Color fieldBackColor) {
@@ -443,19 +500,19 @@ public class Plot {
         return fieldBackColor;
     }
 
-    public void setFieldWidth(double fieldWidth) {
+    public void setFieldWidth(int fieldWidth) {
         this.fieldWidth = fieldWidth;
     }
 
-    public double getFieldWidth() {
+    public int getFieldWidth() {
         return fieldWidth;
     }
 
-    public void setFieldHeight(double fieldHeight) {
+    public void setFieldHeight(int fieldHeight) {
         this.fieldHeight = fieldHeight;
     }
 
-    public double getFieldHeight() {
+    public int getFieldHeight() {
         return fieldHeight;
     }
 
@@ -467,7 +524,7 @@ public class Plot {
         return fieldFrameLineColor;
     }
 
-    public void setFieldFrameLineWidth(double fieldFrameLineWidth) {
+    public void setFieldFrameLineWidth(float fieldFrameLineWidth) {
         this.fieldFrameLineWidth = fieldFrameLineWidth;
     }
 
@@ -483,11 +540,11 @@ public class Plot {
         return netLineColor;
     }
 
-    public void setNetLineWidth(double netLineWidth) {
+    public void setNetLineWidth(float netLineWidth) {
         this.netLineWidth = netLineWidth;
     }
 
-    public double getNetLineWidth() {
+    public float getNetLineWidth() {
         return netLineWidth;
     }
 
@@ -595,9 +652,10 @@ public class Plot {
         if (busy)   return;
         busy = true;
         myPaint.rePaint(dataGraphics);
+        //panelGraph.repaint();
     }
     // ----
-    public void addTrend(Color lineColor, double lineWidth) {
+    public void addTrend(Color lineColor, float lineWidth) {
         trends.add(new Trend(lineColor, lineWidth));
         //newData = new Short[trends.size() + 1];
         newData = new NewDataClass(trends.size());
@@ -646,20 +704,20 @@ public class Plot {
     }
 
     private class CirkMassive {
-        private double[][][] massInt;
+        private int[][][] massInt;
         private int indx;
 
         public CirkMassive() {
-            massInt = new double[2][][];
+            massInt = new int[2][][];
             indx = 0;
         }
 
         public void init(int ch, int n) {
-            massInt[0] = new double[ch][n];
-            massInt[1] = new double[ch][n];
+            massInt[0] = new int[ch][n];
+            massInt[1] = new int[ch][n];
         }
 
-        public double[][] next() {
+        public int[][] next() {
             indx++;
             if (indx > 1)   indx = 0;
             return massInt[indx];

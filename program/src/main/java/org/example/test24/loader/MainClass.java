@@ -5,7 +5,7 @@ import org.example.test24.bd.*;
 import org.example.test24.RS232.CommPort;
 import org.example.test24.RS232.BAUD;
 import org.example.test24.loader.dialog.StartFrame;
-import org.example.test24.loader.dialog.ViewArchive;
+import org.example.test24.loader.archive.ViewArchive;
 import org.example.test24.runner.Runner;
 import org.example.test24.screen.MainFrame;
 import org.example.test24.screen.MainFrame_interface;
@@ -39,12 +39,22 @@ public class MainClass {
                 public void messageCloseStartFrame(BaseData conn, String commPortName) {
                     connBd = conn;
                     MainClass.this.commPortName = commPortName;
-                    new Thread(() -> MainClass.this.startFx(), "start fx").start();
+                    new Thread(MainClass.this::startFx, "start fx").start();
                 }
 
                 @Override
                 public void messageSetNewData() {
 
+                }
+
+                @Override
+                public void stopSystem() {
+                    if (commPort != null) commPort.close();
+                    if (runner != null) runner.Close();
+                    if (screenFx != null) screenFx.exitApp();
+                    if (commPort != null) commPort = null;
+                    if (runner != null) runner = null;
+                    if (screenFx != null) screenFx = null;
                 }
             });
         } catch (Exception exception) {
@@ -54,7 +64,7 @@ public class MainClass {
     }
     private void startFx() {
         // создание основных объектов
-        screenFx = ScreenFx.init(() -> close());
+        screenFx = ScreenFx.init(this::close);
         runner = Runner.main(o->runnerCloser());
         commPort = CommPort.main();
         // вызов основной формы
@@ -70,9 +80,19 @@ public class MainClass {
 
             @Override
             public void startViewArchive() {
-                new Thread(()->{
-                    SwingUtilities.invokeLater(()->{
-                        new ViewArchive(connBd);
+                new Thread(()-> {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ViewArchive v = new ViewArchive(connBd);
+                                if (v != null) {
+                                    MainFrame.mainFrame.buttonArchive.setDisable(true);
+                                }
+                            } catch (Exception e) {
+                                MyLogger.myLog.log(Level.SEVERE, "запуск окна орхива", e);
+                            }
+                        }
                     });
                 }, "start arhive").start();
             }
@@ -100,6 +120,16 @@ public class MainClass {
                     public void messageSetNewData() {
                         runner.fillFields();
                         commPort.ReciveStart();
+                    }
+
+                    @Override
+                    public void stopSystem() {
+                        if (commPort != null) commPort.close();
+                        if (runner != null) runner.Close();
+                        if (screenFx != null) screenFx.exitApp();
+                        if (commPort != null) commPort = null;
+                        if (runner != null) runner = null;
+                        if (screenFx != null) screenFx = null;
                     }
                 });
             } catch (Exception exception) {
@@ -132,8 +162,8 @@ public class MainClass {
                 runner = null;
             }
             if (screenFx != null) {
-//                screenFx.exitApp();
-//                screenFx = null;
+                screenFx.exitApp();
+                screenFx = null;
 //                screenFx.setVisible(false);
             }
         }, "restart").start();

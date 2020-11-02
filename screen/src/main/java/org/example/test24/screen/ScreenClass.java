@@ -46,6 +46,7 @@ public class ScreenClass extends Application implements ScreenFx {
         primaryStage.setTitle("title fx window");
         primaryStage.show();
         stage = primaryStage;
+        stage.setResizable(false);
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -57,6 +58,7 @@ public class ScreenClass extends Application implements ScreenFx {
 
     @Override
     public void exitApp() {
+        MainFrame.mainFrame = null;
         Platform.exit();
     }
 

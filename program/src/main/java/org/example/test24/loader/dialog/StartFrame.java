@@ -9,6 +9,10 @@ import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.swing.*;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.logging.Level;
@@ -20,6 +24,7 @@ public class StartFrame {
     public interface CallBack {
         void messageCloseStartFrame(BaseData conn, String commPortName);
         void messageSetNewData();
+        void stopSystem();
     }
     // ----------------------------------
     // title
@@ -58,7 +63,7 @@ public class StartFrame {
     private JLabel viewLabelMove;
     private JLabel viewLabelUnclenching;
 
-    private Canvas canvas;
+    private JButton buttonExit;
 
     // ===============================================
     //             флаги
@@ -241,7 +246,7 @@ public class StartFrame {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                e.getWindow().removeAll();
+                callBack.stopSystem();
                 System.exit(2);
             }
         });
@@ -379,11 +384,18 @@ public class StartFrame {
             frame.add(buttonWork);
             frame.add(buttonTuning);
             frame.add(buttonSetPassword);
+            buttonWork.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "WorkButtonEnter");
+            buttonWork.getActionMap().put("WorkButtonEnter", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    callReturnToWork(e);
+                }
+            });
 
             JPanel panel = new JPanel();
             panel.setBounds(50, 50, 300, 300);
 
-            canvas = new Canvas();
+            //canvas = new Canvas();
         } // кнопки
         {
             jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 380, 320, 160, 90,true, true );
@@ -438,7 +450,15 @@ public class StartFrame {
         fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 190,120, 24, null, this::callEnter, false, true);
         frame.add(fieldPassword);
 
+        buttonExit = CreateComponents.getButton("Выход", new Font("Times New Roman", Font.PLAIN, 14),
+                80, 330, 90, 24, this::callExit, false, true);
+        frame.add(buttonExit);
+
         frame.pack();
+    }
+
+    private void callExit(ActionEvent event) {
+        frame.dispose();
     }
 
     private void onTitleComponents() {
@@ -467,6 +487,7 @@ public class StartFrame {
         buttonSetPassword.setVisible(true);
         jPanel1.setVisible(true);
         buttonTuning.setVisible(false);
+        buttonExit.setVisible(true);
         //
         buttonTuning.setEnabled(true);
         buttonSetPassword.setEnabled(false);
@@ -534,7 +555,7 @@ public class StartFrame {
             // проверка на локального админа
             if (!checkIntegratedAdministrator(surName, pass)) {
                 buttonEnter.setEnabled(false);
-                buttonTuning.setVisible(false);
+                buttonOffForErrorPass();
                 MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
                     buttonEnter.setEnabled(true);
                     frame.requestFocus();
@@ -554,8 +575,9 @@ public class StartFrame {
         buttonTuning.setVisible(false);
         // проверка пароля у пользователя из списка (БД)
         if (!selectUser.userPassword.equals(password)) {
-            myLog.log(Level.FINE, "у пользователя из списка не совпал пароль (" + selectUser.userPassword + ")");
+            myLog.log(Level.FINE, " у пользователя из списка не совпал пароль"); //(" + selectUser.userPassword + ")");
             // отключить кнопки управления
+            buttonOffForErrorPass();
             saveEnableComponentsStartFrame.save();
             saveEnableComponentsStartFrame.offline();
             myLog.log(Level.INFO, "ошибка ввода пароля: " + selectUser.surName + "/" + password);
@@ -577,6 +599,14 @@ public class StartFrame {
         buttonWork.setEnabled(true);
         // разрешение выбора толкателей
         comboBoxPusher.setEnabled(true);
+        buttonWork.requestFocus();
+    }
+    private void buttonOffForErrorPass() {
+        buttonTuning.setVisible(false);
+        buttonWork.setEnabled(false);
+        buttonEditPushers.setEnabled(false);
+        buttonEditUsers.setEnabled(false);
+        buttonSetPassword.setEnabled(false);
     }
     // обработка новый пароль
     private void callSetNewPassword(ActionEvent f) {
