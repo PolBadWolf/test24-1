@@ -247,14 +247,6 @@ public class StartFrame {
                 super.windowClosing(e);
                 System.exit(2);
             }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-                callBack.stopSystem();
-                frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                super.windowClosed(e);
-                System.exit(3);
-            }
         });
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
@@ -464,8 +456,10 @@ public class StartFrame {
     }
 
     private void callExit(ActionEvent event) {
+        callBack.stopSystem();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.dispose();
+        System.exit(3);
     }
 
     private void onTitleComponents() {
