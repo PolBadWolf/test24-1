@@ -10,8 +10,6 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -77,12 +75,9 @@ public class FilterSortField2Table<T> {
                 fiterDoc();
             }
         });
-        textField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (results == null || results.size() == 0) return;
-                callBack.selectRow(results.get(0).getIndex());
-            }
+        textField.addActionListener(e -> {
+            if (results == null || results.size() == 0) return;
+            callBack.selectRow(results.get(0).getIndex());
         });
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override

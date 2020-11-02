@@ -7,8 +7,8 @@ import java.sql.SQLException;
 
 public class MeasuredBlobDecoder {
     private static final int baseLenght = 8;
-    private Blob blob;
-    private long lenght;
+    private final Blob blob;
+    private final long lenght;
     public MeasuredBlobDecoder(Blob blob) throws Exception {
         this.blob = blob;
         try {

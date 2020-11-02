@@ -1,4 +1,4 @@
-package org.example.test24.screen;
+package ru.yandex.fixcolor.tests.spc.screen;
 
 public interface ScreenFx {
     interface Closer {

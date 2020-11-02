@@ -5,15 +5,12 @@ import me.xdrop.fuzzywuzzy.model.BoundExtractedResult;
 
 import javax.swing.*;
 import javax.swing.text.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SelectComboBox2Table_Top<T> {
     private final JTable table;
-    private final JComboBox<T> comboBox;
     private List<T> collection;
     private final int rowMax;
     //
@@ -21,7 +18,6 @@ public class SelectComboBox2Table_Top<T> {
     private String textFilter;
     private List<BoundExtractedResult<T>> resultList;
     private T singleT;
-    private final String lostName;
     private boolean lock = true;
     //
 
@@ -31,11 +27,9 @@ public class SelectComboBox2Table_Top<T> {
     }
 
     public SelectComboBox2Table_Top(JComboBox<T> comboBox, JTable table, T[] collection, int rowMax, String lostName) {
-        this.comboBox = comboBox;
         this.table = table;
         this.collection = Arrays.asList(collection);
         this.rowMax = rowMax;
-        this.lostName = lostName;
         //
         //iKeep = false;
         textFilter = "";
@@ -57,38 +51,35 @@ public class SelectComboBox2Table_Top<T> {
                 comboBoxFilterDo();
             }
         });
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (comboLockSelect) {
-                    comboLockSelect = false;
-                    return;
-                }
-                comboLockSelect = true;
-                Object o;
-                try {
-                    o = comboBox.getSelectedItem();
-                    if (o != null) {
-                        if (o.getClass().getSimpleName().equals("String")) {
-                            String s = (String) o;
-                            if (s.equals(lostName)) {
-                                return;
-                            }
-                        }
-                        if (resultList.size() > 0) {
-                            comboBox.setSelectedItem(resultList.get(0).getReferent());
-                        }
-                    } else {
-                        comboBox.setSelectedItem(null);
-                    }
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                } finally {
-                    table.clearSelection();
-                    table.setVisible(false);
-                }
+        comboBox.addActionListener(e -> {
+            if (comboLockSelect) {
                 comboLockSelect = false;
+                return;
             }
+            comboLockSelect = true;
+            Object o;
+            try {
+                o = comboBox.getSelectedItem();
+                if (o != null) {
+                    if (o.getClass().getSimpleName().equals("String")) {
+                        String s = (String) o;
+                        if (s.equals(lostName)) {
+                            return;
+                        }
+                    }
+                    if (resultList.size() > 0) {
+                        comboBox.setSelectedItem(resultList.get(0).getReferent());
+                    }
+                } else {
+                    comboBox.setSelectedItem(null);
+                }
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            } finally {
+                table.clearSelection();
+                table.setVisible(false);
+            }
+            comboLockSelect = false;
         });
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) return;
@@ -121,7 +112,7 @@ public class SelectComboBox2Table_Top<T> {
         };
         tableModel.setTitles(((MyJTable) table).titles);
         table.setModel(tableModel);
-        ((MyJTable) table).setCallUpdate(jTable -> {
+        ((MyJTable) table).setCallBack(() -> {
             doFilter();
             int row = table.getRowCount();
             if (row == 0) row = 1;
@@ -132,10 +123,6 @@ public class SelectComboBox2Table_Top<T> {
         });
     }
     private void comboBoxFilterDo() {
-//        if (!iKeep) {
-//            iKeep = true;
-//            return;
-//        }
         if (!table.isVisible()) table.setVisible(true);
         table.updateUI();
     }

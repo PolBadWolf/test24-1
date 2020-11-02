@@ -1,10 +1,7 @@
 package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
 import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.DataSpec;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.Pusher;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.TypePusher;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.User;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.lib.swing.*;
 
@@ -266,7 +263,7 @@ public class StartFrame {
                     "запуск начального экрана",
                     "структура БД нарушена - требуется вмешательство администратора",
                     30_000,
-                    o -> {
+                    () -> {
                         onInputComponents();
                         frame.requestFocus();
                     }
@@ -545,7 +542,7 @@ public class StartFrame {
         if (selectUser == null) {
             surName = (String) comboBoxUsers.getSelectedItem();
             if (surName == null) {
-                MySwingUtil.showMessage(frame, "ошибка", "пользователь не назначен", 5_000, o-> {
+                MySwingUtil.showMessage(frame, "ошибка", "пользователь не назначен", 5_000, ()-> {
                     buttonEnter.setEnabled(true);
                     frame.requestFocus();
                 });
@@ -557,7 +554,7 @@ public class StartFrame {
             if (!checkIntegratedAdministrator(surName, pass)) {
                 buttonEnter.setEnabled(false);
                 buttonOffForErrorPass();
-                MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
+                MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, ()-> {
                     buttonEnter.setEnabled(true);
                     frame.requestFocus();
                 });
@@ -582,7 +579,7 @@ public class StartFrame {
             saveEnableComponentsStartFrame.save();
             saveEnableComponentsStartFrame.offline();
             myLog.log(Level.INFO, "ошибка ввода пароля: " + selectUser.surName + "/" + password);
-            MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, o-> {
+            MySwingUtil.showMessage(frame, "ошибка", "пароль не верен", 5_000, ()-> {
                 saveEnableComponentsStartFrame.restore();
                 frame.requestFocus();
             });
@@ -613,7 +610,7 @@ public class StartFrame {
     private void callSetNewPassword(ActionEvent f) {
         User currentUser = (User) comboBoxUsers.getSelectedItem();
         if (currentUser == null) {
-            MySwingUtil.showMessage(frame, "установка нового пароля", "пользователь не выбран", 5_000, o -> {
+            MySwingUtil.showMessage(frame, "установка нового пароля", "пользователь не выбран", 5_000, () -> {
                 buttonSetPassword.setEnabled(true);
                 frame.requestFocus();
             });
@@ -623,7 +620,7 @@ public class StartFrame {
         }
         String newPassword = fieldPassword.getText();
         if  (newPassword.length() == 0) {
-            MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, o -> {
+            MySwingUtil.showMessage(frame, "установка нового пароля", "новый пароль пустой !!!", 5_000, () -> {
                 buttonSetPassword.setEnabled(true);
                 frame.requestFocus();
             });
@@ -635,7 +632,7 @@ public class StartFrame {
             connBD.setNewUserPassword(currentUser.id_loggerUser, currentUser, newPassword);
             currentUser.userPassword = newPassword;
         } catch (Exception e) {
-            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка установки нового пароля", 5_000, o -> {
+            MySwingUtil.showMessage(frame, "установка нового пароля", "ошибка установки нового пароля", 5_000, () -> {
                 buttonSetPassword.setEnabled(true);
                 frame.requestFocus();
             });
@@ -819,7 +816,7 @@ public class StartFrame {
             } catch (BaseDataException bde) {
                 myLog.log(Level.SEVERE, "ошибка редактирования толкателей", bde);
                 MySwingUtil.showMessage(frame, "редактор толкателей", "ошибка редактирования толкателей",
-                        5_000, o -> {
+                        5_000, () -> {
                             saveEnableComponentsStartFrame.restore();
                             frame.requestFocus();
                             pusherSelectComboBox2Table.setLock(false);

@@ -1,4 +1,4 @@
-package org.example.test24.screen;
+package ru.yandex.fixcolor.tests.spc.screen;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

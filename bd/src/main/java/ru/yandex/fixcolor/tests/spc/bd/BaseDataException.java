@@ -1,7 +1,7 @@
 package ru.yandex.fixcolor.tests.spc.bd;
 
 public class BaseDataException extends Exception {
-    private Status status;
+    private final Status status;
 
     public BaseDataException(Status status) {
         this.status = status;

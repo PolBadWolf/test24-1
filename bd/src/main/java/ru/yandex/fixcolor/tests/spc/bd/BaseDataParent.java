@@ -158,7 +158,7 @@ class BaseDataParent implements BaseData {
         data = checkStructureTable(
                 base,
                 "datas",
-                new ArrayList(Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                         "id_data",
                         "dateTime",
                         "id_spec",
@@ -176,7 +176,7 @@ class BaseDataParent implements BaseData {
         data_spec = checkStructureTable(
                 base,
                 "data_spec",
-                new ArrayList(Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                         "id_dataSpec",
                         "date_upd",
                         "id_user",
@@ -186,7 +186,7 @@ class BaseDataParent implements BaseData {
         users = checkStructureTable(
                 base,
                 "users",
-                new ArrayList(Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                         "id_user",
                         "date_reg",
                         "id_loggerUser",
@@ -196,7 +196,7 @@ class BaseDataParent implements BaseData {
         users_logger = checkStructureTable(
                 base,
                 "users_logger",
-                new ArrayList(Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                         "id_loggerUser",
                         "date_upd",
                         "id_loggerUserEdit",
@@ -209,7 +209,7 @@ class BaseDataParent implements BaseData {
         pushers = checkStructureTable(
                 base,
                 "pushers",
-                new ArrayList(Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                         "id_pusher",
                         "date_reg",
                         "id_loggerPusher",
@@ -219,7 +219,7 @@ class BaseDataParent implements BaseData {
         logger_pushers = checkStructureTable(
                 base,
                 "pushers_logger",
-                new ArrayList(Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                         "id_loggerPusher",
                         "date_upd",
                         "id_loggerUserEdit",
@@ -231,7 +231,7 @@ class BaseDataParent implements BaseData {
         pusherstype = checkStructureTable(
                 base,
                 "pusherstype",
-                new ArrayList(Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                         "id_typePusher",
                         "date_reg",
                         "id_loggerTypePusher",
@@ -241,7 +241,7 @@ class BaseDataParent implements BaseData {
         pusherstype_logger = checkStructureTable(
                 base,
                 "pusherstype_logger",
-                new ArrayList(Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                        "id_loggerTypePusher",
                        "date_upd",
                         "id_loggerUserEdit",
@@ -912,8 +912,7 @@ class BaseDataParent implements BaseData {
 
     @Override
     public BaseData cloneNewBase(String base) {
-        BaseData baseData = new BaseDataParent(connection, base);
-        return baseData;
+        return new BaseDataParent(connection, base);
     }
     protected BaseDataParent(Connection connection, String base) {
         this.connection = connection;
@@ -1139,8 +1138,8 @@ class BaseDataParent implements BaseData {
         internalCheckConnect();
         internalAutoCommit(true);
         //
-        Statement statement = null;
-        ResultSet result = null;
+        Statement statement;
+        ResultSet result;
         String query;
         Pusher pusher = null;
         //
@@ -1210,10 +1209,10 @@ class BaseDataParent implements BaseData {
         internalCheckConnect();
         internalAutoCommit(true);
         //
-        Statement statement = null;
-        ResultSet result = null;
+        Statement statement;
+        ResultSet result;
         String query;
-        long id_typePusher = -1;
+        long id_typePusher;
 
         try {
             statement = connection.createStatement();
@@ -1239,7 +1238,7 @@ class BaseDataParent implements BaseData {
     // количество толкателей заданого типа
     @Override
     public int getCountPushersFromType(long id_typePusher, String[] targetNamePusher) throws BaseDataException {
-        if (targetNamePusher.length != 1) new BaseDataException("ошибка указателя имени", Status.ERROR);
+        if (targetNamePusher.length != 1) throw  new BaseDataException("ошибка указателя имени", Status.ERROR);
         internalCheckConnect();
         internalAutoCommit(true);
 
@@ -1407,7 +1406,7 @@ class BaseDataParent implements BaseData {
     // -----
     protected void internalCheckConnect() throws BaseDataException {
         if (connection == null) { throw new BaseDataException("соединение не установлено", Status.CONNECT_NO_CONNECTION); }
-        boolean fl = false;
+        boolean fl;
         try {
             fl = connection.isClosed();
         } catch (SQLException e) {

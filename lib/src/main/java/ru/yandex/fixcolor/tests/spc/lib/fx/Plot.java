@@ -57,17 +57,17 @@ public class Plot {
     private int    yStep;
 
     // масив графиков
-    private ArrayList<Trend> trends;
-    private ArrayList<NewDataClass> dataGraphics;
-    private MyPaint myPaint;
+    private final ArrayList<Trend> trends;
+    private final ArrayList<NewDataClass> dataGraphics;
+    private final MyPaint myPaint;
     private NewDataClass newData;
-    private CirkMassive cirkMassive;
+    private final CirkMassive cirkMassive;
 
     private boolean busy = false;
 
     private class Trend {
         private Color lineColor;
-        private double lineWidth = 2.0;
+        private double lineWidth;
 
         public Trend(Color lineColor, double lineWidth) {
             this.lineColor = lineColor;

@@ -2,15 +2,12 @@ package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
 import ru.yandex.fixcolor.tests.spc.bd.BaseData;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.User;
-import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
-import ru.yandex.fixcolor.tests.spc.lib.swing.FilterSortField2Table;
-import ru.yandex.fixcolor.tests.spc.lib.swing.MySwingUtil;
+import ru.yandex.fixcolor.tests.spc.lib.swing.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
@@ -182,7 +179,7 @@ public class EditUsers extends JFrame {
                     "новый пользователь",
                     "имя пользователя не задано",
                     5_000,
-                    o -> {
+                    () -> {
                         buttonNewUser.setEnabled(true);
                         this.requestFocus();
                     }
@@ -195,7 +192,7 @@ public class EditUsers extends JFrame {
                     "новый пользователь",
                     "пароль пустой",
                     5_000,
-                    o -> {
+                    () -> {
                         buttonNewUser.setEnabled(true);
                         this.requestFocus();
                     }
@@ -216,7 +213,7 @@ public class EditUsers extends JFrame {
                     "новый пользователь",
                     "такой пользователь уже существует",
                     5_000,
-                    o -> {
+                    () -> {
                         buttonNewUser.setEnabled(true);
                         this.requestFocus();
                     }
@@ -240,7 +237,7 @@ public class EditUsers extends JFrame {
                     "редактирование пользователя",
                     "имя пользователя не задано",
                     5_000,
-                    o -> {
+                    () -> {
                         buttonNewUser.setEnabled(true);
                         onButtonEdit();
                     }
@@ -254,7 +251,7 @@ public class EditUsers extends JFrame {
                     "редактирование пользователя",
                     "пароль пустой",
                     5_000,
-                    o -> {
+                    () -> {
                         buttonNewUser.setEnabled(true);
                         onButtonEdit();
                     }
@@ -279,7 +276,7 @@ public class EditUsers extends JFrame {
                     "редактирование пользователя",
                     "такой пользователь уже существует",
                     5_000,
-                    o -> {
+                    () -> {
                         buttonNewUser.setEnabled(true);
                         onButtonEdit();
                     }

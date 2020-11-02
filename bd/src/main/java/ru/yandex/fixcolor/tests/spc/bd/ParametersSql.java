@@ -11,7 +11,7 @@ class ParametersSql implements BaseData.Parameters {
     final static String fileNameMsSql = "ms_sql.txt";
     // ------------------------------------------------
     private String fileName;
-    private TypeBaseDate typeBaseDate;
+    private final TypeBaseDate typeBaseDate;
     private Status stat;
     private String ipServer;
     private String portServer;

@@ -19,9 +19,7 @@ public class MyBlob implements Blob {
     public MyBlob(byte[] bytes) {
         len = bytes.length;
         buf = new byte[(int) len];
-        for (int i = 0; i < len; i++) {
-            buf[i] = bytes[i];
-        }
+        System.arraycopy(bytes, 0, buf, 0, (int) len);
         origLen = len;
     }
 
@@ -69,8 +67,7 @@ public class MyBlob implements Blob {
     @Override
     public InputStream getBinaryStream() throws SQLException {
         isValid();
-        InputStream stream = new ByteArrayInputStream(buf);
-        return stream;
+        return new ByteArrayInputStream(buf);
     }
 
     @Override

@@ -11,7 +11,7 @@ public class MyUtil {
         if (space) {
             comboBox.addItem(null);
         }
-        Arrays.stream(list).forEach(t -> comboBox.addItem(t));
+        Arrays.stream(list).forEach(comboBox::addItem);
         if (def != null) comboBox.setSelectedItem(def);
     }
 }

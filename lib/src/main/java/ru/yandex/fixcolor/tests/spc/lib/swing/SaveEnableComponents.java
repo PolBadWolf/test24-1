@@ -3,8 +3,8 @@ package ru.yandex.fixcolor.tests.spc.lib.swing;
 import java.awt.*;
 
 public class SaveEnableComponents {
-    private Component[] components;
-    private boolean[] stats;
+    private final Component[] components;
+    private final boolean[] stats;
 
     public SaveEnableComponents(Component[] components) {
         this.components = components;
@@ -22,13 +22,13 @@ public class SaveEnableComponents {
         }
     }
     public void offline() {
-        for (int i = 0; i < components.length; i++) {
-            components[i].setEnabled(false);
+        for (Component component : components) {
+            component.setEnabled(false);
         }
     }
     public void online() {
-        for (int i = 0; i < components.length; i++) {
-            components[i].setEnabled(true);
+        for (Component component : components) {
+            component.setEnabled(true);
         }
     }
 }

@@ -1,20 +1,12 @@
 package ru.yandex.fixcolor.tests.spc.loader.archive;
 
 import javafx.application.Platform;
-import ru.yandex.fixcolor.tests.spc.bd.BaseData;
-import ru.yandex.fixcolor.tests.spc.bd.BaseDataException;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.DataUnitMeasured;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.Pusher;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.User;
-import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
-import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
-import ru.yandex.fixcolor.tests.spc.lib.swing.MLabel;
-import ru.yandex.fixcolor.tests.spc.lib.swing.MPanelPrintableCap;
-import ru.yandex.fixcolor.tests.spc.lib.swing.Scale;
-import org.example.test24.screen.MainFrame;
-import ru.yandex.fixcolor.tests.spc.lib.swing.Plot;
-import ru.yandex.fixcolor.tests.spc.allinterface.bd.DistClass;
-import ru.yandex.fixcolor.tests.spc.allinterface.bd.MeasuredBlobDecoder;
+import ru.yandex.fixcolor.tests.spc.bd.*;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
+import ru.yandex.fixcolor.tests.spc.lib.*;
+import ru.yandex.fixcolor.tests.spc.lib.swing.*;
+import ru.yandex.fixcolor.tests.spc.allinterface.bd.*;
+import ru.yandex.fixcolor.tests.spc.screen.MainFrame;
 import ru.yandex.fixcolor.tests.spc.loader.MainClass;
 
 import javax.swing.*;
@@ -157,12 +149,9 @@ public class ViewArchive {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        MainClass.getScreenFx().setRootFocus();
-                        MainFrame.mainFrame.buttonArchive.setDisable(false);
-                    }
+                Platform.runLater(() -> {
+                    MainClass.getScreenFx().setRootFocus();
+                    MainFrame.mainFrame.buttonArchive.setDisable(false);
                 });
             }
         });
@@ -257,7 +246,9 @@ public class ViewArchive {
 
         @Override
         public void valueChanged(TreeSelectionEvent e) {
-            Object node = e.getNewLeadSelectionPath().getLastPathComponent();
+            TreePath path = e.getNewLeadSelectionPath();
+            if (path == null) return;
+            Object node = path.getLastPathComponent();
             if (node == root) return;
             int level = ((Shablon) node).getLevel();
             if (level < 3) return;

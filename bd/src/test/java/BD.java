@@ -75,7 +75,7 @@ public class BD {
     @Test
     public void _01_getListBase() throws Exception {
         System.out.println("getListBase:");
-        String[] list = null;
+        String[] list;
         list = getConn().getListBase();
         if (list == null) throw new Exception("ошибка получения списка");
         Arrays.stream(list).forEach(System.out::println);
@@ -108,9 +108,7 @@ public class BD {
         System.out.println("getListUsers(true):");
         BaseData conn = getConn();
         User[] listUser = conn.getListUsers(true);
-        Arrays.stream(listUser).forEach(user -> {
-            System.out.println("пользователь: \"" + user.surName + "\" , пароль: \"" + user.userPassword + "\"");
-        });
+        Arrays.stream(listUser).forEach(user -> System.out.println("пользователь: \"" + user.surName + "\" , пароль: \"" + user.userPassword + "\""));
         System.out.println();
     }
 
@@ -120,7 +118,7 @@ public class BD {
         BaseData conn = getConn();
         User[] listUsers = conn.getListUsers(true);
         User[] target = new User[1];
-        if (searchUser(testRecord1, listUsers, target)) new Exception("ошибка поиска пользователя");
+        if (searchUser(testRecord1, listUsers, target)) throw  new Exception("ошибка поиска пользователя");
         User user = target[0];
         String password = "12";
         conn.setNewUserPassword(0, user, password);
@@ -134,7 +132,7 @@ public class BD {
         BaseData conn = getConn();
         User[] listUsers = conn.getListUsers(true);
         User[] target = new User[1];
-        if (searchUser(testRecord1, listUsers, target)) new Exception("ошибка поиска пользователя");
+        if (searchUser(testRecord1, listUsers, target)) throw new Exception("ошибка поиска пользователя");
         User user = target[0];
         conn.updateDataUser(user, 0, testRecord2, user.userPassword, user.rang);
         System.out.println("ok");
@@ -185,8 +183,8 @@ public class BD {
         BaseData conn = getConn();
         TypePusher[] listTypePushers = conn.getListTypePushers(true);
         TypePusher typePusher;
-        for (int i = 0; i < listTypePushers.length; i++) {
-            typePusher = listTypePushers[i];
+        for (TypePusher listTypePusher : listTypePushers) {
+            typePusher = listTypePusher;
             System.out.println(typePusher.id_typePusher + ":" + typePusher.loggerTypePusher.id_loggerTypePusher + ":" + typePusher.loggerTypePusher.nameType);
         }
         System.out.println("ok");
@@ -199,7 +197,7 @@ public class BD {
         BaseData conn = getConn();
         TypePusher[] listTypePushers = conn.getListTypePushers(true);
         TypePusher[] target = new TypePusher[1];
-        if (searchTypePusher(testRecord1, listTypePushers, target)) new Exception("ошибка поиска типа пользователя");
+        if (searchTypePusher(testRecord1, listTypePushers, target)) throw new Exception("ошибка поиска типа пользователя");
         TypePusher typePusher = target[0];
         conn.updateTypePusher(typePusher, 0, testRecord2, 101, 88, 7);
         System.out.println("ok");
@@ -232,8 +230,8 @@ public class BD {
         BaseData conn = getConn();
         TypePusher[] listTypePushers = conn.getListTypePushers(false);
         TypePusher typePusher;
-        for (int i = 0; i < listTypePushers.length; i++) {
-            typePusher = listTypePushers[i];
+        for (TypePusher listTypePusher : listTypePushers) {
+            typePusher = listTypePusher;
             System.out.println(typePusher.id_typePusher + ":" + typePusher.loggerTypePusher.id_loggerTypePusher + ":" + typePusher.loggerTypePusher.nameType +
                     "  <==>  " + (typePusher.date_unreg == null ? "NULL" : typePusher.date_unreg.toString()));
         }
@@ -339,15 +337,12 @@ public class BD {
         System.out.println("getCountPushersFromType:");
         BaseData conn = getConn();
         long id_typePusher;
-        long id_pusher;
         int count;
         TypePusher[] targetTypePusher = new TypePusher[1];
         String[] targetNamePusher = new String[1];
         Pusher[] targetPusher = new Pusher[1];
         // создать тип толкателя
         id_typePusher = conn.writeNewTypePusher(0, "c_pu", 222, 22, 2);
-        // создать толкатель
-        id_pusher = conn.writeNewPusher(0, "pu_c", id_typePusher);
         // подсчитать
         count = conn.getCountPushersFromType(id_typePusher, targetNamePusher);
         Assert.assertNotEquals(0, count);

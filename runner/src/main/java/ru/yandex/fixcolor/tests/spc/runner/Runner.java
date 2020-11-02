@@ -2,7 +2,7 @@ package ru.yandex.fixcolor.tests.spc.runner;
 
 import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
 import ru.yandex.fixcolor.tests.spc.bd.BaseData;
-import org.example.test24.screen.MainFrame_interface;
+import ru.yandex.fixcolor.tests.spc.screen.MainFrame_interface;
 
 import java.util.function.Consumer;
 
@@ -10,11 +10,11 @@ public interface Runner {
     interface Closer {
         void close();
     }
-    static Runner main(Consumer closer) {
-        return new RunningClass(closer);
+    static Runner main() {
+        return new RunningClass();
     }
 
-    void init(BaseData bdSql, CommPort commPort, MainFrame_interface mainFrame);
+    void init(BaseData bdSql, MainFrame_interface mainFrame);
     void fillFields();
     void reciveRsPush(byte[] bytes, int lenght);
 

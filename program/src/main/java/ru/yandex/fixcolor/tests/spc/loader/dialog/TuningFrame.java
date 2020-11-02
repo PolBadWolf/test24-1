@@ -1,21 +1,14 @@
 package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
-import ru.yandex.fixcolor.tests.spc.rs232.BAUD;
-import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
+import ru.yandex.fixcolor.tests.spc.rs232.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.User;
-import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
-import ru.yandex.fixcolor.tests.spc.lib.swing.MySwingUtil;
-import ru.yandex.fixcolor.tests.spc.lib.swing.MyUtil;
-import ru.yandex.fixcolor.tests.spc.lib.swing.SaveEnableComponents;
+import ru.yandex.fixcolor.tests.spc.lib.swing.*;
 import ru.yandex.fixcolor.tests.spc.bd.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.Arrays;
-import java.util.Date;
+import java.awt.event.*;
+import java.util.*;
 import java.util.logging.Level;
 
 import static ru.yandex.fixcolor.tests.spc.lib.MyLogger.myLog;
@@ -412,7 +405,7 @@ class TuningFrame {
             } catch (BaseDataException bde) {
                 myLog.log(Level.SEVERE, "ошибка редактирования толкателей", bde);
                 MySwingUtil.showMessage(frameTuning, "редактор толкателей", "ошибка редактирования толкателей",
-                        5_000, o -> {
+                        5_000, () -> {
                             saveEnableComponents.restore();
                             frameTuning.requestFocus();
                         }

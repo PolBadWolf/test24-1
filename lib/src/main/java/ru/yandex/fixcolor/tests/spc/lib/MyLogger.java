@@ -3,9 +3,7 @@ package ru.yandex.fixcolor.tests.spc.lib;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.NoSuchFileException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.logging.*;
 
@@ -57,15 +55,17 @@ public class MyLogger {
                             }
                         }
                 );
-            } catch (NoSuchFileException e) {
-                System.out.println("Ошибка создания файлово логера:");
-                e.printStackTrace();
-            }catch (IOException e) {
+            } catch (IOException e ) {
                 System.out.println("Ошибка создания файлово логера:");
                 e.printStackTrace();
             }
-            handler.setLevel(fileLevel);
-            myLog.addHandler(handler);
+            if (handler != null) {
+                handler.setLevel(fileLevel);
+                myLog.addHandler(handler);
+            } else {
+                System.out.println("Ошибка создания логера");
+                System.exit(-10);
+            }
         }
     }
 }

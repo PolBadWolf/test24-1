@@ -25,6 +25,7 @@ public class Reflection {
         }
     }
     //
+    @SuppressWarnings("unchecked")
     public static <T> T getField(Object o, String nameField) {
         T zn = null;
         try {

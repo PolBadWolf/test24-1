@@ -1,10 +1,7 @@
 package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
-import ru.yandex.fixcolor.tests.spc.bd.BaseData;
-import ru.yandex.fixcolor.tests.spc.bd.BaseDataException;
-import ru.yandex.fixcolor.tests.spc.bd.Status;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.Pusher;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.TypePusher;
+import ru.yandex.fixcolor.tests.spc.bd.*;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.lib.swing.*;
 
 import javax.swing.*;
@@ -260,7 +257,7 @@ public class EditPushers {
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "обновление списка толкателей", e);
             MySwingUtil.showMessage(frame, "ошибка БД", "обновление списка толкателей",
-                    10_000, o -> frame.requestFocus()
+                    10_000, () -> frame.requestFocus()
             );
             return true;
         }
@@ -288,7 +285,7 @@ public class EditPushers {
         ) {
             saveEnableComponents.save();
             saveEnableComponents.offline();
-            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
+            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, () -> {
                 saveEnableComponents.restore();
                 frame.requestFocus();
             });
@@ -303,7 +300,7 @@ public class EditPushers {
             newData = true;
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "ошибка удаления толкателя");
-            MySwingUtil.showMessage(frame, "ошибка БД", "ошибка удаления толкателя", 10_000, o -> frame.requestFocus());
+            MySwingUtil.showMessage(frame, "ошибка БД", "ошибка удаления толкателя", 10_000, () -> frame.requestFocus());
             tablePushers.clearSelection();
             return;
         }
@@ -331,7 +328,7 @@ public class EditPushers {
                 MySwingUtil.showMessage(frame,
                         "редактирование списка толкателей",
                         "такой толкатель уже существует",
-                        5_000, o -> {
+                        5_000, () -> {
                             saveEnableComponents.restore();
                             frame.requestFocus();
                         });
@@ -345,7 +342,7 @@ public class EditPushers {
             newData = true;
         } catch (BaseDataException e) {
             myLog.log(Level.SEVERE, "запись нового толкателя в БД", e);
-            MySwingUtil.showMessage(frame, "ошибка БД", "Запись нового толкателя", 10_000, o -> frame.requestFocus());
+            MySwingUtil.showMessage(frame, "ошибка БД", "Запись нового толкателя", 10_000, () -> frame.requestFocus());
             return;
         }
         // очистка полей
@@ -411,7 +408,7 @@ public class EditPushers {
                 MySwingUtil.showMessage(frame,
                         "редактирование списка толкателей",
                         "толкатель с таким именем уже существует",
-                        5_000, o -> {
+                        5_000, () -> {
                             saveEnableComponents.restore();
                             frame.requestFocus();
                         });
@@ -432,7 +429,7 @@ public class EditPushers {
             MySwingUtil.showMessage(frame,
                     "редактирование списка толкателей",
                     "ошибка редактирования толкателей",
-                    5_000, o -> {
+                    5_000, () -> {
                         saveEnableComponents.restore();
                         frame.requestFocus();
                     });

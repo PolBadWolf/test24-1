@@ -1,12 +1,9 @@
 package ru.yandex.fixcolor.tests.spc.loader;
 
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
-import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
-import ru.yandex.fixcolor.tests.spc.rs232.BAUD;
+import ru.yandex.fixcolor.tests.spc.rs232.*;
 import ru.yandex.fixcolor.tests.spc.runner.Runner;
-import org.example.test24.screen.MainFrame;
-import org.example.test24.screen.MainFrame_interface;
-import org.example.test24.screen.ScreenFx;
+import ru.yandex.fixcolor.tests.spc.screen.*;
 import ru.yandex.fixcolor.tests.spc.bd.BaseData;
 import ru.yandex.fixcolor.tests.spc.loader.archive.ViewArchive;
 import ru.yandex.fixcolor.tests.spc.loader.dialog.StartFrame;
@@ -65,7 +62,7 @@ public class MainClass {
     private void startFx() {
         // создание основных объектов
         screenFx = ScreenFx.init(this::close);
-        runner = Runner.main(o->runnerCloser());
+        runner = Runner.main();
         commPort = CommPort.main();
         // вызов основной формы
         screenFx.main();
@@ -80,25 +77,20 @@ public class MainClass {
 
             @Override
             public void startViewArchive() {
-                new Thread(()-> {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                ViewArchive v = new ViewArchive(connBd);
-                                if (v != null) {
-                                    MainFrame.mainFrame.buttonArchive.setDisable(true);
-                                }
-                            } catch (Exception e) {
-                                MyLogger.myLog.log(Level.SEVERE, "запуск окна орхива", e);
-                            }
+                new Thread(()-> SwingUtilities.invokeLater(() -> {
+                    try {
+                        ViewArchive v = new ViewArchive(connBd);
+                        if (v != null) {
+                            MainFrame.mainFrame.buttonArchive.setDisable(true);
                         }
-                    });
-                }, "start arhive").start();
+                    } catch (Exception e) {
+                        MyLogger.myLog.log(Level.SEVERE, "запуск окна орхива", e);
+                    }
+                }), "start arhive").start();
             }
         });
         // пуск регистрации
-        runner.init(connBd, commPort, MainFrame.mainFrame);
+        runner.init(connBd, MainFrame.mainFrame);
         commPort.open(runner::reciveRsPush, commPortName, BAUD.baud57600);
         commPort.ReciveStart();
     }
@@ -111,9 +103,6 @@ public class MainClass {
                 StartFrame.main(true, new StartFrame.CallBack() {
                     @Override
                     public void messageCloseStartFrame(BaseData conn, String commPortName) {
-//                    connBd = conn;
-//                    MainClass.this.commPortName = commPortName;
-//                    new Thread(() -> MainClass.this.startFx()).start();
                     }
 
                     @Override
@@ -138,18 +127,6 @@ public class MainClass {
             }
         }, "st fr").start();
     }
-
-    private void cont() {
-        System.out.println("start ?");
-        if (MainFrame.mainFrame == null) {
-            screenFx.main();
-        }
-        while (MainFrame.mainFrame == null) {
-            Thread.yield();
-        }
-    }
-    private void puskStartFrame() {
-    }
     // ===============================================
     private void close() {
         new Thread(()->{
@@ -167,9 +144,6 @@ public class MainClass {
 //                screenFx.setVisible(false);
             }
         }, "restart").start();
-    }
-    private void runnerCloser() {
-        close();
     }
 
     public static ScreenFx getScreenFx() {

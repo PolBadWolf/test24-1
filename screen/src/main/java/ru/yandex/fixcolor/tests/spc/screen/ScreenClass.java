@@ -1,4 +1,4 @@
-package org.example.test24.screen;
+package ru.yandex.fixcolor.tests.spc.screen;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;

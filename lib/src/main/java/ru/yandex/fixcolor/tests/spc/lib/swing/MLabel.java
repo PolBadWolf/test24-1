@@ -12,24 +12,20 @@ public class MLabel extends JLabel {
     private int beginX;
     private int pos;
     private boolean block;
-    private boolean gBlock;
 
     public MLabel(String text) {
         super(text);
         pos = POS_LEADS;
         block = false;
-        gBlock = false;
     }
 
     public MLabel() {
         pos = POS_LEADS;
         block = false;
-        gBlock = false;
     }
     public MLabel(int pos) {
         this.pos = normPos(pos);
         block = false;
-        gBlock = false;
     }
 
     private void setBoundsInt(int x, int y, int width, int height, String text) {

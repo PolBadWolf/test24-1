@@ -1,22 +1,14 @@
 package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
-import ru.yandex.fixcolor.tests.spc.bd.BaseData;
-import ru.yandex.fixcolor.tests.spc.bd.BaseDataException;
+import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.TypePusher;
-import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
-import ru.yandex.fixcolor.tests.spc.lib.swing.MySwingUtil;
-import ru.yandex.fixcolor.tests.spc.lib.swing.MyTableModel;
-import ru.yandex.fixcolor.tests.spc.lib.swing.SaveEnableComponents;
+import ru.yandex.fixcolor.tests.spc.lib.swing.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
+import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.logging.Level;
 
 import static ru.yandex.fixcolor.tests.spc.lib.MyLogger.myLog;
@@ -205,7 +197,7 @@ public class EditTypePushers {
                     "редактирование типа гидротолкателя",
                     "такой тип уже существует",
                     5_000,
-                    o -> {
+                    () -> {
                         saveEnableComponents.restore();
                         frame.requestFocus();
                     }
@@ -227,7 +219,7 @@ public class EditTypePushers {
                 saveEnableComponents.save();
                 saveEnableComponents.offline();
                 MySwingUtil.showMessage(frame, "удаление", "этот тип толкателя используется (" + targetNamePusher[0] + ")"
-                        , 5_000, o -> {
+                        , 5_000, () -> {
                     saveEnableComponents.restore();
                     frame.requestFocus();
                 });
@@ -258,7 +250,7 @@ public class EditTypePushers {
         ) {
             saveEnableComponents.save();
             saveEnableComponents.offline();
-            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, o -> {
+            MySwingUtil.showMessage(frame, "редактирование", "не все поля заполнены", 5_000, () -> {
                 saveEnableComponents.restore();
                 frame.requestFocus();
             });

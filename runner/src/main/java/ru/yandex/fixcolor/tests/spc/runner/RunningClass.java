@@ -1,25 +1,18 @@
 package ru.yandex.fixcolor.tests.spc.runner;
 
-import javafx.scene.paint.Color;
 import ru.yandex.fixcolor.tests.spc.allinterface.bd.DistClass;
-import ru.yandex.fixcolor.tests.spc.bd.BaseData;
-import ru.yandex.fixcolor.tests.spc.bd.BaseDataException;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.DataSpec;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.MyBlob;
+import ru.yandex.fixcolor.tests.spc.bd.*;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
-import ru.yandex.fixcolor.tests.spc.bd.usertypes.Pusher;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
-import org.example.test24.screen.MainFrame;
-import org.example.test24.screen.MainFrame_interface;
 import ru.yandex.fixcolor.tests.spc.lib.fx.Plot;
+import ru.yandex.fixcolor.tests.spc.screen.*;
 
+import javafx.scene.paint.Color;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 
 class RunningClass implements Runner {
-    private Consumer closer;
-    private CommPort commPort = null;
     private MainFrame_interface mainFrame = null;
     private Plot plot = null;
 
@@ -34,13 +27,11 @@ class RunningClass implements Runner {
 
     private int tik, tik0;
 
-    public RunningClass(Consumer closer) {
-        this.closer = closer;
+    public RunningClass() {
     }
 
     @Override
-    public void init(BaseData bdSql, CommPort commPort, MainFrame_interface mainFrame) {
-        this.commPort = commPort;
+    public void init(BaseData bdSql, MainFrame_interface mainFrame) {
         this.mainFrame = mainFrame;
         this.bdSql = bdSql;
 
