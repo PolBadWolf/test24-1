@@ -420,20 +420,20 @@ public class Plot {
     }
 
     public Plot(JComponent parent, int x, int y, int width, int height, int fieldWidth, int fieldHeight) {
-        this.width = (int) (width * Scale.scaleUp);
-        this.height = (int) (height * Scale.scaleUp);
-        this.fieldWidth = (int) (fieldWidth * Scale.scaleUp);
-        this.fieldHeight = (int) (fieldHeight * Scale.scaleUp);
+        this.width = Math.round(width * Scale.scaleUp);
+        this.height = Math.round(height * Scale.scaleUp);
+        this.fieldWidth = Math.round(fieldWidth * Scale.scaleUp);
+        this.fieldHeight = Math.round(fieldHeight * Scale.scaleUp);
         panelGraph = new JMyPane();
         panelGraph.setLayout(null);
-        panelGraph.setBounds(x, y, this.width, this.height);
+        panelGraph.setBounds(x, y, width, height);
         panelGraph.setBackground(parent.getBackground());
         parent.add(panelGraph);
         panelGraph.createBI();
         gc = panelGraph.getGraphics2D();
         {
             Font font = gc.getFont();
-            font = font.deriveFont((float) (font.getSize() *  Scale.scaleUp));
+            font = font.deriveFont(font.getSize() *  Scale.scaleUp);
             gc.setFont(font);
         }
         //
@@ -468,7 +468,10 @@ public class Plot {
             g2.setTransform(affineTransform);
         }
         public void createBI() {
-            bufferedImage = new BufferedImage(super.getWidth(), super.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            bufferedImage = new BufferedImage(
+                    Math.round(super.getWidth() * Scale.scaleUp),
+                    Math.round(super.getHeight() * Scale.scaleUp),
+                    BufferedImage.TYPE_INT_ARGB);
             graphics2D = bufferedImage.createGraphics();
         }
         public void closeBI() {

@@ -1,7 +1,7 @@
 package ru.yandex.fixcolor.tests.spc.lib.swing;
 
 public class Scale {
-    public static final int PRN_DPI = 300;
+    public static final int PRN_DPI = 36;
     public static final int SCR_DPI = 72;
     public static final float scaleUp = (float) PRN_DPI / (float) SCR_DPI;
     public static final float scaleDn = (float) SCR_DPI / (float) PRN_DPI;
