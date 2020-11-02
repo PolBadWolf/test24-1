@@ -17,9 +17,9 @@ import java.util.logging.Level;
 
 public class MainClass {
     // модули
-    protected ScreenFx screenFx;
-    protected Runner runner;
-    protected CommPort commPort;
+    protected static ScreenFx screenFx;
+    protected static Runner runner;
+    protected static CommPort commPort;
     //
     private BaseData connBd;
     private String commPortName;
@@ -172,6 +172,9 @@ public class MainClass {
         close();
     }
 
+    public static ScreenFx getScreenFx() {
+        return screenFx;
+    }
     // ===============================================
 
 }
