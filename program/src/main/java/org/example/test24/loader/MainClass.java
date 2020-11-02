@@ -80,7 +80,21 @@ public class MainClass {
 
             @Override
             public void startViewArchive() {
-                new Thread(()-> SwingUtilities.invokeLater(()-> new ViewArchive(connBd)), "start arhive").start();
+                new Thread(()-> {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ViewArchive v = new ViewArchive(connBd);
+                                if (v != null) {
+                                    MainFrame.mainFrame.buttonArchive.setDisable(true);
+                                }
+                            } catch (Exception e) {
+                                MyLogger.myLog.log(Level.SEVERE, "запуск окна орхива", e);
+                            }
+                        }
+                    });
+                }, "start arhive").start();
             }
         });
         // пуск регистрации

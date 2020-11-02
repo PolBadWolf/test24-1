@@ -12,6 +12,7 @@ import org.example.test24.lib.swing.CreateComponents;
 import org.example.test24.lib.swing.MLabel;
 import org.example.test24.lib.swing.MPanelPrintableCap;
 import org.example.test24.lib.swing.Scale;
+import org.example.test24.screen.MainFrame;
 import ru.yandex.fixcolor.my_lib.graphics.swing.Plot;
 
 import javax.swing.*;
@@ -20,6 +21,8 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.print.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -123,6 +126,14 @@ public class ViewArchive {
         plot.setZoomX(0, 5_000 / 5);
         plot.setZoomXlenghtAuto(true);
         plot.setZoomXbeginAuto(false);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                MainFrame.mainFrame.buttonArchive.setDisable(false);
+            }
+        });
     }
 
     class MyTreeModel implements TreeModel, TreeWillExpandListener, TreeSelectionListener {
