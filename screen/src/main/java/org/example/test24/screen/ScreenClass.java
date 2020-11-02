@@ -65,27 +65,16 @@ public class ScreenClass extends Application implements ScreenFx {
     @Override
     public void stop() throws Exception {
         closer.close();
-        //super.stop();
+        super.stop();
     }
 
     @Override
-    public void setVisible(boolean visible) {
-        boolean[] flWait = new boolean[] {true};
-        Platform.runLater(()->{
-            Stage window = (Stage) stage.getScene().getWindow();
-            if (visible) {
-                window.show();
-            } else {
-                window.hide();
+    public void setRootFocus() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                stage.requestFocus();
             }
-            flWait[0] = false;
         });
-        while (flWait[0]) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

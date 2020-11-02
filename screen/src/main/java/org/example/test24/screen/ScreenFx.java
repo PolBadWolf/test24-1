@@ -9,5 +9,5 @@ public interface ScreenFx {
     }
     void main();
     void exitApp();
-    void setVisible(boolean visible);
+    void setRootFocus();
 }
