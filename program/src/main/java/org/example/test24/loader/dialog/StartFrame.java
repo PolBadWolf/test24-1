@@ -9,10 +9,6 @@ import org.example.test24.bd.usertypes.User;
 import org.example.test24.lib.swing.*;
 
 import javax.swing.*;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.logging.Level;
@@ -247,7 +243,17 @@ public class StartFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 callBack.stopSystem();
+                frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+                super.windowClosing(e);
                 System.exit(2);
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+                callBack.stopSystem();
+                frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+                super.windowClosed(e);
+                System.exit(3);
             }
         });
         // =================== загрузка начальных параметров ===================
@@ -458,6 +464,7 @@ public class StartFrame {
     }
 
     private void callExit(ActionEvent event) {
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.dispose();
     }
 
