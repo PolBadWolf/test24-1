@@ -11,12 +11,12 @@
         <module name="allinterface" />
         <module name="screen" />
         <module name="RS232" />
-        <module name="graphics" />
         <module name="program" />
         <module name="runner" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="graphics" target="1.8" />
       <module name="loader" target="1.8" />
     </bytecodeTargetLevel>
   </component>

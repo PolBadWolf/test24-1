@@ -9,7 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import org.example.test24.bd.usertypes.Pusher;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.Pusher;
 
 import java.net.URL;
 import java.util.ResourceBundle;

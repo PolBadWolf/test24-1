@@ -2,9 +2,7 @@ package org.example.test24.screen;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
-import org.example.test24.bd.BaseData;
-import org.example.test24.bd.usertypes.Pusher;
-import org.example.test24.bd.usertypes.TypePusher;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.Pusher;
 
 public interface MainFrame_interface {
     interface CallBack {

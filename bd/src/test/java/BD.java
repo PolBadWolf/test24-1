@@ -1,8 +1,8 @@
-import org.example.test24.bd.BaseData;
-import org.example.test24.bd.TypeBaseDate;
-import org.example.test24.bd.usertypes.Pusher;
-import org.example.test24.bd.usertypes.TypePusher;
-import org.example.test24.bd.usertypes.User;
+import ru.yandex.fixcolor.tests.spc.bd.BaseData;
+import ru.yandex.fixcolor.tests.spc.bd.TypeBaseDate;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.Pusher;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.TypePusher;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.User;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
