@@ -91,11 +91,7 @@ public class ViewArchive {
                 350, 40, false, true, MLabel.POS_CENTER);
         labelUser = CreateComponents.getLabel(panelMain, "user", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 70, false, true, MLabel.POS_CENTER);
-<<<<<<< Updated upstream
         labelPusherSampleTitle = CreateComponents.getLabel(panelMain, "pusher", new Font("Times New Roman", Font.PLAIN, 16),
-=======
-        labelPusherSample = CreateComponents.getLabel(panelMain, "pusher", new Font("Times New Roman", Font.PLAIN, 16),
->>>>>>> Stashed changes
                 350, 100, false, true, MLabel.POS_CENTER);
         labelGraphTitle = CreateComponents.getLabel(panelMain, "Динамические характеристики:", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 120, false, true, MLabel.POS_CENTER);
