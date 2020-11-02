@@ -38,6 +38,9 @@ public class Plot2 extends JComponent {
     private static final float _netLineWidth = 1.0f;
     // ======
     private BufferedImage image;
+    private double scale;
+    private int sizeX;
+    private int sizeY;
 
     public Plot2(int x, int y, int width, int height) {
         super();
@@ -57,5 +60,54 @@ public class Plot2 extends JComponent {
         netLineWidth = _netLineWidth;
         setBounds(x, y, width, height);
     }
-
+    public void createImage(int dpi) {
+        scale = (double) dpi / (double) 72;
+        int w = (int) Math.ceil((double) width * scale);
+        int h = (int) Math.ceil((double) height * scale);
+        image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        setSize();
+    }
+    public void closeImage() {
+        image = null;
+    }
+    private void setSize() {
+        sizeX = image.getWidth() - (int) Math.ceil(fieldWidth * scale);
+        sizeY = image.getHeight() - (int) Math.ceil(fieldHeight * scale);
+    }
+    public void clear() {
+        Graphics2D g2d = image.createGraphics();
+        try {
+            // очистка окна
+            g2d.setColor(windowBackGround);
+            g2d.fillRect(fieldWidth, 0, width, height - fieldHeight);
+            // очистка поля
+            g2d.setColor(fieldBackGround);
+            g2d.fillRect(0, 0, fieldWidth, height);
+            g2d.fillRect(fieldWidth, height - fieldHeight, width, height);
+            // сетка
+            int cx0, cx1, cy0, cy1;
+            String string;
+            float stringWidth, tmp;
+            final int nX = 10;
+            // x
+            cy0 = sizeY;
+            cy1 = 0;
+            for (int i = 1; i < nX; i++) {
+                cx0 = (i * sizeX / (nX - 1));
+                g2d.setStroke(new BasicStroke(netLineWidth));
+                g2d.setColor(netLineColor);
+                g2d.drawLine(cx0, cy0, cx0, cy1);
+                //
+                tmp = (float) Math.round(i * 10 * 1_000) / 1_000;
+                string = String.valueOf(tmp);
+                stringWidth = g2d.getFontMetrics().stringWidth(string);
+                cx1 = cx0 - Math.round(stringWidth / 2);
+                g2d.setColor(fieldFontColor);
+                g2d.setFont(fieldFont);
+                g2d.drawString(string, cx1, (int) Math.ceil(sizeY + 20 * scale));
+            }
+        } finally {
+            g2d.dispose();
+        }
+    }
 }
