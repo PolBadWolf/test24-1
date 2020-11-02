@@ -337,9 +337,6 @@ public class Plot {
         }
 
         private void __paintNet() {
-//            AffineTransform at = ((Graphics2D) gc).getTransform();
-//            ((Graphics2D) gc).scale(cosDn, cosDn);
-
             double xSize = width - fieldWidth;
             double ySize = height - fieldHeight;
 
@@ -412,9 +409,6 @@ public class Plot {
                 double widthString = gc.getFontMetrics().stringWidth(String.valueOf(iK));
                 gc.drawString(String.valueOf(iK), (int) (fieldWidth - widthString - 10 * Scale.scaleUp), (int) (y + 5 * Scale.scaleUp));
             }
-//            ((Graphics2D) gc).scale(1, 1);
-//            ((Graphics2D) gc).setTransform(at);
-            //panelGraph.repaint();
         }
 
     }
