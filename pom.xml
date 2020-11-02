@@ -13,7 +13,6 @@
         <module>lib</module>
         <module>allinterface</module>
         <module>screen</module>
-        <module>graphics</module>
         <module>program</module>
         <module>runner</module>
         <module>bd</module>

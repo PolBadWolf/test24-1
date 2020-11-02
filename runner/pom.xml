@@ -19,12 +19,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>ru.yandex.fixcolor.my_lib</groupId>
-            <artifactId>graphics</artifactId>
-            <version>1.1.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.example.test24</groupId>
             <artifactId>RS232</artifactId>
             <version>1.0.1</version>
