@@ -89,6 +89,7 @@ public class StartFrame {
 
 
     public static StartFrame main(boolean statMainWork, CallBack callBack) throws Exception {
+        if (startFrame != null) return null;
         try {
             SwingUtilities.invokeAndWait(()->{
                 startFrame = new StartFrame(statMainWork, callBack);
@@ -236,13 +237,21 @@ public class StartFrame {
         frame.setResizable(false);
         frame.setLayout(null);
         frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                callBack.stopSystem();
-                frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                super.windowClosing(e);
-                System.exit(2);
+                if (!statMainWork) {
+                    callBack.stopSystem();
+                    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+                    super.windowClosing(e);
+                    System.exit(2);
+                }
+                callBack.messageSetNewData();
+                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                frame.removeAll();
+                frame.dispose();
+                startFrame = null;
             }
         });
         // =================== загрузка начальных параметров ===================
@@ -455,6 +464,7 @@ public class StartFrame {
     private void callExit(ActionEvent event) {
         callBack.stopSystem();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.removeAll();
         frame.dispose();
         System.exit(3);
     }
@@ -711,6 +721,7 @@ public class StartFrame {
         } else {
             callBack.messageCloseStartFrame(connBD, config.getPortName());
         }
+        startFrame = null;
     }
     // обработка настройка
     private void callTuning(ActionEvent e) {
