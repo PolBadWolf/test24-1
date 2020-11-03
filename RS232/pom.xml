@@ -3,23 +3,23 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>test24</artifactId>
-        <groupId>org.example</groupId>
+        <artifactId>spc</artifactId>
+        <groupId>ru.yandex.fixcolor.tests</groupId>
         <version>1.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example.test24</groupId>
-    <artifactId>RS232</artifactId>
+    <groupId>ru.yandex.fixcolor.tests.spc</groupId>
+    <artifactId>rs232</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.example.test24</groupId>
+            <groupId>ru.yandex.fixcolor.tests.spc</groupId>
             <artifactId>lib</artifactId>
             <version>1.0.1</version>
         </dependency>
         <dependency>
-            <groupId>org.example.test24</groupId>
+            <groupId>ru.yandex.fixcolor.tests.spc</groupId>
             <artifactId>allinterface</artifactId>
             <version>1.0.1</version>
             <scope>compile</scope>
