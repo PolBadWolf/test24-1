@@ -14,6 +14,21 @@
 
 <dependencies>
     <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>11</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-graphics</artifactId>
+        <version>11</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>11</version>
+    </dependency>
+    <dependency>
         <groupId>ru.yandex.fixcolor.tests.spc</groupId>
         <artifactId>allinterface</artifactId>
         <version>1.0.1</version>
