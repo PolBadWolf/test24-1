@@ -175,6 +175,7 @@ public class Plot {
             paintQueue.add(new DatQueue(RePaint, dat));
         }
 
+        /*
         @Override
         protected void finalize() throws Throwable {
             onWork = false;
@@ -183,6 +184,7 @@ public class Plot {
             }
             super.finalize();
         }
+        */
         public void close() {
             onWork = false;
             while (!thisThread.isAlive()) {
@@ -634,6 +636,7 @@ public class Plot {
     }
     // ----
 
+    /*
     @Override
     protected void finalize() throws Throwable {
         myPaint.finalize();
@@ -642,6 +645,7 @@ public class Plot {
         }
         super.finalize();
     }
+    */
 
     private class CirkMassive {
         private double[][][] massInt;

@@ -184,6 +184,7 @@ public class Plot {
             paintQueue.add(new DatQueue(RePaint, dat));
         }
 
+        /*
         @Override
         protected void finalize() throws Throwable {
             onWork = false;
@@ -192,6 +193,7 @@ public class Plot {
             }
             super.finalize();
         }
+        */
         public void close() {
             onWork = false;
             while (!thisThread.isAlive()) {
@@ -246,7 +248,6 @@ public class Plot {
             }
 
             // drops & selects
-            //int nItemsMass = datGraph.get(0).length;
             int nItemsMass = datGraph.get(0).getZnTrends().length;
             ArrayList<DatXindx> xIndxes = new ArrayList<>();
             NewDataClass tmpShort = null;
@@ -303,7 +304,6 @@ public class Plot {
                 trends.get(i - 1).rePaint(massGraphcs[0], massGraphcs[i], dropLenght);
             }
             panelGraph.repaint();
-//            System.out.println(Thread.currentThread());
             busy = false;
         }
 
@@ -327,7 +327,6 @@ public class Plot {
             gc.setColor(fieldFrameLineColor);
             gc.setStroke(new BasicStroke(fieldFrameLineWidth));
             gc.drawPolyline(x, y, x.length);
-            //panelGraph.repaint();
         }
 
         private void __clearWindow() {
@@ -686,7 +685,7 @@ public class Plot {
         newData = new NewDataClass(trends.size());
     }
     // ----
-
+/*
     @Override
     protected void finalize() throws Throwable {
         myPaint.finalize();
@@ -695,6 +694,7 @@ public class Plot {
         }
         super.finalize();
     }
+    */
 
     private class CirkMassive {
         private int[][][] massInt;

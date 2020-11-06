@@ -8,6 +8,7 @@ import ru.yandex.fixcolor.tests.spc.bd.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -179,7 +180,9 @@ class TuningFrame {
 //        // БД
         setComponentBaseData(parametersSql);
 //        // список БД
-        try { MyUtil.loadToComboBox(listBaseBD, comboBoxListBd, false, parametersSql.getDataBase()); } catch (Exception e) {
+        try {
+            MyUtil.loadToComboBox(listBaseBD, comboBoxListBd, false, parametersSql.getDataBase());
+        } catch (Exception e) {
             myLog.log(Level.WARNING, "начальная инициализация компонентов", e);
         }
 //        // установка начального состояния кнопок по основным параметрам
@@ -357,32 +360,41 @@ class TuningFrame {
             buttonEditUsers.setEnabled(false);
             return;
         }
+        String basName = (String) comboBoxListBd.getSelectedItem();
+        System.out.println(basName);
         saveEnableComponents.save();
         saveEnableComponents.offline();
-        new Thread(() -> SwingUtilities.invokeLater(() -> new EditUsers(
-                connBD.cloneNewBase((String) comboBoxListBd.getSelectedItem()),
-                new EditUsers.CallBack() {
-                    @Override
-                    public void messageCloseEditUsers(boolean newData) {
-                        saveEnableComponents.restore();
-                        frameTuning.requestFocus();
-                    }
-                    // текущий активный пользователь
-                    @Override
-                    public User getCurrentUser() {
-                        return new User(
-                                0,
-                                new Date(),
-                                0,
-                                new Date(),
-                                0,
-                                "lockAdmin",
-                                "",
-                                3,
-                                null
-                        );
-                    }
-                })), "create edit users").start();
+        new Thread(() -> SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                BaseData localConnBD = connBD.cloneNewBase(basName);
+                new EditUsers(
+                        localConnBD,
+                        new EditUsers.CallBack() {
+                            @Override
+                            public void messageCloseEditUsers(boolean newData) {
+                                saveEnableComponents.restore();
+                                frameTuning.requestFocus();
+                            }
+
+                            // текущий активный пользователь
+                            @Override
+                            public User getCurrentUser() {
+                                return new User(
+                                        0,
+                                        new Date(),
+                                        0,
+                                        new Date(),
+                                        0,
+                                        "lockAdmin",
+                                        "",
+                                        3,
+                                        null
+                                );
+                            }
+                        });
+            }
+        }), "create edit users").start();
     }
     private void callPushButtonEditPushers(ActionEvent actionEvent) {
         if (!flagTestBaseData) {
@@ -511,41 +523,45 @@ class TuningFrame {
             //MySwingUtil.showMessage(frameTuning, "тест соединения с БД", "выберите базу", 8_000);
             textTypeBdStatus.setText("выберите базу");
             flagLockActions = true;
-            try { MyUtil.loadToComboBox(
-                    conn.getListBase(),
-                    comboBoxListBd,
-                    false,
-                    parametersSql.getDataBase()
-            ); } catch (Exception e) {
+            try {
+                MyUtil.loadToComboBox(
+                        conn.getListBase(),
+                        comboBoxListBd,
+                        false,
+                        parametersSql.getDataBase());
+            } catch (Exception e) {
                 myLog.log(Level.WARNING, "нажатие кнопки тест", e);
                 comboBoxListBd.removeAllItems();
             }
             flagLockActions = false;
             return;
-        }
-        // проверка структуры
-        try {
-            if (!conn.checkStructureBd((String) comboBoxListBd.getSelectedItem())) {
+        } else {
+            // проверка структуры
+            try {
+                if (!conn.checkStructureBd((String) comboBoxListBd.getSelectedItem())) {
+                    textTypeBdStatus.setText("ошибка базы");
+                    throw new Exception("структура БД нарушена");
+                }
+            } catch (Exception e) {
                 textTypeBdStatus.setText("ошибка базы");
-                throw new Exception("структура БД нарушена");
+                myLog.log(Level.WARNING, "нажатие кнопки тест", new Exception("тест структуры БД", e));
+                return;
             }
-        } catch (Exception e) {
-            textTypeBdStatus.setText("ошибка базы");
-            myLog.log(Level.WARNING, "нажатие кнопки тест", new Exception("тест структуры БД", e));
-            return;
+            textTypeBdStatus.setText("соединение установлено");
+            flagTestBaseData = true;
+            //
+            buttonEditUsers.setEnabled(true);
+            buttonEditPushers.setEnabled(true);
         }
-        textTypeBdStatus.setText("соединение установлено");
-        flagTestBaseData = true;
-        //
-        buttonEditUsers.setEnabled(true);
-        buttonEditPushers.setEnabled(true);
     }
     private void callPushButtonTestCommPort() {
         CommPort port;
         CommPort.PortStat stat;
         flagTestCommPort = false;
         port = CommPort.main();
-        stat = port.open(null, (String) comboBoxCommPort.getSelectedItem(), BAUD.baud9600);
+        String portName = (String) comboBoxCommPort.getSelectedItem();
+        if (portName == null) portName = "";
+        stat = port.open(null, portName, BAUD.baud9600);
         port.close();
         switch (stat) {
             case INITCODE_OK:
@@ -579,7 +595,9 @@ class TuningFrame {
         BaseData.Config config;
         try {
             config = BaseData.Config.create();
-            config.setPortName((String) comboBoxCommPort.getSelectedItem());
+            String portName = (String) comboBoxCommPort.getSelectedItem();
+            if (portName == null) portName = "";
+            config.setPortName(portName);
             config.setTypeBaseData((TypeBaseDate) comboBoxTypeBd.getSelectedItem());
             result = config.save();
             if (result != Status.OK) {
@@ -601,8 +619,13 @@ class TuningFrame {
             parameters.save();
             parametersSql = parameters;
             flagNewCorrectData = true;
+            if (flagTestBaseData) {
+                connBD = initConnect(parametersSql);
+            }
         } catch (BaseDataException e) {
             myLog.log(Level.WARNING, "сохранение параметров соединения", e);
+        } catch (Exception e) {
+            myLog.log(Level.WARNING, "соединение с новыми параметрами", e);
         }
     }
     // ===========================================================================

@@ -1,2 +1,4 @@
-java -jar loader-1.0.1-jar-with-dependencies.jar
+@echo off
+chcp 1251
+java -jar Stend_spc-jar-with-dependencies.jar
 exit
