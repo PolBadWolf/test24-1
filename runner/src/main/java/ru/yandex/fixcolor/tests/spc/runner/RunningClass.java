@@ -94,7 +94,14 @@ class RunningClass implements Runner {
                 break;
             case TypePack.MANUAL_STOP:
                 reciveOn = false;
-                if (n_cicle > 0) n_cicle++;
+                if (n_cicle > 0) {
+                    if (distanceOut.size() < 2) {
+                        mainFrame.outStatusWork("AUTO_STOP");
+                        n_cicle = 0;
+                        break;
+                    }
+                    n_cicle++;
+                }
                 mainFrame.outStatusWork("MANUAL_STOP");
                 System.out.println("count = " + distanceOut.size());
                 //
@@ -127,6 +134,7 @@ class RunningClass implements Runner {
                 System.out.println("count = " + distanceOut.size());
                 //
                 sendOutData();
+                distanceOut.clear();
                 break;
             case TypePack.CYCLE_FORWARD:
                 mainFrame.outStatusWork("CYCLE_FORWARD");

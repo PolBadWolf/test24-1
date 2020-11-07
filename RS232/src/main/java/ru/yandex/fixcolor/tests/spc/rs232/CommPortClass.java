@@ -207,10 +207,11 @@ class CommPortClass implements CommPort {
                 lenghtReciveSumm += num;
             }
 
-            crc = ControlSumma.crc8(bytes, lenghtRecive - 1);
-
-            if (crc == bytes[lenghtRecive - 1]) {
-                callBack.reciveRsPush(bytes, lenghtRecive - 1);
+            if (lenghtRecive > 1) {
+                crc = ControlSumma.crc8(bytes, lenghtRecive - 1);
+                if (crc == bytes[lenghtRecive - 1]) {
+                    callBack.reciveRsPush(bytes, lenghtRecive - 1);
+                }
             }
 
             flagHead = true;
@@ -219,24 +220,31 @@ class CommPortClass implements CommPort {
 
     @Override
     public void sendMessageStopAuto() {
-        byte[] buf = {
+        byte[] header = {
                 // заголовок
                 (byte)0xe6
                 ,(byte)0x19
                 ,(byte)0x55
                 ,(byte)0xaa
-                // длина передачи
-                ,(byte)0x02
-                // код передачи
-                ,(byte)0x80
-                // резерв для к.с.
-                ,(byte)0x00
         };
-        buf[buf.length - 1] = ControlSumma.crc8(buf, buf[4] - 1, 5);
-        int lenOffset = 0;
-        while (lenOffset < buf.length) {
-            int x = port.writeBytes(buf, buf.length);
-            lenOffset += x;
+        byte[] body = {
+                // код передачи
+                (byte)0x80
+        };
+        port.writeBytes(headBuffer, header.length);
+        // длина передачи
+        {
+            byte[] dl = new byte[1];
+            dl[0] = (byte) (body.length + (1 & 0x000000ff));
+            port.writeBytes(dl, dl.length);
+        }
+        // тело передачи
+        port.writeBytes(body, body.length);
+        // контрольная сумма
+        {
+            byte[] cs = new byte[1];
+            cs[0] = ControlSumma.crc8(body, body.length);
+            port.writeBytes(cs, cs.length);
         }
     }
 }

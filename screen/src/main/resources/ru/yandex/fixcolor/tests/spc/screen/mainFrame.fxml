@@ -63,7 +63,7 @@
       <TextField fx:id="set_Pusher" editable="false" layoutX="22.0" layoutY="719.0" prefHeight="25.0" prefWidth="118.0" />
       <TextField fx:id="l_nCicle" editable="false" layoutX="863.0" layoutY="753.0" prefHeight="25.0" prefWidth="110.0" />
       <Button fx:id="buttonArchive" layoutX="886.0" layoutY="15.0" mnemonicParsing="false" onAction="#archiveOnAction" prefHeight="25.0" prefWidth="59.0" text="Archive" />
-      <TextField fx:id="s_nCicle" editable="false" layoutX="863.0" layoutY="719.0" prefHeight="25.0" prefWidth="110.0" />
+      <TextField fx:id="s_nCicle" layoutX="863.0" layoutY="719.0" prefHeight="25.0" prefWidth="110.0" text="1" />
     </children>
 
 </AnchorPane>
