@@ -216,4 +216,27 @@ class CommPortClass implements CommPort {
             flagHead = true;
         }
     }
+
+    @Override
+    public void sendMessageStopAuto() {
+        byte[] buf = {
+                // заголовок
+                (byte)0xe6
+                ,(byte)0x19
+                ,(byte)0x55
+                ,(byte)0xaa
+                // длина передачи
+                ,(byte)0x02
+                // код передачи
+                ,(byte)0x80
+                // резерв для к.с.
+                ,(byte)0x00
+        };
+        buf[buf.length - 1] = ControlSumma.crc8(buf, buf[4] - 1, 5);
+        int lenOffset = 0;
+        while (lenOffset < buf.length) {
+            int x = port.writeBytes(buf, buf.length);
+            lenOffset += x;
+        }
+    }
 }
