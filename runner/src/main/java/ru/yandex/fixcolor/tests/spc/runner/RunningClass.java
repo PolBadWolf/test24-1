@@ -212,6 +212,16 @@ class RunningClass implements Runner {
         // ****** out screen ******
         mainFrame.setFieldsMeasuredPusher(n_cicle, forceMeasure, moveMeasure, timeUnClenching);
         // ***** send stop *****
+        int b;
+        try {
+            b = Integer.parseInt(MainFrame.mainFrame.s_nCicle.getText());
+        } catch (NumberFormatException e) {
+            b = 5;
+            MyLogger.myLog.log(Level.SEVERE, "максимальное число итераций, ( установленно " + b + " )", e);
+        }
+        if (n_cicle >= b) {
+            callBack.sendStopAutoMode();
+        }
         // ***** out to bd *****
         try {
             tik_stop = distanceOut.get(distanceOut.size() - 1).tik;

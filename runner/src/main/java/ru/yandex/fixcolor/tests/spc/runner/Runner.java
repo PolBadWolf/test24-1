@@ -1,10 +1,7 @@
 package ru.yandex.fixcolor.tests.spc.runner;
 
-import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
 import ru.yandex.fixcolor.tests.spc.bd.BaseData;
 import ru.yandex.fixcolor.tests.spc.screen.MainFrame_interface;
-
-import java.util.function.Consumer;
 
 public interface Runner {
     public interface CallBack {
