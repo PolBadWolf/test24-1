@@ -3,7 +3,6 @@ package ru.yandex.fixcolor.tests.spc.runner;
 import ru.yandex.fixcolor.tests.spc.allinterface.bd.DistClass;
 import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
-import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.lib.fx.Plot;
 import ru.yandex.fixcolor.tests.spc.screen.*;
@@ -26,8 +25,10 @@ class RunningClass implements Runner {
     private int n_cicle = 0;
 
     private int tik, tik0;
+    private final CallBack callBack;
 
-    public RunningClass() {
+    public RunningClass(CallBack callBack) {
+        this.callBack = callBack;
     }
 
     @Override
@@ -210,6 +211,7 @@ class RunningClass implements Runner {
         int timeUnClenching = Math.abs(distanceOut.get(0).tik - tik_shelf);
         // ****** out screen ******
         mainFrame.setFieldsMeasuredPusher(n_cicle, forceMeasure, moveMeasure, timeUnClenching);
+        // ***** send stop *****
         // ***** out to bd *****
         try {
             tik_stop = distanceOut.get(distanceOut.size() - 1).tik;

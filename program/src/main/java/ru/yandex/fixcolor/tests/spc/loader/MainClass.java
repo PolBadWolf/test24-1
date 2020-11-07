@@ -62,7 +62,7 @@ public class MainClass {
     private void startFx() {
         // создание основных объектов
         screenFx = ScreenFx.init(this::close);
-        runner = Runner.main();
+        runner = Runner.main(new RunnerCallBack());
         commPort = CommPort.main();
         // вызов основной формы
         screenFx.main();
@@ -150,5 +150,11 @@ public class MainClass {
         return screenFx;
     }
     // ===============================================
-
+    class RunnerCallBack implements Runner.CallBack {
+        @Override
+        public void sendStopAutoMode() {
+            commPort.sendMessageStopAuto();
+        }
+    }
+    // ===============================================
 }

@@ -7,11 +7,11 @@ import ru.yandex.fixcolor.tests.spc.screen.MainFrame_interface;
 import java.util.function.Consumer;
 
 public interface Runner {
-    interface Closer {
-        void close();
+    public interface CallBack {
+        void sendStopAutoMode();
     }
-    static Runner main() {
-        return new RunningClass();
+    static Runner main(CallBack callBack) {
+        return new RunningClass(callBack);
     }
 
     void init(BaseData bdSql, MainFrame_interface mainFrame);
