@@ -10,6 +10,7 @@
         <module name="lib" />
         <module name="allinterface" />
         <module name="screen" />
+        <module name="RS232" />
         <module name="program" />
         <module name="rs232" />
         <module name="runner" />
