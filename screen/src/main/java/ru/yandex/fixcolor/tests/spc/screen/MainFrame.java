@@ -20,6 +20,7 @@ public class MainFrame implements Initializable, MainFrame_interface {
     private CallBack callBack;
     public Button buttonExit;
     public Button buttonArchive;
+    public TextField s_nCicle;
     public TextField l_nCicle;
     public TextField state;
     public TextField get_Force;
