@@ -77,7 +77,7 @@ public class EditTypePushers {
     }
     // инициация компонентов
     private void initComponents() {
-        frame = new JFrame();
+        frame = new JFrame("Перечень типов толкателей");
         frame.setResizable(false);
         frame.setPreferredSize(new Dimension(640, 480));
         frame.setLayout(null);
@@ -85,7 +85,7 @@ public class EditTypePushers {
         CreateComponents.getLabel(frame, "Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 280, 240, true, true, MLabel.POS_CENTER);
         CreateComponents.getLabel(frame, "Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 16), 275, 310, true, true, MLabel.POS_RIGHT);
         CreateComponents.getLabel(frame, "Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 16), 275, 350, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(frame, "Время разжатия (м.Сек)", new Font("Times New Roman", Font.PLAIN, 16), 275, 385, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(frame, "Время разжатия (мc)", new Font("Times New Roman", Font.PLAIN, 16), 275, 385, true, true, MLabel.POS_RIGHT);
         // ---- поля ввода данных
         textName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 30, 270,400, 24, null, null, true, true);
         frame.add(textName);

@@ -23,6 +23,7 @@ class RunningClass implements Runner {
     private int tik_stop;
     private boolean reciveOn = false;
     private int n_cicle = 0;
+    private int dist0 = 0;
 
     private int tik, tik0;
     private final CallBack callBack;
@@ -39,19 +40,24 @@ class RunningClass implements Runner {
         distanceOut = new ArrayList<>();
 
         plot = new Plot(mainFrame.getCanvas(), 70, 50);
-        plot.setFieldFontColor(Color.YELLOW);
+        plot.setFieldBackColor(Color.WHITE);
+        plot.setFieldFontColor(Color.BLACK);
 
-        plot.addTrend(Color.WHITE, 2);
-        //plot.addTrend(Color.YELLOW, 2);
+        plot.addTrend(Color.RED, 2);
+        plot.addTrend(Color.GREEN, 2);
 
-        plot.setFieldBackColor(Color.DARKGRAY);
+//        plot.setFieldBackColor(Color.DARKGRAY);
+        plot.setFieldBackColor(Color.WHITE);
 
-        plot.setFieldFrameLineColor(Color.LIGHTGREEN);
+//        plot.setFieldFrameLineColor(Color.LIGHTGREEN);
+        plot.setFieldFrameLineColor(Color.BLACK);
         plot.setFieldFrameLineWidth(4.0);
 
-        plot.setNetLineColor(Color.DARKGREEN);
+//        plot.setNetLineColor(Color.DARKGREEN);
+        plot.setNetLineColor(Color.BLACK);
         plot.setNetLineWidth(1.0);
 
+        plot.setWindowBackColor(Color.WHITE);
         plot.clearScreen();
 
         plot.setZoomY(0, 1024);
@@ -112,6 +118,7 @@ class RunningClass implements Runner {
             case TypePack.MANUAL_FORWARD:
                 mainFrame.outStatusWork("MANUAL_FORWARD");
                 distanceOut.clear();
+                dist0 = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
 
                 plot.allDataClear();
                 tik0 = tik;
@@ -139,6 +146,7 @@ class RunningClass implements Runner {
                 break;
             case TypePack.CYCLE_FORWARD:
                 mainFrame.outStatusWork("CYCLE_FORWARD");
+                dist0 = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
                 distanceOut.clear();
 
                 plot.allDataClear();
@@ -151,10 +159,11 @@ class RunningClass implements Runner {
                 break;
             case TypePack.CURENT_DATA:
                 if (reciveOn) {
-                    paintTrends(bytes);
                     {
-                        int dist = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+                        int dist = Math.abs(
+                                ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8)) - dist0);
                         int ves = (bytes[7 + 0] & 0xff) + ((bytes[7 + 1] & 0xff) << 8);
+                        paintTrends((short) dist, (short) ves);
                         distanceOut.add(new DistClass(tik, dist, ves));
                     }
                 }
@@ -171,16 +180,12 @@ class RunningClass implements Runner {
         mainFrame.label2_txt(ves + "кг");
     }
 
-    private void paintTrends(byte[] bytes) {
-        short dist, ves;
+    private void paintTrends(short dist, short ves) {
         int x;
-        dist = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
-        //ves  = (short) ((bytes[5 + 2] & 0xff) + ((bytes[5 + 3] & 0xff) << 8));
-
         x = (short)((tik - tik0) / 5);
         plot.newDataX(x);
         plot.newDataTrend(0, dist);
-        //plot.newDataTrend(1, ves);
+        plot.newDataTrend(1, ves);
         plot.newDataPush();
         plot.rePaint();
 

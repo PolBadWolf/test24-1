@@ -31,27 +31,17 @@ public class ScreenClass extends Application implements ScreenFx {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = null;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("mainFrame.fxml"));
-
-        try {
-            root = (Parent) loader.load();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        Parent root = loader.load();
 
         primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("title fx window");
+        primaryStage.setTitle("График испытания гидротолкателей");
         primaryStage.show();
         stage = primaryStage;
         stage.setResizable(false);
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                event.consume();
-                primaryStage.show();
-            }
+        primaryStage.setOnCloseRequest(event -> {
+            event.consume();
+            primaryStage.show();
         });
     }
 

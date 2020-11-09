@@ -439,7 +439,7 @@ public class StartFrame {
                     new Font("Time New Roman", Font.PLAIN, 14),
                     460, 286, 120, 25,
                     null, null, false, true, false);
-            viewLabelUnclenching = CreateComponents.getLabel("Время разж.(сек)",
+            viewLabelUnclenching = CreateComponents.getLabel("Время разж.(мс)",
                     new Font("Time New Roman", Font.PLAIN, 14),
                     465, 260, 120, 25, false,true);
             frame.add(viewNameTypePusher);
@@ -845,7 +845,7 @@ public class StartFrame {
         viewNameTypePusher.setText(typePusher.loggerTypePusher.nameType);
         viewForce.setText(String.valueOf(typePusher.loggerTypePusher.forceNominal));
         viewMove.setText(String.valueOf(typePusher.loggerTypePusher.moveNominal));
-        viewUnclenching.setText(String.valueOf(typePusher.loggerTypePusher.unclenchingTime / 1000.0));
+        viewUnclenching.setText(String.valueOf(typePusher.loggerTypePusher.unclenchingTime));
     }
     // ===========================================================================
 }
