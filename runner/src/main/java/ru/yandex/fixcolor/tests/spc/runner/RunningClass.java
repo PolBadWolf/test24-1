@@ -46,14 +46,14 @@ class RunningClass implements Runner {
         plot.addTrend(Color.RED, 2);
         plot.addTrend(Color.GREEN, 2);
 
-//        plot.setFieldBackColor(Color.DARKGRAY);
+//        plot.setFieldBackColor(ColorName.DARKGRAY);
         plot.setFieldBackColor(Color.WHITE);
 
-//        plot.setFieldFrameLineColor(Color.LIGHTGREEN);
+//        plot.setFieldFrameLineColor(ColorName.LIGHTGREEN);
         plot.setFieldFrameLineColor(Color.BLACK);
         plot.setFieldFrameLineWidth(4.0);
 
-//        plot.setNetLineColor(Color.DARKGREEN);
+//        plot.setNetLineColor(ColorName.DARKGREEN);
         plot.setNetLineColor(Color.BLACK);
         plot.setNetLineWidth(1.0);
 
