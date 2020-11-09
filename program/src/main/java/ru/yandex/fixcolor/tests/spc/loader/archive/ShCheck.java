@@ -5,10 +5,13 @@ import ru.yandex.fixcolor.tests.spc.bd.BaseDataException;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.DataUnit;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.logging.SimpleFormatter;
 
 public class ShCheck extends Shablon {
+    static final SimpleDateFormat strForm = new SimpleDateFormat("HH:mm");
     public ShCheck(String name, long idx) {
         super(name, idx);
     }
@@ -32,10 +35,14 @@ public class ShCheck extends Shablon {
         for (int i = 0; i < listConn.size(); i++) {
             dataUnit = listConn.get(i);
             n_cicle = dataUnit.n_cicle;
-            if (n_cicle < 2) n++;
-            name = String.valueOf(n);
-            if (n_cicle > 0) name += ":" + n_cicle;
-            name += " - " + dataUnit.pusherName + "/" + dataUnit.typeName;
+//            if (n_cicle < 2) n++;
+//            name = String.valueOf(n);
+//            if (n_cicle > 0) name += ":" + n_cicle;
+//            name += " - " + dataUnit.pusherName + "/" + dataUnit.typeName;
+            name = strForm.format(dataUnit.dateIzm);
+            if (n_cicle > 1) name += "." + n_cicle;
+            else name += ".1";
+            name += " - " + dataUnit.pusherName + " - " + dataUnit.typeName;
             list.add(new ShCheck(name, dataUnit.data_id, 3));
         }
         return list;

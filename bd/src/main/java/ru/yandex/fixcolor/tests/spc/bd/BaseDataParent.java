@@ -1522,7 +1522,8 @@ class BaseDataParent implements BaseData {
                 " datas.id_data, " +
                 " datas.n_cicle, " +
                 " pushers_logger.namePusher, " +
-                " pusherstype_logger.nameType " +
+                " pusherstype_logger.nameType, " +
+                " datas.dateTime " +
                 " FROM " + baseDat + ".datas " +
                 " INNER JOIN " + baseDat + ".data_spec ON datas.id_spec = data_spec.id_dataSpec " +
                 " INNER JOIN " + baseDat + ".pushers ON data_spec.id_pusher = pushers.id_pusher " +
@@ -1540,7 +1541,8 @@ class BaseDataParent implements BaseData {
                                 result.getLong("id_data"),
                                 result.getInt("n_cicle"),
                                 result.getString("namePusher"),
-                                result.getString("nameType")
+                                result.getString("nameType"),
+                                result.getTimestamp("dateTime")
                         )
                 );
             }
