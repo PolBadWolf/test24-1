@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class Plot {
     private Color fieldFrameLineColor = Color.LIGHTGREEN;
     // ширина рамки
     private double fieldFrameLineWidth = 3.0;
+    private Color fieldFontColor = Color.YELLOWGREEN;
+    private double fieldFontSize = 20.0;
 
     //          окно
     // цвет фона
@@ -373,7 +376,8 @@ public class Plot {
             gc.beginPath();
             gc.setStroke(netLineColor);
             gc.setLineWidth(netLineWidth);
-            gc.setFill(Color.YELLOW);
+            gc.setFont(new Font(fieldFontSize));
+            gc.setFill(fieldFontColor);
             gc.setTextAlign(TextAlignment.CENTER);
 
             // x
@@ -435,8 +439,24 @@ public class Plot {
         myPaint.close();
     }
 
+    public Color getFieldFontColor() {
+        return fieldFontColor;
+    }
+
+    public void setFieldFontColor(Color fieldFontColor) {
+        this.fieldFontColor = fieldFontColor;
+    }
+
     public void setFieldBackColor(Color fieldBackColor) {
         this.fieldBackColor = fieldBackColor;
+    }
+
+    public double getFieldFontSize() {
+        return fieldFontSize;
+    }
+
+    public void setFieldFontSize(double fieldFontSize) {
+        this.fieldFontSize = fieldFontSize;
     }
 
     public Color getFieldBackColor() {

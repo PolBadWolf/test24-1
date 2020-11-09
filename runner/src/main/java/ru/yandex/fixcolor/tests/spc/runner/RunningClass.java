@@ -38,7 +38,8 @@ class RunningClass implements Runner {
 
         distanceOut = new ArrayList<>();
 
-        plot = new Plot(mainFrame.getCanvas(), 50, 50);
+        plot = new Plot(mainFrame.getCanvas(), 70, 50);
+        plot.setFieldFontColor(Color.YELLOW);
 
         plot.addTrend(Color.WHITE, 2);
         //plot.addTrend(Color.YELLOW, 2);
