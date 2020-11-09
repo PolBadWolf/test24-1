@@ -21,7 +21,7 @@ public class CreateComponents {
         label.setEnabled(enable);
         return label;
     }
-    public static MLabel getLabel(JComponent parent, String text, Font font, int x, int y, boolean visible, boolean enable, int horizontalAlignment) {
+    public static MLabel getLabel(Container parent, String text, Font font, int x, int y, boolean visible, boolean enable, int horizontalAlignment) {
         int strWidth = parent.getFontMetrics(font).stringWidth(text);
         Rectangle2D r = parent.getFontMetrics(font).getStringBounds(text, parent.getGraphics());
         int rw = (int) r.getWidth() + 1;
