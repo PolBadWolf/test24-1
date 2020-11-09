@@ -18,21 +18,22 @@ public class MainFrame implements Initializable, MainFrame_interface {
     public static MainFrame mainFrame = null;
     private GraphicsContext gc = null;
     private CallBack callBack;
+
+    public Label state;
     public Button buttonExit;
     public Button buttonArchive;
-    public TextField s_nCicle;
-    public TextField l_nCicle;
-    public TextField state;
-    public TextField get_Force;
-    public TextField set_Force;
-    public TextField set_TypePusher;
-    public TextField get_Move;
-    public TextField set_Move;
-    public TextField get_Unclenching;
-    public TextField set_Unclenching;
-    public TextField set_Pusher;
-    public Label label2;
     public Canvas canvas;
+    public Label set_Pusher;
+    public Label set_TypePusher;
+    public Label get_Force;
+    public Label set_Force;
+    public Label get_Move;
+    public Label set_Move;
+    public Label get_Unclenching;
+    public Label set_Unclenching;
+    public TextField s_nCicle;
+    public Label l_nCicle;
+    public Label label2;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
