@@ -168,7 +168,7 @@ public class EditTypePushers {
         });
     }
     // -----------
-    class FilterTextDigit extends DocumentFilter {
+    static class FilterTextDigit extends DocumentFilter {
         @Override
         public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
             if (text.length() == 1) {

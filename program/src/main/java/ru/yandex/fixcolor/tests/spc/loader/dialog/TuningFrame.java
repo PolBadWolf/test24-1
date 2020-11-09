@@ -8,7 +8,6 @@ import ru.yandex.fixcolor.tests.spc.bd.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -181,7 +180,7 @@ class TuningFrame {
         setComponentBaseData(parametersSql);
 //        // список БД
         try {
-            MyUtil.loadToComboBox(listBaseBD, comboBoxListBd, false, parametersSql.getDataBase());
+            MyUtil.loadToComboBox(listBaseBD, comboBoxListBd,false, parametersSql.getDataBase());
         } catch (Exception e) {
             myLog.log(Level.WARNING, "начальная инициализация компонентов", e);
         }
@@ -364,36 +363,33 @@ class TuningFrame {
         System.out.println(basName);
         saveEnableComponents.save();
         saveEnableComponents.offline();
-        new Thread(() -> SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                BaseData localConnBD = connBD.cloneNewBase(basName);
-                new EditUsers(
-                        localConnBD,
-                        new EditUsers.CallBack() {
-                            @Override
-                            public void messageCloseEditUsers(boolean newData) {
-                                saveEnableComponents.restore();
-                                frameTuning.requestFocus();
-                            }
+        new Thread(() -> SwingUtilities.invokeLater(() -> {
+            BaseData localConnBD = connBD.cloneNewBase(basName);
+            new EditUsers(
+                    localConnBD,
+                    new EditUsers.CallBack() {
+                        @Override
+                        public void messageCloseEditUsers(boolean newData) {
+                            saveEnableComponents.restore();
+                            frameTuning.requestFocus();
+                        }
 
-                            // текущий активный пользователь
-                            @Override
-                            public User getCurrentUser() {
-                                return new User(
-                                        0,
-                                        new Date(),
-                                        0,
-                                        new Date(),
-                                        0,
-                                        "lockAdmin",
-                                        "",
-                                        3,
-                                        null
-                                );
-                            }
-                        });
-            }
+                        // текущий активный пользователь
+                        @Override
+                        public User getCurrentUser() {
+                            return new User(
+                                    0,
+                                    new Date(),
+                                    0,
+                                    new Date(),
+                                    0,
+                                    "lockAdmin",
+                                    "",
+                                    3,
+                                    null
+                            );
+                        }
+                    });
         }), "create edit users").start();
     }
     private void callPushButtonEditPushers(ActionEvent actionEvent) {

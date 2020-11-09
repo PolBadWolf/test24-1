@@ -86,7 +86,7 @@ public class EditUsers extends JFrame {
                 fieldSearch,
                 table,
                 tablUsers,
-                new FilterSortField2Table.CallBackF<User>() {
+                new FilterSortField2Table.CallBackF<>() {
                     @Override
                     public Object decoder(int columnIndex, User result) {
                         String text;

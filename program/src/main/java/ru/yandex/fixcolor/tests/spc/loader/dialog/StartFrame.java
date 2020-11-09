@@ -305,11 +305,11 @@ public class StartFrame {
     }
     private void loadAndSetBeginParameters2() {
         // загрузка пользователей в комбо бокс
-        try { MyUtil.loadToComboBox(listUsers, comboBoxUsers, false, null);
+        try { MyUtil.loadToComboBox(listUsers, comboBoxUsers,false, null);
         } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
         }
         // загрузка толкателей в комбо бокс
-        try { MyUtil.loadToComboBox(listPushers, comboBoxPusher, false, null);
+        try { MyUtil.loadToComboBox(listPushers, comboBoxPusher,false, null);
         } catch (Exception e) { myLog.log(Level.SEVERE, "Ошибка загрузки толкателей в comboboxUser", e);
         }
         /*if (statMainWork) {
@@ -774,7 +774,7 @@ public class StartFrame {
                             // загрузить обновленный список
                             try {
                                 userSelectComboBox2Table.setLock(true);
-                                MyUtil.loadToComboBox(listUsers, comboBoxUsers, false, null);
+                                MyUtil.loadToComboBox(listUsers, comboBoxUsers,false, null);
                             } catch (Exception e) {
                                 myLog.log(Level.SEVERE, "Ошибка загрузки пользователей в comboboxUser", e);
                                 MySwingUtil.showMessage(
@@ -802,24 +802,26 @@ public class StartFrame {
         saveEnableComponentsStartFrame.save();
         saveEnableComponentsStartFrame.offline();
         pusherSelectComboBox2Table.setLock(true);
+        long curPusher = ((Pusher) comboBoxPusher.getSelectedItem()).id_pusher;
         new Thread(() -> SwingUtilities.invokeLater(() -> {
             try {
                 EditPushers editPushers = new EditPushers(
-                        new EditPushers.CallBack() {
-                            @Override
-                            public void messageCloseEditUsers(boolean newData) {
-                                if (newData) {
-                                    // чтение списка толкателей
-                                    try {
-                                        listPushers = connBD.getListPushers(true);
-                                        MyUtil.loadToComboBox(listPushers, comboBoxPusher, false, null);
-                                    } catch (Exception e) { myLog.log(Level.WARNING, "ошибка чтение списка толкателей с БД", e);
-                                    }
+                        newData -> {
+                            if (newData) {
+                                // чтение списка толкателей
+                                try {
+                                    listPushers = connBD.getListPushers(true);
+                                    pusherSelectComboBox2Table.setLock(true);
+                                    MyUtil.loadToComboBox(listPushers, comboBoxPusher, false, null);
+                                    selectIdPusher(comboBoxPusher, curPusher);
+                                    pusherSelectComboBox2Table.setLock(false);
+                                    callSelectPusher(null);
+                                } catch (Exception e1) { myLog.log(Level.WARNING, "ошибка чтение списка толкателей с БД", e1);
                                 }
-                                saveEnableComponentsStartFrame.restore();
-                                frame.requestFocus();
-                                pusherSelectComboBox2Table.setLock(false);
                             }
+                            saveEnableComponentsStartFrame.restore();
+                            frame.requestFocus();
+                            pusherSelectComboBox2Table.setLock(false);
                         },
                         connBD,
                         ((User) comboBoxUsers.getSelectedItem()).id_loggerUser
@@ -846,6 +848,16 @@ public class StartFrame {
         viewForce.setText(String.valueOf(typePusher.loggerTypePusher.forceNominal));
         viewMove.setText(String.valueOf(typePusher.loggerTypePusher.moveNominal));
         viewUnclenching.setText(String.valueOf(typePusher.loggerTypePusher.unclenchingTime));
+    }
+    private void selectIdPusher(JComboBox<Pusher> comboBox, final long id) {
+        Pusher pusher;
+        for (int i = 0; i < comboBox.getItemCount(); i++) {
+            pusher = comboBox.getItemAt(i);
+            if (pusher.id_pusher == id) {
+                comboBox.setSelectedItem(pusher);
+                break;
+            }
+        }
     }
     // ===========================================================================
 }

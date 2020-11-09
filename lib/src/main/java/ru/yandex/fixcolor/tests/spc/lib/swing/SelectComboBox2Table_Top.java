@@ -52,6 +52,7 @@ public class SelectComboBox2Table_Top<T> {
             }
         });
         comboBox.addActionListener(e -> {
+            if (lock) return;
             if (comboLockSelect) {
                 comboLockSelect = false;
                 return;
