@@ -98,7 +98,7 @@ public class MainFrame implements Initializable, MainFrame_interface {
             set_TypePusher.setText(pusher.loggerPusher.typePusher.loggerTypePusher.nameType);
             set_Force.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.forceNominal));
             set_Move.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.moveNominal));
-            set_Unclenching.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.unclenchingTime));
+            set_Unclenching.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.unclenchingTime / 1000.0));
         });
     }
 

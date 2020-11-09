@@ -82,14 +82,10 @@ public class EditTypePushers {
         frame.setPreferredSize(new Dimension(640, 480));
         frame.setLayout(null);
         // ---- надписи
-        JLabel jLabel1 = CreateComponents.getLabel("Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 120, 230, 210, 24, true, true);
-        frame.add(jLabel1);
-        JLabel jLabel2 = CreateComponents.getLabel("Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 16), 30, 310, 190, 24, true, true);
-        frame.add(jLabel2);
-        JLabel jLabel3 = CreateComponents.getLabel("Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 16), 40, 350, 140, 24, true, true);
-        frame.add(jLabel3);
-        JLabel jLabel4 = CreateComponents.getLabel("Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 16), 40, 385, 140, 24, true, true);
-        frame.add(jLabel4);
+        CreateComponents.getLabel(frame, "Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 280, 240, true, true, MLabel.POS_CENTER);
+        CreateComponents.getLabel(frame, "Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 16), 275, 310, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(frame, "Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 16), 275, 350, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(frame, "Время разжатия (м.Сек)", new Font("Times New Roman", Font.PLAIN, 16), 275, 385, true, true, MLabel.POS_RIGHT);
         // ---- поля ввода данных
         textName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 30, 270,400, 24, null, null, true, true);
         frame.add(textName);
@@ -104,7 +100,7 @@ public class EditTypePushers {
         frame.add(buttonDelete);
         buttonClear = CreateComponents.getButton("Очистить", new Font("Times New Roman", Font.PLAIN, 14), 470, 310, 120, 25, this::buttonClearAction, true, true);
         frame.add(buttonClear);
-        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 470, 350, 120, 25, this::buttonEditAction, true, true);
+        buttonEdit = CreateComponents.getButton("Изменить", new Font("Times New Roman", Font.PLAIN, 14), 470, 350, 120, 25, this::buttonEditAction, true, true);
         frame.add(buttonEdit);
         buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", Font.PLAIN, 14), 470, 385, 120, 25, this::buttonAddAction, true, true);
         frame.add(buttonAdd);

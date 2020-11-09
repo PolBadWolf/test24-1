@@ -21,12 +21,12 @@
             <Font name="Times New Roman" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="314.0" layoutY="692.0" text="Номинальное усилие">
+      <Label layoutX="331.0" layoutY="692.0" text="Ном. усилие (кг)">
          <font>
             <Font name="Times New Roman" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="512.0" layoutY="692.0" text="Номинальный ход">
+      <Label layoutX="528.0" layoutY="692.0" text="Ном. ход (мм)">
          <font>
             <Font name="Times New Roman" size="18.0" />
          </font>
@@ -53,17 +53,32 @@
             <Font name="Times New Roman" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="772.0" layoutY="18.0" text="Статус">
+      <Label layoutX="91.0" layoutY="18.0" text="Статус">
          <font>
             <Font name="Times New Roman" size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="state" editable="false" layoutX="653.0" layoutY="16.0" prefHeight="25.0" prefWidth="110.0" />
-      <Button fx:id="buttonExit" layoutX="957.0" layoutY="15.0" mnemonicParsing="false" onAction="#exitOnAction" prefHeight="25.0" prefWidth="53.0" text="Menu" />
+      <TextField fx:id="state" editable="false" layoutX="62.0" layoutY="40.0" prefHeight="25.0" prefWidth="110.0" />
+      <Button fx:id="buttonExit" layoutX="957.0" layoutY="15.0" mnemonicParsing="false" onAction="#exitOnAction" prefHeight="25.0" prefWidth="53.0" text="Управ." />
       <TextField fx:id="set_Pusher" editable="false" layoutX="22.0" layoutY="719.0" prefHeight="25.0" prefWidth="118.0" />
       <TextField fx:id="l_nCicle" editable="false" layoutX="863.0" layoutY="753.0" prefHeight="25.0" prefWidth="110.0" />
-      <Button fx:id="buttonArchive" layoutX="886.0" layoutY="15.0" mnemonicParsing="false" onAction="#archiveOnAction" prefHeight="25.0" prefWidth="59.0" text="Archive" />
+      <Button fx:id="buttonArchive" layoutX="886.0" layoutY="15.0" mnemonicParsing="false" onAction="#archiveOnAction" prefHeight="25.0" prefWidth="59.0" text="Архив" />
       <TextField fx:id="s_nCicle" layoutX="863.0" layoutY="719.0" prefHeight="25.0" prefWidth="110.0" text="1" />
+      <Label layoutX="889.0" layoutY="692.0" text="Циклы">
+         <font>
+            <Font name="Times New Roman" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="826.0" layoutY="755.0" text="тек.">
+         <font>
+            <Font name="Times New Roman" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="826.0" layoutY="722.0" text="выкл.">
+         <font>
+            <Font name="Times New Roman" size="18.0" />
+         </font>
+      </Label>
     </children>
 
 </AnchorPane>

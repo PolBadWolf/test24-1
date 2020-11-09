@@ -118,9 +118,9 @@ public class EditPushers {
         JLabel jLabel1 = CreateComponents.getLabel("Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 200, 230, 210, 25, true, true);
         textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 410, 230,200, 25, null, null, true, true);
         buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 30, 275, 120, 25, this::callButtonDelete, true, true);
-        buttonEdit = CreateComponents.getButton("Редактировать", new Font("Times New Roman", Font.PLAIN, 14), 30, 315, 120, 25, this::callButtonEditPusher, true, true);
+        buttonEdit = CreateComponents.getButton("Изменить", new Font("Times New Roman", Font.PLAIN, 14), 30, 315, 120, 25, this::callButtonEditPusher, true, true);
         buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", Font.PLAIN, 14), 30, 355, 120, 25, this::callButtonAdd, true, true);
-        buttonEditTypePushers = CreateComponents.getButton("Тип.Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 30, 395, 120, 25, this::callButtonEditTypePushers, true, true);
+        buttonEditTypePushers = CreateComponents.getButton("Типы Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 30, 395, 120, 25, this::callButtonEditTypePushers, true, true);
         // ---- таблица
         tablePushers = CreateComponents.getTable(
                 640 - 17,

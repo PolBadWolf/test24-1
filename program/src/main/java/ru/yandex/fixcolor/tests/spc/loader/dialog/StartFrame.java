@@ -380,10 +380,10 @@ public class StartFrame {
             tableFindPushers.updateUI();
         } // селекторы
         {
-            buttonEnter = CreateComponents.getButton("проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 190, 90, 24, this::callEnter, false, true);
-            buttonWork = CreateComponents.getButton("работа", new Font("Times New Roman", Font.PLAIN, 14), 200, 330, 90, 24, this::callReturnToWork, false, true);
+            buttonEnter = CreateComponents.getButton("Проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 190, 90, 24, this::callEnter, false, true);
+            buttonSetPassword = CreateComponents.getButton("Новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 190, 116, 24, this::callSetNewPassword, false, true);
+            buttonWork = CreateComponents.getButton("Измерения", new Font("Times New Roman", Font.PLAIN, 14), 200, 330, 100, 24, this::callReturnToWork, false, true);
             buttonTuning = CreateComponents.getButton("настройка", new Font("Times New Roman", Font.PLAIN, 14), 190, 370, 116, 24, this::callTuning, false, true);
-            buttonSetPassword = CreateComponents.getButton("новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 190, 116, 24, this::callSetNewPassword, false, true);
             frame.add(buttonEnter);
             frame.add(buttonWork);
             frame.add(buttonTuning);
@@ -845,7 +845,7 @@ public class StartFrame {
         viewNameTypePusher.setText(typePusher.loggerTypePusher.nameType);
         viewForce.setText(String.valueOf(typePusher.loggerTypePusher.forceNominal));
         viewMove.setText(String.valueOf(typePusher.loggerTypePusher.moveNominal));
-        viewUnclenching.setText(String.valueOf(typePusher.loggerTypePusher.unclenchingTime));
+        viewUnclenching.setText(String.valueOf(typePusher.loggerTypePusher.unclenchingTime / 1000.0));
     }
     // ===========================================================================
 }
