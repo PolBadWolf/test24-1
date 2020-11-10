@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-class PlotParent implements Plot {
+class PlotParent implements Plot, LocalInt {
     // размер холста
     protected double width;
     protected double height;
@@ -164,6 +164,22 @@ class PlotParent implements Plot {
 
     @Override
     public void clear() {
+        // top
+        fillRect(fieldBackColor, fieldSizeLeft, 0, windowWidth, fieldSizeTop);
+        // left
+        fillRect(fieldBackColor, 0, 0, fieldSizeLeft, height);
+        // right
+        fillRect(fieldBackColor, width - fieldSizeRight, 0, fieldSizeRight, height);
+        // bottom
+        fillRect(fieldBackColor, fieldSizeLeft, height - fieldSizeBottom, windowWidth, fieldSizeBottom);
+        // окно
+        fillRect(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
+        // рамка
+//        g2d.setColor(fieldFrameColor);
+//        g2d.setStroke(new BasicStroke((float) fieldFrameWidth));
+//        g2d.drawRect((int) fieldSizeLeft, (int) fieldSizeTop, (int) windowWidth, (int) windowHeight);
 
     }
+    @Override
+    public void fillRect(Color color, double x, double y, double width, double height) { }
 }

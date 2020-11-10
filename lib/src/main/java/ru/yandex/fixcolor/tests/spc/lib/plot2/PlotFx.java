@@ -1,5 +1,7 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
+import java.awt.*;
+
 class PlotFx extends PlotParent implements PlotParent.TrendCallBack {
     public PlotFx(Plot.Parameters parameters) {
         super(parameters, 0, 0);
@@ -18,6 +20,11 @@ class PlotFx extends PlotParent implements PlotParent.TrendCallBack {
 
     @Override
     public void ll(TrendUnit[] units) {
+
+    }
+
+    @Override
+    public void fillRect(Color color, double x, double y, double width, double height) {
 
     }
 }

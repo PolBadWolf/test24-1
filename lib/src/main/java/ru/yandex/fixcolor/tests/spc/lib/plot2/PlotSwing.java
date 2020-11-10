@@ -7,12 +7,14 @@ import java.awt.image.BufferedImage;
 
 class PlotSwing extends PlotParent implements PlotParent.TrendCallBack {
     private MPanel panel;
+    private Graphics2D g2d;
     public PlotSwing(Plot.Parameters parameters, MPanel panel) {
         super(parameters, panel.getWidth(), panel.getHeight());
         this.panel = panel;
         width = panel.getWidth();
         height = panel.getHeight();
         panel.image = new BufferedImage((int) width, (int) height,BufferedImage.TYPE_INT_ARGB);
+        g2d = (Graphics2D) panel.image.getGraphics();
         // тренд1
         trends[0] = new Trend(this);
         // тренд2
@@ -22,26 +24,9 @@ class PlotSwing extends PlotParent implements PlotParent.TrendCallBack {
     }
 
     @Override
-    public void clear() {
-        Graphics2D g2d = (Graphics2D) panel.image.getGraphics();
-        // заполнение полей
-        g2d.setColor(fieldBackColor);
-//        // top
-        g2d.fillRect((int) fieldSizeLeft, (int) 0, (int) windowWidth, (int) fieldSizeTop);
-//        // left
-        g2d.fillRect((int) 0, (int) 0, (int) fieldSizeLeft, (int) height);
-//        // right
-        g2d.fillRect((int) (width - fieldSizeRight), (int) 0, (int) fieldSizeRight, (int) height);
-//        // bottom
-        g2d.fillRect((int) fieldSizeLeft, (int) (height - fieldSizeBottom), (int) windowWidth, (int) fieldSizeBottom);
-        // окно
-        g2d.setColor(windowBackColor);
-        g2d.fillRect((int) (fieldSizeLeft), (int) (fieldSizeTop), (int) (windowWidth), (int) (windowHeight));
-        // рамка
-        g2d.setColor(fieldFrameColor);
-        g2d.setStroke(new BasicStroke((float) fieldFrameWidth));
-        g2d.drawRect((int) fieldSizeLeft, (int) fieldSizeTop, (int) windowWidth, (int) windowHeight);
-        g2d.dispose();
+    public void fillRect(Color color, double x, double y, double width, double height) {
+        g2d.setColor(color);
+        g2d.fillRect((int) x, (int) y, (int) width, (int) height);
     }
 
     @Override
