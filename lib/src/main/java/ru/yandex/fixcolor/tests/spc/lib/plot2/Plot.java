@@ -1,4 +1,4 @@
-package ru.yandex.fixcolor.tests.spc.lib.plot;
+package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
 import java.awt.*;
 
@@ -20,6 +20,10 @@ public interface Plot {
         public static final Color MAGENTA = new Color(255, 0, 255);
         public static final Color CYAN = new Color(0, 255, 255);
         public static final Color BLUE = new Color(0, 0, 255);
+    }
+    class TrendPosition {
+        public static final int left = 1;
+        public static final int right = 2;
     }
     class Parameters {
         // размер холста
@@ -54,6 +58,41 @@ public interface Plot {
         public Color netLineColor;
         // ширина линий сетки
         public double netLineWidth;
+        //
+        //      тренд1
+        // начальные значения минимума и максимума
+        public double trend1_zeroY_min;
+        public double trend1_zeroY_max;
+        // толщина линии
+        public double trend1_lineWidth;
+        // цвет линии
+        public Color trend1_lineColor;
+        // размер шрифта надписи
+        public double trend1_textFontSize;
+        // цвет шрифта надписи
+        public Color trend1_textFontColor;
+        // текст надписи
+        public String trend1_text;
+        // позитция тренда относительно окна
+        public int trend1_positionFromWindow;
+        //
+        //      тренд2
+        // начальные значения минимума и максимума
+        public double trend2_zeroY_min;
+        public double trend2_zeroY_max;
+        // толщина линии
+        public double trend2_lineWidth;
+        // цвет линии
+        public Color trend2_lineColor;
+        // размер шрифта надписи
+        public double trend2_textFontSize;
+        // цвет шрифта надписи
+        public Color trend2_textFontColor;
+        // текст надписи
+        public String trend2_text;
+        // позитция тренда относительно окна
+        public int trend2_positionFromWindow;
+        //
 
         public Parameters(double width, double height) {
             // размер холста
@@ -88,6 +127,42 @@ public interface Plot {
             netLineColor = ColorName.DARKGREEN;
             // ширина линий сетки
             netLineWidth = 1.0;
+            //
+            //      тренд1
+            // начальные значения минимума и максимума
+            trend1_zeroY_min = 0.0;
+            trend1_zeroY_max = 1000.0;
+            // толщина линии
+            trend1_lineWidth = 2.0;
+            // цвет линии
+            trend1_lineColor = ColorName.RED;
+            // размер шрифта надписи
+            trend1_textFontSize = 16.0;
+            // цвет шрифта надписи
+            trend1_textFontColor = ColorName.RED;
+            // текст надписи
+            trend1_text = "мм";
+            // позитция тренда относительно окна
+            trend1_positionFromWindow = TrendPosition.left;
+            //
+            //      тренд2
+            // начальные значения минимума и максимума
+            trend2_zeroY_min = 0.0;
+            trend2_zeroY_max = 500.0;
+            // толщина линии
+            trend2_lineWidth = 2.0;
+            // цвет линии
+            trend2_lineColor = ColorName.GREEN;
+            // размер шрифта надписи
+            trend2_textFontSize = 16.0;
+            // цвет шрифта надписи
+            trend2_textFontColor = ColorName.GREEN;
+            // текст надписи
+            trend2_text = "кг";
+            // позитция тренда относительно окна
+            trend2_positionFromWindow = TrendPosition.right;
+            //
+            //
         }
     }
     // -----------------
