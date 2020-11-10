@@ -1,5 +1,6 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -7,6 +8,9 @@ class PlotParent implements Plot {
     // размер холста
     protected double width;
     protected double height;
+    // размер окна
+    protected double windowWidth;
+    protected double windowHeight;
     //          поля
     // размер полей
     protected double fieldSizeTop;
@@ -40,10 +44,10 @@ class PlotParent implements Plot {
     // тренды, всегда двое: учитель и ученик
     protected final Trend[] trends = new Trend[2];
     // конструктор
-    protected PlotParent(Parameters parameters) {
-        // размер холста
-        width = parameters.width;
-        height = parameters.height;
+    protected PlotParent(Parameters parameters, double paneWidth, double paneHeight) {
+        // размер холста ( задается в основном конструкторе )
+        width = paneWidth;
+        height = paneHeight;
         //          поля
         // размер полей
         fieldSizeTop = parameters.fieldSizeTop;
@@ -69,6 +73,9 @@ class PlotParent implements Plot {
         //          окно
         // цвет фона
         windowBackColor = parameters.windowBackColor;
+        // размер окна
+        windowWidth = width - fieldSizeLeft - fieldSizeRight;
+        windowHeight = height - fieldSizeTop - fieldSizeBottom;
         // цвет линий сетки
         netLineColor = parameters.netLineColor;
         // ширина линий сетки
@@ -153,5 +160,10 @@ class PlotParent implements Plot {
             if (curnY_min > unit.y) curnY_min = unit.y;
             if (curnY_max < unit.y) curnY_max = unit.y;
         }
+    }
+
+    @Override
+    public void clear() {
+
     }
 }

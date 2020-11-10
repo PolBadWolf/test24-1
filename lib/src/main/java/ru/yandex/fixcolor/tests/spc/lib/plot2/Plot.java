@@ -1,5 +1,7 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
+import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
+
 import java.awt.*;
 
 public interface Plot {
@@ -26,9 +28,9 @@ public interface Plot {
         public static final int right = 2;
     }
     class Parameters {
-        // размер холста
-        public double width;
-        public double height;
+        // размер холста ( задается в основном конструкторе )
+//        public double width;
+//        public double height;
         //          поля
         // размер полей
         public double fieldSizeTop;
@@ -95,15 +97,15 @@ public interface Plot {
         //
 
         public Parameters(double width, double height) {
-            // размер холста
-            this.width = width;
-            this.height = height;
+//            // размер холста
+//            this.width = width;
+//            this.height = height;
             //          поля
             // размер полей
-            fieldSizeTop = 0.0;
-            fieldSizeLeft = 70.0;
-            fieldSizeRight = 70.0;
-            fieldSizeBottom = 30.0;
+            fieldSizeTop = 40.0;
+            fieldSizeLeft = 80.0;
+            fieldSizeRight = 160.0;
+            fieldSizeBottom = 320.0;
             // цвет шрифта на полях
             fieldFontColorTop = ColorName.YELLOWGREEN;
             fieldFontColorLeft = ColorName.YELLOWGREEN;
@@ -115,14 +117,14 @@ public interface Plot {
             fieldFontSizeRight = 20.0;
             fieldFontSizeBottom = 20.0;
             // цвет фона полей
-            fieldBackColor = ColorName.GRAY;
+            fieldBackColor = ColorName.GREEN;
             // цвет рамки
             fieldFrameColor = ColorName.LIGHTGREEN;
             // ширина рамки
             fieldFrameWidth = 3.0;
             //          окно
             // цвет фона
-            windowBackColor = Color.BLACK;
+            windowBackColor = Color.CYAN;
             // цвет линий сетки
             netLineColor = ColorName.DARKGREEN;
             // ширина линий сетки
@@ -166,6 +168,8 @@ public interface Plot {
         }
     }
     // -----------------
-    static Plot createSwing(Parameters parameters) { return new PlotSwing(parameters); }
+    static Plot createSwing(Parameters parameters, MPanel panel) { return new PlotSwing(parameters, panel); }
     static Plot createFx(Parameters parameters) { return new PlotFx(parameters); }
+    // -----------------
+    void clear();
 }
