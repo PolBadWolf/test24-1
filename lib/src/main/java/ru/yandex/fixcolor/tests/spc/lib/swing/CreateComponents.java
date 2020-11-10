@@ -208,6 +208,21 @@ public class CreateComponents {
         panel.setEnabled(enable);
         return panel;
     }
+    public static MPanel getMPanel(LayoutManager layoutManager, Font font, String titledBorder, int x, int y, int width, int height, boolean visible, boolean enable) {
+        MPanel panel = new MPanel();
+        panel.setLayout(layoutManager);
+        panel.setBorder(BorderFactory.createTitledBorder(
+                javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)),
+                titledBorder,
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+                javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                font
+        ));
+        panel.setBounds(x, y, width, height);
+        panel.setVisible(visible);
+        panel.setEnabled(enable);
+        return panel;
+    }
     // ---
     public static JCheckBox getJCheckBox(String text, Font font, int x, int y, int width, int height, boolean selected, ActionListener listener, boolean visible, boolean enable) {
         JCheckBox checkBox = new JCheckBox();
