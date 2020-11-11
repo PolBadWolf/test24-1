@@ -177,6 +177,8 @@ class PlotParent implements Plot, LocalInt {
         // рамка
         drawRect(fieldFrameColor, fieldFrameWidth, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
     }
+
+    // ====================
     @Override
     public void fillRect(Color color, double x, double y, double width, double height) { }
     @Override
