@@ -175,11 +175,12 @@ class PlotParent implements Plot, LocalInt {
         // окно
         fillRect(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
         // рамка
-//        g2d.setColor(fieldFrameColor);
-//        g2d.setStroke(new BasicStroke((float) fieldFrameWidth));
-//        g2d.drawRect((int) fieldSizeLeft, (int) fieldSizeTop, (int) windowWidth, (int) windowHeight);
-
+        drawRect(fieldFrameColor, fieldFrameWidth, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
     }
+
+    // ====================
     @Override
     public void fillRect(Color color, double x, double y, double width, double height) { }
+    @Override
+    public void drawRect(Color color, double lineWidth, double x, double y, double width, double height) { }
 }

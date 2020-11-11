@@ -30,6 +30,13 @@ class PlotSwing extends PlotParent implements PlotParent.TrendCallBack {
     }
 
     @Override
+    public void drawRect(Color color, double lineWidth, double x, double y, double width, double height) {
+        g2d.setColor(color);
+        g2d.setStroke(new BasicStroke((float) lineWidth));
+        g2d.drawRect((int) x, (int) y, (int) width, (int) height);
+    }
+
+    @Override
     public void ll(TrendUnit[] units) {
 
     }

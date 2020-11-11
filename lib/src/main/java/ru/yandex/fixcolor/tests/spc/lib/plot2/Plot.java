@@ -1,5 +1,6 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
+import javafx.scene.canvas.Canvas;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 
 import java.awt.*;
@@ -96,7 +97,7 @@ public interface Plot {
         public int trend2_positionFromWindow;
         //
 
-        public Parameters(double width, double height) {
+        public Parameters() {
 //            // размер холста
 //            this.width = width;
 //            this.height = height;
@@ -119,7 +120,7 @@ public interface Plot {
             // цвет фона полей
             fieldBackColor = ColorName.GREEN;
             // цвет рамки
-            fieldFrameColor = ColorName.LIGHTGREEN;
+            fieldFrameColor = ColorName.BLUE;
             // ширина рамки
             fieldFrameWidth = 3.0;
             //          окно
@@ -169,7 +170,7 @@ public interface Plot {
     }
     // -----------------
     static Plot createSwing(Parameters parameters, MPanel panel) { return new PlotSwing(parameters, panel); }
-    static Plot createFx(Parameters parameters) { return new PlotFx(parameters); }
+    static Plot createFx(Parameters parameters, Canvas canvas) { return new PlotFx(parameters, canvas); }
     // -----------------
     void clear();
 }
