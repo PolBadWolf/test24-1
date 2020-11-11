@@ -1,4 +1,4 @@
-package test.swing;
+package ru.yandex.fixcolor.tests.spc.lib.plot2.test.swing;
 
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;

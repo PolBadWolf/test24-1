@@ -1,12 +1,10 @@
-package test.fx;
+package ru.yandex.fixcolor.tests.spc.lib.plot2.test.fx;
 
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 
