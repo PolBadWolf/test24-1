@@ -249,7 +249,8 @@ class BaseDataParent implements BaseData {
                         "nameType",
                         "forceNominal",
                         "moveNominal",
-                        "unclenchingTime"
+                        "unclenchingTime",
+                        "weightNominal"
                 ))
         );
         return data && data_spec && users && users_logger && pushers && logger_pushers && pusherstype && pusherstype_logger;
@@ -346,6 +347,7 @@ class BaseDataParent implements BaseData {
                             " pusherstype_logger.forceNominal, " +
                             " pusherstype_logger.moveNominal, " +
                             " pusherstype_logger.unclenchingTime, " +
+                            " pusherstype_logger.weightNominal, " +
                             " pusherstype.date_unreg AS date_unreg_typepushers, " +
                             " pushers.date_unreg AS date_unreg_pushers " +
                             " FROM " +  baseDat + ".pushers " +
@@ -373,6 +375,7 @@ class BaseDataParent implements BaseData {
                             " pusherstype_logger.forceNominal, " +
                             " pusherstype_logger.moveNominal, " +
                             " pusherstype_logger.unclenchingTime, " +
+                            " pusherstype_logger.weightNominal, " +
                             " pusherstype.date_unreg AS date_unreg_typepushers, " +
                             " pushers.date_unreg AS date_unreg_pushers " +
                             " FROM " +  baseDat + ".pushers " +
@@ -406,7 +409,8 @@ class BaseDataParent implements BaseData {
                                             result.getString("nameType"),
                                             result.getInt("forceNominal"),
                                             result.getInt("moveNominal"),
-                                            result.getInt("unclenchingTime")
+                                            result.getInt("unclenchingTime"),
+                                            result.getInt("weightNominal")
                                     ),
                                     result.getTimestamp("date_unreg_typepushers")
                             )
@@ -846,6 +850,7 @@ class BaseDataParent implements BaseData {
                                 " pusherstype_logger.forceNominal, " +
                                 " pusherstype_logger.moveNominal, " +
                                 " pusherstype_logger.unclenchingTime, " +
+                                " pusherstype_logger.weightNominal, " +
                                 " pusherstype.date_unreg " +
                                 " FROM " + baseDat + ".pusherstype " +
                                 " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
@@ -864,6 +869,7 @@ class BaseDataParent implements BaseData {
                                 " pusherstype_logger.forceNominal, " +
                                 " pusherstype_logger.moveNominal, " +
                                 " pusherstype_logger.unclenchingTime, " +
+                                " pusherstype_logger.weightNominal, " +
                                 " pusherstype.date_unreg " +
                                 " FROM " + baseDat + ".pusherstype " +
                                 " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
@@ -888,7 +894,8 @@ class BaseDataParent implements BaseData {
                                         result.getString("nameType"),
                                         result.getInt("forceNominal"),
                                         result.getInt("moveNominal"),
-                                        result.getInt("unclenchingTime")
+                                        result.getInt("unclenchingTime"),
+                                        result.getInt("weightNominal")
                                 ),
                                 result.getTimestamp("date_unreg")
                         ));
@@ -1088,6 +1095,7 @@ class BaseDataParent implements BaseData {
                             " pusherstype_logger.forceNominal, " +
                             " pusherstype_logger.moveNominal, " +
                             " pusherstype_logger.unclenchingTime, " +
+                            " pusherstype_logger.weightNominal, " +
                             " pusherstype.date_unreg " +
                             " FROM " + baseDat + ".pusherstype " +
                             " INNER JOIN " + baseDat + ".pusherstype_logger " +
@@ -1113,7 +1121,8 @@ class BaseDataParent implements BaseData {
                             result.getString("nameType"),
                             result.getInt("forceNominal"),
                             result.getInt("moveNominal"),
-                            result.getInt("unclenchingTime")
+                            result.getInt("unclenchingTime"),
+                            result.getInt("weightNominal")
                     ),
                     result.getTimestamp("date_unreg")
             );
@@ -1160,6 +1169,7 @@ class BaseDataParent implements BaseData {
                     " pusherstype_logger.forceNominal, " +
                     " pusherstype_logger.moveNominal, " +
                     " pusherstype_logger.unclenchingTime, " +
+                    " pusherstype_logger.weightNominal, " +
                     " pusherstype.date_unreg AS typePusher_dateUnreg, " +
                     " pushers.date_unreg AS pusher_dateUnreg " +
                     " FROM " + baseDat + ".pushers " +
@@ -1191,7 +1201,8 @@ class BaseDataParent implements BaseData {
                                             result.getString("nameType"),
                                             result.getInt("forceNominal"),
                                             result.getInt("moveNominal"),
-                                            result.getInt("unclenchingTime")
+                                            result.getInt("unclenchingTime"),
+                                            result.getInt("weightNominal")
                                     ),
                                     result.getTimestamp("typePusher_dateUnreg")
                             )
@@ -1311,7 +1322,8 @@ class BaseDataParent implements BaseData {
                             result.getString("nameType"),
                             result.getInt("forceNominal"),
                             result.getInt("moveNominal"),
-                            result.getInt("unclenchingTime")
+                            result.getInt("unclenchingTime"),
+                            result.getInt("weightNominal")
                     ),
                     result.getTimestamp("date_unreg")
             );

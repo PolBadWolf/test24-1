@@ -3,15 +3,15 @@
 
  Source Server         : 12
  Source Server Type    : MySQL
- Source Server Version : 80021
+ Source Server Version : 80022
  Source Host           : localhost:3306
  Source Schema         : bas4
 
  Target Server Type    : MySQL
- Target Server Version : 80021
+ Target Server Version : 80022
  File Encoding         : 65001
 
- Date: 26/10/2020 22:56:20
+ Date: 12/11/2020 09:22:49
 */
 
 SET NAMES utf8mb4;
@@ -101,6 +101,7 @@ CREATE TABLE `pusherstype_logger`  (
   `forceNominal` int NULL DEFAULT NULL COMMENT 'номинальное усилие',
   `moveNominal` int NULL DEFAULT NULL COMMENT 'номинальный ход минимальный',
   `unclenchingTime` int NULL DEFAULT NULL COMMENT 'номинальный ход максимальный',
+  `weightNominal` int NULL DEFAULT NULL COMMENT 'номинальный вес',
   PRIMARY KEY (`id_loggerTypePusher`, `id_typePusher`) USING BTREE,
   INDEX `id_typePusher`(`id_typePusher`) USING BTREE,
   INDEX `id_loggerTypePusher`(`id_loggerTypePusher`) USING BTREE
