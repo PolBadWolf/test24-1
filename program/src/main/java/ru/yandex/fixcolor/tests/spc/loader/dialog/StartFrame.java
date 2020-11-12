@@ -46,15 +46,17 @@ public class StartFrame {
     private JTable tableFindPushers;
     private JTable tableFindUsers;
     //
-    private JTextField viewNameTypePusher;
-    private JTextField viewForce;
-    private JTextField viewMove;
-    private JTextField viewUnclenching;
+    private JLabel viewNameTypePusher;
+    private JLabel viewForce;
+    private JLabel viewMove;
+    private JLabel viewUnclenching;
+    private JLabel viewWeightNominal;
     //
     private JLabel viewLabelNameTypePusher;
     private JLabel viewLabelForce;
     private JLabel viewLabelMove;
     private JLabel viewLabelUnclenching;
+    private JLabel viewLabelWeightNominal;
 
     private JButton buttonExit;
 
@@ -333,12 +335,9 @@ public class StartFrame {
             frame.add(label4);
             frame.add(label5);
             //
-            jLabel1 = CreateComponents.getLabel("Пользователь : ", new Font("Times New Roman", Font.PLAIN, 14), 100, 155, 90, 16, false, true);
-            jLabel2 = CreateComponents.getLabel("Пароль :", new Font("Times New Roman", Font.PLAIN, 14), 100, 195, 90, 16, false, true);
-            jLabel3 = CreateComponents.getLabel("Толкатель :", new Font("Times New Roman", Font.PLAIN, 14), 100, 230, 90, 16, false, true);
-            frame.add(jLabel1);
-            frame.add(jLabel2);
-            frame.add(jLabel3);
+            jLabel1 = CreateComponents.getLabel(frame, "Пользователь :", new Font("Times New Roman", Font.PLAIN, 14), 185, 154, false, true, MLabel.POS_RIGHT);
+            jLabel2 = CreateComponents.getLabel(frame, "Пароль :", new Font("Times New Roman", Font.PLAIN, 14), 185, 194, false, true, MLabel.POS_RIGHT);
+            jLabel3 = CreateComponents.getLabel(frame,"Толкатель :", new Font("Times New Roman", Font.PLAIN, 14), 185, 233,  false, true, MLabel.POS_RIGHT);
         } // подписи, надписи
         {
             comboBoxUsers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
@@ -414,42 +413,38 @@ public class StartFrame {
             jPanel1.setVisible(false);
         } // панель редактирование
         {
-            viewNameTypePusher = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
+            viewLabelNameTypePusher = CreateComponents.getLabel(frame, "Тип толкателя",
                     new Font("Time New Roman", Font.PLAIN, 14),
-                    40, 286, 120, 25,
-                    null, null, false, true, false);
-            viewLabelNameTypePusher = CreateComponents.getLabel("Тип толкателя",
+                    80, 260, false, true, MLabel.POS_CENTER);
+            viewLabelForce = CreateComponents.getLabel(frame, "Ном.усилие(кг)",
                     new Font("Time New Roman", Font.PLAIN, 14),
-                    52, 260, 120, 25, false,true);
-            viewForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
+                    208, 260, false, true, MLabel.POS_CENTER);
+            viewLabelMove = CreateComponents.getLabel(frame, "Ном.ход (мм)",
                     new Font("Time New Roman", Font.PLAIN, 14),
-                    180, 286, 120, 25,
-                    null, null, false, true, false);
-            viewLabelForce = CreateComponents.getLabel("Ном.усилие(кг)",
+                    330, 260, false, true, MLabel.POS_CENTER);
+            viewLabelUnclenching = CreateComponents.getLabel(frame, "Время разж.(мс)",
                     new Font("Time New Roman", Font.PLAIN, 14),
-                    188, 260, 120, 25, false,true);
-            viewMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
+                    460, 260, false, true, MLabel.POS_CENTER);
+            viewLabelWeightNominal = CreateComponents.getLabel(frame, "Вес (кг)",
                     new Font("Time New Roman", Font.PLAIN, 14),
-                    320, 286, 120, 25,
-                    null, null, false, true, false);
-            viewLabelMove = CreateComponents.getLabel("Ном.ход (мм)",
+                    565, 260, false, true, MLabel.POS_CENTER);
+            //
+            viewNameTypePusher = CreateComponents.getLabel(frame, "",
                     new Font("Time New Roman", Font.PLAIN, 14),
-                    338, 260, 120, 25, false,true);
-            viewUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
+                    80, 286, false, true, MLabel.POS_CENTER);
+            viewForce = CreateComponents.getLabel(frame, "",
                     new Font("Time New Roman", Font.PLAIN, 14),
-                    460, 286, 120, 25,
-                    null, null, false, true, false);
-            viewLabelUnclenching = CreateComponents.getLabel("Время разж.(мс)",
+                    208, 286, false, true, MLabel.POS_CENTER);
+            viewMove = CreateComponents.getLabel(frame, "",
                     new Font("Time New Roman", Font.PLAIN, 14),
-                    465, 260, 120, 25, false,true);
-            frame.add(viewNameTypePusher);
-            frame.add(viewLabelNameTypePusher);
-            frame.add(viewForce);
-            frame.add(viewLabelForce);
-            frame.add(viewMove);
-            frame.add(viewLabelMove);
-            frame.add(viewUnclenching);
-            frame.add(viewLabelUnclenching);
+                    330, 286, false, true, MLabel.POS_CENTER);
+            viewUnclenching = CreateComponents.getLabel(frame, "",
+                    new Font("Time New Roman", Font.PLAIN, 14),
+                    460, 286, false, true, MLabel.POS_CENTER);
+            viewWeightNominal = CreateComponents.getLabel(frame, "",
+                    new Font("Time New Roman", Font.PLAIN, 14),
+                    565, 286, false, true, MLabel.POS_CENTER);
+            //
         }
         fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 190,120, 24, null, this::callEnter, false, true);
         frame.add(fieldPassword);
@@ -509,7 +504,9 @@ public class StartFrame {
         viewMove.setVisible(true);
         viewLabelMove.setVisible(true);
         viewUnclenching.setVisible(true);
+        viewWeightNominal.setVisible(true);
         viewLabelUnclenching.setVisible(true);
+        viewLabelWeightNominal.setVisible(true);
         //
         if (statMainWork) {
             buttonWork.setEnabled(true);
@@ -848,6 +845,7 @@ public class StartFrame {
         viewForce.setText(String.valueOf(typePusher.loggerTypePusher.forceNominal));
         viewMove.setText(String.valueOf(typePusher.loggerTypePusher.moveNominal));
         viewUnclenching.setText(String.valueOf(typePusher.loggerTypePusher.unclenchingTime));
+        viewWeightNominal.setText(String.valueOf(typePusher.loggerTypePusher.weightNominal));
     }
     private void selectIdPusher(JComboBox<Pusher> comboBox, final long id) {
         Pusher pusher;
