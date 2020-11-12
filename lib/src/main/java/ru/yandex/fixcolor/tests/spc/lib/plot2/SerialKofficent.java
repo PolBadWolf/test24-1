@@ -64,7 +64,7 @@ public class SerialKofficent {
                 subFut = Math.abs(divFut - 10);
                 // ---
                 System.out.println("k = "+multiplicity+"\t"+subOld+" > "+subCur+" < "+subFut);
-                if ((subOld > subCur) && (subCur < subFut)) {
+                if ((subFut > subCur) || (subFut > subOld)) {
                     fail = false;
                     break;
                 }
@@ -80,7 +80,7 @@ public class SerialKofficent {
         int dev = (rendMax - rendMin) / multiplicity;
         return new StructFindK_Div(rendMin,rendMax,dev, multiplicity);
     }
-    public static StructFindK_Div findK_Div(double min, double max, int base) {
+    public static StructFindK_Div findK_DivAdj(double min, double max, int base) {
 
         return new StructFindK_Div((int)min, (int)max, 1, base);
     }
