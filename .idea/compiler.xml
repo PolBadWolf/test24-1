@@ -16,9 +16,17 @@
         <module name="runner" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="graphics" target="1.8" />
-      <module name="loader" target="1.8" />
-    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="RS232" options="" />
+      <module name="allinterface" options="" />
+      <module name="bd" options="" />
+      <module name="lib" options="" />
+      <module name="program" options="" />
+      <module name="runner" options="" />
+      <module name="screen" options="" />
+      <module name="test24-1" options="" />
+    </option>
   </component>
 </project>
