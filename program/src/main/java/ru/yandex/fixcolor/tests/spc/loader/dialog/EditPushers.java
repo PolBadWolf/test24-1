@@ -31,6 +31,7 @@ public class EditPushers {
     private JTextField textForce;
     private JTextField textMove;
     private JTextField textUnclenching;
+    private JTextField textWeightNominal;
     private JTable tableFindTypePushers;
     // ***************************
     private final EditPushers.CallBack callBack;
@@ -75,6 +76,7 @@ public class EditPushers {
                 textMove,
                 textForce,
                 textUnclenching,
+                textWeightNominal,
                 tableFindTypePushers
         });
         // загрузка типов компонентов
@@ -185,11 +187,12 @@ public class EditPushers {
         frame.add(scrollPushers);
         //
         panelTypePushers = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "Параметры типа толкателя", 190, 260, 420, 170, true, true);
-        CreateComponents.getLabel(panelTypePushers, "Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 200, 28, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(panelTypePushers, "Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 18), 200, 65, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(panelTypePushers, "Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 18), 200, 104, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(panelTypePushers, "Время разжатия (мс)", new Font("Times New Roman", Font.PLAIN, 18), 200, 138, true, true, MLabel.POS_RIGHT);
-        comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 220, 28, 190, 25,
+        CreateComponents.getLabel(panelTypePushers, "Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 200, 20, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 18), 200, 48, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 18), 200, 78, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Время разжатия (мс)", new Font("Times New Roman", Font.PLAIN, 18), 200, 108, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Вес гидротолкателя (кг)", new Font("Times New Roman", Font.PLAIN, 18), 200, 138, true, true, MLabel.POS_RIGHT);
+        comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 220, 20, 190, 25,
               true,
                 null,
                 this::callComboBoxTypePushers,
@@ -204,17 +207,20 @@ public class EditPushers {
         );
         tableFindTypePushers.setBounds(220, 55, 220, 300);
 
-        textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 67, 170, 25,
+        textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 50, 170, 25, //67
                 null, null, true, true, false);
-        textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 106, 170, 25,
+        textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 80, 170, 25, //106
                 null, null, true, true, false);
-        textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 140, 170, 25,
+        textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 110, 170, 25, //140
+                null, null, true, true, false);
+        textWeightNominal = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 220, 140, 170, 25, //140
                 null, null, true, true, false);
         panelTypePushers.add(tableFindTypePushers);
         panelTypePushers.add(comboBoxTypePushers);
         panelTypePushers.add(textForce);
         panelTypePushers.add(textMove);
         panelTypePushers.add(textUnclenching);
+        panelTypePushers.add(textWeightNominal);
         frame.add(panelTypePushers);
         //
         frame.pack();
@@ -267,10 +273,12 @@ public class EditPushers {
             textForce.setText(String.valueOf(tp.loggerTypePusher.forceNominal));
             textMove.setText(String.valueOf(tp.loggerTypePusher.moveNominal));
             textUnclenching.setText(String.valueOf(tp.loggerTypePusher.unclenchingTime));
+            textWeightNominal.setText(String.valueOf(tp.loggerTypePusher.weightNominal));
         } catch (Exception exception) {
             textForce.setText("");
             textMove.setText("");
             textUnclenching.setText("");
+            textWeightNominal.setText("");
         }
     }
     private boolean checkComponentsEdit() {
