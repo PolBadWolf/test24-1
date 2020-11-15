@@ -3,111 +3,58 @@ package ru.yandex.fixcolor.tests.spc.lib.plot2;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static ru.yandex.fixcolor.tests.spc.lib.plot2.SerialKofficent.*;
-
 public class TestSerialKofficent {
-    private class Trio {
-        public double x;
-        public int s;
-        public int b;
-
-        public Trio(double x, int s, int b) {
-            this.x = x;
-            this.s = s;
-            this.b = b;
-        }
-    }
-    private class TrioDubl {
-        public double min;
-        public double max;
-        public int div;
-
-        public TrioDubl(double min, double max, int div) {
-            this.min = min;
-            this.div = div;
-            this.max = max;
-        }
-
-        @Override
-        public String toString() {
-            return "TrioDubl{" +
-                    "min=" + min +
-                    ", max=" + max +
-                    ", div=" + div +
-                    '}';
-        }
-    }
-
     @Test
-    public void testFind() {
-        Trio[] trios = {
-                new Trio(12.5, 10, 20),
-                new Trio(7.35, 5, 10),
-                new Trio(18.5, 10, 20),
-                new Trio(38.5, 25, 50),
-                new Trio(76.7, 50, 100)
+    public void testMultiplicity() {
+        double[] lines = {12, 18, 48, 53, 186, 154, 678, 1024, 852};
+        System.out.println("цикл поисков К из ряда чисел:");
+        for (int i = 0; i < lines.length; i++) {
+            System.out.println(String.format("%3d", i+1) + ") x = " + String.format("%8.2f", lines[i]) + " -> step = " + String.format("%5d", MultiplicityRender.render.multiplicity(lines[i])) );
+        }
+    }
+    static class TestSectionUnit {
+        public double fist;
+        public double end;
+        public int sampleStep;
+        public int sampleN;
+
+        public TestSectionUnit(double fist, double end, int sampleStep, int sampleN) {
+            this.fist = fist;
+            this.end = end;
+            this.sampleStep = sampleStep;
+            this.sampleN = sampleN;
+        }
+    }
+    @Test
+    public void testMultiplicitySection() {
+        TestSectionUnit[] units = {
+                new TestSectionUnit(0, 52, 5, 11),
+                new TestSectionUnit(-53, 726, 100, 9),
+                new TestSectionUnit(0, 1024, 100, 11),
+                new TestSectionUnit(0, 37, 5, 8),
+                new TestSectionUnit(0, 32, 5, 7)
         };
-        SerialKofficent.TwoKof znIn;
-        boolean allError = false;
-        boolean flError;
-        for (Trio trio: trios
-             ) {
-            znIn = findKoff(trio.x);
-            flError = false;
-            if (trio.s != znIn.k_min) flError = true;
-            if (trio.b != znIn.k_max) flError = true;
-            System.out.print("x = " + trio.x + " min= " + znIn.k_min + " max=" + znIn.k_max);
-            if (flError) {
-                System.out.print(" !!! min=" + trio.s + " max= " + trio.b);
-                allError = true;
-            }
+        boolean fail = false;
+        for (int i = 0; i < units.length; i++) {
+            System.out.print(String.format("%4d", i) + ") ");
+            double fist = units[i].fist;
+            double end = units[i].end;
+            int sampleStep = units[i].sampleStep;
+            int sampleN = units[i].sampleN;
+            System.out.print("fist = " + String.format("%9.2f", fist) + " ");
+            System.out.print("end = "  + String.format("%9.2f", end) + " ");
+            MultiplicityRender.Section section = MultiplicityRender.render.multiplicity(fist, end);
+            System.out.print("--> ");
+            System.out.print("step = "  + String.format("%3d", section.multiplicity) + " ");
+            System.out.print("sample step = "  + String.format("%3d", sampleStep) + " ");
+            System.out.print("fist = " + String.format("%4d", section.fist) + " ");
+            System.out.print("end = "  + String.format("%4d", section.end) + " ");
+            System.out.print("n = "  + String.format("%3d", section.n) + " ");
+            System.out.print("sample n = "  + String.format("%3d", sampleN) + " ");
             System.out.println();
+            if (sampleStep != section.multiplicity) fail = true;
+            if (sampleN != section.n) fail = true;
         }
-        Assert.assertTrue(!allError);
-    }
-
-    @Test
-    public void testFindDiv() {
-        TrioDubl[] mass = {
-                new TrioDubl(-10, 1000, 11),
-                new TrioDubl(0,276, 12),
-                new TrioDubl(0, 385, 8),
-                new TrioDubl(-124,698, 9),
-                new TrioDubl(0,768, 8),
-                new TrioDubl(0, 852, 9),
-                new TrioDubl(0, 273, 9),
-                new TrioDubl(0, 220, 12)
-        };
-        StructFindK_Div div2;
-        boolean allOk = true;
-        for (TrioDubl trio: mass) {
-            System.out.println("============================");
-            System.out.println(trio);
-            div2 = findK_Div(trio.min, trio.max);
-            //Assert.assertEquals(div.div, trio.div);
-            System.out.println("res2 = "+div2);
-        }
-    }
-
-    private class MassTestFindDivAdj {
-        public StructFindK_Div dataInp;
-        public StructFindK_Div dataOut;
-        public MassTestFindDivAdj(StructFindK_Div dataInp, StructFindK_Div dataOut) {
-            this.dataInp = dataInp;
-            this.dataOut = dataOut;
-        }
-    }
-    @Test
-    public void testFindDivAdj() {
-        MassTestFindDivAdj[] mass = {
-                new MassTestFindDivAdj(
-                        new StructFindK_Div(0, 273, 11, 100),
-                        new StructFindK_Div(0, 275, 11, 25)
-                ),
-                new MassTestFindDivAdj(
-                        new StructFindK_Div(0, 600,12, 5),
-                        new StructFindK_Div(0, 23, 5, 2)
-                )
-        };
+        Assert.assertFalse(fail);
     }
 }
