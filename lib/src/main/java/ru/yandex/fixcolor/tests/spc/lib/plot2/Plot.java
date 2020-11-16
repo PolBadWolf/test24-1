@@ -66,6 +66,7 @@ public interface Plot {
         // начальные значения минимума и максимума
         public double trend1_zeroY_min;
         public double trend1_zeroY_max;
+        public boolean trend1_AutoZoomY;
         // толщина линии
         public double trend1_lineWidth;
         // цвет линии
@@ -83,6 +84,7 @@ public interface Plot {
         // начальные значения минимума и максимума
         public double trend2_zeroY_min;
         public double trend2_zeroY_max;
+        public boolean trend2_AutoZoomY;
         // толщина линии
         public double trend2_lineWidth;
         // цвет линии
@@ -129,12 +131,13 @@ public interface Plot {
             // цвет линий сетки
             netLineColor = ColorName.DARKGREEN;
             // ширина линий сетки
-            netLineWidth = 1.0;
+            netLineWidth = 5.0;
             //
             //      тренд1
             // начальные значения минимума и максимума
             trend1_zeroY_min = 0.0;
             trend1_zeroY_max = 1000.0;
+            trend1_AutoZoomY = false;
             // толщина линии
             trend1_lineWidth = 2.0;
             // цвет линии
@@ -152,6 +155,7 @@ public interface Plot {
             // начальные значения минимума и максимума
             trend2_zeroY_min = 0.0;
             trend2_zeroY_max = 500.0;
+            trend2_AutoZoomY = false;
             // толщина линии
             trend2_lineWidth = 2.0;
             // цвет линии

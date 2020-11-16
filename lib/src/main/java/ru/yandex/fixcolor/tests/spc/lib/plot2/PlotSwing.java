@@ -5,7 +5,7 @@ import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-class PlotSwing extends PlotParent implements PlotParent.TrendCallBack {
+class PlotSwing extends PlotParent implements Trend.TrendCallBack {
     private MPanel panel;
     private Graphics2D g2d;
     public PlotSwing(Plot.Parameters parameters, MPanel panel) {
@@ -39,5 +39,14 @@ class PlotSwing extends PlotParent implements PlotParent.TrendCallBack {
     @Override
     public void ll(TrendUnit[] units) {
 
+    }
+
+    @Override
+    public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) {
+        g2d.setColor(lineColor);
+        g2d.setStroke(new BasicStroke((float) lineWidth));
+        for (LineParameters line : lines) {
+            g2d.drawLine((int) Math.round(line.x1), (int) Math.round(line.y1), (int) Math.round(line.x2), (int) Math.round(line.y2));
+        }
     }
 }
