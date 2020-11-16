@@ -674,7 +674,7 @@ class BaseDataParent implements BaseData {
             // создание записи в журнале типа толкателя
             query = "INSERT INTO " + baseDat + ".pusherstype_logger " +
                     " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime, weightNominal) " +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?) "
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
             ;
             preStatementLogger = connection.prepareStatement(query);
             preStatementLogger.setTimestamp(1, timestamp);
