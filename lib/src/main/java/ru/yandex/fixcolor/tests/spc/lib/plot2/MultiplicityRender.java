@@ -46,16 +46,54 @@ public class MultiplicityRender {
         }
         throw new IllegalArgumentException("\"x\" вне диапозона : " + x);
     }
+    int ceilStep(double baseStep) {
+        for (SectionUnit unit: sectionUnits) {
+            if (baseStep <= unit.multiplicity) return unit.multiplicity;
+        }
+        throw new IllegalArgumentException("\"x\" вне диапозона : " + baseStep);
+    }
     public Section multiplicity(double fist, double end) throws IllegalArgumentException {
         double lenght = end - fist;
         int step = multiplicity(lenght);
-        int nDn = (int) Math.floor(fist / step);
+        int nDn = (int) (fist / step);
         int nUp = (int) Math.ceil(end / step);
         return new Section(
-                step * nDn,
-                step * nUp,
+                (int) Math.floor(fist),
+                (int) Math.ceil(end),
                 step,
                 Math.abs(nDn) + Math.abs(nUp)
+        );
+    }
+    public Section multiplicityT2(final Section sectionTrend1, final double fistTrend2, final double endTrend2) {
+        int baseN = sectionTrend1.n;
+        double baseLenght = endTrend2 - fistTrend2;
+        double baseStep = baseLenght / baseN;
+        int step = ceilStep(baseStep);
+        //
+        int celDnTr1 = (int) (sectionTrend1.fist / sectionTrend1.multiplicity);
+        int celDnTr2 = (int) (fistTrend2 / step);
+        double otnDnTr1 = (double) (sectionTrend1.fist % sectionTrend1.multiplicity) / sectionTrend1.multiplicity;
+        double otnDnTr2 = (double) (fistTrend2 % step) / step;
+        double otnDn = Math.min(otnDnTr1, otnDnTr2);
+        int corDnTr1 = (int) Math.floor(sectionTrend1.multiplicity * (celDnTr1 + otnDn));
+        int corDnTr2 = (int) Math.floor(step * (celDnTr2 + otnDn));
+        //
+        int celUpTr1 = (int) (sectionTrend1.end / sectionTrend1.multiplicity);
+        int celUpTr2 = (int) (endTrend2 / step);
+        double otnUpTr1 = (double) (sectionTrend1.end % sectionTrend1.multiplicity) / sectionTrend1.multiplicity;
+        double otnUpTr2 = (double) (endTrend2 % step) / step;
+        double otnUp = Math.max(otnUpTr1, otnUpTr2);
+        int corUpTr1 = (int) Math.ceil(sectionTrend1.multiplicity * (celUpTr1 + otnUp));
+        int corUpTr2 = (int) Math.ceil(step * (celUpTr2 + otnUp));
+        //
+        sectionTrend1.fist = corDnTr1;
+        sectionTrend1.end = corUpTr1;
+        //
+        return new Section(
+                corDnTr2,
+                corUpTr2,
+                step,
+                baseN
         );
     }
 }
