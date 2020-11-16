@@ -166,12 +166,10 @@ class PlotParent implements Plot, LocalInt {
     public void drawNetY() {
         double k = windowHeight / (trends[0].netY_max - trends[0].netY_min);
         int fistN = 0;
-//        if ((trends[0].netY_max - trends[0].netY_min) % trends[0].netY_step == 0) fistN = 1;
         if ((trends[0].netY_min % trends[0].netY_step) == 0) fistN = 1;
         int baseN = netY_n;
         int step = trends[0].netY_step;
         double offset = k * (trends[0].netY_min % step);
-        double len = windowHeight - offset;
         LineParameters[] lines = new LineParameters[baseN - fistN];
         double x1 = fieldSizeLeft + netLineWidth / 2;
         double x2 = fieldSizeLeft + windowWidth - netLineWidth / 2;
@@ -182,8 +180,12 @@ class PlotParent implements Plot, LocalInt {
             lines[indx] = new LineParameters(x1, yInv, x2, yInv);
         }
         drawLines(netLineColor, netLineWidth, lines);
+        drawTitleY(0);
+        drawTitleY(1);
     }
 
     @Override
     public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) { }
+    @Override
+    public void drawTitleY(int nTrend) { }
 }

@@ -56,4 +56,9 @@ class PlotFx extends PlotParent implements Trend.TrendCallBack {
         }
         gc.closePath();
     }
+
+    @Override
+    public void drawTitleY(int nTrend) {
+
+    }
 }

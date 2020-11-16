@@ -21,4 +21,5 @@ interface LocalInt {
         }
     }
     void drawLines(Color lineColor, double lineWidth, LineParameters[] lines);
+    void drawTitleY(int nTrend);
 }

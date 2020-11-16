@@ -163,7 +163,7 @@ public interface Plot {
             // размер шрифта надписи
             trend2_textFontSize = 16.0;
             // цвет шрифта надписи
-            trend2_textFontColor = ColorName.GREEN;
+            trend2_textFontColor = ColorName.PINK;
             // текст надписи
             trend2_text = "кг";
             // позитция тренда относительно окна

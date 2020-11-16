@@ -3,6 +3,7 @@ package ru.yandex.fixcolor.tests.spc.lib.plot2;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 class PlotSwing extends PlotParent implements Trend.TrendCallBack {
@@ -47,6 +48,50 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
         g2d.setStroke(new BasicStroke((float) lineWidth));
         for (LineParameters line : lines) {
             g2d.drawLine((int) Math.round(line.x1), (int) Math.round(line.y1), (int) Math.round(line.x2), (int) Math.round(line.y2));
+        }
+    }
+
+    @Override
+    public void drawTitleY(int nTrend) {
+        Trend trend = trends[nTrend];
+        g2d.setColor(trend.textFontColor);
+        Font fnt = g2d.getFont();
+        g2d.setFont(new Font(
+                fnt.getName(),
+                fnt.getStyle(),
+                (int) trend.textFontSize
+        ));
+        //
+        double k = windowHeight / (trend.netY_max - trend.netY_min);
+        int fistN = 0;
+        if ((trend.netY_min % trend.netY_step) == 0) fistN = 1;
+        int baseN = netY_n;
+        int step = trend.netY_step;
+        double offset = k * (trend.netY_min % step);
+        int offsetC = trend.netY_min / step;
+        LineParameters[] lines = new LineParameters[baseN - fistN];
+        double y, yInv;
+        int x1, x2;
+        if (trend.positionFromWindow == TrendPosition.left) {
+            x1 = (int) (fieldSizeLeft - 5);
+        } else {
+            x1 = (int) (fieldSizeLeft + windowWidth + 5);
+        }
+        Rectangle2D textRec;
+        String text;
+        for (int i = fistN, indx = 0; i < (baseN); i++, indx++) {
+            y = (i * step * k) - offset;
+            yInv = (windowHeight + fieldSizeTop) - y;
+            text = String.valueOf((i + offsetC) * trend.netY_step);
+            textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
+            if (trend.positionFromWindow == TrendPosition.right) {
+                x2 = (int) x1;
+            } else {
+                x2 = (int) (x1 - textRec.getWidth());
+            }
+            g2d.drawString(text, x2, (int) (yInv + textRec.getHeight() / 3));
+            //lines[indx] = new LineParameters(x1, yInv, x2, yInv);
+            int a = 5;
         }
     }
 }
