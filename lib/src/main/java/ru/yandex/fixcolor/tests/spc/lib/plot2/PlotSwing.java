@@ -63,14 +63,11 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
         ));
         //
         double k = windowHeight / (trend.netY_max - trend.netY_min);
-        int fistN = 0;
-        if ((trend.netY_min % trend.netY_step) == 0) fistN = 1;
         int baseN = netY_n;
         int step = trend.netY_step;
         double offset = k * (trend.netY_min % step);
         int offsetC = trend.netY_min / step;
-        LineParameters[] lines = new LineParameters[baseN - fistN];
-        double y, yInv;
+        double y, yZ, yInv;
         int x1, x2;
         if (trend.positionFromWindow == TrendPosition.left) {
             x1 = (int) (fieldSizeLeft - 5);
@@ -79,10 +76,12 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
         }
         Rectangle2D textRec;
         String text;
-        for (int i = fistN, indx = 0; i < (baseN); i++, indx++) {
+        for (int i = 0; i < (baseN); i++) {
+            yZ = (i + offsetC) * trend.netY_step;
+            if (yZ > trend.netY_max) break;
             y = (i * step * k) - offset;
             yInv = (windowHeight + fieldSizeTop) - y;
-            text = String.valueOf((i + offsetC) * trend.netY_step);
+            text = String.valueOf(yZ);
             textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
             if (trend.positionFromWindow == TrendPosition.right) {
                 x2 = (int) x1;
@@ -90,8 +89,6 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
                 x2 = (int) (x1 - textRec.getWidth());
             }
             g2d.drawString(text, x2, (int) (yInv + textRec.getHeight() / 3));
-            //lines[indx] = new LineParameters(x1, yInv, x2, yInv);
-            int a = 5;
         }
     }
 }

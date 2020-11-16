@@ -180,6 +180,8 @@ class PlotParent implements Plot, LocalInt {
             lines[indx] = new LineParameters(x1, yInv, x2, yInv);
         }
         drawLines(netLineColor, netLineWidth, lines);
+//        drawTitleY(0,trends[1].netY_min / trends[1].netY_step < 0);
+//        drawTitleY(1,trends[0].netY_min / trends[0].netY_step < 0);
         drawTitleY(0);
         drawTitleY(1);
     }
