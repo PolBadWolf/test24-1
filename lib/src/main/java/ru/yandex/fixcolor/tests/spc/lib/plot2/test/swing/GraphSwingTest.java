@@ -30,6 +30,10 @@ public class GraphSwingTest {
         frame.pack();
         frame.setVisible(true);
         // ---
+        plotParameters.trend1_zeroY_min = -6;
+        plotParameters.trend1_zeroY_max = 52;
+//        plotParameters.trend2_zeroY_min = -0;
+//        plotParameters.trend2_zeroY_max = 950;
         Plot plot = Plot.createSwing(plotParameters, panel);
         plot.clear();
         panel.repaint();

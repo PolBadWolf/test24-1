@@ -24,8 +24,10 @@ public class AppFx extends Application {
         primaryStage.setTitle("fx");
         primaryStage.setScene(scene);
         primaryStage.show();
-        Plot.Parameters parameters = new Plot.Parameters();
-        Plot plot = Plot.createFx(parameters, canvas);
+        Plot.Parameters plotParameters = new Plot.Parameters();
+        plotParameters.trend1_zeroY_min = -135;
+        plotParameters.trend1_zeroY_max = 1024;
+        Plot plot = Plot.createFx(plotParameters, canvas);
         plot.clear();
     }
 }

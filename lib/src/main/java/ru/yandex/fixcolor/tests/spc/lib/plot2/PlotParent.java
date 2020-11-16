@@ -1,6 +1,5 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -31,6 +30,8 @@ class PlotParent implements Plot, LocalInt {
     protected Color fieldBackColor;
     // цвет рамки
     protected Color fieldFrameColor;
+    //
+    protected int netY_n;
     // ширина рамки
     protected double fieldFrameWidth;
     //          окно
@@ -85,8 +86,8 @@ class PlotParent implements Plot, LocalInt {
     protected void setParametersTrends(Parameters parameters) {
         // ***** тренд1 *****
         // начальные значения миниму и максимума
-        trends[0].zeroY_min = parameters.trend1_zeroY_min;
-        trends[0].zeroY_max = parameters.trend1_zeroY_max;
+        trends[0].curnY_min = trends[0].zeroY_min = parameters.trend1_zeroY_min;
+        trends[0].curnY_max = trends[0].zeroY_max = parameters.trend1_zeroY_max;
         // толщина линии
         trends[0].lineWidth = parameters.trend1_lineWidth;
         // цвет линии
@@ -119,49 +120,6 @@ class PlotParent implements Plot, LocalInt {
         // =============
     }
     // ==========================
-    interface TrendCallBack {
-        void ll(TrendUnit[] units);
-    }
-    class Trend {
-        private TrendCallBack callBack;
-        // начальные значения минимума и максимума
-        private double zeroY_min;
-        private double zeroY_max;
-        // текущие значения минимума и максимума
-        private double curnY_min;
-        private double curnY_max;
-        // толщина линии
-        private double lineWidth;
-        // цвет линии
-        private Color lineColor;
-        // размер шрифта надписи
-        private double textFontSize;
-        // цвет шрифта надписи
-        private Color textFontColor;
-        // текст надписи
-        private String text;
-        // позитция тренда относительно окна
-        private int positionFromWindow;
-
-        //
-        private final ArrayList<TrendUnit> mass;
-
-        public Trend(TrendCallBack callBack) {
-            this.callBack = callBack;
-            mass = new ArrayList<>();
-        }
-
-        public void trendClear() {
-            mass.clear();
-        }
-
-        public void trendAddPoint(TrendUnit unit) {
-            mass.add(unit);
-            if (curnY_min > unit.y) curnY_min = unit.y;
-            if (curnY_max < unit.y) curnY_max = unit.y;
-        }
-    }
-
     @Override
     public void clear() {
         // top
@@ -176,6 +134,26 @@ class PlotParent implements Plot, LocalInt {
         fillRect(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
         // рамка
         drawRect(fieldFrameColor, fieldFrameWidth, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
+        // расчет минимум и максимум
+        MultiplicityRender.Section sectionTr1 = MultiplicityRender.render.multiplicity(
+                Math.min(trends[0].curnY_min, trends[0].zeroY_min),
+                Math.max(trends[0].curnY_max, trends[0].zeroY_max)
+        );
+        MultiplicityRender.Section sectionTr2 = MultiplicityRender.render.multiplicityT2(
+                sectionTr1,
+                Math.min(trends[1].curnY_min, trends[1].zeroY_min),
+                Math.max(trends[1].curnY_max, trends[1].zeroY_max)
+        );
+        trends[0].netY_min = sectionTr1.fist;
+        trends[0].netY_max = sectionTr1.end;
+        trends[0].netY_step = sectionTr1.multiplicity;
+        trends[1].netY_min = sectionTr2.fist;
+        trends[1].netY_max = sectionTr2.end;
+        trends[1].netY_step = sectionTr2.multiplicity;
+        netY_n = sectionTr1.n;
+        drawNetY();
+        // ===========
+
     }
 
     // ====================
@@ -183,4 +161,33 @@ class PlotParent implements Plot, LocalInt {
     public void fillRect(Color color, double x, double y, double width, double height) { }
     @Override
     public void drawRect(Color color, double lineWidth, double x, double y, double width, double height) { }
+
+    @Override
+    public void drawNetY() {
+        double k = windowHeight / (trends[0].netY_max - trends[0].netY_min);
+        int fistN = 0;
+        if ((trends[0].netY_min % trends[0].netY_step) == 0) fistN = 1;
+        int baseN = netY_n;
+        int step = trends[0].netY_step;
+        double offset = k * (trends[0].netY_min % step);
+        LineParameters[] lines = new LineParameters[baseN - fistN];
+        double x1 = fieldSizeLeft + netLineWidth / 2;
+        double x2 = fieldSizeLeft + windowWidth - netLineWidth / 2;
+        double y, yInv;
+        for (int i = fistN, indx = 0; i < (baseN); i++, indx++) {
+            y = (i * step * k) - offset;
+            yInv = (windowHeight + fieldSizeTop) - y;
+            lines[indx] = new LineParameters(x1, yInv, x2, yInv);
+        }
+        drawLines(netLineColor, netLineWidth, lines);
+//        drawTitleY(0,trends[1].netY_min / trends[1].netY_step < 0);
+//        drawTitleY(1,trends[0].netY_min / trends[0].netY_step < 0);
+        drawTitleY(0);
+        drawTitleY(1);
+    }
+
+    @Override
+    public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) { }
+    @Override
+    public void drawTitleY(int nTrend) { }
 }

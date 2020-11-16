@@ -25,18 +25,37 @@ public class TestSerialKofficent {
             this.sampleN = sampleN;
         }
     }
+    static class TestSectionUnit2 {
+        public double fist;
+        public double end;
+        public double fistTrend2;
+        public double endTrend2;
+
+        public TestSectionUnit2(double fistTrend1, double endTrend1, double fistTrend2, double endTrend2) {
+            this.fist = fistTrend1;
+            this.end= endTrend1;
+            this.fistTrend2 = fistTrend2;
+            this.endTrend2 = endTrend2;
+        }
+    }
     @Test
     public void testMultiplicitySection() {
         TestSectionUnit[] units = {
+                new TestSectionUnit(0, 54, 5, 11),
+                new TestSectionUnit(-2, 52, 5, 11),
+                new TestSectionUnit(-7, 47, 5, 11),
                 new TestSectionUnit(0, 52, 5, 11),
-                new TestSectionUnit(-53, 726, 100, 9),
+                new TestSectionUnit(0, 52, 5, 11),
+                new TestSectionUnit(0, 779, 100, 8),
+                new TestSectionUnit(-53, 726, 100, 8),
+                new TestSectionUnit(-253, 526, 100, 8),
                 new TestSectionUnit(0, 1024, 100, 11),
                 new TestSectionUnit(0, 37, 5, 8),
                 new TestSectionUnit(0, 32, 5, 7)
         };
         boolean fail = false;
         for (int i = 0; i < units.length; i++) {
-            System.out.print(String.format("%4d", i) + ") ");
+            System.out.print(String.format("%4d", i+1) + ") ");
             double fist = units[i].fist;
             double end = units[i].end;
             int sampleStep = units[i].sampleStep;
@@ -56,5 +75,26 @@ public class TestSerialKofficent {
             if (sampleN != section.n) fail = true;
         }
         Assert.assertFalse(fail);
+    }
+
+    @Test
+    public void testMultiplicitySectionT2() {
+        TestSectionUnit2[] units = {
+                new TestSectionUnit2(0, 54, 0, 230),
+                new TestSectionUnit2(0, 54, -20, 210),
+                new TestSectionUnit2(0, 54, -65, 165),
+                new TestSectionUnit2(-2, 52, 0, 230),
+                new TestSectionUnit2(-2, 52, -20, 210),
+                new TestSectionUnit2(-2, 52, -65, 165),
+                new TestSectionUnit2(-7, 47, 0, 230),
+                new TestSectionUnit2(-7, 47, -20, 210),
+                new TestSectionUnit2(-7, 47, -65, 165)
+        };
+        MultiplicityRender.Section[] sectionTrend1 = new MultiplicityRender.Section[units.length];
+        MultiplicityRender.Section[] sectionTrend2 = new MultiplicityRender.Section[units.length];
+        for (int i = 0; i < units.length; i++) {
+            sectionTrend1[i] = MultiplicityRender.render.multiplicity(units[i].fist, units[i].end);
+            sectionTrend2[i] = MultiplicityRender.render.multiplicityT2(sectionTrend1[i], units[i].fistTrend2, units[i].endTrend2);
+        }
     }
 }
