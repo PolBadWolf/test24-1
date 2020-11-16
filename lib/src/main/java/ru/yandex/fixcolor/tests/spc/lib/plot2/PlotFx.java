@@ -5,7 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 import java.awt.*;
 
-class PlotFx extends PlotParent implements PlotParent.TrendCallBack {
+class PlotFx extends PlotParent implements Trend.TrendCallBack {
     private Canvas canvas;
     private GraphicsContext gc;
     public PlotFx(Plot.Parameters parameters, Canvas canvas) {
@@ -44,5 +44,16 @@ class PlotFx extends PlotParent implements PlotParent.TrendCallBack {
         gc.setStroke(colorAwtToFx(color));
         gc.setLineWidth(lineWidth);
         gc.strokeRect(x, y, width, height);
+    }
+
+    @Override
+    public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) {
+        gc.beginPath();
+        gc.setStroke(colorAwtToFx(lineColor));
+        gc.setLineWidth(lineWidth);
+        for (LineParameters line : lines) {
+            gc.strokeLine(line.x1, line.y1, line.x2, line.y2);
+        }
+        gc.closePath();
     }
 }
