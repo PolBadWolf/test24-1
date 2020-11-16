@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-class PlotSwing extends PlotParent implements Trend.TrendCallBack {
+class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
     private MPanel panel;
     private Graphics2D g2d;
     public PlotSwing(Plot.Parameters parameters, MPanel panel) {
@@ -17,9 +17,9 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
         panel.image = new BufferedImage((int) width, (int) height,BufferedImage.TYPE_INT_ARGB);
         g2d = (Graphics2D) panel.image.getGraphics();
         // тренд1
-        trends[0] = new Trend(this);
+        trends[0] = new Trend();
         // тренд2
-        trends[1] = new Trend(this);
+        trends[1] = new Trend();
         // sets
         setParametersTrends(parameters);
     }
@@ -37,10 +37,10 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
         g2d.drawRect((int) x, (int) y, (int) width, (int) height);
     }
 
-    @Override
-    public void ll(TrendUnit[] units) {
-
-    }
+//    @Override
+//    public void ll(TrendUnit[] units) {
+//
+//    }
 
     @Override
     public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) {
@@ -90,5 +90,31 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
             }
             g2d.drawString(text, x2, (int) (yInv + textRec.getHeight() / 3));
         }
+    }
+
+    @Override
+    public void drawTitleX() {
+        if (memX_end < 1_000) xStep = 50;
+        else xStep = ((int) Math.floor(memX_end / 1_000)) * 100;
+        xN = ((int) Math.ceil(memX_end / xStep)) + 1;
+        xCena = (double) xStep / 1_000;
+        double kX = windowWidth / (memX_end);
+        double x, xs, y1, y2, y0 = fieldSizeTop + windowHeight;
+        String text;
+        //
+        LineParameters[] lines = new LineParameters[xN];
+        for (int i = 0; i < xN; i++) {
+            x = (i * xStep);
+            text = String.valueOf((double) x / 1_000);
+            x = x * kX;
+            xs = x + fieldSizeLeft;
+            Rectangle2D textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
+            double polWstr = textRec.getWidth() / 2;
+            g2d.drawString(text, (int) (xs - polWstr), (int) (fieldSizeTop + windowHeight + textRec.getHeight() * 1.2));
+            y1 = netLineWidth / 2;
+            y2 = windowHeight - netLineWidth /  2;
+            lines[i] = new LineParameters(xs, y0 - y1, xs, y0 - y2);
+        }
+        drawLines(netLineColor, netLineWidth, lines );
     }
 }

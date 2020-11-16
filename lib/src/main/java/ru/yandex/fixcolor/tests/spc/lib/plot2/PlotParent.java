@@ -41,9 +41,24 @@ class PlotParent implements Plot, LocalInt {
     protected Color netLineColor;
     // ширина линий сетки
     protected double netLineWidth;
+    protected int zeroX_zoom;
+    protected double zeroX_max;
+    // значения минимума из прошлого цикла
+    protected double memX_begin;
+    protected int memX_beginIndx;
+    protected double memX_end;
     // ==========================
     // тренды, всегда двое: учитель и ученик
     protected final Trend[] trends = new Trend[2];
+    // ===============================================
+    protected ArrayList<TimeUnit> timeUnits = new ArrayList<>();
+    protected double newDataX;
+    protected int newDataIndx;
+    protected double[] newDataTrends;
+    protected int xStep;
+    protected int xN;
+    protected double xCena;
+    // ===============================================
     // конструктор
     protected PlotParent(Parameters parameters, double paneWidth, double paneHeight) {
         // размер холста ( задается в основном конструкторе )
@@ -81,6 +96,15 @@ class PlotParent implements Plot, LocalInt {
         netLineColor = parameters.netLineColor;
         // ширина линий сетки
         netLineWidth = parameters.netLineWidth;
+        //
+        zeroX_zoom = parameters.zeroX_zoom;
+        zeroX_max = parameters.zeroX_max;
+        // значения минимума из прошлого цикла
+        memX_begin = 90;
+        memX_beginIndx = 0;
+        memX_end = zeroX_max;
+        //
+        newDataTrends = new double[2];
         // ========================================
     }
     protected void setParametersTrends(Parameters parameters) {
@@ -153,7 +177,10 @@ class PlotParent implements Plot, LocalInt {
         netY_n = sectionTr1.n;
         drawNetY();
         // ===========
-
+        timeUnits.clear();
+        for (int i = 0; i < trends.length; i++) {
+            trends[i].trendClear();
+        }
     }
 
     // ====================
@@ -180,14 +207,43 @@ class PlotParent implements Plot, LocalInt {
             lines[indx] = new LineParameters(x1, yInv, x2, yInv);
         }
         drawLines(netLineColor, netLineWidth, lines);
-//        drawTitleY(0,trends[1].netY_min / trends[1].netY_step < 0);
-//        drawTitleY(1,trends[0].netY_min / trends[0].netY_step < 0);
         drawTitleY(0);
         drawTitleY(1);
+        drawTitleX();
     }
 
+    @Override
+    public void newData(double ms) {
+        newDataIndx = 0;
+        newDataX = ms;
+        if (memX_end < ms) memX_end = ms;
+    }
+
+    @Override
+    public void addTrend(double zn) {
+        newDataTrends[newDataIndx] = zn;
+        newDataIndx++;
+    }
+
+    @Override
+    public void setData() {
+        timeUnits.add(new TimeUnit(newDataX));
+        for (int i = 0; i < trends.length; i++) {
+            trends[i].trendAddPoint(new TrendUnit(newDataTrends[i]));
+        }
+    }
+
+    @Override
+    public void rePaint() {
+        clear();
+
+    }
+
+    // ===========================================================================
     @Override
     public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) { }
     @Override
     public void drawTitleY(int nTrend) { }
+    @Override
+    public void drawTitleX() { }
 }

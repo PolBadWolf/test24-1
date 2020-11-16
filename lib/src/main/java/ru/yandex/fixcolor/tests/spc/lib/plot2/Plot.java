@@ -61,6 +61,8 @@ public interface Plot {
         public Color netLineColor;
         // ширина линий сетки
         public double netLineWidth;
+        public double zeroX_max;
+        public int zeroX_zoom;
         //
         //      тренд1
         // начальные значения минимума и максимума
@@ -132,6 +134,9 @@ public interface Plot {
             netLineColor = ColorName.DARKGREEN;
             // ширина линий сетки
             netLineWidth = 5.0;
+            // 5 секунд
+            zeroX_max = 3_000;
+            zeroX_zoom = 0;
             //
             //      тренд1
             // начальные значения минимума и максимума
@@ -177,4 +182,8 @@ public interface Plot {
     static Plot createFx(Parameters parameters, Canvas canvas) { return new PlotFx(parameters, canvas); }
     // -----------------
     void clear();
+    void newData(double ms);
+    void addTrend(double zn);
+    void setData();
+    void rePaint();
 }

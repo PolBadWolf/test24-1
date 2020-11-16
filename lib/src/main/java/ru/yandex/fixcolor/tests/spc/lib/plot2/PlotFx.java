@@ -8,7 +8,7 @@ import javafx.scene.text.TextAlignment;
 
 import java.awt.*;
 
-class PlotFx extends PlotParent implements Trend.TrendCallBack {
+class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
     private Canvas canvas;
     private GraphicsContext gc;
     public PlotFx(Plot.Parameters parameters, Canvas canvas) {
@@ -16,17 +16,17 @@ class PlotFx extends PlotParent implements Trend.TrendCallBack {
         this.canvas = canvas;
         gc = canvas.getGraphicsContext2D();
         // тренд1
-        trends[0] = new Trend(this);
+        trends[0] = new Trend();
         // тренд2
-        trends[1] = new Trend(this);
+        trends[1] = new Trend();
         // sets
         setParametersTrends(parameters);
     }
 
-    @Override
-    public void ll(TrendUnit[] units) {
-
-    }
+//    @Override
+//    public void ll(TrendUnit[] units) {
+//
+//    }
 
     private javafx.scene.paint.Color colorAwtToFx(Color color) {
         return new javafx.scene.paint.Color(
@@ -100,5 +100,10 @@ class PlotFx extends PlotParent implements Trend.TrendCallBack {
         } finally {
             gc.closePath();
         }
+    }
+
+    @Override
+    public void drawTitleX() {
+
     }
 }

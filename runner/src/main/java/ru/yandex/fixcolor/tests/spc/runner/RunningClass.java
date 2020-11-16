@@ -63,9 +63,9 @@ class RunningClass implements Runner {
         plot.setZoomY(0, 1024);
         plot.setZoomYauto(false);
 
-        plot.setZoomX(0, 5_000 / 5);
-        plot.setZoomXlenghtAuto(true);
-        plot.setZoomXbeginAuto(false);
+        plot.setZoomX(0, 2_000 / 5);
+        plot.setZoomXlenghtAuto(false);
+        plot.setZoomXbeginAuto(true);
         fillFields();
     }
 
