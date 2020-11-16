@@ -77,7 +77,7 @@ class PlotFx extends PlotParent implements Trend.TrendCallBack {
             double y, yZ, yInv;
             int x1, x2;
             if (trend.positionFromWindow == TrendPosition.left) {
-                x1 = (int) (fieldSizeLeft - 10);
+                x1 = (int) (fieldSizeLeft - 5);
                 gc.setTextAlign(TextAlignment.RIGHT);
             } else {
                 x1 = (int) (fieldSizeLeft + windowWidth + 5);
@@ -90,12 +90,12 @@ class PlotFx extends PlotParent implements Trend.TrendCallBack {
                 if (yZ > trend.netY_max) break;
                 y = (i * step * k) - offset;
                 yInv = (windowHeight + fieldSizeTop) - y;
-                text = String.valueOf((int) yZ);
+                text = String.valueOf((int) yZ) + "" + trend.text;
                 final Text oText = new Text(text);
                 oText.setFont(gc.getFont());
                 textRec = oText.getLayoutBounds();
                 textRec.getWidth();
-                gc.fillText(text, x1, yInv + textRec.getHeight() / 3);
+                gc.fillText(text, x1, yInv + textRec.getHeight() / 4);
             }
         } finally {
             gc.closePath();

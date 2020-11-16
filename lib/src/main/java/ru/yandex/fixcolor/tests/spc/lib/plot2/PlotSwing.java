@@ -81,7 +81,7 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
             if (yZ > trend.netY_max) break;
             y = (i * step * k) - offset;
             yInv = (windowHeight + fieldSizeTop) - y;
-            text = String.valueOf(yZ);
+            text = String.valueOf((int) yZ) + "" + trend.text;
             textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
             if (trend.positionFromWindow == TrendPosition.right) {
                 x2 = (int) x1;
