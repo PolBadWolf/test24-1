@@ -36,13 +36,13 @@ class PlotFx extends PlotParent implements PlotParent.TrendCallBack {
     @Override
     public void fillRect(Color color, double x, double y, double width, double height) {
         gc.setFill(colorAwtToFx(color));
-        gc.fillRect(x, y, x + width, y + height);
+        gc.fillRect(x, y, width, height);
     }
 
     @Override
     public void drawRect(Color color, double lineWidth, double x, double y, double width, double height) {
         gc.setStroke(colorAwtToFx(color));
         gc.setLineWidth(lineWidth);
-        gc.strokeRect(x, y, x + width, y + height);
+        gc.strokeRect(x, y, width, height);
     }
 }

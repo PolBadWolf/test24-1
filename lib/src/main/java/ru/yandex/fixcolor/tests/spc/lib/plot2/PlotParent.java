@@ -1,6 +1,5 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 

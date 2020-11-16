@@ -104,9 +104,9 @@ public interface Plot {
             //          поля
             // размер полей
             fieldSizeTop = 40.0;
-            fieldSizeLeft = 80.0;
-            fieldSizeRight = 160.0;
-            fieldSizeBottom = 320.0;
+            fieldSizeLeft = 70.0;
+            fieldSizeRight = 70.0;
+            fieldSizeBottom = 40.0;
             // цвет шрифта на полях
             fieldFontColorTop = ColorName.YELLOWGREEN;
             fieldFontColorLeft = ColorName.YELLOWGREEN;
