@@ -1,13 +1,12 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
-import com.sun.javafx.tk.FontMetrics;
-import com.sun.javafx.tk.Toolkit;
+import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 
 class PlotFx extends PlotParent implements Trend.TrendCallBack {
     private Canvas canvas;
@@ -66,7 +65,7 @@ class PlotFx extends PlotParent implements Trend.TrendCallBack {
         try {
             gc.beginPath();
             Trend trend = trends[nTrend];
-            gc.setStroke(colorAwtToFx(trend.textFontColor));
+            gc.setFill(colorAwtToFx(trend.textFontColor));
             javafx.scene.text.Font fnt = gc.getFont();
             gc.setFont(new javafx.scene.text.Font(trend.textFontSize));
             //
@@ -78,26 +77,25 @@ class PlotFx extends PlotParent implements Trend.TrendCallBack {
             double y, yZ, yInv;
             int x1, x2;
             if (trend.positionFromWindow == TrendPosition.left) {
-                x1 = (int) (fieldSizeLeft - 5);
+                x1 = (int) (fieldSizeLeft - 10);
+                gc.setTextAlign(TextAlignment.RIGHT);
             } else {
                 x1 = (int) (fieldSizeLeft + windowWidth + 5);
+                gc.setTextAlign(TextAlignment.LEFT);
             }
-            Rectangle2D textRec;
+            Bounds textRec;
             String text;
             for (int i = 0; i < (baseN); i++) {
                 yZ = (i + offsetC) * trend.netY_step;
                 if (yZ > trend.netY_max) break;
                 y = (i * step * k) - offset;
                 yInv = (windowHeight + fieldSizeTop) - y;
-                text = String.valueOf(yZ);
-                FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(gc.getFont());
-                textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
-                if (trend.positionFromWindow == TrendPosition.right) {
-                    x2 = (int) x1;
-                } else {
-                    x2 = (int) (x1 - textRec.getWidth());
-                }
-                g2d.drawString(text, x2, (int) (yInv + textRec.getHeight() / 3));
+                text = String.valueOf((int) yZ);
+                final Text oText = new Text(text);
+                oText.setFont(gc.getFont());
+                textRec = oText.getLayoutBounds();
+                textRec.getWidth();
+                gc.fillText(text, x1, yInv + textRec.getHeight() / 3);
             }
         } finally {
             gc.closePath();
