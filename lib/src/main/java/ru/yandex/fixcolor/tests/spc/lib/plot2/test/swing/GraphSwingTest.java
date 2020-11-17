@@ -1,6 +1,8 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2.test.swing;
 
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.PlotParent;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.test.CiclTest;
 import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 
@@ -30,12 +32,14 @@ public class GraphSwingTest {
         frame.pack();
         frame.setVisible(true);
         // ---
-        plotParameters.trend1_zeroY_min = -6;
+        plotParameters.trend1_zeroY_min = 0;
         plotParameters.trend1_zeroY_max = 52;
 //        plotParameters.trend2_zeroY_min = -0;
 //        plotParameters.trend2_zeroY_max = 950;
+        plotParameters.zeroX_zoom = 2;
         Plot plot = Plot.createSwing(plotParameters, panel);
         plot.clear();
         panel.repaint();
+        new Thread(new CiclTest(plot)).start();
     }
 }

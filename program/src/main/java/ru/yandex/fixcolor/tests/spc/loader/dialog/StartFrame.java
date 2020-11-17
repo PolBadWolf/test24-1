@@ -799,7 +799,13 @@ public class StartFrame {
         saveEnableComponentsStartFrame.save();
         saveEnableComponentsStartFrame.offline();
         pusherSelectComboBox2Table.setLock(true);
-        long curPusher = ((Pusher) comboBoxPusher.getSelectedItem()).id_pusher;
+        long curPusher;
+        try {
+            curPusher = ((Pusher) comboBoxPusher.getSelectedItem()).id_pusher;
+        } catch (Exception x) {
+            curPusher = 0;
+        }
+        long finalCurPusher = curPusher;
         new Thread(() -> SwingUtilities.invokeLater(() -> {
             try {
                 EditPushers editPushers = new EditPushers(
@@ -810,7 +816,7 @@ public class StartFrame {
                                     listPushers = connBD.getListPushers(true);
                                     pusherSelectComboBox2Table.setLock(true);
                                     MyUtil.loadToComboBox(listPushers, comboBoxPusher, false, null);
-                                    selectIdPusher(comboBoxPusher, curPusher);
+                                    selectIdPusher(comboBoxPusher, finalCurPusher);
                                     pusherSelectComboBox2Table.setLock(false);
                                     callSelectPusher(null);
                                 } catch (Exception e1) { myLog.log(Level.WARNING, "ошибка чтение списка толкателей с БД", e1);

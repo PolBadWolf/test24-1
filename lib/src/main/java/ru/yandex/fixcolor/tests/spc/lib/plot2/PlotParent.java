@@ -3,7 +3,7 @@ package ru.yandex.fixcolor.tests.spc.lib.plot2;
 import java.awt.*;
 import java.util.ArrayList;
 
-class PlotParent implements Plot, LocalInt {
+public class PlotParent implements Plot, LocalInt {
     // размер холста
     protected double width;
     protected double height;
@@ -39,11 +39,29 @@ class PlotParent implements Plot, LocalInt {
     protected Color windowBackColor;
     // цвет линий сетки
     protected Color netLineColor;
+    protected Color netTextColor;
+    protected double netTextSize;
     // ширина линий сетки
     protected double netLineWidth;
+    protected int zeroX_zoom; // 0 - off, 1 - shrink, 2 - shift
+    protected double zeroX_max;
+    // значения минимума из прошлого цикла
+    protected double memX_begin;
+    protected int memX_beginIndx;
+    protected double memX_end;
+    protected double kX;
     // ==========================
     // тренды, всегда двое: учитель и ученик
-    protected final Trend[] trends = new Trend[2];
+    public final Trend[] trends = new Trend[2];
+    // ===============================================
+    protected ArrayList<TimeUnit> timeUnits = new ArrayList<>();
+    protected double newDataX;
+    protected int newDataIndx;
+    protected double[] newDataTrends;
+    protected int xStep;
+    protected int xN;
+    protected double xCena;
+    // ===============================================
     // конструктор
     protected PlotParent(Parameters parameters, double paneWidth, double paneHeight) {
         // размер холста ( задается в основном конструкторе )
@@ -79,8 +97,25 @@ class PlotParent implements Plot, LocalInt {
         windowHeight = height - fieldSizeTop - fieldSizeBottom;
         // цвет линий сетки
         netLineColor = parameters.netLineColor;
+        netTextColor = parameters.netTextColor;
+        netTextSize = parameters.netTextSize;
         // ширина линий сетки
         netLineWidth = parameters.netLineWidth;
+        //
+        zeroX_zoom = parameters.zeroX_zoom;
+        zeroX_max = parameters.zeroX_max;
+        // значения минимума из прошлого цикла
+        memX_begin = 0;
+        memX_beginIndx = 0;
+        memX_end = zeroX_max;
+        {
+            double xLenght = memX_end - memX_begin;
+            int xStep = (MultiplicityRender.render.multiplicity(xLenght));
+            int xN = ((int) Math.ceil(xLenght / xStep));
+            kX = windowWidth / (xN * xStep);
+        }
+        //
+        newDataTrends = new double[2];
         // ========================================
     }
     protected void setParametersTrends(Parameters parameters) {
@@ -153,7 +188,6 @@ class PlotParent implements Plot, LocalInt {
         netY_n = sectionTr1.n;
         drawNetY();
         // ===========
-
     }
 
     // ====================
@@ -180,14 +214,115 @@ class PlotParent implements Plot, LocalInt {
             lines[indx] = new LineParameters(x1, yInv, x2, yInv);
         }
         drawLines(netLineColor, netLineWidth, lines);
-//        drawTitleY(0,trends[1].netY_min / trends[1].netY_step < 0);
-//        drawTitleY(1,trends[0].netY_min / trends[0].netY_step < 0);
         drawTitleY(0);
         drawTitleY(1);
+        drawTitleX();
+    }
+boolean flData  = false;
+    @Override
+    public void newData(double ms) {
+        newDataIndx = 0;
+        newDataX = ms;
+        if (memX_end < ms) {
+            if (zeroX_zoom > 0) {
+                memX_end = ms;
+                flData = true;
+            } else flData = false;
+        } else
+            flData = true;
     }
 
+    @Override
+    public void addTrend(double zn) {
+        newDataTrends[newDataIndx] = zn;
+        newDataIndx++;
+    }
+//Object objLock = new Object();
+    @Override
+    public void setData() {
+        if (!flData) return;
+        flData = false;
+//        synchronized (objLock)
+        {
+            timeUnits.add(new TimeUnit(newDataX));
+            for (int i = 0; i < trends.length; i++) {
+                trends[i].trendAddPoint(new TrendUnit(newDataTrends[i]));
+            }
+        }
+    }
+
+    @Override
+    public void paint() {
+//        synchronized (objLock)
+        {
+            clear();
+            if (timeUnits.isEmpty())
+                return;
+            // текущее крайнее положение memX_end
+            if (zeroX_zoom == 2) { // shift
+                // длина окна zeroX_max
+                memX_begin = timeUnits.get(memX_beginIndx).ms;
+                double lenghtSample = memX_end - zeroX_max;
+                if (memX_begin < lenghtSample) {
+                    // поск позитции начала
+                    double tmp;
+                    for (int i = memX_beginIndx; i < timeUnits.size(); i++) {
+                        tmp = timeUnits.get(i).ms;
+                        if (tmp < lenghtSample) continue;
+                        memX_begin = tmp;
+                        memX_beginIndx = i;
+                        break;
+                    }
+                }
+            } else {
+                memX_begin = 0;
+                memX_beginIndx = 0;
+            }
+            // === дроп
+            ArrayList<Double> mX = new ArrayList<>();
+            ArrayList<Double>[] mY = new ArrayList[trends.length];
+            for (int i = 0; i < trends.length; i++) {
+                mY[i] = new ArrayList<>();
+            }
+            double curMs;
+            int pixOld = -1_000;
+            int pixCur;
+            for (int i_ms = memX_beginIndx; i_ms < timeUnits.size(); i_ms++) {
+                curMs = timeUnits.get(i_ms).ms;
+                pixCur = (int) (curMs * kX);
+                if (pixOld >= pixCur) continue;
+                pixOld = pixCur;
+                mX.add(curMs);
+                for (int t = 0; t < trends.length; t++) {
+                    mY[t].add(trends[t].getValueFromMass(i_ms));
+                }
+            }
+
+            for (int i = 0; i < trends.length; i++) {
+                drawTrend(
+                        trends[i],
+                        mX,
+                        mY[i]
+                );
+            }
+            mX.clear();
+            for (int i = 0; i < mY.length; i++) {
+                mY[i].clear();
+                mY[i] = null;
+            }
+        }
+        reFresh();
+    }
+
+    // ===========================================================================
     @Override
     public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) { }
     @Override
     public void drawTitleY(int nTrend) { }
+    @Override
+    public void drawTitleX() { }
+    @Override
+    public void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> y) { }
+    @Override
+    public void reFresh() { }
 }

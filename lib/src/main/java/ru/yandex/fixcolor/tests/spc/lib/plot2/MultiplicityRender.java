@@ -40,6 +40,18 @@ public class MultiplicityRender {
             this.n = n;
         }
     }
+    public static class Steps {
+        public int small;
+        public int big;
+
+        public Steps(int small, int big) {
+            this.small = small;
+            this.big = big;
+        }
+
+        public Steps() {
+        }
+    }
     int multiplicity(double x) {
         for (SectionUnit unit: sectionUnits) {
             if (x < unit.section) return unit.multiplicity;
@@ -49,6 +61,16 @@ public class MultiplicityRender {
     int ceilStep(double baseStep) {
         for (SectionUnit unit: sectionUnits) {
             if (baseStep <= unit.multiplicity) return unit.multiplicity;
+        }
+        throw new IllegalArgumentException("\"x\" вне диапозона : " + baseStep);
+    }
+    void ceilStep(double baseStep, Steps steps) {
+        for (SectionUnit unit: sectionUnits) {
+            if (baseStep <= unit.multiplicity) {
+                steps.big = unit.multiplicity;
+                return;
+            }
+            steps.small = unit.multiplicity;
         }
         throw new IllegalArgumentException("\"x\" вне диапозона : " + baseStep);
     }
@@ -64,11 +86,28 @@ public class MultiplicityRender {
                 Math.abs(nDn) + Math.abs(nUp)
         );
     }
-    public Section multiplicityT2(final Section sectionTrend1, final double fistTrend2, final double endTrend2) {
+    public Section multiplicityT2(final Section sectionTrend1, double fistTrend2, double endTrend2) {
         int baseN = sectionTrend1.n;
         double baseLenght = endTrend2 - fistTrend2;
         double baseStep = baseLenght / baseN;
-        int step = ceilStep(baseStep);
+        Steps steps = new Steps();
+        int step;
+        ceilStep(baseStep, steps);
+        double smOst = (baseStep % steps.small) / steps.small;
+        double bgOst = (baseStep % steps.big) / steps.big;
+        if (smOst < bgOst) {
+            step = steps.small;
+            baseN = (int) Math.ceil(baseLenght / step);
+            baseLenght = step * baseN;
+            endTrend2 = baseLenght + fistTrend2;
+            int tmpLen = (int) (baseN * sectionTrend1.multiplicity);
+            sectionTrend1.end = tmpLen + sectionTrend1.fist;
+        } else {
+            step = steps.big;
+            endTrend2 = step * baseN;
+            int tmpLen = (int) (baseN * sectionTrend1.multiplicity);
+            sectionTrend1.end = tmpLen + sectionTrend1.fist;
+        }
         //
         int celDnTr1 = (int) (sectionTrend1.fist / sectionTrend1.multiplicity);
         int celDnTr2 = (int) (fistTrend2 / step);
@@ -88,6 +127,7 @@ public class MultiplicityRender {
         //
         sectionTrend1.fist = corDnTr1;
         sectionTrend1.end = corUpTr1;
+        sectionTrend1.n = baseN;
         //
         return new Section(
                 corDnTr2,

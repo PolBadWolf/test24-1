@@ -5,10 +5,11 @@ import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
-class PlotSwing extends PlotParent implements Trend.TrendCallBack {
-    private MPanel panel;
+class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
     private Graphics2D g2d;
+    private MPanel panel;
     public PlotSwing(Plot.Parameters parameters, MPanel panel) {
         super(parameters, panel.getWidth(), panel.getHeight());
         this.panel = panel;
@@ -17,9 +18,9 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
         panel.image = new BufferedImage((int) width, (int) height,BufferedImage.TYPE_INT_ARGB);
         g2d = (Graphics2D) panel.image.getGraphics();
         // тренд1
-        trends[0] = new Trend(this);
+        trends[0] = new Trend();
         // тренд2
-        trends[1] = new Trend(this);
+        trends[1] = new Trend();
         // sets
         setParametersTrends(parameters);
     }
@@ -37,10 +38,10 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
         g2d.drawRect((int) x, (int) y, (int) width, (int) height);
     }
 
-    @Override
-    public void ll(TrendUnit[] units) {
-
-    }
+//    @Override
+//    public void ll(TrendUnit[] units) {
+//
+//    }
 
     @Override
     public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) {
@@ -49,6 +50,7 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
         for (LineParameters line : lines) {
             g2d.drawLine((int) Math.round(line.x1), (int) Math.round(line.y1), (int) Math.round(line.x2), (int) Math.round(line.y2));
         }
+
     }
 
     @Override
@@ -81,14 +83,69 @@ class PlotSwing extends PlotParent implements Trend.TrendCallBack {
             if (yZ > trend.netY_max) break;
             y = (i * step * k) - offset;
             yInv = (windowHeight + fieldSizeTop) - y;
-            text = String.valueOf(yZ);
+            text = (int) yZ + "" + trend.text;
             textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
             if (trend.positionFromWindow == TrendPosition.right) {
-                x2 = (int) x1;
+                x2 = x1;
             } else {
                 x2 = (int) (x1 - textRec.getWidth());
             }
             g2d.drawString(text, x2, (int) (yInv + textRec.getHeight() / 3));
         }
+    }
+
+    @Override
+    public void drawTitleX() {
+        double xLenght = memX_end - memX_begin;
+        xStep = (MultiplicityRender.render.multiplicity(xLenght));
+        xN = ((int) Math.ceil(xLenght / xStep));
+        xCena = (double) xStep / 1_000;
+        kX = windowWidth / (xN * xStep);
+        double x, y1, y2, y0 = fieldSizeTop + windowHeight;
+        String text;
+        //
+        double offsetOst = memX_begin % xStep;
+        int offsetCel = ((int) Math.ceil(memX_begin / xStep))* xStep;
+        double offsetS2 = (xStep - (memX_begin % xStep)) % xStep;
+        if (offsetOst == 0) xN++;
+        LineParameters[] lines = new LineParameters[xN];
+        g2d.setColor(netTextColor);
+        g2d.setFont(g2d.getFont().deriveFont((float) netTextSize));
+        y1 = netLineWidth / 2;
+        y2 = windowHeight - netLineWidth /  2;
+        for (int i = 0; i < xN; i++) {
+            x = (i * xStep + offsetS2) * kX + fieldSizeLeft;
+            text = String.valueOf((double) ((i * xStep) + offsetCel) / 1_000);
+            Rectangle2D textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
+            double polWstr = textRec.getWidth() / 2;
+            g2d.drawString(text, (int) (x - polWstr), (int) (fieldSizeTop + windowHeight + textRec.getHeight() * 1.2));
+            lines[i] = new LineParameters(x, y0 - y1, x, y0 - y2);
+        }
+        drawLines(netLineColor, netLineWidth, lines );
+    }
+
+    @Override
+    public void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> yt) {
+        int[] x = new int[ms.size()];
+        int[] y = new int[x.length];
+        int y0 = (int) (fieldSizeTop + windowHeight);
+        double kY = windowHeight / (trend.netY_max - trend.netY_min);
+        for (int i = 0; i < x.length; i++) {
+            x[i] = (int) ((ms.get(i) - memX_begin) * kX + fieldSizeLeft);
+            y[i] = y0 - (int) (yt.get(i) * kY);
+        }
+        g2d.setColor(trend.lineColor);
+        g2d.setStroke(new BasicStroke((float) trend.lineWidth));
+        g2d.drawPolyline(x, y, x.length);
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+    }
+
+    @Override
+    public void reFresh() {
+        panel.repaint();
     }
 }

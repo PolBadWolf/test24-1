@@ -3,12 +3,12 @@ package ru.yandex.fixcolor.tests.spc.lib.plot2;
 import java.awt.*;
 import java.util.ArrayList;
 
-class Trend {
-    interface TrendCallBack {
-        void ll(TrendUnit[] units);
-    }
+public class Trend {
+//    interface TrendCallBack {
+//        void ll(TrendUnit[] units);
+//    }
     // ---------------
-    private TrendCallBack callBack;
+//    private TrendCallBack callBack;
     // начальные значения минимума и максимума
     public double zeroY_min;
     public double zeroY_max;
@@ -35,8 +35,9 @@ class Trend {
     //
     private final ArrayList<TrendUnit> mass;
 
-    public Trend(TrendCallBack callBack) {
-        this.callBack = callBack;
+//    public Trend(TrendCallBack callBack) {
+//        this.callBack = callBack;
+    public Trend() {
         mass = new ArrayList<>();
     }
 
@@ -48,5 +49,8 @@ class Trend {
         mass.add(unit);
         if (curnY_min > unit.y) curnY_min = unit.y;
         if (curnY_max < unit.y) curnY_max = unit.y;
+    }
+    public double getValueFromMass(int indx) {
+        return mass.get(indx).y;
     }
 }

@@ -7,6 +7,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.PlotParent;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.test.CiclTest;
 
 public class AppFx extends Application {
 
@@ -25,9 +27,11 @@ public class AppFx extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         Plot.Parameters plotParameters = new Plot.Parameters();
-        plotParameters.trend1_zeroY_min = -135;
-        plotParameters.trend1_zeroY_max = 1024;
+        plotParameters.trend1_zeroY_min = 0;
+        plotParameters.trend1_zeroY_max = 52;
+        plotParameters.zeroX_zoom = 2;
         Plot plot = Plot.createFx(plotParameters, canvas);
         plot.clear();
+        new Thread(new CiclTest(plot)).start();
     }
 }

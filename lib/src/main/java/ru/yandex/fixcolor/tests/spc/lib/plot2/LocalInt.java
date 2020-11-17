@@ -1,6 +1,7 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 interface LocalInt {
     void fillRect(Color color, double x, double y, double width, double height);
@@ -22,4 +23,6 @@ interface LocalInt {
     }
     void drawLines(Color lineColor, double lineWidth, LineParameters[] lines);
     void drawTitleY(int nTrend);
+    void drawTitleX();
+    void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> y);
 }

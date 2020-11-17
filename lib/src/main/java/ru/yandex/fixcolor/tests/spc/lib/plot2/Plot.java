@@ -59,8 +59,12 @@ public interface Plot {
         public Color windowBackColor;
         // цвет линий сетки
         public Color netLineColor;
+        public Color netTextColor;
+        public double netTextSize;
         // ширина линий сетки
         public double netLineWidth;
+        public double zeroX_max;
+        public int zeroX_zoom;
         //
         //      тренд1
         // начальные значения минимума и максимума
@@ -105,7 +109,7 @@ public interface Plot {
 //            this.height = height;
             //          поля
             // размер полей
-            fieldSizeTop = 40.0;
+            fieldSizeTop = 10.0;
             fieldSizeLeft = 70.0;
             fieldSizeRight = 70.0;
             fieldSizeBottom = 40.0;
@@ -130,8 +134,13 @@ public interface Plot {
             windowBackColor = Color.CYAN;
             // цвет линий сетки
             netLineColor = ColorName.DARKGREEN;
+            netTextColor = ColorName.RED;
+            netTextSize = 16;
             // ширина линий сетки
-            netLineWidth = 5.0;
+            netLineWidth = 2.0;
+            // 5 секунд
+            zeroX_max = 5_400;
+            zeroX_zoom = 0;
             //
             //      тренд1
             // начальные значения минимума и максимума
@@ -177,4 +186,9 @@ public interface Plot {
     static Plot createFx(Parameters parameters, Canvas canvas) { return new PlotFx(parameters, canvas); }
     // -----------------
     void clear();
+    void newData(double ms);
+    void addTrend(double zn);
+    void setData();
+    void paint();
+    void reFresh();
 }

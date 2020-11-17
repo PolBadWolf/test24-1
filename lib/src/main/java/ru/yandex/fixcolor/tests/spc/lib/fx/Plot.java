@@ -353,7 +353,6 @@ public class Plot {
             yStep = Math.floorDiv((int) y_level, 100) * 10;
             yN = (int) Math.ceil(y_level / yStep);
 
-            //yN = (int) (y_level / kNet + 1);
             yNk = (int) (levelYmin / yStep);
             if ((levelYmin % yStep) > 0) yNk++;
 
@@ -361,7 +360,7 @@ public class Plot {
             int xN;
             if (levelXlenghtMax == 0)   levelXlenghtMax = levelXlenght;
             if (levelXlenghtMax < 200) {
-                xStep = Math.floorDiv((int)levelXlenghtMax, 100) * 10;
+                xStep = 10;
             }
             else {
                 int div = Math.floorDiv((int) levelXlenghtMax, 200) * 20;
