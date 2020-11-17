@@ -188,10 +188,6 @@ public class PlotParent implements Plot, LocalInt {
         netY_n = sectionTr1.n;
         drawNetY();
         // ===========
-//        timeUnits.clear();
-//        for (Trend trend : trends) {
-//            trend.trendClear();
-//        }
     }
 
     // ====================
@@ -241,12 +237,13 @@ boolean flData  = false;
         newDataTrends[newDataIndx] = zn;
         newDataIndx++;
     }
-Object objLock = new Object();
+//Object objLock = new Object();
     @Override
     public void setData() {
         if (!flData) return;
         flData = false;
-        synchronized (objLock) {
+//        synchronized (objLock)
+        {
             timeUnits.add(new TimeUnit(newDataX));
             for (int i = 0; i < trends.length; i++) {
                 trends[i].trendAddPoint(new TrendUnit(newDataTrends[i]));
@@ -256,7 +253,8 @@ Object objLock = new Object();
 
     @Override
     public void paint() {
-        synchronized (objLock) {
+//        synchronized (objLock)
+        {
             clear();
             if (timeUnits.isEmpty())
                 return;

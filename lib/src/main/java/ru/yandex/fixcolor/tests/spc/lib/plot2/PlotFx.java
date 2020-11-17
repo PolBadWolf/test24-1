@@ -1,5 +1,6 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -20,6 +21,19 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
         trends[1] = new Trend();
         // sets
         setParametersTrends(parameters);
+    }
+
+    @Override
+    public void clear() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                _clear();
+            }
+        });
+    }
+    protected void _clear() {
+        super.clear();
     }
 
     private javafx.scene.paint.Color colorAwtToFx(Color color) {
@@ -101,7 +115,7 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
         xStep = (MultiplicityRender.render.multiplicity(xLenght));
         xN = ((int) Math.ceil(xLenght / xStep));
         xCena = (double) xStep / 1_000;
-        double kX = windowWidth / (xN * xStep);
+        kX = windowWidth / (xN * xStep);
         double x, y1, y2, y0 = fieldSizeTop + windowHeight;
         String text;
         //
@@ -110,7 +124,6 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
         double offsetS2 = (xStep - (memX_begin % xStep)) % xStep;
         if (offsetOst == 0) xN++;
         LineParameters[] lines = new LineParameters[xN];
-        //g2d.setColor(netTextColor);
         gc.setFill(colorAwtToFx(netTextColor));
         gc.setFont(new javafx.scene.text.Font(netTextSize));
         y1 = netLineWidth / 2;
@@ -122,8 +135,6 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
             final Text oText = new Text(text);
             oText.setFont(gc.getFont());
             Bounds textBounds = oText.getLayoutBounds();
-            //double polWstr = textRec.getWidth() / 2;
-            //g2d.drawString(text, (int) (x - polWstr), (int) (fieldSizeTop + windowHeight + textRec.getHeight() * 1.2));
             gc.fillText(text, x, fieldSizeTop + windowHeight + textBounds.getHeight() * 1.0);
             lines[i] = new LineParameters(x, y0 - y1, x, y0 - y2);
         }
@@ -131,7 +142,24 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
     }
 
     @Override
-    public void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> y) {
-
+    public void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> yt) {
+        double[] x = new double[ms.size()];
+        double[] y = new double[x.length];
+        double y0 = (int) (fieldSizeTop + windowHeight);
+        double kY = windowHeight / (trend.netY_max - trend.netY_min);
+        for (int i = 0; i < x.length; i++) {
+            x[i] = (int) ((ms.get(i) - memX_begin) * kX + fieldSizeLeft);
+            y[i] = y0 - (int) (yt.get(i) * kY);
+        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                gc.beginPath();
+                gc.setStroke(colorAwtToFx(trend.lineColor));
+                gc.setLineWidth(trend.lineWidth);
+                gc.strokePolyline(x, y, x.length);
+                gc.closePath();
+            }
+        });
     }
 }

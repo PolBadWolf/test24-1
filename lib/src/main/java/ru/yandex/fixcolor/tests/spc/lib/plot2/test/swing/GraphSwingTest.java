@@ -2,6 +2,7 @@ package ru.yandex.fixcolor.tests.spc.lib.plot2.test.swing;
 
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.PlotParent;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.test.CiclTest;
 import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 
@@ -39,49 +40,6 @@ public class GraphSwingTest {
         Plot plot = Plot.createSwing(plotParameters, panel);
         plot.clear();
         panel.repaint();
-        new Thread(new Cicl(plot)).start();
-    }
-    private class Cicl implements Runnable {
-        public Cicl(Plot plot) {
-            this.plot = plot;
-        }
-        Plot plot;
-        int curX = 0;
-        int tr1 = 0;
-        int tr1_f = 150;
-        boolean pl_tr1 = true;
-        int tr2 = 0;
-        int tr2_f = 777;
-        boolean pl_tr2 = true;
-        @Override
-        public void run() {
-            do {
-                try {
-                    Thread.sleep(1);
-                    plot.newData(curX);
-                    plot.addTrend(tr1);
-                    plot.addTrend(tr2);
-                    plot.setData();
-                    if (pl_tr1) {
-                        if (tr1 >= tr1_f) pl_tr1 = false;
-                    } else {
-                        if (tr1 <= 0) pl_tr1 = true;
-                    }
-                    if (pl_tr2) {
-                        if (tr2 >= tr2_f) pl_tr2 = false;
-                    } else {
-                        if (tr2 <= 0) pl_tr2 = true;
-                    }
-                    if (pl_tr1) tr1++;
-                    else tr1--;
-                    if (pl_tr2) tr2++;
-                    else tr2--;
-                    if (curX % 10 == 0) plot.paint();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    break;
-                }
-            } while (++curX < 7_000);
-        }
+        new Thread(new CiclTest(plot)).start();
     }
 }
