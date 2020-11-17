@@ -109,7 +109,7 @@ public interface Plot {
 //            this.height = height;
             //          поля
             // размер полей
-            fieldSizeTop = 40.0;
+            fieldSizeTop = 10.0;
             fieldSizeLeft = 70.0;
             fieldSizeRight = 70.0;
             fieldSizeBottom = 40.0;
@@ -139,7 +139,7 @@ public interface Plot {
             // ширина линий сетки
             netLineWidth = 2.0;
             // 5 секунд
-            zeroX_max = 5_000;
+            zeroX_max = 5_400;
             zeroX_zoom = 0;
             //
             //      тренд1

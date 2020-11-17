@@ -9,11 +9,9 @@ import javafx.scene.text.TextAlignment;
 import java.awt.*;
 
 class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
-    private Canvas canvas;
     private GraphicsContext gc;
     public PlotFx(Plot.Parameters parameters, Canvas canvas) {
         super(parameters, canvas.getWidth(), canvas.getHeight());
-        this.canvas = canvas;
         gc = canvas.getGraphicsContext2D();
         // тренд1
         trends[0] = new Trend();
@@ -22,11 +20,6 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
         // sets
         setParametersTrends(parameters);
     }
-
-//    @Override
-//    public void ll(TrendUnit[] units) {
-//
-//    }
 
     private javafx.scene.paint.Color colorAwtToFx(Color color) {
         return new javafx.scene.paint.Color(
@@ -66,7 +59,6 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
             gc.beginPath();
             Trend trend = trends[nTrend];
             gc.setFill(colorAwtToFx(trend.textFontColor));
-            javafx.scene.text.Font fnt = gc.getFont();
             gc.setFont(new javafx.scene.text.Font(trend.textFontSize));
             //
             double k = windowHeight / (trend.netY_max - trend.netY_min);
@@ -75,7 +67,7 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
             double offset = k * (trend.netY_min % step);
             int offsetC = trend.netY_min / step;
             double y, yZ, yInv;
-            int x1, x2;
+            int x1;
             if (trend.positionFromWindow == TrendPosition.left) {
                 x1 = (int) (fieldSizeLeft - 5);
                 gc.setTextAlign(TextAlignment.RIGHT);
@@ -90,11 +82,11 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
                 if (yZ > trend.netY_max) break;
                 y = (i * step * k) - offset;
                 yInv = (windowHeight + fieldSizeTop) - y;
-                text = String.valueOf((int) yZ) + "" + trend.text;
+                text = (int) yZ + "" + trend.text;
                 final Text oText = new Text(text);
                 oText.setFont(gc.getFont());
                 textRec = oText.getLayoutBounds();
-                textRec.getWidth();
+                //textRec.getWidth();
                 gc.fillText(text, x1, yInv + textRec.getHeight() / 4);
             }
         } finally {
@@ -104,6 +96,36 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
 
     @Override
     public void drawTitleX() {
-
+        double xLenght = memX_end - memX_begin;
+        xStep = (MultiplicityRender.render.multiplicity(xLenght));
+        xN = ((int) Math.ceil(xLenght / xStep));
+        xCena = (double) xStep / 1_000;
+        double kX = windowWidth / (xN * xStep);
+        double x, y1, y2, y0 = fieldSizeTop + windowHeight;
+        String text;
+        //
+        double offsetOst = memX_begin % xStep;
+        int offsetCel = ((int) Math.ceil(memX_begin / xStep))* xStep;
+        double offsetS2 = (xStep - (memX_begin % xStep)) % xStep;
+        if (offsetOst == 0) xN++;
+        LineParameters[] lines = new LineParameters[xN];
+        //g2d.setColor(netTextColor);
+        gc.setFill(colorAwtToFx(netTextColor));
+        gc.setFont(new javafx.scene.text.Font(netTextSize));
+        y1 = netLineWidth / 2;
+        y2 = windowHeight - netLineWidth /  2;
+        gc.setTextAlign(TextAlignment.CENTER);
+        for (int i = 0; i < xN; i++) {
+            x = (i * xStep + offsetS2) * kX + fieldSizeLeft;
+            text = String.valueOf((double) ((i * xStep) + offsetCel) / 1_000);
+            final Text oText = new Text(text);
+            oText.setFont(gc.getFont());
+            Bounds textBounds = oText.getLayoutBounds();
+            //double polWstr = textRec.getWidth() / 2;
+            //g2d.drawString(text, (int) (x - polWstr), (int) (fieldSizeTop + windowHeight + textRec.getHeight() * 1.2));
+            gc.fillText(text, x, fieldSizeTop + windowHeight + textBounds.getHeight() * 1.0);
+            lines[i] = new LineParameters(x, y0 - y1, x, y0 - y2);
+        }
+        drawLines(netLineColor, netLineWidth, lines );
     }
 }

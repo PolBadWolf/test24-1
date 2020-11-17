@@ -7,11 +7,9 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
-    private MPanel panel;
     private Graphics2D g2d;
     public PlotSwing(Plot.Parameters parameters, MPanel panel) {
         super(parameters, panel.getWidth(), panel.getHeight());
-        this.panel = panel;
         width = panel.getWidth();
         height = panel.getHeight();
         panel.image = new BufferedImage((int) width, (int) height,BufferedImage.TYPE_INT_ARGB);
@@ -81,10 +79,10 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
             if (yZ > trend.netY_max) break;
             y = (i * step * k) - offset;
             yInv = (windowHeight + fieldSizeTop) - y;
-            text = String.valueOf((int) yZ) + "" + trend.text;
+            text = (int) yZ + "" + trend.text;
             textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
             if (trend.positionFromWindow == TrendPosition.right) {
-                x2 = (int) x1;
+                x2 = x1;
             } else {
                 x2 = (int) (x1 - textRec.getWidth());
             }

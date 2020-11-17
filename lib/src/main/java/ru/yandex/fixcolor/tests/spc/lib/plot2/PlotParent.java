@@ -104,7 +104,7 @@ class PlotParent implements Plot, LocalInt {
         zeroX_zoom = parameters.zeroX_zoom;
         zeroX_max = parameters.zeroX_max;
         // значения минимума из прошлого цикла
-        memX_begin = 0;
+        memX_begin = 400;
         memX_beginIndx = 0;
         memX_end = zeroX_max;
         //
