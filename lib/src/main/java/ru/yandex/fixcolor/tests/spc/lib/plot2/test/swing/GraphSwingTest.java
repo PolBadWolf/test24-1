@@ -1,6 +1,7 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2.test.swing;
 
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.PlotParent;
 import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 
@@ -30,10 +31,11 @@ public class GraphSwingTest {
         frame.pack();
         frame.setVisible(true);
         // ---
-        plotParameters.trend1_zeroY_min = -6;
+        plotParameters.trend1_zeroY_min = 0;
         plotParameters.trend1_zeroY_max = 52;
 //        plotParameters.trend2_zeroY_min = -0;
 //        plotParameters.trend2_zeroY_max = 950;
+        plotParameters.zeroX_zoom = 1;
         Plot plot = Plot.createSwing(plotParameters, panel);
         plot.clear();
         panel.repaint();
@@ -46,16 +48,16 @@ public class GraphSwingTest {
         Plot plot;
         int curX = 0;
         int tr1 = 0;
-        int tr1_f = 50;
+        int tr1_f = 150;
         boolean pl_tr1 = true;
         int tr2 = 0;
-        int tr2_f = 70;
+        int tr2_f = 777;
         boolean pl_tr2 = true;
         @Override
         public void run() {
             do {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1);
                     plot.newData(curX);
                     plot.addTrend(tr1);
                     plot.addTrend(tr2);
@@ -74,12 +76,12 @@ public class GraphSwingTest {
                     else tr1--;
                     if (pl_tr2) tr2++;
                     else tr2--;
-                    plot.rePaint();
+                    if (curX % 10 == 0) plot.paint();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     break;
                 }
-            } while (++curX < 5_000);
+            } while (++curX < 7_000);
         }
     }
 }

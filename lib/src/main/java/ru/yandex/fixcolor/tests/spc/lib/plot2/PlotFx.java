@@ -7,6 +7,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
     private GraphicsContext gc;
@@ -127,5 +128,10 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
             lines[i] = new LineParameters(x, y0 - y1, x, y0 - y2);
         }
         drawLines(netLineColor, netLineWidth, lines );
+    }
+
+    @Override
+    public void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> y) {
+
     }
 }

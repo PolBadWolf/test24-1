@@ -3,7 +3,7 @@ package ru.yandex.fixcolor.tests.spc.lib.plot2;
 import java.awt.*;
 import java.util.ArrayList;
 
-class Trend {
+public class Trend {
 //    interface TrendCallBack {
 //        void ll(TrendUnit[] units);
 //    }
@@ -49,5 +49,8 @@ class Trend {
         mass.add(unit);
         if (curnY_min > unit.y) curnY_min = unit.y;
         if (curnY_max < unit.y) curnY_max = unit.y;
+    }
+    public double getValueFromMass(int indx) {
+        return mass.get(indx).y;
     }
 }

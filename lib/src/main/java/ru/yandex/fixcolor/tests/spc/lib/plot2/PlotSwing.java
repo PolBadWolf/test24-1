@@ -5,11 +5,14 @@ import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
     private Graphics2D g2d;
+    private MPanel panel;
     public PlotSwing(Plot.Parameters parameters, MPanel panel) {
         super(parameters, panel.getWidth(), panel.getHeight());
+        this.panel = panel;
         width = panel.getWidth();
         height = panel.getHeight();
         panel.image = new BufferedImage((int) width, (int) height,BufferedImage.TYPE_INT_ARGB);
@@ -47,6 +50,7 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
         for (LineParameters line : lines) {
             g2d.drawLine((int) Math.round(line.x1), (int) Math.round(line.y1), (int) Math.round(line.x2), (int) Math.round(line.y2));
         }
+
     }
 
     @Override
@@ -96,7 +100,7 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
         xStep = (MultiplicityRender.render.multiplicity(xLenght));
         xN = ((int) Math.ceil(xLenght / xStep));
         xCena = (double) xStep / 1_000;
-        double kX = windowWidth / (xN * xStep);
+        kX = windowWidth / (xN * xStep);
         double x, y1, y2, y0 = fieldSizeTop + windowHeight;
         String text;
         //
@@ -118,6 +122,25 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
             lines[i] = new LineParameters(x, y0 - y1, x, y0 - y2);
         }
         drawLines(netLineColor, netLineWidth, lines );
+    }
 
+    @Override
+    public void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> yt) {
+        int[] x = new int[ms.size()];
+        int[] y = new int[x.length];
+        int y0 = (int) (fieldSizeTop + windowHeight);
+        double kY = windowHeight / (trend.netY_max - trend.netY_min);
+        for (int i = 0; i < x.length; i++) {
+            x[i] = (int) (ms.get(i) * kX + fieldSizeLeft);
+            y[i] = y0 - (int) (yt.get(i) * kY);
+        }
+        g2d.setColor(trend.lineColor);
+        g2d.setStroke(new BasicStroke((float) trend.lineWidth));
+        g2d.drawPolyline(x, y, x.length);
+    }
+
+    @Override
+    public void reFresh() {
+        panel.repaint();
     }
 }

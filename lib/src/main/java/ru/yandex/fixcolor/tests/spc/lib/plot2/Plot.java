@@ -189,5 +189,6 @@ public interface Plot {
     void newData(double ms);
     void addTrend(double zn);
     void setData();
-    void rePaint();
+    void paint();
+    void reFresh();
 }
