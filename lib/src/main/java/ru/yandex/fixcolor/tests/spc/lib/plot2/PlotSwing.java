@@ -140,6 +140,11 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
     }
 
     @Override
+    public void clear() {
+        super.clear();
+    }
+
+    @Override
     public void reFresh() {
         panel.repaint();
     }

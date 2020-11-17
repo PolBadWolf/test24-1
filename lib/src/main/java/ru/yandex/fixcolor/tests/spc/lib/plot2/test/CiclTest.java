@@ -37,7 +37,7 @@ public class CiclTest implements Runnable {
                 else tr1--;
                 if (pl_tr2) tr2++;
                 else tr2--;
-                if (curX % 10 == 0) plot.paint();
+                if (curX % 25 == 0) plot.paint();
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;

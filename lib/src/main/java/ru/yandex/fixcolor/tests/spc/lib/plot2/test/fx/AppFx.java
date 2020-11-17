@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.PlotParent;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.test.CiclTest;
 
 public class AppFx extends Application {
