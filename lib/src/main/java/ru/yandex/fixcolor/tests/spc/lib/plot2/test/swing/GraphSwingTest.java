@@ -35,7 +35,7 @@ public class GraphSwingTest {
         plotParameters.trend1_zeroY_max = 52;
 //        plotParameters.trend2_zeroY_min = -0;
 //        plotParameters.trend2_zeroY_max = 950;
-        plotParameters.zeroX_zoom = 1;
+        plotParameters.zeroX_zoom = 2;
         Plot plot = Plot.createSwing(plotParameters, panel);
         plot.clear();
         panel.repaint();

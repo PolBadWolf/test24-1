@@ -131,7 +131,7 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
         int y0 = (int) (fieldSizeTop + windowHeight);
         double kY = windowHeight / (trend.netY_max - trend.netY_min);
         for (int i = 0; i < x.length; i++) {
-            x[i] = (int) (ms.get(i) * kX + fieldSizeLeft);
+            x[i] = (int) ((ms.get(i) - memX_begin) * kX + fieldSizeLeft);
             y[i] = y0 - (int) (yt.get(i) * kY);
         }
         g2d.setColor(trend.lineColor);

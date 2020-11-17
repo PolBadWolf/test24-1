@@ -222,11 +222,18 @@ public class PlotParent implements Plot, LocalInt {
         drawTitleY(1);
         drawTitleX();
     }
-
+boolean flData  = false;
     @Override
     public void newData(double ms) {
         newDataIndx = 0;
         newDataX = ms;
+        if (memX_end < ms) {
+            if (zeroX_zoom > 0) {
+                memX_end = ms;
+                flData = true;
+            } else flData = false;
+        } else
+            flData = true;
     }
 
     @Override
@@ -234,71 +241,77 @@ public class PlotParent implements Plot, LocalInt {
         newDataTrends[newDataIndx] = zn;
         newDataIndx++;
     }
-
+Object objLock = new Object();
     @Override
     public void setData() {
-        timeUnits.add(new TimeUnit(newDataX));
-        for (int i = 0; i < trends.length; i++) {
-            trends[i].trendAddPoint(new TrendUnit(newDataTrends[i]));
+        if (!flData) return;
+        flData = false;
+        synchronized (objLock) {
+            timeUnits.add(new TimeUnit(newDataX));
+            for (int i = 0; i < trends.length; i++) {
+                trends[i].trendAddPoint(new TrendUnit(newDataTrends[i]));
+            }
         }
     }
 
     @Override
     public void paint() {
-        clear();
-        if (timeUnits.isEmpty())
-            return;
-        // текущее крайнее положение memX_end
-        if (zeroX_zoom == 2) { // shift
-            // длина окна zeroX_max
-            memX_begin = timeUnits.get(memX_beginIndx).ms;
-            double lenghtSample = memX_end - zeroX_max;
-            if (memX_begin < lenghtSample) {
-                // поск позитции начала
-                double tmp;
-                for (int i = memX_beginIndx; i < timeUnits.size(); i++) {
-                    tmp = timeUnits.get(i).ms;
-                    if (tmp < lenghtSample) continue;
-                    memX_begin = tmp;
-                    memX_beginIndx = i;
-                    break;
+        synchronized (objLock) {
+            clear();
+            if (timeUnits.isEmpty())
+                return;
+            // текущее крайнее положение memX_end
+            if (zeroX_zoom == 2) { // shift
+                // длина окна zeroX_max
+                memX_begin = timeUnits.get(memX_beginIndx).ms;
+                double lenghtSample = memX_end - zeroX_max;
+                if (memX_begin < lenghtSample) {
+                    // поск позитции начала
+                    double tmp;
+                    for (int i = memX_beginIndx; i < timeUnits.size(); i++) {
+                        tmp = timeUnits.get(i).ms;
+                        if (tmp < lenghtSample) continue;
+                        memX_begin = tmp;
+                        memX_beginIndx = i;
+                        break;
+                    }
+                }
+            } else {
+                memX_begin = 0;
+                memX_beginIndx = 0;
+            }
+            // === дроп
+            ArrayList<Double> mX = new ArrayList<>();
+            ArrayList<Double>[] mY = new ArrayList[trends.length];
+            for (int i = 0; i < trends.length; i++) {
+                mY[i] = new ArrayList<>();
+            }
+            double curMs;
+            int pixOld = -1_000;
+            int pixCur;
+            for (int i_ms = memX_beginIndx; i_ms < timeUnits.size(); i_ms++) {
+                curMs = timeUnits.get(i_ms).ms;
+                pixCur = (int) (curMs * kX);
+                if (pixOld >= pixCur) continue;
+                pixOld = pixCur;
+                mX.add(curMs);
+                for (int t = 0; t < trends.length; t++) {
+                    mY[t].add(trends[t].getValueFromMass(i_ms));
                 }
             }
-        } else {
-            memX_begin = 0;
-            memX_beginIndx = 0;
-        }
-        // === дроп
-        ArrayList<Double> mX = new ArrayList<>();
-        ArrayList<Double>[] mY =new ArrayList[trends.length];
-        for (int i = 0; i < trends.length; i++) {
-            mY[i] = new ArrayList<>();
-        }
-        double curMs;
-        int pixOld = -1_000;
-        int pixCur;
-        for (int i_ms = memX_beginIndx; i_ms < timeUnits.size(); i_ms++) {
-            curMs = timeUnits.get(i_ms).ms;
-            pixCur = (int) (curMs * kX);
-            if (pixOld >= pixCur) continue;
-            pixOld = pixCur;
-            mX.add(curMs);
-            for (int t = 0; t < trends.length; t++) {
-                mY[t].add(trends[t].getValueFromMass(i_ms));
-            }
-        }
 
-        for (int i = 0; i < trends.length; i++) {
-            drawTrend(
-                    trends[i],
-                    mX,
-                    mY[i]
-            );
-        }
-        mX.clear();
-        for (int i = 0; i < mY.length; i++) {
-            mY[i].clear();
-            mY[i] = null;
+            for (int i = 0; i < trends.length; i++) {
+                drawTrend(
+                        trends[i],
+                        mX,
+                        mY[i]
+                );
+            }
+            mX.clear();
+            for (int i = 0; i < mY.length; i++) {
+                mY[i].clear();
+                mY[i] = null;
+            }
         }
         reFresh();
     }
