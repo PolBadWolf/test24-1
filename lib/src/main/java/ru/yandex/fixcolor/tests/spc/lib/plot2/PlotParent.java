@@ -104,7 +104,7 @@ class PlotParent implements Plot, LocalInt {
         zeroX_zoom = parameters.zeroX_zoom;
         zeroX_max = parameters.zeroX_max;
         // значения минимума из прошлого цикла
-        memX_begin = 200;
+        memX_begin = 0;
         memX_beginIndx = 0;
         memX_end = zeroX_max;
         //
@@ -182,8 +182,8 @@ class PlotParent implements Plot, LocalInt {
         drawNetY();
         // ===========
         timeUnits.clear();
-        for (int i = 0; i < trends.length; i++) {
-            trends[i].trendClear();
+        for (Trend trend : trends) {
+            trend.trendClear();
         }
     }
 

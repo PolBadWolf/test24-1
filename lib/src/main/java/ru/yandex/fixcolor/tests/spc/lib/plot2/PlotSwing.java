@@ -95,34 +95,29 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
     @Override
     public void drawTitleX() {
         double xLenght = memX_end - memX_begin;
-//        if (xLenght < 1_000) xStep = 50;
-//        else xStep = ((int) Math.ceil(xLenght / 1_000)) * 100;
         xStep = (MultiplicityRender.render.multiplicity(xLenght));
-//        xLenght = ((int) Math.ceil(xLenght / xStep)) * xStep;
         xN = ((int) Math.ceil(xLenght / xStep));
-        int xK3 = xStep;
-        if (xK3 > 1_000) xK3 = 1_000;
         xCena = (double) xStep / 1_000;
         double kX = windowWidth / (xN * xStep);
-        double xs, y1, y2, y0 = fieldSizeTop + windowHeight;
+        double x, y1, y2, y0 = fieldSizeTop + windowHeight;
         String text;
         //
         double offsetOst = memX_begin % xStep;
-        int offsetCel = ((int) Math.ceil(memX_begin / xK3))* xK3;
-        double offsetS2 = (xK3 - (memX_begin % xK3)) % xK3;
+        int offsetCel = ((int) Math.ceil(memX_begin / xStep))* xStep;
+        double offsetS2 = (xStep - (memX_begin % xStep)) % xStep;
         if (offsetOst == 0) xN++;
         LineParameters[] lines = new LineParameters[xN];
         g2d.setColor(netTextColor);
         g2d.setFont(g2d.getFont().deriveFont((float) netTextSize));
+        y1 = netLineWidth / 2;
+        y2 = windowHeight - netLineWidth /  2;
         for (int i = 0; i < xN; i++) {
-            xs = (i * xStep + offsetS2) * kX + fieldSizeLeft;
+            x = (i * xStep + offsetS2) * kX + fieldSizeLeft;
             text = String.valueOf((double) ((i * xStep) + offsetCel) / 1_000);
             Rectangle2D textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
             double polWstr = textRec.getWidth() / 2;
-            g2d.drawString(text, (int) (xs - polWstr), (int) (fieldSizeTop + windowHeight + textRec.getHeight() * 1.2));
-            y1 = netLineWidth / 2;
-            y2 = windowHeight - netLineWidth /  2;
-            lines[i] = new LineParameters(xs, y0 - y1, xs, y0 - y2);
+            g2d.drawString(text, (int) (x - polWstr), (int) (fieldSizeTop + windowHeight + textRec.getHeight() * 1.2));
+            lines[i] = new LineParameters(x, y0 - y1, x, y0 - y2);
         }
         drawLines(netLineColor, netLineWidth, lines );
 
