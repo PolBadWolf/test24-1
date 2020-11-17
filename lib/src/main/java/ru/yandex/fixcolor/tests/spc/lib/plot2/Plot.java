@@ -59,6 +59,8 @@ public interface Plot {
         public Color windowBackColor;
         // цвет линий сетки
         public Color netLineColor;
+        public Color netTextColor;
+        public double netTextSize;
         // ширина линий сетки
         public double netLineWidth;
         public double zeroX_max;
@@ -132,10 +134,12 @@ public interface Plot {
             windowBackColor = Color.CYAN;
             // цвет линий сетки
             netLineColor = ColorName.DARKGREEN;
+            netTextColor = ColorName.RED;
+            netTextSize = 16;
             // ширина линий сетки
-            netLineWidth = 5.0;
+            netLineWidth = 2.0;
             // 5 секунд
-            zeroX_max = 3_000;
+            zeroX_max = 2_700;
             zeroX_zoom = 0;
             //
             //      тренд1

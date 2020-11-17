@@ -39,6 +39,8 @@ class PlotParent implements Plot, LocalInt {
     protected Color windowBackColor;
     // цвет линий сетки
     protected Color netLineColor;
+    protected Color netTextColor;
+    protected double netTextSize;
     // ширина линий сетки
     protected double netLineWidth;
     protected int zeroX_zoom;
@@ -94,13 +96,15 @@ class PlotParent implements Plot, LocalInt {
         windowHeight = height - fieldSizeTop - fieldSizeBottom;
         // цвет линий сетки
         netLineColor = parameters.netLineColor;
+        netTextColor = parameters.netTextColor;
+        netTextSize = parameters.netTextSize;
         // ширина линий сетки
         netLineWidth = parameters.netLineWidth;
         //
         zeroX_zoom = parameters.zeroX_zoom;
         zeroX_max = parameters.zeroX_max;
         // значения минимума из прошлого цикла
-        memX_begin = 90;
+        memX_begin = 200;
         memX_beginIndx = 0;
         memX_end = zeroX_max;
         //

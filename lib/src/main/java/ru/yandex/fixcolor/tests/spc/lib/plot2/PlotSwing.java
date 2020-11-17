@@ -94,20 +94,29 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
 
     @Override
     public void drawTitleX() {
-        if (memX_end < 1_000) xStep = 50;
-        else xStep = ((int) Math.floor(memX_end / 1_000)) * 100;
-        xN = ((int) Math.ceil(memX_end / xStep)) + 1;
+        double xLenght = memX_end - memX_begin;
+//        if (xLenght < 1_000) xStep = 50;
+//        else xStep = ((int) Math.ceil(xLenght / 1_000)) * 100;
+        xStep = (MultiplicityRender.render.multiplicity(xLenght));
+//        xLenght = ((int) Math.ceil(xLenght / xStep)) * xStep;
+        xN = ((int) Math.ceil(xLenght / xStep));
+        int xK3 = xStep;
+        if (xK3 > 1_000) xK3 = 1_000;
         xCena = (double) xStep / 1_000;
-        double kX = windowWidth / (memX_end);
-        double x, xs, y1, y2, y0 = fieldSizeTop + windowHeight;
+        double kX = windowWidth / (xN * xStep);
+        double xs, y1, y2, y0 = fieldSizeTop + windowHeight;
         String text;
         //
+        double offsetOst = memX_begin % xStep;
+        int offsetCel = ((int) Math.ceil(memX_begin / xK3))* xK3;
+        double offsetS2 = (xK3 - (memX_begin % xK3)) % xK3;
+        if (offsetOst == 0) xN++;
         LineParameters[] lines = new LineParameters[xN];
+        g2d.setColor(netTextColor);
+        g2d.setFont(g2d.getFont().deriveFont((float) netTextSize));
         for (int i = 0; i < xN; i++) {
-            x = (i * xStep);
-            text = String.valueOf((double) x / 1_000);
-            x = x * kX;
-            xs = x + fieldSizeLeft;
+            xs = (i * xStep + offsetS2) * kX + fieldSizeLeft;
+            text = String.valueOf((double) ((i * xStep) + offsetCel) / 1_000);
             Rectangle2D textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
             double polWstr = textRec.getWidth() / 2;
             g2d.drawString(text, (int) (xs - polWstr), (int) (fieldSizeTop + windowHeight + textRec.getHeight() * 1.2));
@@ -116,5 +125,6 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
             lines[i] = new LineParameters(xs, y0 - y1, xs, y0 - y2);
         }
         drawLines(netLineColor, netLineWidth, lines );
+
     }
 }
