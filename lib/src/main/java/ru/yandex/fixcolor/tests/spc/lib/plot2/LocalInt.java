@@ -25,4 +25,6 @@ interface LocalInt {
     void drawTitleY(int nTrend);
     void drawTitleX();
     void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> y);
+    MyRecWidthHeight getRecWidthHeight(String text, double textFontSize);
+    void drawStringAlignment(String text, Color textColor, double textFontSize, double x, double y, MyRecWidthHeight textRec, int alignment);
 }

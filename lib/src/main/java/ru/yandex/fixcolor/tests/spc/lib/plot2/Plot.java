@@ -26,7 +26,8 @@ public interface Plot {
     }
     class TrendPosition {
         public static final int left = 1;
-        public static final int right = 2;
+        public static final int center = 2;
+        public static final int right = 3;
     }
     class Parameters {
         // размер холста ( задается в основном конструкторе )
@@ -191,4 +192,5 @@ public interface Plot {
     void setData();
     void paint();
     void reFresh();
+    void closeApp();
 }

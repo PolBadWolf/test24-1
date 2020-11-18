@@ -7,8 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
-import ru.yandex.fixcolor.tests.spc.lib.plot2.PlotParent;
-import ru.yandex.fixcolor.tests.spc.lib.plot2.test.CiclTest;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.test.CycleTest;
 
 public class AppFx extends Application {
 
@@ -32,6 +31,6 @@ public class AppFx extends Application {
         plotParameters.zeroX_zoom = 2;
         Plot plot = Plot.createFx(plotParameters, canvas);
         plot.clear();
-        new Thread(new CiclTest(plot)).start();
+        new Thread(new CycleTest(plot)).start();
     }
 }

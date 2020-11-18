@@ -1,11 +1,15 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
+import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
     private Graphics2D g2d;
@@ -23,7 +27,60 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
         trends[1] = new Trend();
         // sets
         setParametersTrends(parameters);
+        //
+        fistZoomRender();
+        //
+        threadCycle = new Thread(new Cycle(), "cycle swing");
+        threadCycle.start();
     }
+
+    private class Cycle implements Runnable {
+        @Override
+        public void run() {
+            flOnWork = true;
+            while (flOnWork) {
+                try {
+                    if (paintQueue.isEmpty()) {
+                        Thread.yield();
+                        Thread.sleep(1);
+                        continue;
+                    }
+                    SwingUtilities.invokeAndWait(() -> {
+                        DataQueue dataQueue;
+                        try {
+                            while((dataQueue = paintQueue.poll(1, java.util.concurrent.TimeUnit.MILLISECONDS)) != null) {
+                                //System.out.println(dataQueue.command);
+                                doCicle(dataQueue);
+                            }
+                        } catch (Exception exception) {
+                            MyLogger.myLog.log(Level.SEVERE, "ошибка выполнения очереди", exception);
+                        }
+                    });
+                } catch (InterruptedException | InvocationTargetException e) {
+                    e.printStackTrace();
+                    flOnWork = false;
+                    continue;
+                }
+            }
+        }
+    }
+
+    protected void __paint_trend(ArrayList<GraphDataUnit> graphData, Trend trend) {
+        int graphData_size = graphData.size();
+        //
+        int[] x = new int[graphData_size];
+        int[] y = new int[graphData_size];
+        int y0 = (int) positionBottom;
+        //double kY = windowHeight / (trend.netY_max - trend.netY_min);
+        for (int i = 0; i < graphData_size; i++) {
+            x[i] = (int) ((graphData.get(i).x - memX_begin) * kX + positionLeft);
+            y[i] = (int) (positionBottom - (graphData.get(i).y * trend.kY));
+        }
+        g2d.setColor(trend.lineColor);
+        g2d.setStroke(new BasicStroke((float) trend.lineWidth));
+        g2d.drawPolyline(x, y, x.length);
+    }
+
 
     @Override
     public void fillRect(Color color, double x, double y, double width, double height) {
@@ -37,11 +94,6 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
         g2d.setStroke(new BasicStroke((float) lineWidth));
         g2d.drawRect((int) x, (int) y, (int) width, (int) height);
     }
-
-//    @Override
-//    public void ll(TrendUnit[] units) {
-//
-//    }
 
     @Override
     public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) {
@@ -65,7 +117,7 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
         ));
         //
         double k = windowHeight / (trend.netY_max - trend.netY_min);
-        int baseN = netY_n;
+        int baseN = y_netN;
         int step = trend.netY_step;
         double offset = k * (trend.netY_min % step);
         int offsetC = trend.netY_min / step;
@@ -141,11 +193,37 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
 
     @Override
     public void clear() {
-        super.clear();
+        try {
+            paintQueue.add(queueClear);
+        }catch (IllegalStateException i) {
+
+        }
+    }
+
+    protected void __ReFresh() {
+        panel.repaint();
     }
 
     @Override
-    public void reFresh() {
-        panel.repaint();
+    public MyRecWidthHeight getRecWidthHeight(String text, double textFontSize) {
+        Rectangle2D textRec = g2d.getFontMetrics(g2d.getFont().deriveFont((float) textFontSize)).getStringBounds(text, g2d);
+        return new MyRecWidthHeight(textRec.getWidth(), textRec.getHeight());
+    }
+
+    @Override
+    public void drawStringAlignment(String text, Color textColor, double textFontSize, double x, double y, MyRecWidthHeight textRec, int alignment) {
+        float x2 = 0;
+        if (alignment == TrendPosition.left) {
+            x2 = (float) (x - textRec.width);
+        }
+        if (alignment == TrendPosition.center) {
+            x2 = (float) (x - textRec.width / 2);
+        }
+        if (alignment == TrendPosition.right) {
+            x2 = (float) x;
+        }
+        g2d.setFont(g2d.getFont().deriveFont((float) textFontSize));
+        g2d.setColor(textColor);
+        g2d.drawString(text, x2, (float) (y + textRec.height / 3));
     }
 }

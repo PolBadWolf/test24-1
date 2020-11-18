@@ -19,6 +19,7 @@ public class Trend {
     public int netY_min;
     public int netY_max;
     public int netY_step;
+    protected double kY;
     // толщина линии
     public double lineWidth;
     // цвет линии

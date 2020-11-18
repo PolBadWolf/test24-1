@@ -2,8 +2,8 @@ package ru.yandex.fixcolor.tests.spc.lib.plot2.test;
 
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 
-public class CiclTest implements Runnable {
-    public CiclTest(Plot plot) {
+public class CycleTest implements Runnable {
+    public CycleTest(Plot plot) {
         this.plot = plot;
     }
     Plot plot;
@@ -14,6 +14,7 @@ public class CiclTest implements Runnable {
     int tr2 = 0;
     int tr2_f = 777;
     boolean pl_tr2 = true;
+    public boolean flOnWork = true;
     @Override
     public void run() {
         do {
@@ -37,11 +38,11 @@ public class CiclTest implements Runnable {
                 else tr1--;
                 if (pl_tr2) tr2++;
                 else tr2--;
-                if (curX % 25 == 0) plot.paint();
+                if (curX % 10 == 0) plot.paint();
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;
             }
-        } while (++curX < 180_000);
+        } while (++curX < 180_000 && flOnWork);
     }
 }

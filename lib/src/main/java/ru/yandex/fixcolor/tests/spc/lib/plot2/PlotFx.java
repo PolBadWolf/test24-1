@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -80,7 +81,7 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
             gc.setFont(new javafx.scene.text.Font(trend.textFontSize));
             //
             double k = windowHeight / (trend.netY_max - trend.netY_min);
-            int baseN = netY_n;
+            int baseN = y_netN;
             int step = trend.netY_step;
             double offset = k * (trend.netY_min % step);
             int offsetC = trend.netY_min / step;
@@ -164,5 +165,10 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
                 gc.closePath();
             }
         });
+    }
+
+    @Override
+    public MyRecWidthHeight getRecWidthHeight(String text, double textFontSize) {
+        return null;
     }
 }
