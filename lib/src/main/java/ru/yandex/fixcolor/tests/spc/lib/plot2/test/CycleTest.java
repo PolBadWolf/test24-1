@@ -5,6 +5,7 @@ import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 public class CycleTest implements Runnable {
     public CycleTest(Plot plot) {
         this.plot = plot;
+        this.plot.setCallBack(plotCallBack);
     }
     Plot plot;
     int curX = 0;
@@ -14,9 +15,12 @@ public class CycleTest implements Runnable {
     int tr2 = 0;
     int tr2_f = 777;
     boolean pl_tr2 = true;
+    int dynDiv = 8;
+    int dynCount = dynDiv;
     public boolean flOnWork = true;
     @Override
     public void run() {
+        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         do {
             try {
                 Thread.sleep(1);
@@ -38,11 +42,16 @@ public class CycleTest implements Runnable {
                 else tr1--;
                 if (pl_tr2) tr2++;
                 else tr2--;
-                if (curX % 10 == 0) plot.paint();
+                if (--dynCount == 0) {
+                    dynCount = dynDiv;
+                    plot.paint();
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;
             }
         } while (++curX < 180_000 && flOnWork);
     }
+    Plot.CallBack plotCallBack = new Plot.CallBack() {
+    };
 }

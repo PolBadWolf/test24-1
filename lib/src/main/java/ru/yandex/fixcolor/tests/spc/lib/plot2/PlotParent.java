@@ -4,11 +4,13 @@ import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 
 public class PlotParent implements Plot, LocalInt {
+    private CallBack callBack;
     // размер холста
     protected double width;
     protected double height;
@@ -75,15 +77,12 @@ public class PlotParent implements Plot, LocalInt {
     protected int xN;
     protected double xCena;
     // ===============================================
-//    protected class DatQueue {
-//        public int command;
-//        ArrayList<NewDataClass> datGraph;
-//
-//        public DatQueue(int command, ArrayList<NewDataClass> datGraph) {
-//            this.command = command;
-//            this.datGraph = datGraph;
-//        }
-//    }
+    public CallBack getCallBack() {
+        return callBack;
+    }
+    public void setCallBack(CallBack callBack) {
+        this.callBack = callBack;
+    }
     // ===============================================
     // конструктор
     protected PlotParent(Parameters parameters, double paneWidth, double paneHeight) {
@@ -185,7 +184,7 @@ public class PlotParent implements Plot, LocalInt {
     // ==========================
     protected boolean flOnWork;
     protected Thread threadCycle;
-    protected final BlockingQueue<DataQueue> paintQueue = new ArrayBlockingQueue<>(25);
+    protected final BlockingQueue<DataQueue> paintQueue = new ArrayBlockingQueue<>(100);
     protected static final int command_Clear = 1;
     protected static final int command_Paint = 2;
     protected static final int command_ReFresh = 3;
@@ -231,8 +230,6 @@ public class PlotParent implements Plot, LocalInt {
     }
     protected void __ReFresh(){ }
     protected void __paint(GraphData[] datGraph) {
-        GraphData graphData;
-        int graphData_size;
         for (int t = 0; t < datGraph.length; t++) {
             __paint_trend(datGraph[t].zn, trends[t]);
         }
@@ -285,7 +282,7 @@ public class PlotParent implements Plot, LocalInt {
         drawLines(netLineColor, netLineWidth, lines);
     }
     protected void __drawNetYtitle() {
-        double y, yZ, yInv;
+        double y, yZ;
         double x1;
         MyRecWidthHeight textRec;
         for (int i = 0; i < 2; i++) {
@@ -530,9 +527,9 @@ boolean flData  = false;
         //
     }
     protected void fistZoomRender() {
-        for (int i = 0; i < trends.length; i++) {
-            trends[i].curnY_min = trends[i].zeroY_min;
-            trends[i].curnY_max = trends[i].zeroY_max;
+        for (Trend trend : trends) {
+            trend.curnY_min = trend.zeroY_min;
+            trend.curnY_max = trend.zeroY_max;
         }
         memX_begin = 0;
         memX_beginIndx = 0;
@@ -550,9 +547,7 @@ boolean flData  = false;
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        for (int i = 0; i < trends.length; i++) {
-            trends[i] = null;
-        }
+        Arrays.fill(trends, null);
         paintQueue.clear();
     }
     @Override

@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -12,7 +11,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
-    private GraphicsContext gc;
+    private final GraphicsContext gc;
     public PlotFx(Plot.Parameters parameters, Canvas canvas) {
         super(parameters, canvas.getWidth(), canvas.getHeight());
         gc = canvas.getGraphicsContext2D();
@@ -26,12 +25,7 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
 
     @Override
     public void clear() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                _clear();
-            }
-        });
+        Platform.runLater(this::_clear);
     }
     protected void _clear() {
         super.clear();
@@ -58,7 +52,8 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
         gc.beginPath();
         gc.setStroke(colorAwtToFx(color));
         gc.setLineWidth(lineWidth);
-        gc.strokeRect(x, y, width, height);gc.closePath();
+        gc.strokeRect(x - lineWidth / 2, y - lineWidth / 2, width + lineWidth, height + lineWidth);
+        gc.closePath();
     }
 
     @Override
@@ -155,15 +150,12 @@ class PlotFx extends PlotParent { //implements Trend.TrendCallBack {
             x[i] = (int) ((ms.get(i) - memX_begin) * kX + fieldSizeLeft);
             y[i] = y0 - (int) (yt.get(i) * kY);
         }
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                gc.beginPath();
-                gc.setStroke(colorAwtToFx(trend.lineColor));
-                gc.setLineWidth(trend.lineWidth);
-                gc.strokePolyline(x, y, x.length);
-                gc.closePath();
-            }
+        Platform.runLater(() -> {
+            gc.beginPath();
+            gc.setStroke(colorAwtToFx(trend.lineColor));
+            gc.setLineWidth(trend.lineWidth);
+            gc.strokePolyline(x, y, x.length);
+            gc.closePath();
         });
     }
 

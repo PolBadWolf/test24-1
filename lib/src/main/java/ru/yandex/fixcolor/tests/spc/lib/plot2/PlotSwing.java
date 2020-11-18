@@ -11,9 +11,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
-    private Graphics2D g2d;
-    private MPanel panel;
+class PlotSwing extends PlotParent {
+    private final Graphics2D g2d;
+    private final MPanel panel;
     public PlotSwing(Plot.Parameters parameters, MPanel panel) {
         super(parameters, panel.getWidth(), panel.getHeight());
         this.panel = panel;
@@ -37,19 +37,19 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
     private class Cycle implements Runnable {
         @Override
         public void run() {
+            Thread.currentThread().setPriority(Thread.MAX_PRIORITY - 2);
             flOnWork = true;
             while (flOnWork) {
                 try {
                     if (paintQueue.isEmpty()) {
                         Thread.yield();
-                        Thread.sleep(1);
+//                        Thread.sleep(1);
                         continue;
                     }
                     SwingUtilities.invokeAndWait(() -> {
                         DataQueue dataQueue;
                         try {
                             while((dataQueue = paintQueue.poll(1, java.util.concurrent.TimeUnit.MILLISECONDS)) != null) {
-                                //System.out.println(dataQueue.command);
                                 doCicle(dataQueue);
                             }
                         } catch (Exception exception) {
@@ -59,7 +59,7 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
                 } catch (InterruptedException | InvocationTargetException e) {
                     e.printStackTrace();
                     flOnWork = false;
-                    continue;
+                    break;
                 }
             }
         }
@@ -70,7 +70,6 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
         //
         int[] x = new int[graphData_size];
         int[] y = new int[graphData_size];
-        int y0 = (int) positionBottom;
         //double kY = windowHeight / (trend.netY_max - trend.netY_min);
         for (int i = 0; i < graphData_size; i++) {
             x[i] = (int) ((graphData.get(i).x - memX_begin) * kX + positionLeft);
@@ -92,7 +91,7 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
     public void drawRect(Color color, double lineWidth, double x, double y, double width, double height) {
         g2d.setColor(color);
         g2d.setStroke(new BasicStroke((float) lineWidth));
-        g2d.drawRect((int) x, (int) y, (int) width, (int) height);
+        g2d.drawRect((int) (x - lineWidth / 2), (int) (y - lineWidth / 2), (int) (width + lineWidth), (int) (height + lineWidth));
     }
 
     @Override
@@ -195,7 +194,7 @@ class PlotSwing extends PlotParent { //implements Trend.TrendCallBack {
     public void clear() {
         try {
             paintQueue.add(queueClear);
-        }catch (IllegalStateException i) {
+        } catch (IllegalStateException i) {
 
         }
     }

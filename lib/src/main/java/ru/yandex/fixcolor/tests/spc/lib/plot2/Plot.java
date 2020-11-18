@@ -6,6 +6,8 @@ import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 import java.awt.*;
 
 public interface Plot {
+    interface CallBack {
+    }
     class ColorName {
         public static final Color WHITE = new Color(255, 255, 255);
         public static final Color LIGHT_GRAY = new Color(192, 192, 192);
@@ -125,14 +127,14 @@ public interface Plot {
             fieldFontSizeRight = 20.0;
             fieldFontSizeBottom = 20.0;
             // цвет фона полей
-            fieldBackColor = ColorName.GREEN;
+            fieldBackColor = new Color(220, 220, 220);
             // цвет рамки
             fieldFrameColor = ColorName.BLUE;
             // ширина рамки
             fieldFrameWidth = 3.0;
             //          окно
             // цвет фона
-            windowBackColor = Color.CYAN;
+            windowBackColor = new Color(220, 220, 220);
             // цвет линий сетки
             netLineColor = ColorName.DARKGREEN;
             netTextColor = ColorName.RED;
@@ -173,7 +175,7 @@ public interface Plot {
             // размер шрифта надписи
             trend2_textFontSize = 16.0;
             // цвет шрифта надписи
-            trend2_textFontColor = ColorName.PINK;
+            trend2_textFontColor = ColorName.GREEN;
             // текст надписи
             trend2_text = "кг";
             // позитция тренда относительно окна
@@ -185,6 +187,8 @@ public interface Plot {
     // -----------------
     static Plot createSwing(Parameters parameters, MPanel panel) { return new PlotSwing(parameters, panel); }
     static Plot createFx(Parameters parameters, Canvas canvas) { return new PlotFx(parameters, canvas); }
+    CallBack getCallBack();
+    void setCallBack(CallBack callBack);
     // -----------------
     void clear();
     void newData(double ms);
