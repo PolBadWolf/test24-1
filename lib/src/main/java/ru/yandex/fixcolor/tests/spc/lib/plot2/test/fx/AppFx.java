@@ -41,7 +41,7 @@ public class AppFx extends Application {
         plot.clear();
         cycleTest = new CycleTest(plot);
         threadCycle = new Thread(cycleTest);
-        //threadCycle.start();
+        threadCycle.start();
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {

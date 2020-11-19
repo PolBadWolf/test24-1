@@ -70,6 +70,6 @@ public class GraphSwingTest {
         //panel.repaint();
         cycleTest = new CycleTest(plot);
         threadCycle = new Thread(cycleTest);
-        //threadCycle.start();
+        threadCycle.start();
     }
 }
