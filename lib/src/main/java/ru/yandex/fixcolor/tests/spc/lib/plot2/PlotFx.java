@@ -243,7 +243,6 @@ class PlotFx extends PlotParent {
                 y = (j * step * trend.kY) - offset;
                 text = (int) yZ + "" + trend.text;
                 textRec = getRecWidthHeight(text, textFontSize);
-                //drawStringAlignment(text, trend.textFontColor, textFontSize, x1, positionBottom - y, textRec, trend.positionFromWindow);
                 arrayTitleText.add(drawStringAlignment2(text, trend.textFontColor, textFontSize, x1, positionBottom - y, textRec, trend.positionFromWindow));
             }
         }
