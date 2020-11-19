@@ -34,9 +34,7 @@ class PlotFx extends PlotParent {
         @Override
         public void run() {
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY - 2);
-            Platform.runLater(()->{
-                Thread.currentThread().setPriority(Thread.MAX_PRIORITY - 1);
-            });
+            Platform.runLater(()-> Thread.currentThread().setPriority(Thread.MAX_PRIORITY - 1));
             DataQueue dataQueue;
             flOnWork = true;
             try {
@@ -104,11 +102,11 @@ class PlotFx extends PlotParent {
                     // сетка
                     __drawlines(arrayLines);
                     // отрисовка трендов
-                    for (int t = 0; t < trendPaint.length; t++) {
+                    for (TrendPaintUnit trendPaintUnit : trendPaint) {
                         gc.beginPath();
-                        gc.setStroke(trendPaint[t].trendColor);
-                        gc.setLineWidth(trendPaint[t].trendWidth);
-                        gc.strokePolyline(trendPaint[t].x, trendPaint[t].y, trendPaint[t].x.length);
+                        gc.setStroke(trendPaintUnit.trendColor);
+                        gc.setLineWidth(trendPaintUnit.trendWidth);
+                        gc.strokePolyline(trendPaintUnit.x, trendPaintUnit.y, trendPaintUnit.x.length);
                         gc.closePath();
                     }
                     // top
@@ -132,7 +130,7 @@ class PlotFx extends PlotParent {
         }
     }
     //
-    private class TrendPaintUnit {
+    private static class TrendPaintUnit {
         public double[] x;
         public double[] y;
         javafx.scene.paint.Color trendColor;
@@ -145,7 +143,7 @@ class PlotFx extends PlotParent {
             this.trendWidth = trendWidth;
         }
     }
-    private class TitleText {
+    private static class TitleText {
         public double x;
         public double y;
         public javafx.scene.paint.Color color;
@@ -162,7 +160,7 @@ class PlotFx extends PlotParent {
             this.textFontSize = textFontSize;
         }
     }
-    private class LinesParameters {
+    private static class LinesParameters {
         public LineParameters[] lines;
         public javafx.scene.paint.Color lineColor;
         public double lineWidth;

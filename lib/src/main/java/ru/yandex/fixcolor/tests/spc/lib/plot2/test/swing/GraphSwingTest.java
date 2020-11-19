@@ -58,10 +58,10 @@ public class GraphSwingTest {
         frame.pack();
         frame.setVisible(true);
         // ---
-        plotParameters.trend1_zeroY_min = 0;
-        plotParameters.trend1_zeroY_max = 97;
-        plotParameters.trend2_zeroY_min = 20;
-        plotParameters.trend2_zeroY_max = 100; //100 - касяк с масштабированием
+        plotParameters.trend1_zeroY_min = 20;
+        plotParameters.trend1_zeroY_max = 100;
+        plotParameters.trend2_zeroY_min = -5;
+        plotParameters.trend2_zeroY_max = 95;
         plotParameters.trend2_AutoZoomY = true;
         plotParameters.zeroX_zoom = 2;
         plot = Plot.createSwing(plotParameters, panel);

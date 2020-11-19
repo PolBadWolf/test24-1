@@ -1,7 +1,5 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2;
 
-import javafx.application.Platform;
-import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
@@ -10,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -42,48 +39,24 @@ class PlotSwing extends PlotParent {
         @Override
         public void run() {
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-            flOnWork = true;
-            while (flOnWork) {
-                try {
-                    if (paintQueue.isEmpty()) {
-                        Thread.yield();
-                        Thread.sleep(1);
-                    } else {
-                        SwingUtilities.invokeAndWait(this::runQueueDoCycle);
-                    }
-                } catch (InterruptedException | InvocationTargetException e) {
-                    e.printStackTrace();
-                    flOnWork = false;
-                }
-            }
-        }
-
-        private void runQueueDoCycle() {
             DataQueue dataQueue;
+            flOnWork = true;
             try {
-                while ((dataQueue = paintQueue.poll(1, TimeUnit.MILLISECONDS)) != null) {
-                    doCicle(dataQueue);
+                while (flOnWork) {
+                    try {
+                        if ((dataQueue = paintQueue.poll(10, TimeUnit.MILLISECONDS)) != null) {
+                            doCicle(dataQueue);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        flOnWork = false;
+                    }
                 }
             } catch (Exception exception) {
                 MyLogger.myLog.log(Level.SEVERE, "ошибка выполнения очереди", exception);
             }
         }
     }
-
-    protected void __paint_trend(ArrayList<GraphDataUnit> graphData, Trend trend) {
-        int graphData_size = graphData.size();
-        //
-        int[] x = new int[graphData_size];
-        int[] y = new int[graphData_size];
-        for (int i = 0; i < graphData_size; i++) {
-            x[i] = (int) ((graphData.get(i).x - memX_begin) * kX + positionLeft);
-            y[i] = (int) (positionBottom - (graphData.get(i).y * trend.kY));
-        }
-        g2d.setColor(trend.lineColor);
-        g2d.setStroke(new BasicStroke((float) trend.lineWidth));
-        g2d.drawPolyline(x, y, x.length);
-    }
-
 
     @Override
     public void fillRect(Color color, double x, double y, double width, double height) {
@@ -98,20 +71,20 @@ class PlotSwing extends PlotParent {
         g2d.drawRect((int) (x - lineWidth / 2), (int) (y - lineWidth / 2), (int) (width + lineWidth), (int) (height + lineWidth));
     }
     // ========================================================
-    private class TrendPaintUnit {
-        public double[] x;
-        public double[] y;
+    private static class TrendPaintUnit {
+        public int[] x;
+        public int[] y;
         Color trendColor;
         double trendWidth;
 
-        public TrendPaintUnit(double[] x, double[] y, Color trendColor, double trendWidth) {
+        public TrendPaintUnit(int[] x, int[] y, Color trendColor, double trendWidth) {
             this.x = x;
             this.y = y;
             this.trendColor = trendColor;
             this.trendWidth = trendWidth;
         }
     }
-    private class TitleText {
+    private static class TitleText {
         public double x;
         public double y;
         public Color color;
@@ -128,7 +101,7 @@ class PlotSwing extends PlotParent {
             this.textFontSize = textFontSize;
         }
     }
-    private class LinesParameters {
+    private static class LinesParameters {
         public LineParameters[] lines;
         public Color lineColor;
         public double lineWidth;
@@ -143,11 +116,11 @@ class PlotSwing extends PlotParent {
     private TrendPaintUnit __createPaintTrend(ArrayList<GraphDataUnit> graphData, Trend trend) {
         int graphData_size = graphData.size();
         //
-        double[] x = new double[graphData_size];
-        double[] y = new double[graphData_size];
+        int[] x = new int[graphData_size];
+        int[] y = new int[graphData_size];
         for (int i = 0; i < graphData_size; i++) {
-            x[i] = (graphData.get(i).x - memX_begin) * kX + positionLeft;
-            y[i] = positionBottom - (graphData.get(i).y * trend.kY);
+            x[i] = (int) ((graphData.get(i).x - memX_begin) * kX + positionLeft);
+            y[i] = (int) (positionBottom - (graphData.get(i).y * trend.kY));
         }
         return new TrendPaintUnit(x, y, trend.lineColor, trend.lineWidth);
     }
@@ -243,9 +216,9 @@ class PlotSwing extends PlotParent {
                     case TrendPosition.center:
                         x2 = x1 - textRec.width / 2;
                         break;
-                    case TrendPosition.right:
-                        x2 = x1;
-                        break;
+//                    case TrendPosition.right:
+//                        x2 = x1;
+//                        break;
                     default:
                         x2 = x1;
                 }
@@ -277,27 +250,25 @@ class PlotSwing extends PlotParent {
     // оптимизированная отрисовка трендов с очисткой экрана
     protected void __paint(GraphData[] datGraph) {
         try {
-//            TrendPaintUnit[] trendPaint = new TrendPaintUnit[datGraph.length];
-//            for (int t = 0; t < datGraph.length; t++) {
-//                trendPaint[t] = __createPaintTrend(datGraph[t].zn, trends[t]);
-//            }
+            TrendPaintUnit[] trendPaint = new TrendPaintUnit[datGraph.length];
+            for (int t = 0; t < datGraph.length; t++) {
+                trendPaint[t] = __createPaintTrend(datGraph[t].zn, trends[t]);
+            }
             ArrayList<TitleText> arrayTitleText = new ArrayList<>();
             ArrayList<LinesParameters> arrayLines = new ArrayList<>();
             __createLinesAndTitle(arrayTitleText, arrayLines);
-            //Platform.runLater(()->{
+            SwingUtilities.invokeLater(()->{
                 try {
                     // окно
                     fillRect(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
                     // сетка
                     __drawlines(arrayLines);
                     // отрисовка трендов
-//                    for (int t = 0; t < trendPaint.length; t++) {
-//                        gc.beginPath();
-//                        gc.setStroke(trendPaint[t].trendColor);
-//                        gc.setLineWidth(trendPaint[t].trendWidth);
-//                        gc.strokePolyline(trendPaint[t].x, trendPaint[t].y, trendPaint[t].x.length);
-//                        gc.closePath();
-//                    }
+                    for (int t = 0; t < datGraph.length; t++) {
+                        g2d.setColor(trendPaint[t].trendColor);
+                        g2d.setStroke(new BasicStroke((float) trendPaint[t].trendWidth));
+                        g2d.drawPolyline(trendPaint[t].x, trendPaint[t].y, trendPaint[t].x.length);
+                    }
                     // top
                     fillRect(fieldBackColor, fieldSizeLeft, 0, windowWidth, fieldSizeTop);
                     // left
@@ -313,7 +284,7 @@ class PlotSwing extends PlotParent {
                     System.out.println(flOnWork);
                     exception.printStackTrace();
                 }
-            //});
+            });
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -349,34 +320,6 @@ class PlotSwing extends PlotParent {
         });
     }
 
-
-
-    // ?
-    @Override
-    public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) {
-        g2d.setColor(lineColor);
-        g2d.setStroke(new BasicStroke((float) lineWidth));
-        for (LineParameters line : lines) {
-            g2d.drawLine((int) Math.round(line.x1), (int) Math.round(line.y1), (int) Math.round(line.x2), (int) Math.round(line.y2));
-        }
-
-    }
-
-    @Override
-    public void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> yt) {
-        int[] x = new int[ms.size()];
-        int[] y = new int[x.length];
-        int y0 = (int) (fieldSizeTop + windowHeight);
-        double kY = windowHeight / (trend.netY_max - trend.netY_min);
-        for (int i = 0; i < x.length; i++) {
-            x[i] = (int) ((ms.get(i) - memX_begin) * kX + fieldSizeLeft);
-            y[i] = y0 - (int) (yt.get(i) * kY);
-        }
-        g2d.setColor(trend.lineColor);
-        g2d.setStroke(new BasicStroke((float) trend.lineWidth));
-        g2d.drawPolyline(x, y, x.length);
-    }
-
     protected void __ReFresh() {
         panel.repaint();
     }
@@ -387,20 +330,4 @@ class PlotSwing extends PlotParent {
         return new MyRecWidthHeight(textRec.getWidth(), textRec.getHeight());
     }
 
-    @Override
-    public void drawStringAlignment(String text, Color textColor, double textFontSize, double x, double y, MyRecWidthHeight textRec, int alignment) {
-        float x2 = 0;
-        if (alignment == TrendPosition.left) {
-            x2 = (float) (x - textRec.width);
-        }
-        if (alignment == TrendPosition.center) {
-            x2 = (float) (x - textRec.width / 2);
-        }
-        if (alignment == TrendPosition.right) {
-            x2 = (float) x;
-        }
-        g2d.setFont(g2d.getFont().deriveFont((float) textFontSize));
-        g2d.setColor(textColor);
-        g2d.drawString(text, x2, (float) (y + textRec.height / 3));
-    }
 }
