@@ -214,106 +214,13 @@ public class PlotParent implements Plot, LocalInt {
         }
     }
 
-    protected void __clear() {
-        // top
-        fillRect(fieldBackColor, fieldSizeLeft, 0, windowWidth, fieldSizeTop);
-        // left
-        fillRect(fieldBackColor, 0, 0, fieldSizeLeft, height);
-        // right
-        fillRect(fieldBackColor, width - fieldSizeRight, 0, fieldSizeRight, height);
-        // bottom
-        fillRect(fieldBackColor, fieldSizeLeft, height - fieldSizeBottom, windowWidth, fieldSizeBottom);
-        // окно
-        fillRect(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
-        // рамка
-        drawRect(fieldFrameColor, fieldFrameWidth, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
-        // сетка
-        __drawNet();
-    }
+    protected void __clear() { }
     protected void __ReFresh(){ }
-    protected void __paint(GraphData[] datGraph) {
-        __clear();
-        for (int t = 0; t < datGraph.length; t++) {
-            __paint_trend(datGraph[t].zn, trends[t]);
-        }
-    }
-    protected void __paint_trend(ArrayList<GraphDataUnit> graphData, Trend trend) {
-
-    }
-
-    protected void __drawNet() {
-        if (trends == null || trends.length < 2) return;
-        __drawNetX();
-        __drawNetY();
-    }
-    protected void __drawNetY() {
-        __drawNetYlines();
-        __drawNetYtitle();
-    }
-    protected void __drawNetX() {
-        String text;
-        MyRecWidthHeight textRec;
-        double polNetLineWidth = netLineWidth / 2;
-        double x, y1 = polNetLineWidth, y2 = windowHeight - polNetLineWidth;
-        LineParameters[] lines = new LineParameters[xN];
-        double offsetS2 = (xStep - (memX_begin % xStep)) % xStep;
-        int offsetCel = ((int) Math.ceil(memX_begin / xStep))* xStep;
-        for (int i = 0; i < xN; i++) {
-            x = (i * xStep + offsetS2) * kX + fieldSizeLeft;
-            text = String.valueOf((double) ((i * xStep) + offsetCel) / 1_000);
-            textRec = getRecWidthHeight(text, netTextSize);
-            drawStringAlignment(text, netTextColor, netTextSize, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center);
-            lines[i] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
-        }
-        drawLines(netLineColor, netLineWidth, lines );
-    }
-    protected void __drawNetYlines() {
-        if (trends[0] == null) return;
-        if ((trends[0].netY_min % trends[0].netY_step) == 0) y_FistN = 1;
-        else y_FistN = 0;
-        //
-        int step = trends[0].netY_step;
-        double offset = trends[0].kY * (trends[0].netY_min % step);
-        LineParameters[] lines = new LineParameters[y_netN - y_FistN];
-        double x1 = fieldSizeLeft + netLineWidth / 2;
-        double x2 = fieldSizeLeft + windowWidth - netLineWidth / 2;
-        double y, yInv;
-        for (int i = y_FistN, indx = 0; i < (y_netN); i++, indx++) {
-            y = (i * step * trends[0].kY) - offset;
-            yInv = (windowHeight + fieldSizeTop) - y;
-            lines[indx] = new LineParameters(x1, yInv, x2, yInv);
-        }
-        drawLines(netLineColor, netLineWidth, lines);
-    }
-    protected void __drawNetYtitle() {
-        double y, yZ;
-        double x1;
-        MyRecWidthHeight textRec;
-        for (int i = 0; i < 2; i++) {
-            Trend trend = trends[i];
-            if (trend == null) break;
-            int baseN = y_netN;
-            int step = trend.netY_step;
-            double offset = trend.kY * (trend.netY_min % step);
-            int offsetC = trend.netY_min / step;
-            //
-            if (trend.positionFromWindow == TrendPosition.left) {
-                x1 = positionLeft - 5;
-            } else {
-                x1 = positionRight + 5;
-            }
-            String text;
-            double textFontSize = trend.textFontSize;
-            for (int j = 0; j < (baseN); j++) {
-                yZ = (j + offsetC) * trend.netY_step;
-                if (yZ > trend.netY_max) break;
-                y = (j * step * trend.kY) - offset;
-                text = (int) yZ + "" + trend.text;
-                textRec = getRecWidthHeight(text, textFontSize);
-                drawStringAlignment(text, trend.textFontColor, textFontSize, x1, positionBottom - y, textRec, trend.positionFromWindow);
-            }
-        }
-    }
+    protected void __paint(GraphData[] datGraph) { }
+    @Override
+    public void fillRect(Color color, double x, double y, double width, double height) { }
+    @Override
+    public void drawRect(Color color, double lineWidth, double x, double y, double width, double height) { }
 
     @Override
     public void clear() {
@@ -325,10 +232,6 @@ public class PlotParent implements Plot, LocalInt {
     }
 
     // ====================
-    @Override
-    public void fillRect(Color color, double x, double y, double width, double height) { }
-    @Override
-    public void drawRect(Color color, double lineWidth, double x, double y, double width, double height) { }
 
     boolean flData  = false;
     @Override
@@ -363,9 +266,9 @@ public class PlotParent implements Plot, LocalInt {
         }
     }
 
+    // предварительный рачет и передача в очередь для отрисовки
     @Override
     public void paint() {
-        //clear();
         if (timeUnits.isEmpty()) return;
         if (trends == null) return;
         // текущее крайнее положение memX_end
@@ -541,12 +444,6 @@ public class PlotParent implements Plot, LocalInt {
     }
     // ===========================================================================
     @Override
-    public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) { }
-    @Override
-    public void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> y) { }
-    @Override
     public MyRecWidthHeight getRecWidthHeight(String text, double textFontSize) { return null; }
 
-    @Override
-    public void drawStringAlignment(String text, Color textColor, double textFontSize, double x, double y, MyRecWidthHeight recWidthHeight, int alignment) { }
 }
