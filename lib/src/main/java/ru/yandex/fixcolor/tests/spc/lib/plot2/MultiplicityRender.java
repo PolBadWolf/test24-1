@@ -33,10 +33,10 @@ public class MultiplicityRender {
         public int step;
         public int n;
 
-        public Section(int fist, int end, int multiplicity, int n) {
+        public Section(int fist, int end, int step, int n) {
             this.min = fist;
             this.max = end;
-            this.step = multiplicity;
+            this.step = step;
             this.n = n;
         }
     }
@@ -77,63 +77,42 @@ public class MultiplicityRender {
     public Section multiplicity(double fist, double end) throws IllegalArgumentException {
         double lenght = end - fist;
         int step = multiplicity(lenght);
-        int nDn = (int) (fist / step);
+        int nDn = (int) Math.floor(fist / step);
         int nUp = (int) Math.ceil(end / step);
         return new Section(
-                (int) Math.floor(fist),
-                (int) Math.ceil(end),
+                nDn * step,
+                nUp * step,
                 step,
-                Math.abs(nDn) + Math.abs(nUp)
+                nUp - nDn
         );
     }
     public Section multiplicityT2(final Section sectionTrend1, double fistTrend2, double endTrend2) {
-        int baseN = sectionTrend1.n;
-        double baseLenght = endTrend2 - fistTrend2;
-        double baseStep = baseLenght / baseN;
-        Steps steps = new Steps();
+        double baseLenght2 = endTrend2 - fistTrend2;
+        double baseStep2 = baseLenght2 / sectionTrend1.n;
+        Steps steps2 = new Steps();
+        int tr2_nDn, tr2_nUp, tr1_nUp;
         int step;
-        ceilStep(baseStep, steps);
-        double smOst = ((baseStep - steps.small) % steps.small) / steps.small;
-        double bgOst = ((steps.big - baseStep) % steps.big) / steps.big;
-        if (smOst < bgOst) {
-            step = steps.small;
-            baseN = (int) Math.ceil(baseLenght / step);
-            baseLenght = step * baseN;
-            endTrend2 = baseLenght + fistTrend2;
-            int tmpLen = (int) (baseN * sectionTrend1.step);
-            sectionTrend1.max = tmpLen + sectionTrend1.min;
-        } else {
-            step = steps.big;
-            endTrend2 = step * baseN;
-            int tmpLen = (int) (baseN * sectionTrend1.step);
-            sectionTrend1.max = tmpLen + sectionTrend1.min;
-        }
-        //
-        int celDnTr1 = (int) (sectionTrend1.min / sectionTrend1.step);
-        int celDnTr2 = (int) (fistTrend2 / step);
-        double otnDnTr1 = (double) (sectionTrend1.min % sectionTrend1.step) / sectionTrend1.step;
-        double otnDnTr2 = (double) (fistTrend2 % step) / step;
-        double otnDn = Math.min(otnDnTr1, otnDnTr2);
-        int corDnTr1 = (int) Math.floor(sectionTrend1.step * (celDnTr1 + otnDn));
-        int corDnTr2 = (int) Math.floor(step * (celDnTr2 + otnDn));
-        //
-        int celUpTr1 = (int) (sectionTrend1.max / sectionTrend1.step);
-        int celUpTr2 = (int) (endTrend2 / step);
-        double otnUpTr1 = (double) (sectionTrend1.max % sectionTrend1.step) / sectionTrend1.step;
-        double otnUpTr2 = (double) (endTrend2 % step) / step;
-        double otnUp = Math.max(otnUpTr1, otnUpTr2);
-        int corUpTr1 = (int) Math.ceil(sectionTrend1.step * (celUpTr1 + otnUp));
-        int corUpTr2 = (int) Math.ceil(step * (celUpTr2 + otnUp));
-        //
-        sectionTrend1.min = corDnTr1;
-        sectionTrend1.max = corUpTr1;
-        sectionTrend1.n = baseN;
-        //
+        ceilStep(baseStep2, steps2);
+        double smOst = ((baseStep2 - steps2.small) % steps2.small) / steps2.small;
+        double bgOst = ((steps2.big - baseStep2) % steps2.big) / steps2.big;
+        int n_tmp, n_max;
+        // ---
+        if (smOst < bgOst) step = steps2.small;
+        else step = steps2.big;
+        tr2_nDn = (int) Math.floor(fistTrend2 / step);
+        tr2_nUp = (int) Math.ceil(endTrend2 / step);
+        n_tmp = tr2_nUp - tr2_nDn;
+        n_max = Math.max(n_tmp, sectionTrend1.n);
+        tr2_nUp = n_max + tr2_nDn;
+        tr1_nUp = n_max + (sectionTrend1.min / sectionTrend1.step);
+        // cor tr1
+        sectionTrend1.max = sectionTrend1.step * tr1_nUp;
+        sectionTrend1.n = n_max;
         return new Section(
-                corDnTr2,
-                corUpTr2,
+                step * tr2_nDn,
+                step * tr2_nUp,
                 step,
-                baseN
+                n_max
         );
     }
 }
