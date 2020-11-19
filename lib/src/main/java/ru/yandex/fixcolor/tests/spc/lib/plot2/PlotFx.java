@@ -90,7 +90,7 @@ class PlotFx extends PlotParent {
         try {
             TrendPaintUnit[] trendPaint = new TrendPaintUnit[datGraph.length];
             for (int t = 0; t < datGraph.length; t++) {
-                trendPaint[t] = __createPaintTrend(datGraph[t].zn, trends[t]);
+                trendPaint[t] = __createPaintTrend(datGraph[t].zn, trends[t], datGraph[t].kY);
             }
             ArrayList<TitleText> arrayTitleText = new ArrayList<>();
             ArrayList<LinesParameters> arrayLines = new ArrayList<>();
@@ -266,14 +266,15 @@ class PlotFx extends PlotParent {
             gc.closePath();
         }
     }
-    private TrendPaintUnit __createPaintTrend(ArrayList<GraphDataUnit> graphData, Trend trend) {
+    private TrendPaintUnit __createPaintTrend(ArrayList<GraphDataUnit> graphData, Trend trend, double kY) {
         int graphData_size = graphData.size();
         //
         double[] x = new double[graphData_size];
         double[] y = new double[graphData_size];
         for (int i = 0; i < graphData_size; i++) {
             x[i] = (graphData.get(i).x - memX_begin) * kX + positionLeft;
-            y[i] = positionBottom - (graphData.get(i).y * trend.kY);
+//            y[i] = positionBottom - (graphData.get(i).y * trend.kY);
+            y[i] = positionBottom - renderY_zoom(kY, trend.netY_min, trend.netY_max, graphData.get(i).y);
         }
         return new TrendPaintUnit(x, y, colorAwtToFx(trend.lineColor), trend.lineWidth);
     }

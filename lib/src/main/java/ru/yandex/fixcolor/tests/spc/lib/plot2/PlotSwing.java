@@ -113,14 +113,14 @@ class PlotSwing extends PlotParent {
         }
     }
     // ========================================================
-    private TrendPaintUnit __createPaintTrend(ArrayList<GraphDataUnit> graphData, Trend trend) {
+    private TrendPaintUnit __createPaintTrend(ArrayList<GraphDataUnit> graphData, Trend trend, double kY) {
         int graphData_size = graphData.size();
         //
         int[] x = new int[graphData_size];
         int[] y = new int[graphData_size];
         for (int i = 0; i < graphData_size; i++) {
             x[i] = (int) ((graphData.get(i).x - memX_begin) * kX + positionLeft);
-            y[i] = (int) (positionBottom - (graphData.get(i).y * trend.kY));
+            y[i] = (int) (positionBottom - renderY_zoom(kY, trend.netY_min, trend.netY_max, graphData.get(i).y));
         }
         return new TrendPaintUnit(x, y, trend.lineColor, trend.lineWidth);
     }
@@ -252,7 +252,7 @@ class PlotSwing extends PlotParent {
         try {
             TrendPaintUnit[] trendPaint = new TrendPaintUnit[datGraph.length];
             for (int t = 0; t < datGraph.length; t++) {
-                trendPaint[t] = __createPaintTrend(datGraph[t].zn, trends[t]);
+                trendPaint[t] = __createPaintTrend(datGraph[t].zn, trends[t], datGraph[t].kY);
             }
             ArrayList<TitleText> arrayTitleText = new ArrayList<>();
             ArrayList<LinesParameters> arrayLines = new ArrayList<>();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 class GraphData {
     public ArrayList<GraphDataUnit> zn;
+    public double kY;
 
     public GraphData() {
         zn = new ArrayList<>();

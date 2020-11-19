@@ -357,6 +357,7 @@ public class PlotParent implements Plot, LocalInt {
         //
         int mX_size = mX.size();
         for (int t = 0; t < trends.length; t++) {
+            dataQueue.datGraph[t].kY = trends[t].kY;
             for (int i = 0; i < mX_size; i++) {
                 dataQueue.datGraph[t].zn.add(new GraphDataUnit(mX.get(i), mY[t].get(i)));
             }
@@ -445,5 +446,14 @@ public class PlotParent implements Plot, LocalInt {
     // ===========================================================================
     @Override
     public MyRecWidthHeight getRecWidthHeight(String text, double textFontSize) { return null; }
-
+    //  расчет Y
+    public double renderY_zoom(double kY, int sh_min, int sh_max, double sourceY) {
+        // ограничение
+        if (sourceY < sh_min) sourceY = sh_min;
+        if (sourceY > sh_max) sourceY = sh_max;
+        // привязка к нулю
+        double sub = sourceY - sh_min;
+        // *
+        return sub * kY;
+    }
 }
