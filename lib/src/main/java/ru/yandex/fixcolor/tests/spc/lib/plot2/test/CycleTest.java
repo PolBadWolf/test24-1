@@ -10,7 +10,7 @@ public class CycleTest implements Runnable {
     Plot plot;
     int curX = 0;
     int tr1 = 0;
-    int tr1_f = 95;
+    int tr1_f = 99;
     boolean pl_tr1 = true;
     int tr2 = 0;
     int tr2_f = 6500;
@@ -23,7 +23,7 @@ public class CycleTest implements Runnable {
         Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
         do {
             try {
-                Thread.sleep(1);
+                Thread.sleep(0, 200);
                 plot.newData(curX);
                 plot.addTrend(tr1);
                 plot.addTrend(tr2);
@@ -47,6 +47,7 @@ public class CycleTest implements Runnable {
                     //plot.clear();
                     plot.paint();
                 }
+//                    System.out.println(tr1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;
