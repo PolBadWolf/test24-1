@@ -320,7 +320,7 @@ public class PlotParent implements Plot, LocalInt {
         try {
             paintQueue.add(queueClear);
         } catch (IllegalStateException i) {
-            System.out.println("переполнение буфера команд: " + i.getMessage());
+            //System.out.println("переполнение буфера команд: " + i.getMessage());
         }
     }
 
@@ -462,7 +462,7 @@ public class PlotParent implements Plot, LocalInt {
             paintQueue.add(dataQueue);
             paintQueue.add(queueReFresh);
         } catch (IllegalStateException i) {
-            System.out.println("переполнение буфера команд: " + i.getMessage());
+            //System.out.println("переполнение буфера команд: " + i.getMessage());
         }
     }
 
@@ -536,7 +536,7 @@ public class PlotParent implements Plot, LocalInt {
         try {
             paintQueue.add(queueReFresh);
         } catch (IllegalStateException i) {
-            System.out.println("переполнение буфера команд: " + i.getMessage());
+            //System.out.println("переполнение буфера команд: " + i.getMessage());
         }
     }
     // ===========================================================================

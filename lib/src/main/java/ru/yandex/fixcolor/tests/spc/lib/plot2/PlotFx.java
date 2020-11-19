@@ -41,10 +41,10 @@ class PlotFx extends PlotParent {
             flOnWork = true;
             try {
                 while (flOnWork) {
-                    if ((dataQueue = paintQueue.poll(10, TimeUnit.MILLISECONDS)) != null) {
+                    if ((dataQueue = paintQueue.poll(5, TimeUnit.MILLISECONDS)) != null) {
                         doCicle(dataQueue);
                         if (dataQueue.command == command_Paint) {
-                            Thread.sleep(5);
+                            Thread.sleep(1);
                         }
                     }
                 }
@@ -89,43 +89,47 @@ class PlotFx extends PlotParent {
 
     // оптимизированная отрисовка трендов с очисткой экрана
     protected void __paint(GraphData[] datGraph) {
-        TrendPaintUnit[] trendPaint = new TrendPaintUnit[datGraph.length];
-        for (int t = 0; t < datGraph.length; t++) {
-            trendPaint[t] = __createPaintTrend(datGraph[t].zn, trends[t]);
-        }
-        ArrayList<TitleText> arrayTitleText = new ArrayList<>();
-        ArrayList<LinesParameters> arrayLines = new ArrayList<>();
-        __createLinesAndTitle(arrayTitleText, arrayLines);
-        Platform.runLater(()->{
-            try {
-                // окно
-                fillRect2(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
-                // сетка
-                __drawlines(arrayLines);
-                // отрисовка трендов
-                for (int t = 0; t < trendPaint.length; t++) {
-                    gc.beginPath();
-                    gc.setStroke(trendPaint[t].trendColor);
-                    gc.setLineWidth(trendPaint[t].trendWidth);
-                    gc.strokePolyline(trendPaint[t].x, trendPaint[t].y, trendPaint[t].x.length);
-                    gc.closePath();
-                }
-                // top
-                fillRect2(fieldBackColor, fieldSizeLeft, 0, windowWidth, fieldSizeTop);
-                // left
-                fillRect2(fieldBackColor, 0, 0, fieldSizeLeft, height);
-                // right
-                fillRect2(fieldBackColor, width - fieldSizeRight, 0, fieldSizeRight, height);
-                // bottom
-                fillRect2(fieldBackColor, fieldSizeLeft, height - fieldSizeBottom, windowWidth, fieldSizeBottom);
-                // рамка
-                drawRect2(fieldFrameColor, fieldFrameWidth, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
-                __drawTitles(arrayTitleText);
-            } catch (Exception exception) {
-                System.out.println(flOnWork);
-                exception.printStackTrace();
+        try {
+            TrendPaintUnit[] trendPaint = new TrendPaintUnit[datGraph.length];
+            for (int t = 0; t < datGraph.length; t++) {
+                trendPaint[t] = __createPaintTrend(datGraph[t].zn, trends[t]);
             }
-        });
+            ArrayList<TitleText> arrayTitleText = new ArrayList<>();
+            ArrayList<LinesParameters> arrayLines = new ArrayList<>();
+            __createLinesAndTitle(arrayTitleText, arrayLines);
+            Platform.runLater(()->{
+                try {
+                    // окно
+                    fillRect2(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
+                    // сетка
+                    __drawlines(arrayLines);
+                    // отрисовка трендов
+                    for (int t = 0; t < trendPaint.length; t++) {
+                        gc.beginPath();
+                        gc.setStroke(trendPaint[t].trendColor);
+                        gc.setLineWidth(trendPaint[t].trendWidth);
+                        gc.strokePolyline(trendPaint[t].x, trendPaint[t].y, trendPaint[t].x.length);
+                        gc.closePath();
+                    }
+                    // top
+                    fillRect2(fieldBackColor, fieldSizeLeft, 0, windowWidth, fieldSizeTop);
+                    // left
+                    fillRect2(fieldBackColor, 0, 0, fieldSizeLeft, height);
+                    // right
+                    fillRect2(fieldBackColor, width - fieldSizeRight, 0, fieldSizeRight, height);
+                    // bottom
+                    fillRect2(fieldBackColor, fieldSizeLeft, height - fieldSizeBottom, windowWidth, fieldSizeBottom);
+                    // рамка
+                    drawRect2(fieldFrameColor, fieldFrameWidth, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
+                    __drawTitles(arrayTitleText);
+                } catch (Exception exception) {
+                    System.out.println(flOnWork);
+                    exception.printStackTrace();
+                }
+            });
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
     //
     private class TrendPaintUnit {

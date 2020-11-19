@@ -51,7 +51,7 @@ public class CycleTest implements Runnable {
                 e.printStackTrace();
                 break;
             }
-        } while (++curX < 180_000 && flOnWork);
+        } while (++curX < 1_000_000 && flOnWork);
     }
     Plot.CallBack plotCallBack = new Plot.CallBack() {
     };
