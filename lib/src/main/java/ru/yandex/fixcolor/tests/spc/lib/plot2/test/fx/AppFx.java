@@ -31,17 +31,17 @@ public class AppFx extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         Plot.Parameters plotParameters = new Plot.Parameters();
-        plotParameters.trend1_zeroY_min = 0;
-        plotParameters.trend1_zeroY_max = 97;
-        plotParameters.trend2_zeroY_min = 20;
-        plotParameters.trend2_zeroY_max = 150;
+        plotParameters.trend1_zeroY_min = 20;
+        plotParameters.trend1_zeroY_max = 100;
+        plotParameters.trend2_zeroY_min = -5;
+        plotParameters.trend2_zeroY_max = 95;
         plotParameters.trend2_AutoZoomY = true;
         plotParameters.zeroX_zoom = 2;
         Plot plot = Plot.createFx(plotParameters, canvas);
         plot.clear();
         cycleTest = new CycleTest(plot);
         threadCycle = new Thread(cycleTest);
-        threadCycle.start();
+        //threadCycle.start();
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {

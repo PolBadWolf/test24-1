@@ -97,4 +97,5 @@ public class TestSerialKofficent {
             sectionTrend2[i] = MultiplicityRender.render.multiplicityT2(sectionTrend1[i], units[i].fistTrend2, units[i].endTrend2);
         }
     }
+
 }
