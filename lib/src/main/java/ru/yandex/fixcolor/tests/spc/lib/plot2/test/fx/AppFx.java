@@ -1,11 +1,13 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2.test.fx;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.test.CycleTest;
 
@@ -14,6 +16,9 @@ public class AppFx extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+    CycleTest cycleTest = null;
+    Thread threadCycle;
 
     @Override
     public void start(Stage primaryStage) {
@@ -31,6 +36,30 @@ public class AppFx extends Application {
         plotParameters.zeroX_zoom = 2;
         Plot plot = Plot.createFx(plotParameters, canvas);
         plot.clear();
-        new Thread(new CycleTest(plot)).start();
+        cycleTest = new CycleTest(plot);
+        threadCycle = new Thread(cycleTest);
+        threadCycle.start();
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                cycleTest.flOnWork = false;
+                try {
+                    while (threadCycle.isAlive()) {
+                        Thread.yield();
+                        Thread.sleep(1);
+                    }
+                } catch (InterruptedException interruptedException) {
+                }
+                new Thread(() -> {
+                    try {
+                        plot.closeApp();
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }).start();
+                //event.consume();
+//            primaryStage.show();
+            }
+        });
     }
 }

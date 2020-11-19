@@ -10,17 +10,17 @@ public class CycleTest implements Runnable {
     Plot plot;
     int curX = 0;
     int tr1 = 0;
-    int tr1_f = 150;
+    int tr1_f = 3030;
     boolean pl_tr1 = true;
     int tr2 = 0;
-    int tr2_f = 777;
+    int tr2_f = 3000;
     boolean pl_tr2 = true;
     int dynDiv = 8;
     int dynCount = dynDiv;
     public boolean flOnWork = true;
     @Override
     public void run() {
-        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+        Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
         do {
             try {
                 Thread.sleep(1);
@@ -38,12 +38,13 @@ public class CycleTest implements Runnable {
                 } else {
                     if (tr2 <= 0) pl_tr2 = true;
                 }
-                if (pl_tr1) tr1++;
-                else tr1--;
+                if (pl_tr1) tr1+=1;
+                else tr1-=1;
                 if (pl_tr2) tr2++;
                 else tr2--;
                 if (--dynCount == 0) {
                     dynCount = dynDiv;
+                    plot.clear();
                     plot.paint();
                 }
             } catch (InterruptedException e) {

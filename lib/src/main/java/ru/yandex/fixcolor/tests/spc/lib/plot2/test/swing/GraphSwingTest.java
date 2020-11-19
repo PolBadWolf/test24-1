@@ -20,7 +20,8 @@ public class GraphSwingTest {
     Thread threadCycle;
     CycleTest cycleTest = null;
     private void start() {
-        frame = new JFrame("test plot2");
+        frame = new JFrame("test plot2 swing");
+        frame.setResizable(false);
         //frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(null);
         frame.setPreferredSize(new Dimension(1200, 700));

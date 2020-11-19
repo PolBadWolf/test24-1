@@ -136,7 +136,7 @@ public interface Plot {
             // цвет фона
             windowBackColor = new Color(220, 220, 220);
             // цвет линий сетки
-            netLineColor = ColorName.DARKGREEN;
+            netLineColor = new Color(50, 50, 50);
             netTextColor = ColorName.RED;
             netTextSize = 16;
             // ширина линий сетки
@@ -171,11 +171,11 @@ public interface Plot {
             // толщина линии
             trend2_lineWidth = 2.0;
             // цвет линии
-            trend2_lineColor = ColorName.GREEN;
+            trend2_lineColor = ColorName.DARKGREEN;
             // размер шрифта надписи
             trend2_textFontSize = 16.0;
             // цвет шрифта надписи
-            trend2_textFontColor = ColorName.GREEN;
+            trend2_textFontColor = ColorName.DARKGREEN;
             // текст надписи
             trend2_text = "кг";
             // позитция тренда относительно окна

@@ -7,7 +7,6 @@ interface LocalInt {
     void fillRect(Color color, double x, double y, double width, double height);
     void drawRect(Color color, double lineWidth, double x, double y, double width, double height);
     //
-    void drawNetY();
     class LineParameters {
         public double x1;
         public double y1;
@@ -22,8 +21,6 @@ interface LocalInt {
         }
     }
     void drawLines(Color lineColor, double lineWidth, LineParameters[] lines);
-    void drawTitleY(int nTrend);
-    void drawTitleX();
     void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> y);
     MyRecWidthHeight getRecWidthHeight(String text, double textFontSize);
     void drawStringAlignment(String text, Color textColor, double textFontSize, double x, double y, MyRecWidthHeight textRec, int alignment);

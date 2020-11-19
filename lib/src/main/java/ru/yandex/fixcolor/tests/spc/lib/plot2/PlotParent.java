@@ -312,37 +312,11 @@ public class PlotParent implements Plot, LocalInt {
 
     @Override
     public void clear() {
-        // top
-        fillRect(fieldBackColor, fieldSizeLeft, 0, windowWidth, fieldSizeTop);
-        // left
-        fillRect(fieldBackColor, 0, 0, fieldSizeLeft, height);
-        // right
-        fillRect(fieldBackColor, width - fieldSizeRight, 0, fieldSizeRight, height);
-        // bottom
-        fillRect(fieldBackColor, fieldSizeLeft, height - fieldSizeBottom, windowWidth, fieldSizeBottom);
-        // окно
-        fillRect(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
-        // рамка
-        drawRect(fieldFrameColor, fieldFrameWidth, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
-        // расчет минимум и максимум
-        MultiplicityRender.Section sectionTr1 = MultiplicityRender.render.multiplicity(
-                Math.min(trends[0].curnY_min, trends[0].zeroY_min),
-                Math.max(trends[0].curnY_max, trends[0].zeroY_max)
-        );
-        MultiplicityRender.Section sectionTr2 = MultiplicityRender.render.multiplicityT2(
-                sectionTr1,
-                Math.min(trends[1].curnY_min, trends[1].zeroY_min),
-                Math.max(trends[1].curnY_max, trends[1].zeroY_max)
-        );
-        trends[0].netY_min = sectionTr1.min;
-        trends[0].netY_max = sectionTr1.max;
-        trends[0].netY_step = sectionTr1.step;
-        trends[1].netY_min = sectionTr2.min;
-        trends[1].netY_max = sectionTr2.max;
-        trends[1].netY_step = sectionTr2.step;
-        y_netN = sectionTr1.n;
-        drawNetY();
-        // ===========
+        try {
+            paintQueue.add(queueClear);
+        } catch (IllegalStateException i) {
+            System.out.println("переполнение буфера команд: " + i.getMessage());
+        }
     }
 
     // ====================
@@ -351,29 +325,7 @@ public class PlotParent implements Plot, LocalInt {
     @Override
     public void drawRect(Color color, double lineWidth, double x, double y, double width, double height) { }
 
-    @Override
-    public void drawNetY() {
-        double k = windowHeight / (trends[0].netY_max - trends[0].netY_min);
-        int fistN = 0;
-        if ((trends[0].netY_min % trends[0].netY_step) == 0) fistN = 1;
-        int baseN = y_netN;
-        int step = trends[0].netY_step;
-        double offset = k * (trends[0].netY_min % step);
-        LineParameters[] lines = new LineParameters[baseN - fistN];
-        double x1 = fieldSizeLeft + netLineWidth / 2;
-        double x2 = fieldSizeLeft + windowWidth - netLineWidth / 2;
-        double y, yInv;
-        for (int i = fistN, indx = 0; i < (baseN); i++, indx++) {
-            y = (i * step * k) - offset;
-            yInv = (windowHeight + fieldSizeTop) - y;
-            lines[indx] = new LineParameters(x1, yInv, x2, yInv);
-        }
-        drawLines(netLineColor, netLineWidth, lines);
-        drawTitleY(0);
-        drawTitleY(1);
-        drawTitleX();
-    }
-boolean flData  = false;
+    boolean flData  = false;
     @Override
     public void newData(double ms) {
         newDataIndx = 0;
@@ -408,7 +360,7 @@ boolean flData  = false;
 
     @Override
     public void paint() {
-        clear();
+        //clear();
         if (timeUnits.isEmpty()) return;
         if (trends == null) return;
         // текущее крайнее положение memX_end
@@ -480,21 +432,8 @@ boolean flData  = false;
             paintQueue.add(dataQueue);
             paintQueue.add(queueReFresh);
         } catch (IllegalStateException i) {
-
+            System.out.println("переполнение буфера команд: " + i.getMessage());
         }
-        //
-//        for (int i = 0; i < trends.length; i++) {
-//            drawTrend(
-//                    trends[i],
-//                    mX,
-//                    mY[i]
-//            );
-//        }
-//        mX.clear();
-//        for (int i = 0; i < mY.length; i++) {
-//            mY[i].clear();
-//            mY[i] = null;
-//        }
     }
 
     protected void __zoomRender() {
@@ -554,17 +493,13 @@ boolean flData  = false;
     public void reFresh() {
         try {
             paintQueue.add(queueReFresh);
-        }catch (IllegalStateException i) {
-
+        } catch (IllegalStateException i) {
+            System.out.println("переполнение буфера команд: " + i.getMessage());
         }
     }
     // ===========================================================================
     @Override
     public void drawLines(Color lineColor, double lineWidth, LineParameters[] lines) { }
-    @Override
-    public void drawTitleY(int nTrend) { }
-    @Override
-    public void drawTitleX() { }
     @Override
     public void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> y) { }
     @Override

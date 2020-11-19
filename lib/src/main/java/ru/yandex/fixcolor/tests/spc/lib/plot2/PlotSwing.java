@@ -9,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 class PlotSwing extends PlotParent {
@@ -37,30 +38,31 @@ class PlotSwing extends PlotParent {
     private class Cycle implements Runnable {
         @Override
         public void run() {
-            Thread.currentThread().setPriority(Thread.MAX_PRIORITY - 2);
+            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
             flOnWork = true;
             while (flOnWork) {
                 try {
                     if (paintQueue.isEmpty()) {
                         Thread.yield();
-//                        Thread.sleep(1);
-                        continue;
+                        Thread.sleep(1);
+                    } else {
+                        SwingUtilities.invokeAndWait(this::runQueueDoCycle);
                     }
-                    SwingUtilities.invokeAndWait(() -> {
-                        DataQueue dataQueue;
-                        try {
-                            while((dataQueue = paintQueue.poll(1, java.util.concurrent.TimeUnit.MILLISECONDS)) != null) {
-                                doCicle(dataQueue);
-                            }
-                        } catch (Exception exception) {
-                            MyLogger.myLog.log(Level.SEVERE, "ошибка выполнения очереди", exception);
-                        }
-                    });
                 } catch (InterruptedException | InvocationTargetException e) {
                     e.printStackTrace();
                     flOnWork = false;
-                    break;
                 }
+            }
+        }
+
+        private void runQueueDoCycle() {
+            DataQueue dataQueue;
+            try {
+                while ((dataQueue = paintQueue.poll(1, TimeUnit.MILLISECONDS)) != null) {
+                    doCicle(dataQueue);
+                }
+            } catch (Exception exception) {
+                MyLogger.myLog.log(Level.SEVERE, "ошибка выполнения очереди", exception);
             }
         }
     }
@@ -70,7 +72,6 @@ class PlotSwing extends PlotParent {
         //
         int[] x = new int[graphData_size];
         int[] y = new int[graphData_size];
-        //double kY = windowHeight / (trend.netY_max - trend.netY_min);
         for (int i = 0; i < graphData_size; i++) {
             x[i] = (int) ((graphData.get(i).x - memX_begin) * kX + positionLeft);
             y[i] = (int) (positionBottom - (graphData.get(i).y * trend.kY));
@@ -105,77 +106,6 @@ class PlotSwing extends PlotParent {
     }
 
     @Override
-    public void drawTitleY(int nTrend) {
-        Trend trend = trends[nTrend];
-        g2d.setColor(trend.textFontColor);
-        Font fnt = g2d.getFont();
-        g2d.setFont(new Font(
-                fnt.getName(),
-                fnt.getStyle(),
-                (int) trend.textFontSize
-        ));
-        //
-        double k = windowHeight / (trend.netY_max - trend.netY_min);
-        int baseN = y_netN;
-        int step = trend.netY_step;
-        double offset = k * (trend.netY_min % step);
-        int offsetC = trend.netY_min / step;
-        double y, yZ, yInv;
-        int x1, x2;
-        if (trend.positionFromWindow == TrendPosition.left) {
-            x1 = (int) (fieldSizeLeft - 5);
-        } else {
-            x1 = (int) (fieldSizeLeft + windowWidth + 5);
-        }
-        Rectangle2D textRec;
-        String text;
-        for (int i = 0; i < (baseN); i++) {
-            yZ = (i + offsetC) * trend.netY_step;
-            if (yZ > trend.netY_max) break;
-            y = (i * step * k) - offset;
-            yInv = (windowHeight + fieldSizeTop) - y;
-            text = (int) yZ + "" + trend.text;
-            textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
-            if (trend.positionFromWindow == TrendPosition.right) {
-                x2 = x1;
-            } else {
-                x2 = (int) (x1 - textRec.getWidth());
-            }
-            g2d.drawString(text, x2, (int) (yInv + textRec.getHeight() / 3));
-        }
-    }
-
-    @Override
-    public void drawTitleX() {
-        double xLenght = memX_end - memX_begin;
-        xStep = (MultiplicityRender.render.multiplicity(xLenght));
-        xN = ((int) Math.ceil(xLenght / xStep));
-        xCena = (double) xStep / 1_000;
-        kX = windowWidth / (xN * xStep);
-        double x, y1, y2, y0 = fieldSizeTop + windowHeight;
-        String text;
-        //
-        double offsetOst = memX_begin % xStep;
-        int offsetCel = ((int) Math.ceil(memX_begin / xStep))* xStep;
-        double offsetS2 = (xStep - (memX_begin % xStep)) % xStep;
-        if (offsetOst == 0) xN++;
-        LineParameters[] lines = new LineParameters[xN];
-        g2d.setColor(netTextColor);
-        g2d.setFont(g2d.getFont().deriveFont((float) netTextSize));
-        y1 = netLineWidth / 2;
-        y2 = windowHeight - netLineWidth /  2;
-        for (int i = 0; i < xN; i++) {
-            x = (i * xStep + offsetS2) * kX + fieldSizeLeft;
-            text = String.valueOf((double) ((i * xStep) + offsetCel) / 1_000);
-            Rectangle2D textRec = g2d.getFontMetrics(g2d.getFont()).getStringBounds(text, g2d);
-            double polWstr = textRec.getWidth() / 2;
-            g2d.drawString(text, (int) (x - polWstr), (int) (fieldSizeTop + windowHeight + textRec.getHeight() * 1.2));
-            lines[i] = new LineParameters(x, y0 - y1, x, y0 - y2);
-        }
-        drawLines(netLineColor, netLineWidth, lines );
-    }
-
-    @Override
     public void drawTrend(Trend trend, ArrayList<Double> ms, ArrayList<Double> yt) {
         int[] x = new int[ms.size()];
         int[] y = new int[x.length];
@@ -188,15 +118,6 @@ class PlotSwing extends PlotParent {
         g2d.setColor(trend.lineColor);
         g2d.setStroke(new BasicStroke((float) trend.lineWidth));
         g2d.drawPolyline(x, y, x.length);
-    }
-
-    @Override
-    public void clear() {
-        try {
-            paintQueue.add(queueClear);
-        } catch (IllegalStateException i) {
-
-        }
     }
 
     protected void __ReFresh() {
