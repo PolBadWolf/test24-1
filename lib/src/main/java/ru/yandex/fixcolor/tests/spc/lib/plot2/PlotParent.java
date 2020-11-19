@@ -150,6 +150,7 @@ public class PlotParent implements Plot, LocalInt {
         // начальные значения миниму и максимума
         trends[0].curnY_min = trends[0].zeroY_min = parameters.trend1_zeroY_min;
         trends[0].curnY_max = trends[0].zeroY_max = parameters.trend1_zeroY_max;
+        trends[0].autoZoomY = parameters.trend1_AutoZoomY;
         // толщина линии
         trends[0].lineWidth = parameters.trend1_lineWidth;
         // цвет линии
@@ -167,6 +168,7 @@ public class PlotParent implements Plot, LocalInt {
         // начальные значения миниму и максимума
         trends[1].zeroY_min = parameters.trend2_zeroY_min;
         trends[1].zeroY_max = parameters.trend2_zeroY_max;
+        trends[1].autoZoomY = parameters.trend2_AutoZoomY;
         // толщина линии
         trends[1].lineWidth = parameters.trend2_lineWidth;
         // цвет линии
@@ -230,6 +232,7 @@ public class PlotParent implements Plot, LocalInt {
     }
     protected void __ReFresh(){ }
     protected void __paint(GraphData[] datGraph) {
+        __clear();
         for (int t = 0; t < datGraph.length; t++) {
             __paint_trend(datGraph[t].zn, trends[t]);
         }
@@ -265,6 +268,7 @@ public class PlotParent implements Plot, LocalInt {
         drawLines(netLineColor, netLineWidth, lines );
     }
     protected void __drawNetYlines() {
+        if (trends[0] == null) return;
         if ((trends[0].netY_min % trends[0].netY_step) == 0) y_FistN = 1;
         else y_FistN = 0;
         //
@@ -287,6 +291,7 @@ public class PlotParent implements Plot, LocalInt {
         MyRecWidthHeight textRec;
         for (int i = 0; i < 2; i++) {
             Trend trend = trends[i];
+            if (trend == null) break;
             int baseN = y_netN;
             int step = trend.netY_step;
             double offset = trend.kY * (trend.netY_min % step);
@@ -396,22 +401,47 @@ public class PlotParent implements Plot, LocalInt {
         int pixCur;
         double[] _netY_min = new double[trends.length];
         double[] _netY_max = new double[trends.length];
+        double[] localY_zn = new double[trends.length];
+        int[] localYrend = new int[trends.length];
         double _curY;
-        for (int i = 0; i < trends.length; i++) {
-            _netY_min[i] = trends[i].zeroY_min;
-            _netY_max[i] = trends[i].zeroY_max;
+        for (int t = 0; t < trends.length; t++) {
+            _netY_min[t] = trends[t].zeroY_min;
+            _netY_max[t] = trends[t].zeroY_max;
+            localY_zn[t] = trends[t].getValueFromMass(0);
+            localYrend[t] = 0;
         }
         for (int i_ms = memX_beginIndx; i_ms < timeUnits.size(); i_ms++) {
             curMs = timeUnits.get(i_ms).ms;
             pixCur = (int) (curMs * kX);
-            if (pixOld >= pixCur) continue;
+            //
+            for (int t = 0; t < trends.length; t++) {
+                _curY = trends[t].getValueFromMass(i_ms);
+                if (localYrend[t] == 0) {
+                    if (_curY > localY_zn[t]) {
+                        localYrend[t] = 1;
+                    } else {
+                        localYrend[t] = 2;
+                    }
+                    localY_zn[t] = _curY;
+                }
+                if (localYrend[t] == 1) {
+                    if (localY_zn[t] < _curY) localY_zn[t] = _curY;
+                } else {
+                    if (localY_zn[t] > _curY) localY_zn[t] = _curY;
+                }
+            }
+            //
+            if (pixOld >= pixCur) {
+                continue;
+            }
+            //
             pixOld = pixCur;
             mX.add(curMs);
             for (int t = 0; t < trends.length; t++) {
-                _curY = trends[t].getValueFromMass(i_ms);
-                if (_netY_min[t] > _curY) _netY_min[t] = _curY;
-                if (_netY_max[t] < _curY) _netY_max[t] = _curY;
-                mY[t].add(_curY);
+                if (_netY_min[t] > localY_zn[t]) _netY_min[t] = localY_zn[t];
+                if (_netY_max[t] < localY_zn[t]) _netY_max[t] = localY_zn[t];
+                mY[t].add(localY_zn[t]);
+                localYrend[t] = 0;
             }
         }
         DataQueue dataQueue = new DataQueue(command_Paint, new GraphData[trends.length]);
@@ -437,15 +467,27 @@ public class PlotParent implements Plot, LocalInt {
     }
 
     protected void __zoomRender() {
+        double t1_min, t1_max, t2_min, t2_max;
+        if (trends[0].autoZoomY) {
+            t1_min = Math.min(trends[0].curnY_min, trends[0].zeroY_min);
+            t1_max = Math.max(trends[0].curnY_max, trends[0].zeroY_max);
+        } else {
+            t1_min = trends[0].zeroY_min;
+            t1_max = trends[0].zeroY_max;
+        }
+        if (trends[1].autoZoomY) {
+            t2_min = Math.min(trends[1].curnY_min, trends[1].zeroY_min);
+            t2_max = Math.max(trends[1].curnY_max, trends[1].zeroY_max);
+        } else {
+            t2_min = trends[1].zeroY_min;
+            t2_max = trends[1].zeroY_max;
+        }
         // расчет минимум и максимум
         MultiplicityRender.Section sectionTr1 = MultiplicityRender.render.multiplicity(
-                Math.min(trends[0].curnY_min, trends[0].zeroY_min),
-                Math.max(trends[0].curnY_max, trends[0].zeroY_max)
+                t1_min, t1_max
         );
         MultiplicityRender.Section sectionTr2 = MultiplicityRender.render.multiplicityT2(
-                sectionTr1,
-                Math.min(trends[1].curnY_min, trends[1].zeroY_min),
-                Math.max(trends[1].curnY_max, trends[1].zeroY_max)
+                sectionTr1, t2_min, t2_max
         );
         trends[0].netY_min = sectionTr1.min;
         trends[0].netY_max = sectionTr1.max;

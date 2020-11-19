@@ -4,14 +4,10 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Trend {
-//    interface TrendCallBack {
-//        void ll(TrendUnit[] units);
-//    }
-    // ---------------
-//    private TrendCallBack callBack;
     // начальные значения минимума и максимума
     public double zeroY_min;
     public double zeroY_max;
+    public boolean autoZoomY;
     // значения минимума и максимума из данных тренда
     public double curnY_min;
     public double curnY_max;
@@ -36,8 +32,6 @@ public class Trend {
     //
     private final ArrayList<TrendUnit> mass;
 
-//    public Trend(TrendCallBack callBack) {
-//        this.callBack = callBack;
     public Trend() {
         mass = new ArrayList<>();
     }

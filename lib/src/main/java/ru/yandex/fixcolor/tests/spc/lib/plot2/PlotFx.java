@@ -44,7 +44,7 @@ class PlotFx extends PlotParent {
                     if ((dataQueue = paintQueue.poll(10, TimeUnit.MILLISECONDS)) != null) {
                         doCicle(dataQueue);
                         if (dataQueue.command == command_Paint) {
-                            Thread.sleep(8);
+                            Thread.sleep(5);
                         }
                     }
                 }
@@ -71,6 +71,12 @@ class PlotFx extends PlotParent {
             gc.closePath();
         });
     }
+    private void fillRect2(Color color, double x, double y, double width, double height) {
+        gc.beginPath();
+        gc.setFill(colorAwtToFx(color));
+        gc.fillRect(x, y, width, height);
+        gc.closePath();
+    }
 
     @Override
     public void drawRect(Color color, double lineWidth, double x, double y, double width, double height) {
@@ -81,6 +87,13 @@ class PlotFx extends PlotParent {
             gc.strokeRect(x - lineWidth / 2, y - lineWidth / 2, width + lineWidth, height + lineWidth);
             gc.closePath();
         });
+    }
+    private void drawRect2(Color color, double lineWidth, double x, double y, double width, double height) {
+        gc.beginPath();
+        gc.setStroke(colorAwtToFx(color));
+        gc.setLineWidth(lineWidth);
+        gc.strokeRect(x - lineWidth / 2, y - lineWidth / 2, width + lineWidth, height + lineWidth);
+        gc.closePath();
     }
 
     @Override
@@ -145,6 +158,67 @@ class PlotFx extends PlotParent {
             gc.closePath();
         });
     }
+    private class TrendPaintUnit {
+        public double[] x;
+        public double[] y;
+        javafx.scene.paint.Color trendColor;
+        double trendWidth;
+
+        public TrendPaintUnit(double[] x, double[] y, javafx.scene.paint.Color trendColor, double trendWidth) {
+            this.x = x;
+            this.y = y;
+            this.trendColor = trendColor;
+            this.trendWidth = trendWidth;
+        }
+    }
+    protected void __paint(GraphData[] datGraph) {
+        TrendPaintUnit[] trendPaint = new TrendPaintUnit[datGraph.length];
+        for (int t = 0; t < datGraph.length; t++) {
+            trendPaint[t] = __paint_trend2(datGraph[t].zn, trends[t]);
+        }
+        //__clear();
+        Platform.runLater(()->{
+            try {
+                // окно
+                fillRect2(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
+                // сетка
+                __drawNet();
+                for (int t = 0; t < trendPaint.length; t++) {
+                    gc.beginPath();
+                    gc.setStroke(trendPaint[t].trendColor);
+                    gc.setLineWidth(trendPaint[t].trendWidth);
+                    gc.strokePolyline(trendPaint[t].x, trendPaint[t].y, trendPaint[t].x.length);
+                    gc.closePath();
+                }
+            } catch (Exception exception) {
+                System.out.println(flOnWork);
+                exception.printStackTrace();
+            }
+            // top
+            fillRect2(fieldBackColor, fieldSizeLeft, 0, windowWidth, fieldSizeTop);
+            // left
+            fillRect2(fieldBackColor, 0, 0, fieldSizeLeft, height);
+            // right
+            fillRect2(fieldBackColor, width - fieldSizeRight, 0, fieldSizeRight, height);
+            // bottom
+            fillRect2(fieldBackColor, fieldSizeLeft, height - fieldSizeBottom, windowWidth, fieldSizeBottom);
+            // рамка
+            drawRect2(fieldFrameColor, fieldFrameWidth, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
+        });
+    }
+
+    private TrendPaintUnit __paint_trend2(ArrayList<GraphDataUnit> graphData, Trend trend) {
+        int graphData_size = graphData.size();
+        //
+        double[] x = new double[graphData_size];
+        double[] y = new double[graphData_size];
+        for (int i = 0; i < graphData_size; i++) {
+            x[i] = (graphData.get(i).x - memX_begin) * kX + positionLeft;
+            y[i] = positionBottom - (graphData.get(i).y * trend.kY);
+        }
+        return new TrendPaintUnit(x, y, colorAwtToFx(trend.lineColor), trend.lineWidth);
+    }
+
     protected void __paint_trend(ArrayList<GraphDataUnit> graphData, Trend trend) {
         int graphData_size = graphData.size();
         //

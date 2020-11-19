@@ -10,12 +10,12 @@ public class CycleTest implements Runnable {
     Plot plot;
     int curX = 0;
     int tr1 = 0;
-    int tr1_f = 3030;
+    int tr1_f = 95;
     boolean pl_tr1 = true;
     int tr2 = 0;
-    int tr2_f = 3000;
+    int tr2_f = 6500;
     boolean pl_tr2 = true;
-    int dynDiv = 8;
+    int dynDiv = 10;
     int dynCount = dynDiv;
     public boolean flOnWork = true;
     @Override
@@ -44,7 +44,7 @@ public class CycleTest implements Runnable {
                 else tr2--;
                 if (--dynCount == 0) {
                     dynCount = dynDiv;
-                    plot.clear();
+                    //plot.clear();
                     plot.paint();
                 }
             } catch (InterruptedException e) {
