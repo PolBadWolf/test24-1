@@ -1,20 +1,24 @@
 package ru.yandex.fixcolor.tests.spc.lib.plot2.test.fx;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
-import ru.yandex.fixcolor.tests.spc.lib.plot2.PlotParent;
-import ru.yandex.fixcolor.tests.spc.lib.plot2.test.CiclTest;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.test.CycleTest;
 
 public class AppFx extends Application {
 
     public static void main(String[] args) {
         launch(args);
     }
+
+    CycleTest cycleTest = null;
+    Thread threadCycle;
 
     @Override
     public void start(Stage primaryStage) {
@@ -28,10 +32,37 @@ public class AppFx extends Application {
         primaryStage.show();
         Plot.Parameters plotParameters = new Plot.Parameters();
         plotParameters.trend1_zeroY_min = 0;
-        plotParameters.trend1_zeroY_max = 52;
+        plotParameters.trend1_zeroY_max = 97;
+        plotParameters.trend2_zeroY_min = 20;
+        plotParameters.trend2_zeroY_max = 150;
+        plotParameters.trend2_AutoZoomY = true;
         plotParameters.zeroX_zoom = 2;
         Plot plot = Plot.createFx(plotParameters, canvas);
         plot.clear();
-        new Thread(new CiclTest(plot)).start();
+        cycleTest = new CycleTest(plot);
+        threadCycle = new Thread(cycleTest);
+        threadCycle.start();
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                cycleTest.flOnWork = false;
+                try {
+                    while (threadCycle.isAlive()) {
+                        Thread.yield();
+                        Thread.sleep(1);
+                    }
+                } catch (InterruptedException interruptedException) {
+                }
+                new Thread(() -> {
+                    try {
+                        plot.closeApp();
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }).start();
+                //event.consume();
+//            primaryStage.show();
+            }
+        });
     }
 }

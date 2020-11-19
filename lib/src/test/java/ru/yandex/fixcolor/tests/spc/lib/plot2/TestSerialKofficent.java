@@ -64,14 +64,14 @@ public class TestSerialKofficent {
             System.out.print("end = "  + String.format("%9.2f", end) + " ");
             MultiplicityRender.Section section = MultiplicityRender.render.multiplicity(fist, end);
             System.out.print("--> ");
-            System.out.print("step = "  + String.format("%3d", section.multiplicity) + " ");
+            System.out.print("step = "  + String.format("%3d", section.step) + " ");
             System.out.print("sample step = "  + String.format("%3d", sampleStep) + " ");
-            System.out.print("fist = " + String.format("%4d", section.fist) + " ");
-            System.out.print("end = "  + String.format("%4d", section.end) + " ");
+            System.out.print("fist = " + String.format("%4d", section.min) + " ");
+            System.out.print("end = "  + String.format("%4d", section.max) + " ");
             System.out.print("n = "  + String.format("%3d", section.n) + " ");
             System.out.print("sample n = "  + String.format("%3d", sampleN) + " ");
             System.out.println();
-            if (sampleStep != section.multiplicity) fail = true;
+            if (sampleStep != section.step) fail = true;
             if (sampleN != section.n) fail = true;
         }
         Assert.assertFalse(fail);

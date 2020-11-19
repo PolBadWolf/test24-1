@@ -201,7 +201,7 @@ public class Plot {
             int indexEnd = datGraph.size();
 
             // zoom X
-            levelXlenghtMax = levelXlenght;
+            levelXlenghtMax =  levelXlenght;
             if (levelXlenghtAuto) {
                 if (levelXlenghtMax < datGraph.get(indexEnd -1).getxPos()) {
                     levelXlenghtMax = datGraph.get(indexEnd -1).getxPos();

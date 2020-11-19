@@ -6,6 +6,8 @@ import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
 import java.awt.*;
 
 public interface Plot {
+    interface CallBack {
+    }
     class ColorName {
         public static final Color WHITE = new Color(255, 255, 255);
         public static final Color LIGHT_GRAY = new Color(192, 192, 192);
@@ -26,7 +28,8 @@ public interface Plot {
     }
     class TrendPosition {
         public static final int left = 1;
-        public static final int right = 2;
+        public static final int center = 2;
+        public static final int right = 3;
     }
     class Parameters {
         // размер холста ( задается в основном конструкторе )
@@ -124,16 +127,16 @@ public interface Plot {
             fieldFontSizeRight = 20.0;
             fieldFontSizeBottom = 20.0;
             // цвет фона полей
-            fieldBackColor = ColorName.GREEN;
+            fieldBackColor = new Color(220, 220, 220);
             // цвет рамки
             fieldFrameColor = ColorName.BLUE;
             // ширина рамки
             fieldFrameWidth = 3.0;
             //          окно
             // цвет фона
-            windowBackColor = Color.CYAN;
+            windowBackColor = new Color(220, 220, 220);
             // цвет линий сетки
-            netLineColor = ColorName.DARKGREEN;
+            netLineColor = new Color(50, 50, 50);
             netTextColor = ColorName.RED;
             netTextSize = 16;
             // ширина линий сетки
@@ -168,11 +171,11 @@ public interface Plot {
             // толщина линии
             trend2_lineWidth = 2.0;
             // цвет линии
-            trend2_lineColor = ColorName.GREEN;
+            trend2_lineColor = ColorName.DARKGREEN;
             // размер шрифта надписи
             trend2_textFontSize = 16.0;
             // цвет шрифта надписи
-            trend2_textFontColor = ColorName.PINK;
+            trend2_textFontColor = ColorName.DARKGREEN;
             // текст надписи
             trend2_text = "кг";
             // позитция тренда относительно окна
@@ -184,6 +187,8 @@ public interface Plot {
     // -----------------
     static Plot createSwing(Parameters parameters, MPanel panel) { return new PlotSwing(parameters, panel); }
     static Plot createFx(Parameters parameters, Canvas canvas) { return new PlotFx(parameters, canvas); }
+    CallBack getCallBack();
+    void setCallBack(CallBack callBack);
     // -----------------
     void clear();
     void newData(double ms);
@@ -191,4 +196,5 @@ public interface Plot {
     void setData();
     void paint();
     void reFresh();
+    void closeApp();
 }
