@@ -140,8 +140,10 @@ class PlotSwing extends PlotParent {
         for (int i = 0; i < xN; i++) {
             x = (i * xStep + offsetS2) * kX + fieldSizeLeft;
             text = String.valueOf((double) ((i * xStep) + offsetCel) / 1_000);
-            textRec = getRecWidthHeight(text, netTextSize);
-            arrayTitleText.add(drawStringAlignment2(text, netTextColor, netTextSize, x - textRec.width / 2, positionBottom + textRec.height / 3, textRec, TrendPosition.center));
+//            textRec = getRecWidthHeight(text, netTextSize);
+            textRec = getRecWidthHeight(text, fieldFontSizeBottom);
+//            arrayTitleText.add(drawStringAlignment2(text, netTextColor, netTextSize, x - textRec.width / 2, positionBottom + textRec.height / 3, textRec, TrendPosition.center));
+            arrayTitleText.add(drawStringAlignment2(text, fieldFontColorBottom, fieldFontSizeBottom, x - textRec.width / 2, positionBottom + textRec.height / 3, textRec, TrendPosition.center));
             lines[i] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
         }
         arrayLines.add(new LinesParameters(lines, netLineColor, netLineWidth));

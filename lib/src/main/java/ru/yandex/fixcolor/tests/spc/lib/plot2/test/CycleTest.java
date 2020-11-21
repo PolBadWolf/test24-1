@@ -10,7 +10,7 @@ public class CycleTest implements Runnable {
     Plot plot;
     int curX = 0;
     int tr1 = 0;
-    int tr1_f = 15_555;
+    int tr1_f = 18_000;
     boolean pl_tr1 = true;
     int tr2 = 0;
     int tr2_f = 18_000;
