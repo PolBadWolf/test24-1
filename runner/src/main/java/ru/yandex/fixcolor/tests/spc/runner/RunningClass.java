@@ -24,7 +24,7 @@ class RunningClass implements Runner {
     private int tik_back;
     private int tik_stop;
     private boolean reciveOn = false;
-    private int n_cicle = 0;
+    private int n_cycle = 0;
     private boolean dist0Set = true;
     private int dist0 = 0;
 
@@ -153,19 +153,19 @@ class RunningClass implements Runner {
                 break;
             case TypePack.MANUAL_STOP:
                 reciveOn = false;
-                if (n_cicle > 0) {
+                if (n_cycle > 0) {
                     if (distanceOut.size() < 2) {
                         mainFrame.outStatusWork("AUTO_STOP");
-                        n_cicle = 0;
+                        n_cycle = 0;
                         break;
                     }
-                    n_cicle++;
+                    n_cycle++;
                 }
                 mainFrame.outStatusWork("MANUAL_STOP");
 //                System.out.println("count = " + distanceOut.size());
                 //
                 sendOutData();
-                n_cicle = 0;
+                n_cycle = 0;
                 break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.outStatusWork("MANUAL_FORWARD");
@@ -176,6 +176,7 @@ class RunningClass implements Runner {
                 plot.allDataClear();
                 tik0 = tik;
                 reciveOn = true;
+                mainFrame.setFieldCurrentCycle(n_cycle + 1);
                 break;
             case TypePack.MANUAL_SHELF:
                 mainFrame.outStatusWork("MANUAL_SHELF");
@@ -191,9 +192,9 @@ class RunningClass implements Runner {
             case TypePack.CYCLE_DELAY:
                 mainFrame.outStatusWork("CYCLE_DELAY");
                 reciveOn = false;
-                n_cicle++;
-                System.out.println("count = " + distanceOut.size());
-                //
+                n_cycle++;
+//                System.out.println("count = " + distanceOut.size());
+
                 sendOutData();
                 distanceOut.clear();
                 break;
@@ -205,6 +206,7 @@ class RunningClass implements Runner {
 
                 plot.allDataClear();
                 tik0 = tik;
+                mainFrame.setFieldCurrentCycle(n_cycle + 1);
                 reciveOn = true;
                 break;
             case TypePack.CYCLE_SHELF:
@@ -289,7 +291,7 @@ class RunningClass implements Runner {
         //
         int timeUnClenching = Math.abs(distanceOut.get(0).tik - tik_shelf);
         // ****** out screen ******
-        mainFrame.setFieldsMeasuredPusher(n_cicle, forceMeasure, moveMeasure, timeUnClenching);
+        mainFrame.setFieldsMeasuredPusher(n_cycle, forceMeasure, moveMeasure, timeUnClenching);
         // ***** send stop *****
         int b;
         try {
@@ -298,14 +300,14 @@ class RunningClass implements Runner {
             b = 5;
             MyLogger.myLog.log(Level.SEVERE, "максимальное число итераций, ( установленно " + b + " )", e);
         }
-        if (n_cicle >= b) {
+        if (n_cycle >= b) {
             callBack.sendStopAutoMode();
         }
         // ***** out to bd *****
         try {
             tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
-            System.out.println("count = " + distanceOut.size());
-            bdSql.writeDataDist(n_cicle, ves, tik_shelf, tik_back, tik_stop,
+//            System.out.println("count = " + distanceOut.size());
+            bdSql.writeDataDist(n_cycle, ves, tik_shelf, tik_back, tik_stop,
                     forceMeasure, moveMeasure, timeUnClenching, new MyBlob(distanceOut));
         } catch (BaseDataException e) {
             MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
