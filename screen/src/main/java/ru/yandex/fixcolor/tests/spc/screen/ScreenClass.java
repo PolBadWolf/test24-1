@@ -38,7 +38,7 @@ public class ScreenClass extends Application implements ScreenFx {
         primaryStage.setTitle("График испытания гидротолкателей");
         primaryStage.show();
         stage = primaryStage;
-        stage.setResizable(false);
+        //stage.setResizable(false);
         primaryStage.setOnCloseRequest(event -> {
             event.consume();
             primaryStage.show();

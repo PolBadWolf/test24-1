@@ -49,8 +49,8 @@ public interface Plot {
         public double fieldSizeBottom;
         // цвет шрифта на полях
         public Color fieldFontColorTop;
-        public Color fieldFontColorLeft;
-        public Color fieldFontColorRight;
+//        public Color fieldFontColorLeft;
+//        public Color fieldFontColorRight;
         public Color fieldFontColorBottom;
         // рамер шрифта на полях
         public double fieldFontSizeTop;
@@ -68,8 +68,8 @@ public interface Plot {
         public Color windowBackColor;
         // цвет линий сетки
         public Color netLineColor;
-        public Color netTextColor;
-        public double netTextSize;
+//        public Color netTextColor;
+//        public double netTextSize;
         // ширина линий сетки
         public double netLineWidth;
         public double scaleZero_maxX;
@@ -126,14 +126,14 @@ public interface Plot {
             fieldSizeBottom = 40.0;
             // цвет шрифта на полях
             fieldFontColorTop = ColorName.YELLOWGREEN;
-            fieldFontColorLeft = ColorName.YELLOWGREEN;
-            fieldFontColorRight = ColorName.YELLOWGREEN;
-            fieldFontColorBottom = ColorName.YELLOWGREEN;
+//            fieldFontColorLeft = ColorName.YELLOWGREEN;
+//            fieldFontColorRight = ColorName.YELLOWGREEN;
+            fieldFontColorBottom = ColorName.DARKGREEN;
             // рамер шрифта на полях
-            fieldFontSizeTop = 20.0;
-            fieldFontSizeLeft = 20.0;
-            fieldFontSizeRight = 20.0;
-            fieldFontSizeBottom = 20.0;
+            fieldFontSizeTop = 16.0;
+            fieldFontSizeLeft = 16.0;
+            fieldFontSizeRight = 16.0;
+            fieldFontSizeBottom = 16.0;
             // цвет фона полей
             fieldBackColor = new Color(220, 220, 220);
             // цвет рамки
@@ -141,12 +141,12 @@ public interface Plot {
             // ширина рамки
             fieldFrameWidth = 3.0;
             //          окно
-            // цвет фона
+            // цвет фона окна
             windowBackColor = new Color(220, 220, 220);
             // цвет линий сетки
             netLineColor = new Color(50, 50, 50);
-            netTextColor = ColorName.RED;
-            netTextSize = 16;
+//            netTextColor = ColorName.RED;
+//            netTextSize = 16;
             // ширина линий сетки
             netLineWidth = 2.0;
             // 5 секунд
@@ -179,11 +179,11 @@ public interface Plot {
             // толщина линии
             trend2_lineWidth = 2.0;
             // цвет линии
-            trend2_lineColor = ColorName.DARKGREEN;
+            trend2_lineColor = ColorName.BLUE;
             // размер шрифта надписи
             trend2_textFontSize = 16.0;
             // цвет шрифта надписи
-            trend2_textFontColor = ColorName.DARKGREEN;
+            trend2_textFontColor = ColorName.BLUE;
             // текст надписи
             trend2_text = "кг";
             // позитция тренда относительно окна
@@ -204,5 +204,6 @@ public interface Plot {
     void setData();
     void paint();
     void reFresh();
+    void allDataClear();
     void closeApp();
 }

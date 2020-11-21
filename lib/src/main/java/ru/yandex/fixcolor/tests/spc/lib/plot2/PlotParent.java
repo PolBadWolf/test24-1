@@ -30,8 +30,8 @@ public class PlotParent implements Plot, LocalInt {
     protected double fieldSizeBottom;
     // цвет шрифта на полях
     protected Color fieldFontColorTop;
-    protected Color fieldFontColorLeft;
-    protected Color fieldFontColorRight;
+//    protected Color fieldFontColorLeft;
+//    protected Color fieldFontColorRight;
     protected Color fieldFontColorBottom;
     // рамер шрифта на полях
     protected double fieldFontSizeTop;
@@ -50,8 +50,8 @@ public class PlotParent implements Plot, LocalInt {
     protected Color windowBackColor;
     // цвет линий сетки
     protected Color netLineColor;
-    protected Color netTextColor;
-    protected double netTextSize;
+//    protected Color netTextColor;
+    //protected double netTextSize;
     // ширина линий сетки
     protected double netLineWidth;
     protected int scaleZero_zoomX; // 0 - off, 1 - shrink, 2 - shift
@@ -102,8 +102,8 @@ public class PlotParent implements Plot, LocalInt {
         positionBottom = height - fieldSizeBottom;
         // цвет шрифта на полях
         fieldFontColorTop = parameters.fieldFontColorTop;
-        fieldFontColorLeft = parameters.fieldFontColorLeft;
-        fieldFontColorRight = parameters.fieldFontColorRight;
+//        fieldFontColorLeft = parameters.fieldFontColorLeft;
+//        fieldFontColorRight = parameters.fieldFontColorRight;
         fieldFontColorBottom = parameters.fieldFontColorBottom;
         // рамер шрифта на полях
         fieldFontSizeTop = parameters.fieldFontSizeTop;
@@ -124,8 +124,8 @@ public class PlotParent implements Plot, LocalInt {
         windowHeight = height - fieldSizeTop - fieldSizeBottom;
         // цвет линий сетки
         netLineColor = parameters.netLineColor;
-        netTextColor = parameters.netTextColor;
-        netTextSize = parameters.netTextSize;
+//        netTextColor = parameters.netTextColor;
+//        netTextSize = parameters.netTextSize;
         // ширина линий сетки
         netLineWidth = parameters.netLineWidth;
         //
@@ -258,8 +258,8 @@ public class PlotParent implements Plot, LocalInt {
         flData = false;
         try {
             timeUnits.add(new TimeUnit(newDataX));
-            for (int i = 0; i < trends.length; i++) {
-                trends[i].trendAddPoint(new TrendUnit(newDataTrends[i]));
+            for (int t = 0; t < trends.length; t++) {
+                trends[t].trendAddPoint(new TrendUnit(newDataTrends[t]));
             }
         } catch (Exception exception) {
             //exception.printStackTrace();
@@ -462,6 +462,15 @@ public class PlotParent implements Plot, LocalInt {
             //System.out.println("переполнение буфера команд: " + i.getMessage());
         }
     }
+
+    @Override
+    public void allDataClear() {
+        timeUnits.clear();
+        for (int t = 0; t < trends.length; t++) {
+            trends[t].trendClear();
+        }
+    }
+
     // ===========================================================================
     @Override
     public MyRecWidthHeight getRecWidthHeight(String text, double textFontSize) { return null; }

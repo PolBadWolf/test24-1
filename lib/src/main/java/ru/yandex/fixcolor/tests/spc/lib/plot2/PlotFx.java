@@ -188,9 +188,13 @@ class PlotFx extends PlotParent {
         for (int i = 0; i < xN; i++) {
             x = (i * xStep + offsetS2) * kX + fieldSizeLeft;
             text = String.valueOf((double) ((i * xStep) + offsetCel) / 1_000);
-            textRec = getRecWidthHeight(text, netTextSize);
-            arrayTitleText.add(drawStringAlignment2(text, netTextColor, netTextSize, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
+//            textRec = getRecWidthHeight(text, netTextSize);
+            textRec = getRecWidthHeight(text, fieldFontSizeBottom);
+//            arrayTitleText.add(drawStringAlignment2(text, netTextColor, netTextSize, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
+            arrayTitleText.add(drawStringAlignment2(text, fieldFontColorBottom, fieldFontSizeBottom, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
             lines[i] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
+//            arrayTitleText.add(drawStringAlignment2(text, netTextColor, netTextSize, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
+//            arrayTitleText.add(drawStringAlignment2(text, fieldFontColorBottom, fieldFontSizeBottom, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
         }
         arrayLines.add(new LinesParameters(lines, colorAwtToFx(netLineColor), netLineWidth));
     }
@@ -273,7 +277,6 @@ class PlotFx extends PlotParent {
         double[] y = new double[graphData_size];
         for (int i = 0; i < graphData_size; i++) {
             x[i] = (graphData.get(i).x - memX_begin) * kX + positionLeft;
-//            y[i] = positionBottom - (graphData.get(i).y * trend.kY);
             y[i] = positionBottom - renderY_zoom(kY, trend.netY_min, trend.netY_max, graphData.get(i).y);
         }
         return new TrendPaintUnit(x, y, colorAwtToFx(trend.lineColor), trend.lineWidth);

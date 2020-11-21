@@ -4,16 +4,18 @@ import ru.yandex.fixcolor.tests.spc.allinterface.bd.DistClass;
 import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
-import ru.yandex.fixcolor.tests.spc.lib.fx.Plot;
+//import ru.yandex.fixcolor.tests.spc.lib.fx.Plot;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 import ru.yandex.fixcolor.tests.spc.screen.*;
 
-import javafx.scene.paint.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
 class RunningClass implements Runner {
     private MainFrame_interface mainFrame = null;
-    private Plot plot = null;
+//    private Plot plot = null;
+    private ru.yandex.fixcolor.tests.spc.lib.plot2.Plot plot = null;
 
     private BaseData bdSql = null;
     private ArrayList<DistClass>  distanceOut = null;
@@ -23,6 +25,7 @@ class RunningClass implements Runner {
     private int tik_stop;
     private boolean reciveOn = false;
     private int n_cicle = 0;
+    private boolean dist0Set = true;
     private int dist0 = 0;
 
     private int tik, tik0;
@@ -39,33 +42,82 @@ class RunningClass implements Runner {
 
         distanceOut = new ArrayList<>();
 
-        plot = new Plot(mainFrame.getCanvas(), 70, 50);
-        plot.setFieldBackColor(Color.WHITE);
-        plot.setFieldFontColor(Color.BLACK);
+        Plot.Parameters plotParameters = new Plot.Parameters();
+        // ************ ПОЛЯ ************
+        // размер полей
+        plotParameters.fieldSizeTop = 10;
+        plotParameters.fieldSizeLeft = 70;
+        plotParameters.fieldSizeRight = 70;
+        plotParameters.fieldSizeBottom = 50;
+        // цвет фона
+        plotParameters.fieldBackColor = new Color(220, 220, 220);
+        // цвет шрифта надписей по полям
+        plotParameters.fieldFontColorTop = new Color(100, 100, 255);
+        plotParameters.fieldFontColorBottom = new Color(80, 80, 80);
+        // размер шрифта надписей по полям
+        plotParameters.fieldFontSizeTop = 16;
+        plotParameters.fieldFontSizeLeft = 16;
+        plotParameters.fieldFontSizeRight = 16;
+        plotParameters.fieldFontSizeBottom = 16;
+        // цвет рамки
+        plotParameters.fieldFrameColor = new Color(120, 120, 120);
+        // размер рамки
+        plotParameters.fieldFrameWidth = 4;
+        // ************ ОКНО ************
+        // размер окна опреляется входным компонентом
+        // цвет фона окна
+        plotParameters.windowBackColor = new Color(255, 255, 255);
+        // размер окна в мсек
+        plotParameters.scaleZero_maxX = 5_000;
+        // тип зумирования
+        plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHIFT;
+        // ************ СЕТКА ************
+        // цвет линии сетки
+        plotParameters.netLineColor = new Color(50, 50, 50);
+        // толщина линии сетки
+        plotParameters.netLineWidth = 1;
+        // ************ ТРЕНД1  ************
+        // позитция подписи тренда относительно окна
+        plotParameters.trend1_positionFromWindow = Plot.TrendPosition.left;
+        // попись условновной еденицы тренда
+        plotParameters.trend1_text = "мм";
+        // цвет шрифта подписи
+        plotParameters.trend1_textFontColor = new Color(255, 0, 0);
+        // размер шрифта подписи
+        plotParameters.trend1_textFontSize = 16;
+        // цвет линии тренда
+        plotParameters.trend1_lineColor = new Color(255, 0, 0);
+        // размер линии тренда
+        plotParameters.trend1_lineWidth = 2;
+        // начальное значение шкалы тренда
+        plotParameters.trend1_zeroY_min = 0;
+        // конечное значение шкалы тренда
+        plotParameters.trend1_zeroY_max = 50;
+        // режим автомасштабирования шкалы тренда
+        plotParameters.trend1_AutoZoomY = Plot.ZOOM_Y_FROM_SCALE;
+        // ************ ТРЕНД2  ************
+        // позитция подписи тренда относительно окна
+        plotParameters.trend2_positionFromWindow = Plot.TrendPosition.right;
+        // попись условновной еденицы тренда
+        plotParameters.trend2_text = "кг";
+        // цвет шрифта подписи
+        plotParameters.trend2_textFontColor = new Color(0, 200, 0);
+        // размер шрифта подписи
+        plotParameters.trend1_textFontSize = 16;
+        // цвет линии тренда
+        plotParameters.trend1_lineColor = new Color(0, 200, 0);
+        // размер линии тренда
+        plotParameters.trend1_lineWidth = 2;
+        // начальное значение шкалы тренда
+        plotParameters.trend1_zeroY_min = 0;
+        // конечное значение шкалы тренда
+        plotParameters.trend1_zeroY_max = 300;
+        // режим автомасштабирования шкалы тренда
+        plotParameters.trend1_AutoZoomY = Plot.ZOOM_Y_FROM_SCALE;
 
-        plot.addTrend(Color.RED, 2);
-        plot.addTrend(Color.GREEN, 2);
+        plot = Plot.createFx(plotParameters, mainFrame.getCanvas());
+        plot.clear();
 
-//        plot.setFieldBackColor(ColorName.DARKGRAY);
-        plot.setFieldBackColor(Color.WHITE);
-
-//        plot.setFieldFrameLineColor(ColorName.LIGHTGREEN);
-        plot.setFieldFrameLineColor(Color.BLACK);
-        plot.setFieldFrameLineWidth(4.0);
-
-//        plot.setNetLineColor(ColorName.DARKGREEN);
-        plot.setNetLineColor(Color.BLACK);
-        plot.setNetLineWidth(1.0);
-
-        plot.setWindowBackColor(Color.WHITE);
-        plot.clearScreen();
-
-        plot.setZoomY(0, 1024);
-        plot.setZoomYauto(false);
-
-        plot.setZoomX(0, 2_000 / 5);
-        plot.setZoomXlenghtAuto(false);
-        plot.setZoomXbeginAuto(true);
         fillFields();
     }
 
@@ -110,15 +162,16 @@ class RunningClass implements Runner {
                     n_cicle++;
                 }
                 mainFrame.outStatusWork("MANUAL_STOP");
-                System.out.println("count = " + distanceOut.size());
+//                System.out.println("count = " + distanceOut.size());
                 //
                 sendOutData();
                 n_cicle = 0;
                 break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.outStatusWork("MANUAL_FORWARD");
+//                System.out.println("MANUAL_FORWARD");
                 distanceOut.clear();
-                dist0 = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+                dist0Set = true;
 
                 plot.allDataClear();
                 tik0 = tik;
@@ -146,7 +199,8 @@ class RunningClass implements Runner {
                 break;
             case TypePack.CYCLE_FORWARD:
                 mainFrame.outStatusWork("CYCLE_FORWARD");
-                dist0 = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+//                System.out.println("CYCLE_FORWARD");
+                dist0Set = true;
                 distanceOut.clear();
 
                 plot.allDataClear();
@@ -160,8 +214,12 @@ class RunningClass implements Runner {
             case TypePack.CURENT_DATA:
                 if (reciveOn) {
                     {
-                        int dist = Math.abs(
-                                ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8)) - dist0);
+                        int dist_in = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+                        if (dist0Set) {
+                            dist0Set = false;
+                            dist0 = dist_in;
+                        }
+                        int dist = Math.abs(dist_in - dist0);
                         int ves = (bytes[7 + 0] & 0xff) + ((bytes[7 + 1] & 0xff) << 8);
                         paintTrends((short) dist, (short) ves);
                         distanceOut.add(new DistClass(tik, dist, ves));
@@ -183,14 +241,21 @@ class RunningClass implements Runner {
     private void paintTrends(short dist, short ves) {
         int x;
         x = (short)((tik - tik0) / 5);
-        plot.newDataX(x);
-        plot.newDataTrend(0, dist);
-        plot.newDataTrend(1, ves);
-        plot.newDataPush();
-        plot.rePaint();
+//        plot.newDataX(x);
+//        plot.newDataTrend(0, dist);
+//        plot.newDataTrend(1, ves);
+//        plot.newDataPush();
+//        plot.rePaint();
+        plot.newData(tik - tik0);
+        plot.addTrend(dist);
+        plot.addTrend(ves);
+        plot.setData();
+        plot.paint();
+        plot.reFresh();
+//        System.out.println("dist = " + dist);
 
         if (x >= (3_600_000) / 5 ) {
-            plot.allDataClear();
+//            plot.allDataClear();
             tik0 = tik;
         }
     }
@@ -202,9 +267,9 @@ class RunningClass implements Runner {
 
     @Override
     public void Close() {
-        plot.allDataClear();
-        plot.removeAllTrends();
-        plot.close();
+//        plot.allDataClear();
+//        plot.removeAllTrends();
+//        plot.close();
         plot = null;
     }
 
