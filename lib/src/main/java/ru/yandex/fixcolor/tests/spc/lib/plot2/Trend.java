@@ -7,7 +7,8 @@ public class Trend {
     // начальные значения минимума и максимума
     public double zeroY_min;
     public double zeroY_max;
-    public boolean autoZoomY;
+    // 0 - off, 1 - zeroY+-, 2 - show trend +-
+    public int autoZoomY;
     // значения минимума и максимума из данных тренда
     public double curnY_min;
     public double curnY_max;
@@ -42,8 +43,6 @@ public class Trend {
 
     public void trendAddPoint(TrendUnit unit) {
         mass.add(unit);
-        if (curnY_min > unit.y) curnY_min = unit.y;
-        if (curnY_max < unit.y) curnY_max = unit.y;
     }
     public double getValueFromMass(int indx) {
         return mass.get(indx).y;

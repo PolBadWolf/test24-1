@@ -62,8 +62,8 @@ public class GraphSwingTest {
         plotParameters.trend1_zeroY_max = 100;
         plotParameters.trend2_zeroY_min = -5;
         plotParameters.trend2_zeroY_max = 95;
-        plotParameters.trend2_AutoZoomY = true;
-        plotParameters.zeroX_zoom = 2;
+        plotParameters.trend2_AutoZoomY = Plot.ZOOM_Y_FROM_SCALE;
+        plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHIFT;
         plot = Plot.createSwing(plotParameters, panel);
         plot.clear();
         plot.reFresh();

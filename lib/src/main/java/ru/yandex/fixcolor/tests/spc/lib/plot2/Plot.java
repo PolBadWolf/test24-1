@@ -31,6 +31,12 @@ public interface Plot {
         public static final int center = 2;
         public static final int right = 3;
     }
+    int ZOOM_Y_OFF = 0;
+    int ZOOM_Y_FROM_SCALE = 1;
+    int ZOOM_Y_FROM_VISUAL_DATA = 2;
+    int ZOOM_X_OFF = 0;
+    int ZOOM_X_SHRINK  = 1;
+    int ZOOM_X_SHIFT = 2;
     class Parameters {
         // размер холста ( задается в основном конструкторе )
 //        public double width;
@@ -66,14 +72,15 @@ public interface Plot {
         public double netTextSize;
         // ширина линий сетки
         public double netLineWidth;
-        public double zeroX_max;
-        public int zeroX_zoom;
+        public double scaleZero_maxX;
+        public int scaleZero_zoomX;
         //
         //      тренд1
         // начальные значения минимума и максимума
         public double trend1_zeroY_min;
         public double trend1_zeroY_max;
-        public boolean trend1_AutoZoomY;
+        // 0 - off, 1 - zeroY+-, 2 - show trend +-
+        public int trend1_AutoZoomY;
         // толщина линии
         public double trend1_lineWidth;
         // цвет линии
@@ -91,7 +98,8 @@ public interface Plot {
         // начальные значения минимума и максимума
         public double trend2_zeroY_min;
         public double trend2_zeroY_max;
-        public boolean trend2_AutoZoomY;
+        // 0 - off, 1 - zeroY+-, 2 - show trend +-
+        public int trend2_AutoZoomY;
         // толщина линии
         public double trend2_lineWidth;
         // цвет линии
@@ -142,14 +150,14 @@ public interface Plot {
             // ширина линий сетки
             netLineWidth = 2.0;
             // 5 секунд
-            zeroX_max = 5_400;
-            zeroX_zoom = 0;
+            scaleZero_maxX = 5_400;
+            scaleZero_zoomX = Plot.ZOOM_X_OFF;
             //
             //      тренд1
             // начальные значения минимума и максимума
             trend1_zeroY_min = 0.0;
             trend1_zeroY_max = 1000.0;
-            trend1_AutoZoomY = false;
+            trend1_AutoZoomY = ZOOM_Y_OFF;
             // толщина линии
             trend1_lineWidth = 2.0;
             // цвет линии
@@ -167,7 +175,7 @@ public interface Plot {
             // начальные значения минимума и максимума
             trend2_zeroY_min = 0.0;
             trend2_zeroY_max = 500.0;
-            trend2_AutoZoomY = false;
+            trend2_AutoZoomY = ZOOM_Y_OFF;
             // толщина линии
             trend2_lineWidth = 2.0;
             // цвет линии
