@@ -1,5 +1,6 @@
 package ru.yandex.fixcolor.tests.spc.loader;
 
+import javafx.application.Platform;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.rs232.*;
 import ru.yandex.fixcolor.tests.spc.runner.Runner;
@@ -79,7 +80,15 @@ public class MainClass {
             public void startViewArchive() {
                 new Thread(()-> SwingUtilities.invokeLater(() -> {
                     try {
-                        ViewArchive v = new ViewArchive(connBd);
+                        ViewArchive v = new ViewArchive(new ViewArchive.CallBack() {
+                            @Override
+                            public void closeArchive() {
+                                Platform.runLater(() -> {
+                                    MainClass.getScreenFx().setRootFocus();
+                                    MainFrame.mainFrame.buttonArchive.setDisable(false);
+                                });
+                            }
+                        }, connBd);
                         if (v != null) {
                             MainFrame.mainFrame.buttonArchive.setDisable(true);
                         }

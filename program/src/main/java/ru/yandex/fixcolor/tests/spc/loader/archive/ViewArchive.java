@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class ViewArchive {
+    public interface CallBack {
+        void closeArchive();
+    }
     // =====================
     private static final float PG_WIDTH  = Math.round(210.0f * Scale.MM2UNIT_SCR);
     private static final float PG_HEIGHT = Math.round(297.0f * Scale.MM2UNIT_SCR);
@@ -32,7 +35,9 @@ public class ViewArchive {
     private static final float PG_BOTTOM = (int) Math.ceil(20.0F * Scale.MM2UNIT_SCR);
     // =====================
     private final BaseData conn;
-    public ViewArchive(BaseData conn) {
+    private final CallBack callBack;
+    public ViewArchive(CallBack callBack, BaseData conn) {
+        this.callBack = callBack;
         this.conn = conn;
         new Thread(this::start, "thread view archive").start();
     }
@@ -149,10 +154,7 @@ public class ViewArchive {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                Platform.runLater(() -> {
-                    MainClass.getScreenFx().setRootFocus();
-                    MainFrame.mainFrame.buttonArchive.setDisable(false);
-                });
+                callBack.closeArchive();
             }
         });
     }

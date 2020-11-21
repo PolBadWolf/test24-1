@@ -1,5 +1,6 @@
 package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
+import ru.yandex.fixcolor.tests.spc.loader.archive.ViewArchive;
 import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.bd.*;
@@ -31,6 +32,7 @@ public class StartFrame {
     private JButton buttonTuning;
     private JButton buttonWork;
     private JButton buttonSetPassword;
+    private JButton buttonShowArchive;
     private JTextField fieldPassword;
     private JComboBox<User> comboBoxUsers;
     private JComboBox<Pusher> comboBoxPusher;
@@ -229,6 +231,8 @@ public class StartFrame {
                 buttonTuning,
                 buttonEditUsers,
                 buttonEditPushers,
+                buttonShowArchive,
+                buttonExit,
                 comboBoxUsers,
                 comboBoxPusher,
                 fieldPassword,
@@ -383,10 +387,12 @@ public class StartFrame {
             buttonSetPassword = CreateComponents.getButton("Новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 190, 116, 24, this::callSetNewPassword, false, true);
             buttonWork = CreateComponents.getButton("Измерения", new Font("Times New Roman", Font.PLAIN, 14), 200, 330, 100, 24, this::callReturnToWork, false, true);
             buttonTuning = CreateComponents.getButton("настройка", new Font("Times New Roman", Font.PLAIN, 14), 190, 370, 116, 24, this::callTuning, false, true);
+            buttonShowArchive = CreateComponents.getButton("Архив", new Font("Times New Roman", Font.PLAIN, 14), 80, 370, 90, 24, this::callShowArchive, false, false);
             frame.add(buttonEnter);
             frame.add(buttonWork);
             frame.add(buttonTuning);
             frame.add(buttonSetPassword);
+            frame.add(buttonShowArchive);
             buttonWork.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "WorkButtonEnter");
             buttonWork.getActionMap().put("WorkButtonEnter", new AbstractAction() {
                 @Override
@@ -491,6 +497,7 @@ public class StartFrame {
         jPanel1.setVisible(true);
         buttonTuning.setVisible(false);
         buttonExit.setVisible(true);
+        buttonShowArchive.setVisible(true);
         //
         buttonTuning.setEnabled(true);
         buttonSetPassword.setEnabled(false);
@@ -511,7 +518,6 @@ public class StartFrame {
         if (statMainWork) {
             buttonWork.setEnabled(true);
             comboBoxPusher.setEnabled(true);
-            // здесь установка последнего пользователя текущим !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         } else {
             buttonWork.setEnabled(false);
             comboBoxPusher.setEnabled(false);
@@ -604,6 +610,8 @@ public class StartFrame {
         buttonWork.setEnabled(true);
         // разрешение выбора толкателей
         comboBoxPusher.setEnabled(true);
+        //
+        buttonShowArchive.setEnabled(true);
         buttonWork.requestFocus();
     }
     private void buttonOffForErrorPass() {
@@ -612,6 +620,7 @@ public class StartFrame {
         buttonEditPushers.setEnabled(false);
         buttonEditUsers.setEnabled(false);
         buttonSetPassword.setEnabled(false);
+        buttonShowArchive.setEnabled(false);
     }
     // обработка новый пароль
     private void callSetNewPassword(ActionEvent f) {
@@ -719,6 +728,21 @@ public class StartFrame {
             callBack.messageCloseStartFrame(connBD, config.getPortName());
         }
         startFrame = null;
+    }
+    // просмотр архива
+    private void callShowArchive(ActionEvent e) {
+        saveEnableComponentsStartFrame.save();
+        saveEnableComponentsStartFrame.offline();
+        new Thread(()->{
+            SwingUtilities.invokeLater(()->{
+                new ViewArchive(new ViewArchive.CallBack() {
+                    @Override
+                    public void closeArchive() {
+                        saveEnableComponentsStartFrame.restore();
+                    }
+                }, connBD);
+            });
+        }, "Show Archive").start();
     }
     // обработка настройка
     private void callTuning(ActionEvent e) {
