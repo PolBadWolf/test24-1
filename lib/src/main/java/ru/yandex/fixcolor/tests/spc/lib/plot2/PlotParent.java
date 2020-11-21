@@ -54,8 +54,8 @@ public class PlotParent implements Plot, LocalInt {
     protected double netTextSize;
     // ширина линий сетки
     protected double netLineWidth;
-    protected int zeroX_zoom; // 0 - off, 1 - shrink, 2 - shift
-    protected double zeroX_max;
+    protected int scaleZero_zoomX; // 0 - off, 1 - shrink, 2 - shift
+    protected double scaleZero_maxX;
     // значения минимума из прошлого цикла
     protected double memX_begin;
     protected int memX_beginIndx;
@@ -129,12 +129,12 @@ public class PlotParent implements Plot, LocalInt {
         // ширина линий сетки
         netLineWidth = parameters.netLineWidth;
         //
-        zeroX_zoom = parameters.zeroX_zoom;
-        zeroX_max = parameters.zeroX_max;
+        scaleZero_zoomX = parameters.scaleZero_zoomX;
+        scaleZero_maxX = parameters.scaleZero_maxX;
         // значения минимума из прошлого цикла
         memX_begin = 0;
         memX_beginIndx = 0;
-        memX_end = zeroX_max;
+        memX_end = scaleZero_maxX;
         {
             double xLenght = memX_end - memX_begin;
             int xStep = (MultiplicityRender.render.multiplicity(xLenght));
@@ -239,7 +239,7 @@ public class PlotParent implements Plot, LocalInt {
         newDataIndx = 0;
         newDataX = ms;
         if (memX_end < ms) {
-            if (zeroX_zoom > 0) {
+            if (scaleZero_zoomX > Plot.ZOOM_X_OFF) {
                 memX_end = ms;
                 flData = true;
             } else flData = false;
@@ -272,11 +272,11 @@ public class PlotParent implements Plot, LocalInt {
         if (timeUnits.isEmpty()) return;
         if (trends == null) return;
         // текущее крайнее положение memX_end
-        if (zeroX_zoom == 2) {
+        if (scaleZero_zoomX == Plot.ZOOM_X_SHIFT) {
             // shift
             // длина окна zeroX_max
             memX_begin = timeUnits.get(memX_beginIndx).ms;
-            double lenghtSample = memX_end - zeroX_max;
+            double lenghtSample = memX_end - scaleZero_maxX;
             if (memX_begin < lenghtSample) {
                 // поск позитции начала
                 double tmp;
@@ -307,10 +307,17 @@ public class PlotParent implements Plot, LocalInt {
         double[] localY_zn = new double[trends.length];
         int[] localYrend = new int[trends.length];
         double _curY;
+        // начальные значения
         for (int t = 0; t < trends.length; t++) {
-            _netY_min[t] = trends[t].zeroY_min;
-            _netY_max[t] = trends[t].zeroY_max;
-            localY_zn[t] = trends[t].getValueFromMass(0);
+            double zn = trends[t].getValueFromMass(memX_beginIndx);
+            if (trends[t].autoZoomY == Plot.ZOOM_Y_FROM_VISUAL_DATA) {
+                _netY_min[t] = zn;
+                _netY_max[t] = zn;
+            } else {
+                _netY_min[t] = trends[t].zeroY_min;
+                _netY_max[t] = trends[t].zeroY_max;
+            }
+            localY_zn[t] = zn;
             localYrend[t] = 0;
         }
         for (int i_ms = memX_beginIndx; i_ms < timeUnits.size(); i_ms++) {
@@ -372,19 +379,31 @@ public class PlotParent implements Plot, LocalInt {
 
     protected void __zoomRender() {
         double t1_min, t1_max, t2_min, t2_max;
-        if (trends[0].autoZoomY) {
-            t1_min = Math.min(trends[0].curnY_min, trends[0].zeroY_min);
-            t1_max = Math.max(trends[0].curnY_max, trends[0].zeroY_max);
-        } else {
-            t1_min = trends[0].zeroY_min;
-            t1_max = trends[0].zeroY_max;
+        switch (trends[0].autoZoomY) {
+            case Plot.ZOOM_Y_FROM_SCALE:
+                t1_min = Math.min(trends[0].curnY_min, trends[0].zeroY_min);
+                t1_max = Math.max(trends[0].curnY_max, trends[0].zeroY_max);
+                break;
+            case Plot.ZOOM_Y_FROM_VISUAL_DATA:
+                t1_min = trends[0].curnY_min;
+                t1_max = trends[0].curnY_max;
+                break;
+            default:
+                t1_min = trends[0].zeroY_min;
+                t1_max = trends[0].zeroY_max;
         }
-        if (trends[1].autoZoomY) {
-            t2_min = Math.min(trends[1].curnY_min, trends[1].zeroY_min);
-            t2_max = Math.max(trends[1].curnY_max, trends[1].zeroY_max);
-        } else {
-            t2_min = trends[1].zeroY_min;
-            t2_max = trends[1].zeroY_max;
+        switch (trends[1].autoZoomY) {
+            case Plot.ZOOM_Y_FROM_SCALE:
+                t2_min = Math.min(trends[1].curnY_min, trends[1].zeroY_min);
+                t2_max = Math.max(trends[1].curnY_max, trends[1].zeroY_max);
+                break;
+            case Plot.ZOOM_Y_FROM_VISUAL_DATA:
+                t2_min = trends[1].curnY_min;
+                t2_max = trends[1].curnY_max;
+                break;
+            default:
+                t2_min = trends[1].zeroY_min;
+                t2_max = trends[1].zeroY_max;
         }
         // расчет минимум и максимум
         MultiplicityRender.Section sectionTr1 = MultiplicityRender.render.multiplicity(
@@ -418,7 +437,7 @@ public class PlotParent implements Plot, LocalInt {
         }
         memX_begin = 0;
         memX_beginIndx = 0;
-        memX_end = zeroX_max;
+        memX_end = scaleZero_maxX;
         __zoomRender();
     }
 

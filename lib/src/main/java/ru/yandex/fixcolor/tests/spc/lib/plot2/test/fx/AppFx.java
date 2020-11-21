@@ -32,11 +32,12 @@ public class AppFx extends Application {
         primaryStage.show();
         Plot.Parameters plotParameters = new Plot.Parameters();
         plotParameters.trend1_zeroY_min = 20;
-        plotParameters.trend1_zeroY_max = 100;
-        plotParameters.trend2_zeroY_min = -5;
+        plotParameters.trend1_zeroY_max = 50;
+        plotParameters.trend2_zeroY_min = 0;
         plotParameters.trend2_zeroY_max = 95;
-        plotParameters.trend2_AutoZoomY = true;
-        plotParameters.zeroX_zoom = 2;
+        plotParameters.trend1_AutoZoomY = Plot.ZOOM_Y_FROM_SCALE;
+        plotParameters.trend2_AutoZoomY = Plot.ZOOM_Y_FROM_VISUAL_DATA;
+        plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHIFT;
         Plot plot = Plot.createFx(plotParameters, canvas);
         plot.clear();
         cycleTest = new CycleTest(plot);

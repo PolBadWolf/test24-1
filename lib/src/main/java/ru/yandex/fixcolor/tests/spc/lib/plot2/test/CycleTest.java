@@ -10,10 +10,10 @@ public class CycleTest implements Runnable {
     Plot plot;
     int curX = 0;
     int tr1 = 0;
-    int tr1_f = 99;
+    int tr1_f = 15_555;
     boolean pl_tr1 = true;
     int tr2 = 0;
-    int tr2_f = 6500;
+    int tr2_f = 18_000;
     boolean pl_tr2 = true;
     int dynDiv = 10;
     int dynCount = dynDiv;
@@ -23,7 +23,7 @@ public class CycleTest implements Runnable {
         Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
         do {
             try {
-                Thread.sleep(0, 200);
+                Thread.sleep(1);
                 plot.newData(curX);
                 plot.addTrend(tr1);
                 plot.addTrend(tr2);
@@ -40,8 +40,8 @@ public class CycleTest implements Runnable {
                 }
                 if (pl_tr1) tr1+=1;
                 else tr1-=1;
-                if (pl_tr2) tr2++;
-                else tr2--;
+                if (pl_tr2) tr2+=1;
+                else tr2-=1;
                 if (--dynCount == 0) {
                     dynCount = dynDiv;
                     //plot.clear();
