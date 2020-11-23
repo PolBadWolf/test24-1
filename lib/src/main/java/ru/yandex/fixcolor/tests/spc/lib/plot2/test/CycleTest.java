@@ -10,12 +10,12 @@ public class CycleTest implements Runnable {
     Plot plot;
     int curX = 0;
     int tr1 = 0;
-    int tr1_f = 18_000;
+    int tr1_f = 115;
     boolean pl_tr1 = true;
     int tr2 = 0;
-    int tr2_f = 18_000;
+    int tr2_f = 8_000;
     boolean pl_tr2 = true;
-    int dynDiv = 10;
+    int dynDiv = 100;
     int dynCount = dynDiv;
     public boolean flOnWork = true;
     @Override
@@ -52,7 +52,8 @@ public class CycleTest implements Runnable {
                 e.printStackTrace();
                 break;
             }
-        } while (++curX < 1_000_000 && flOnWork);
+        } while (++curX < 5_000 && flOnWork);
+        plot.paint();
     }
     Plot.CallBack plotCallBack = new Plot.CallBack() {
     };

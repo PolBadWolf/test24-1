@@ -18,9 +18,10 @@ class PlotSwing extends PlotParent {
     public PlotSwing(Plot.Parameters parameters, MPanel panel) {
         super(parameters, panel.getWidth(), panel.getHeight());
         this.panel = panel;
-        width = panel.getWidth();
-        height = panel.getHeight();
+//        width = panel.getWidth() * scale_img;
+//        height = panel.getHeight() * scale_img;
         panel.image = new BufferedImage((int) width, (int) height,BufferedImage.TYPE_INT_ARGB);
+        panel.scale_img = scale_img;
         g2d = (Graphics2D) panel.image.getGraphics();
         // тренд1
         trends[0] = new Trend();
@@ -140,9 +141,7 @@ class PlotSwing extends PlotParent {
         for (int i = 0; i < xN; i++) {
             x = (i * xStep + offsetS2) * kX + fieldSizeLeft;
             text = String.valueOf((double) ((i * xStep) + offsetCel) / 1_000);
-//            textRec = getRecWidthHeight(text, netTextSize);
             textRec = getRecWidthHeight(text, fieldFontSizeBottom);
-//            arrayTitleText.add(drawStringAlignment2(text, netTextColor, netTextSize, x - textRec.width / 2, positionBottom + textRec.height / 3, textRec, TrendPosition.center));
             arrayTitleText.add(drawStringAlignment2(text, fieldFontColorBottom, fieldFontSizeBottom, x - textRec.width / 2, positionBottom + textRec.height / 3, textRec, TrendPosition.center));
             lines[i] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
         }
@@ -199,9 +198,9 @@ class PlotSwing extends PlotParent {
             int offsetC = trend.netY_min / step;
             //
             if (trend.positionFromWindow == TrendPosition.left) {
-                x1 = positionLeft - 5;
+                x1 = positionLeft - 5 * scale_img;
             } else {
-                x1 = positionRight + 5;
+                x1 = positionRight + 5 * scale_img;
             }
             String text;
             double textFontSize = trend.textFontSize;
@@ -218,9 +217,6 @@ class PlotSwing extends PlotParent {
                     case TrendPosition.center:
                         x2 = x1 - textRec.width / 2;
                         break;
-//                    case TrendPosition.right:
-//                        x2 = x1;
-//                        break;
                     default:
                         x2 = x1;
                 }

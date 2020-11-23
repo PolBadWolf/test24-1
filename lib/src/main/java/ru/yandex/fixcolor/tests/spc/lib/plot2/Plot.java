@@ -38,6 +38,7 @@ public interface Plot {
     int ZOOM_X_SHRINK  = 1;
     int ZOOM_X_SHIFT = 2;
     class Parameters {
+        public double scale_img;
         // размер холста ( задается в основном конструкторе )
 //        public double width;
 //        public double height;
@@ -54,8 +55,8 @@ public interface Plot {
         public Color fieldFontColorBottom;
         // рамер шрифта на полях
         public double fieldFontSizeTop;
-        public double fieldFontSizeLeft;
-        public double fieldFontSizeRight;
+//        public double fieldFontSizeLeft;
+//        public double fieldFontSizeRight;
         public double fieldFontSizeBottom;
         // цвет фона полей
         public Color fieldBackColor;
@@ -115,6 +116,7 @@ public interface Plot {
         //
 
         public Parameters() {
+            scale_img = 1.0;
 //            // размер холста
 //            this.width = width;
 //            this.height = height;
@@ -131,8 +133,8 @@ public interface Plot {
             fieldFontColorBottom = ColorName.DARKGREEN;
             // рамер шрифта на полях
             fieldFontSizeTop = 16.0;
-            fieldFontSizeLeft = 16.0;
-            fieldFontSizeRight = 16.0;
+//            fieldFontSizeLeft = 16.0;
+//            fieldFontSizeRight = 16.0;
             fieldFontSizeBottom = 16.0;
             // цвет фона полей
             fieldBackColor = new Color(220, 220, 220);

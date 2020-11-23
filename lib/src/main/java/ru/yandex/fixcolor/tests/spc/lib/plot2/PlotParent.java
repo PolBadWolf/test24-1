@@ -10,7 +10,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 
 public class PlotParent implements Plot, LocalInt {
-    private CallBack callBack;
+    protected CallBack callBack;
+    protected double scale_img;
     // размер холста
     protected double width;
     protected double height;
@@ -35,8 +36,8 @@ public class PlotParent implements Plot, LocalInt {
     protected Color fieldFontColorBottom;
     // рамер шрифта на полях
     protected double fieldFontSizeTop;
-    protected double fieldFontSizeLeft;
-    protected double fieldFontSizeRight;
+//    protected double fieldFontSizeLeft;
+//    protected double fieldFontSizeRight;
     protected double fieldFontSizeBottom;
     // цвет фона полей
     protected Color fieldBackColor;
@@ -86,15 +87,16 @@ public class PlotParent implements Plot, LocalInt {
     // ===============================================
     // конструктор
     protected PlotParent(Parameters parameters, double paneWidth, double paneHeight) {
+        scale_img = parameters.scale_img;
         // размер холста ( задается в основном конструкторе )
-        width = paneWidth;
-        height = paneHeight;
+        width = paneWidth * scale_img;
+        height = paneHeight * scale_img;
         //          поля
         // размер полей
-        fieldSizeTop = parameters.fieldSizeTop;
-        fieldSizeLeft = parameters.fieldSizeLeft;
-        fieldSizeRight = parameters.fieldSizeRight;
-        fieldSizeBottom = parameters.fieldSizeBottom;
+        fieldSizeTop = parameters.fieldSizeTop * scale_img;
+        fieldSizeLeft = parameters.fieldSizeLeft * scale_img;
+        fieldSizeRight = parameters.fieldSizeRight * scale_img;
+        fieldSizeBottom = parameters.fieldSizeBottom * scale_img;
         // позитции
         positionLeft = fieldSizeLeft;
         positionRight = width - fieldSizeRight;
@@ -106,16 +108,16 @@ public class PlotParent implements Plot, LocalInt {
 //        fieldFontColorRight = parameters.fieldFontColorRight;
         fieldFontColorBottom = parameters.fieldFontColorBottom;
         // рамер шрифта на полях
-        fieldFontSizeTop = parameters.fieldFontSizeTop;
-        fieldFontSizeLeft = parameters.fieldFontSizeLeft;
-        fieldFontSizeRight = parameters.fieldFontSizeRight;
-        fieldFontSizeBottom = parameters.fieldFontSizeBottom;
+        fieldFontSizeTop = parameters.fieldFontSizeTop * scale_img;
+//        fieldFontSizeLeft = parameters.fieldFontSizeLeft;
+//        fieldFontSizeRight = parameters.fieldFontSizeRight;
+        fieldFontSizeBottom = parameters.fieldFontSizeBottom * scale_img;
         // цвет фона полей
         fieldBackColor = parameters.fieldBackColor;
         // цвет рамки
         fieldFrameColor = parameters.fieldFrameColor;
         // ширина рамки
-        fieldFrameWidth = parameters.fieldFrameWidth;
+        fieldFrameWidth = parameters.fieldFrameWidth * scale_img;
         //          окно
         // цвет фона
         windowBackColor = parameters.windowBackColor;
@@ -127,7 +129,7 @@ public class PlotParent implements Plot, LocalInt {
 //        netTextColor = parameters.netTextColor;
 //        netTextSize = parameters.netTextSize;
         // ширина линий сетки
-        netLineWidth = parameters.netLineWidth;
+        netLineWidth = parameters.netLineWidth * scale_img;
         //
         scaleZero_zoomX = parameters.scaleZero_zoomX;
         scaleZero_maxX = parameters.scaleZero_maxX;
@@ -152,11 +154,11 @@ public class PlotParent implements Plot, LocalInt {
         trends[0].curnY_max = trends[0].zeroY_max = parameters.trend1_zeroY_max;
         trends[0].autoZoomY = parameters.trend1_AutoZoomY;
         // толщина линии
-        trends[0].lineWidth = parameters.trend1_lineWidth;
+        trends[0].lineWidth = parameters.trend1_lineWidth * scale_img;
         // цвет линии
         trends[0].lineColor = parameters.trend1_lineColor;
         // размер шрифта для надписи
-        trends[0].textFontSize = parameters.trend1_textFontSize;
+        trends[0].textFontSize = parameters.trend1_textFontSize * scale_img;
         // цвет шрифта надписи
         trends[0].textFontColor = parameters.trend1_textFontColor;
         // текст надписи
@@ -170,11 +172,11 @@ public class PlotParent implements Plot, LocalInt {
         trends[1].zeroY_max = parameters.trend2_zeroY_max;
         trends[1].autoZoomY = parameters.trend2_AutoZoomY;
         // толщина линии
-        trends[1].lineWidth = parameters.trend2_lineWidth;
+        trends[1].lineWidth = parameters.trend2_lineWidth * scale_img;
         // цвет линии
         trends[1].lineColor = parameters.trend2_lineColor;
         // размер шрифта для надписи
-        trends[1].textFontSize = parameters.trend2_textFontSize;
+        trends[1].textFontSize = parameters.trend2_textFontSize * scale_img;
         // цвет шрифта надписи
         trends[1].textFontColor = parameters.trend2_textFontColor;
         // текст надписи
@@ -302,6 +304,9 @@ public class PlotParent implements Plot, LocalInt {
         // === дроп и поиск минимума и максимума Y для каждого тренда
         ArrayList<Double> mX = new ArrayList<>();
         MY_Double[] mY = new MY_Double[trends.length];
+        for (int t = 0; t < trends.length; t++) {
+            mY[t] = new MY_Double();
+        }
         double curMs;
         int pixOld = -1_000;
         int pixCur;
