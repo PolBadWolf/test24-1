@@ -455,7 +455,7 @@ public class Plot {
             Graphics2D g2 = (Graphics2D) g;
             AffineTransform affineTransform = g2.getTransform();
             g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2.scale(Scale.scaleDn, Scale.scaleDn);
             g2.drawRenderedImage(bufferedImage, null);
             g2.setTransform(affineTransform);

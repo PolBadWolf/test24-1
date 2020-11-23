@@ -110,7 +110,7 @@ public class ViewArchive {
                 350, 70, false, true, MLabel.POS_CENTER);
         labelPusherSampleTitle = CreateComponents.getLabel(panelMain, "pusher", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 100, false, true, MLabel.POS_CENTER);
-        labelGraphTitle = CreateComponents.getLabel(panelMain, "Динамические характеристики:", new Font("Times New Roman", Font.PLAIN, 16),
+        labelGraphTitle = CreateComponents.getLabel(panelMain, "Динамические  характеристики: ", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 120, false, true, MLabel.POS_CENTER);
         // =============
         int showY_Title    = 620;
@@ -150,7 +150,7 @@ public class ViewArchive {
         frame.pack();
         //
         ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.Parameters plotParameters = new ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.Parameters();
-        //plotParameters.scale_img = Scale.scaleUp;
+        plotParameters.scale_img = Scale.scaleUp;
         // ************ ПОЛЯ ************
         // размер полей
         plotParameters.fieldSizeTop = 10;
