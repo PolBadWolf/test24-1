@@ -4,6 +4,7 @@ import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.test.CycleTest;
 import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MPanel;
+import ru.yandex.fixcolor.tests.spc.lib.swing.Scale;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,11 +59,13 @@ public class GraphSwingTest {
         frame.pack();
         frame.setVisible(true);
         // ---
-        plotParameters.trend1_zeroY_min = 20;
-        plotParameters.trend1_zeroY_max = 100;
-        plotParameters.trend2_zeroY_min = -5;
-        plotParameters.trend2_zeroY_max = 95;
-        plotParameters.trend2_AutoZoomY = Plot.ZOOM_Y_FROM_SCALE;
+        plotParameters.scale_img = Scale.scaleUp;
+        plotParameters.trend1_zeroY_min = 0;
+        plotParameters.trend1_zeroY_max = 120;
+        plotParameters.trend2_zeroY_min = 0;
+        plotParameters.trend2_zeroY_max = 5_000;
+        plotParameters.trend2_AutoZoomY = Plot.ZOOM_Y_OFF;
+        plotParameters.scaleZero_maxX = 5_000;
         plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHIFT;
         plot = Plot.createSwing(plotParameters, panel);
         plot.clear();

@@ -56,8 +56,6 @@ class RunningClass implements Runner {
         plotParameters.fieldFontColorBottom = new Color(80, 80, 80);
         // размер шрифта надписей по полям
         plotParameters.fieldFontSizeTop = 16;
-        plotParameters.fieldFontSizeLeft = 16;
-        plotParameters.fieldFontSizeRight = 16;
         plotParameters.fieldFontSizeBottom = 16;
         // цвет рамки
         plotParameters.fieldFrameColor = new Color(120, 120, 120);

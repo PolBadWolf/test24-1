@@ -18,7 +18,7 @@ public class MPanelPrintableCap extends JPanel implements Printable {
         return Printable.PAGE_EXISTS;
     }
 
-    private void doScale(Graphics2D g2d, PageFormat pf) {
+    protected void doScale(Graphics2D g2d, PageFormat pf) {
         AffineTransform oldAt = g2d.getTransform();
         try {
             g2d.translate(pf.getImageableX(), pf.getImageableY());
