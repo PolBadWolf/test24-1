@@ -265,7 +265,13 @@ public class PlotParent implements Plot, LocalInt {
             //exception.printStackTrace();
         }
     }
+    private static class MY_Double {
+        public ArrayList<Double> array;
 
+        public MY_Double() {
+            array = new ArrayList<>();
+        }
+    }
     // предварительный рачет и передача в очередь для отрисовки
     @Override
     public void paint() {
@@ -295,10 +301,7 @@ public class PlotParent implements Plot, LocalInt {
         }
         // === дроп и поиск минимума и максимума Y для каждого тренда
         ArrayList<Double> mX = new ArrayList<>();
-        ArrayList<Double>[] mY = new ArrayList[trends.length];
-        for (int i = 0; i < trends.length; i++) {
-            mY[i] = new ArrayList<>();
-        }
+        MY_Double[] mY = new MY_Double[trends.length];
         double curMs;
         int pixOld = -1_000;
         int pixCur;
@@ -350,7 +353,7 @@ public class PlotParent implements Plot, LocalInt {
             for (int t = 0; t < trends.length; t++) {
                 if (_netY_min[t] > localY_zn[t]) _netY_min[t] = localY_zn[t];
                 if (_netY_max[t] < localY_zn[t]) _netY_max[t] = localY_zn[t];
-                mY[t].add(localY_zn[t]);
+                mY[t].array.add(localY_zn[t]);
                 localYrend[t] = 0;
             }
         }
@@ -366,7 +369,7 @@ public class PlotParent implements Plot, LocalInt {
         for (int t = 0; t < trends.length; t++) {
             dataQueue.datGraph[t].kY = trends[t].kY;
             for (int i = 0; i < mX_size; i++) {
-                dataQueue.datGraph[t].zn.add(new GraphDataUnit(mX.get(i), mY[t].get(i)));
+                dataQueue.datGraph[t].zn.add(new GraphDataUnit(mX.get(i), mY[t].array.get(i)));
             }
         }
         try {
@@ -466,8 +469,8 @@ public class PlotParent implements Plot, LocalInt {
     @Override
     public void allDataClear() {
         timeUnits.clear();
-        for (int t = 0; t < trends.length; t++) {
-            trends[t].trendClear();
+        for (Trend trend : trends) {
+            trend.trendClear();
         }
     }
 
