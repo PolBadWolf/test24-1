@@ -39,7 +39,7 @@ public class AppFx extends Application {
         plotParameters.trend2_AutoZoomY = Plot.ZOOM_Y_FROM_VISUAL_DATA;
         plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHIFT;
         Plot plot = Plot.createFx(plotParameters, canvas);
-        plot.clear();
+        plot.clearScreen();
         cycleTest = new CycleTest(plot);
         threadCycle = new Thread(cycleTest);
         threadCycle.start();

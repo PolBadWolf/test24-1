@@ -114,7 +114,7 @@ class RunningClass implements Runner {
         plotParameters.trend1_AutoZoomY = Plot.ZOOM_Y_FROM_SCALE;
 
         plot = Plot.createFx(plotParameters, mainFrame.getCanvas());
-        plot.clear();
+        plot.clearScreen();
 
         fillFields();
     }

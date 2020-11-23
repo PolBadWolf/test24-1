@@ -68,7 +68,7 @@ public class GraphSwingTest {
         plotParameters.scaleZero_maxX = 5_000;
         plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHIFT;
         plot = Plot.createSwing(plotParameters, panel);
-        plot.clear();
+        plot.clearScreen();
         plot.reFresh();
         //panel.repaint();
         cycleTest = new CycleTest(plot);
