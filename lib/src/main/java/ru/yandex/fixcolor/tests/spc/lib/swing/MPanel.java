@@ -1,5 +1,6 @@
 package ru.yandex.fixcolor.tests.spc.lib.swing;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -9,8 +10,8 @@ public class MPanel extends MPanelPrintableCap {
     public double scale_img = 1.0;
 
     @Override
-    protected void paintChildren(Graphics g) {
-        super.paintChildren(g);
+    public void paint(Graphics g) {
+        super.paint(g);
         if (image == null) return;
         Graphics2D g2 = (Graphics2D) g;
         AffineTransform oldAt = g2.getTransform();
@@ -23,6 +24,11 @@ public class MPanel extends MPanelPrintableCap {
         } finally {
             g2.setTransform(oldAt);
         }
+    }
+
+    @Override
+    protected void paintChildren(Graphics g) {
+        super.paintChildren(g);
     }
 
 }

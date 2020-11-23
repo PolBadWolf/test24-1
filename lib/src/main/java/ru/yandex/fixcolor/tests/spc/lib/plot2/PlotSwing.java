@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -255,7 +256,7 @@ class PlotSwing extends PlotParent {
             ArrayList<TitleText> arrayTitleText = new ArrayList<>();
             ArrayList<LinesParameters> arrayLines = new ArrayList<>();
             __createLinesAndTitle(arrayTitleText, arrayLines);
-            SwingUtilities.invokeLater(()->{
+            SwingUtilities.invokeAndWait(()->{
                 try {
                     // окно
                     fillRect(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
@@ -289,11 +290,11 @@ class PlotSwing extends PlotParent {
     }
 
     @Override
-    protected void __clear() {
+    protected void __clear() throws InvocationTargetException, InterruptedException {
         ArrayList<TitleText> arrayTitleText = new ArrayList<>();
         ArrayList<LinesParameters> arrayLines = new ArrayList<>();
         __createLinesAndTitle(arrayTitleText, arrayLines);
-        SwingUtilities.invokeLater(()->{
+        SwingUtilities.invokeAndWait(()->{
             try {
                 // окно
                 fillRect(windowBackColor, fieldSizeLeft, fieldSizeTop, windowWidth, windowHeight);
@@ -319,7 +320,9 @@ class PlotSwing extends PlotParent {
     }
 
     protected void __ReFresh() {
+//        panel.validate();
         panel.repaint();
+
     }
 
     @Override
