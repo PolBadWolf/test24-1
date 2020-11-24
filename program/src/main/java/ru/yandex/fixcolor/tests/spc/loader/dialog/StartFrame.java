@@ -44,6 +44,7 @@ public class StartFrame {
     private JPanel jPanel1;
     private JButton buttonEditUsers;
     private JButton buttonEditPushers;
+    private JButton buttonCalibration;
     //
     private JTable tableFindPushers;
     private JTable tableFindUsers;
@@ -232,6 +233,7 @@ public class StartFrame {
                 buttonEditUsers,
                 buttonEditPushers,
                 buttonShowArchive,
+                buttonCalibration,
                 buttonExit,
                 comboBoxUsers,
                 comboBoxPusher,
@@ -385,12 +387,14 @@ public class StartFrame {
         {
             buttonEnter = CreateComponents.getButton("Проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 190, 90, 24, this::callEnter, false, true);
             buttonSetPassword = CreateComponents.getButton("Новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 190, 116, 24, this::callSetNewPassword, false, true);
-            buttonWork = CreateComponents.getButton("Измерения", new Font("Times New Roman", Font.PLAIN, 14), 200, 330, 100, 24, this::callReturnToWork, false, true);
-            buttonTuning = CreateComponents.getButton("настройка", new Font("Times New Roman", Font.PLAIN, 14), 190, 370, 116, 24, this::callTuning, false, true);
+            buttonWork = CreateComponents.getButton("Измерения", new Font("Times New Roman", Font.PLAIN, 14), 195, 330, 110, 24, this::callReturnToWork, false, true);
+            buttonCalibration = CreateComponents.getButton("Калибровка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callTuning, false, false);
+            buttonTuning = CreateComponents.getButton("настройка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callTuning, false, true);
             buttonShowArchive = CreateComponents.getButton("Архив", new Font("Times New Roman", Font.PLAIN, 14), 80, 370, 90, 24, this::callShowArchive, false, false);
             frame.add(buttonEnter);
             frame.add(buttonWork);
             frame.add(buttonTuning);
+            frame.add(buttonCalibration);
             frame.add(buttonSetPassword);
             frame.add(buttonShowArchive);
             buttonWork.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "WorkButtonEnter");
@@ -499,6 +503,7 @@ public class StartFrame {
         buttonExit.setVisible(true);
         buttonShowArchive.setVisible(true);
         //
+        buttonCalibration.setVisible(true);
         buttonTuning.setEnabled(true);
         buttonSetPassword.setEnabled(false);
         buttonEditUsers.setEnabled(false);
@@ -606,6 +611,7 @@ public class StartFrame {
         buttonEditUsers.setEnabled((selectUser.rang & (1 << User.RANG_USERS)) != 0);
         // разрешение на редактирование толкателей
         buttonEditPushers.setEnabled((selectUser.rang & (1 << User.RANG_PUSHERS)) != 0);
+        buttonCalibration.setEnabled((selectUser.rang & (1 << User.RANG_PUSHERS)) != 0);
         // разрешение кнопки работа
         buttonWork.setEnabled(true);
         // разрешение выбора толкателей
@@ -619,6 +625,7 @@ public class StartFrame {
         buttonWork.setEnabled(false);
         buttonEditPushers.setEnabled(false);
         buttonEditUsers.setEnabled(false);
+        buttonCalibration.setEnabled(false);
         buttonSetPassword.setEnabled(false);
         buttonShowArchive.setEnabled(false);
     }
