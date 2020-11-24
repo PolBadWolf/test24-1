@@ -291,11 +291,10 @@ class RunningClass implements Runner {
         // ****** out screen ******
         mainFrame.setFieldsMeasuredPusher(n_cycle, forceMeasure, moveMeasure, timeUnClenching);
         // ***** send stop *****
-        int b;
+        int b = 0;
         try {
             b = Integer.parseInt(MainFrame.mainFrame.s_nCicle.getText());
         } catch (NumberFormatException e) {
-            b = 5;
             MyLogger.myLog.log(Level.SEVERE, "максимальное число итераций, ( установленно " + b + " )", e);
         }
         if (n_cycle >= b) {
