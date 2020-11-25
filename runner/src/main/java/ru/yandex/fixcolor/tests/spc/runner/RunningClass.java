@@ -4,7 +4,6 @@ import ru.yandex.fixcolor.tests.spc.allinterface.bd.DistClass;
 import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
-//import ru.yandex.fixcolor.tests.spc.lib.fx.Plot;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 import ru.yandex.fixcolor.tests.spc.screen.*;
 
