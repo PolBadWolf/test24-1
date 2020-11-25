@@ -50,5 +50,8 @@ public interface CommPort {
     void close();
     boolean ReciveStart();
     void ReciveStop();
+    boolean isRecive();
     void sendMessageStopAuto();
+    CallBack getCallBack();
+    void setCallBack(CallBack callBack);
 }
