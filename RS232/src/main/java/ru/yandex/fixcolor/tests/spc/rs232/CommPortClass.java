@@ -74,13 +74,19 @@ class CommPortClass implements CommPort {
     }
 
     @Override
+    public boolean isOpen() {
+        if (port == null)   return false;
+        return port.isOpen();
+    }
+
+    @Override
     public boolean ReciveStart() {
         if (port == null)   return false;
         if (!port.isOpen()) return false;
 
         threadRS = new Thread(this::runnerReciver);
         threadRS.start();
-        return false;
+        return true;
     }
 
     @Override
@@ -101,6 +107,8 @@ class CommPortClass implements CommPort {
 
     @Override
     public boolean isRecive() {
+        if (port == null)   return false;
+        if (!port.isOpen()) return false;
         return onCycle;
     }
 
