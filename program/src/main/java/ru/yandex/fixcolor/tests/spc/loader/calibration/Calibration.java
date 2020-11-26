@@ -11,7 +11,7 @@ import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 
 public class Calibration {
-    interface CallBack {
+    public interface CallBack {
         void messageClose();
     }
     private static Calibration calibration = null;
