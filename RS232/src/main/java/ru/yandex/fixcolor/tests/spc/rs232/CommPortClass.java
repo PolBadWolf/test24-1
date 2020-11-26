@@ -34,9 +34,7 @@ class CommPortClass implements CommPort {
 
     @Override
     public PortStat open(CallBack callBack, String portName, BAUD baud) {
-        if (port != null) {
-            close();
-        }
+        if (port != null) close();
 
         boolean flagTmp = false;
         String[] portsName = CommPort.getListPortsName();
@@ -66,10 +64,10 @@ class CommPortClass implements CommPort {
     @Override
     public void close() {
         if (port == null)   return;
-
         ReciveStop();
-
-        port.closePort();
+        if (port.isOpen()) {
+            port.closePort();
+        }
         port = null;
     }
 
@@ -216,36 +214,52 @@ class CommPortClass implements CommPort {
         }
         reciveMode = reciveMode_SYNHRO;
     }
-
+    // ************************************************************************
+    private static final byte[] header = {
+            (byte)0xe6,
+            (byte)0x19,
+            (byte)0x55,
+            (byte)0xaa
+    };
+    private void send_header() {
+        port.writeBytes(header, header.length);
+    }
+    private byte[] send_lenghtVar = new byte[1];
+    private void send_lenght(byte[] body) {
+        send_lenghtVar[0] = (byte) ((body.length + 1) & 0xff);
+        port.writeBytes(send_lenghtVar, 1);
+    }
+    // ---------------------
+    private static final byte[] sendMessageStopBody = {
+            // код передачи
+            (byte)0x80
+    };
     @Override
     public void sendMessageStopAuto() {
-        byte[] header = {
-                // заголовок
-                (byte)0xe6
-                ,(byte)0x19
-                ,(byte)0x55
-                ,(byte)0xaa
-        };
-        byte[] body = {
-                // код передачи
-                (byte)0x80
-        };
-        port.writeBytes(header, header.length);
-        // длина передачи
-        {
-            byte[] dl = new byte[1];
-            dl[0] = (byte) (body.length + (1 & 0x000000ff));
-            port.writeBytes(dl, dl.length);
-        }
-        // тело передачи
-        port.writeBytes(body, body.length);
+        send_header();
+        send_lenght(sendMessageStopBody);
+        port.writeBytes(sendMessageStopBody, sendMessageStopBody.length);
         // контрольная сумма
-        {
-            byte[] cs = new byte[1];
-            cs[0] = ControlSumma.crc8(body, body.length);
-            port.writeBytes(cs, cs.length);
-        }
+        byte[] cs = new byte[1];
+        cs[0] = ControlSumma.crc8(sendMessageStopBody, sendMessageStopBody.length);
+        port.writeBytes(cs, cs.length);
     }
+    // ========================================================================
+    private static final byte[] sendMessageCalibrationBody = {
+            // код передачи
+            (byte)0x81
+    };
+    @Override
+    public void sendMessageCalibrationMode() {
+        send_header();
+        send_lenght(sendMessageCalibrationBody);
+        port.writeBytes(sendMessageCalibrationBody, sendMessageCalibrationBody.length);
+        // контрольная сумма
+        byte[] cs = new byte[1];
+        cs[0] = ControlSumma.crc8(sendMessageCalibrationBody, sendMessageCalibrationBody.length);
+        port.writeBytes(cs, cs.length);
+    }
+    // ************************************************************************
 
     @Override
     public CallBack getCallBack() {

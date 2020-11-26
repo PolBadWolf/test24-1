@@ -121,6 +121,7 @@ public class MainClass {
     private void newTestPuser() {
         new Thread(()->{
             commPort.ReciveStop();
+            commPort.close();
             // стар фрейм
             try {
                 StartFrame.main(true, new StartFrame.CallBack() {
