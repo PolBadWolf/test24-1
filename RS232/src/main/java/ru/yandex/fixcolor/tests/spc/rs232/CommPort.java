@@ -51,8 +51,8 @@ public interface CommPort {
     boolean ReciveStart();
     void ReciveStop();
     boolean isRecive();
-    void sendMessageStopAuto();
-    void sendMessageCalibrationMode();
+    void sendMessageStopAuto() throws Exception;
+    void sendMessageCalibrationMode() throws Exception;
     CallBack getCallBack();
     void setCallBack(CallBack callBack);
     boolean isOpen();

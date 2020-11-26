@@ -51,7 +51,7 @@ class CommPortClass implements CommPort {
         port = SerialPort.getCommPort(portNameCase);
         port.setComPortParameters(baud.getBaud(), 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         port.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 1000, 0);
+        port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 50, 50);
 
         if (port.openPort()) {
             this.callBack = callBack;
@@ -221,13 +221,15 @@ class CommPortClass implements CommPort {
             (byte)0x55,
             (byte)0xaa
     };
-    private void send_header() {
-        port.writeBytes(header, header.length);
+    private void send_header() throws Exception {
+        int l = port.writeBytes(header, header.length);
+        if (l < 1) throw new Exception("ошибка отправки по comm port");
     }
     private byte[] send_lenghtVar = new byte[1];
-    private void send_lenght(byte[] body) {
+    private void send_lenght(byte[] body) throws Exception {
         send_lenghtVar[0] = (byte) ((body.length + 1) & 0xff);
-        port.writeBytes(send_lenghtVar, 1);
+        int l = port.writeBytes(send_lenghtVar, 1);
+        if (l < 1) throw new Exception("ошибка отправки по comm port");
     }
     // ---------------------
     private static final byte[] sendMessageStopBody = {
@@ -235,14 +237,15 @@ class CommPortClass implements CommPort {
             (byte)0x80
     };
     @Override
-    public void sendMessageStopAuto() {
+    public void sendMessageStopAuto() throws Exception {
         send_header();
         send_lenght(sendMessageStopBody);
         port.writeBytes(sendMessageStopBody, sendMessageStopBody.length);
         // контрольная сумма
         byte[] cs = new byte[1];
         cs[0] = ControlSumma.crc8(sendMessageStopBody, sendMessageStopBody.length);
-        port.writeBytes(cs, cs.length);
+        int l = port.writeBytes(cs, cs.length);
+        if (l < cs.length) throw new Exception("ошибка отправки по comm port");
     }
     // ========================================================================
     private static final byte[] sendMessageCalibrationBody = {
@@ -250,14 +253,15 @@ class CommPortClass implements CommPort {
             (byte)0x81
     };
     @Override
-    public void sendMessageCalibrationMode() {
+    public void sendMessageCalibrationMode() throws Exception {
         send_header();
         send_lenght(sendMessageCalibrationBody);
         port.writeBytes(sendMessageCalibrationBody, sendMessageCalibrationBody.length);
         // контрольная сумма
         byte[] cs = new byte[1];
         cs[0] = ControlSumma.crc8(sendMessageCalibrationBody, sendMessageCalibrationBody.length);
-        port.writeBytes(cs, cs.length);
+        int l = port.writeBytes(cs, cs.length);
+        if (l < cs.length) throw new Exception("ошибка отправки по comm port");
     }
     // ************************************************************************
 
