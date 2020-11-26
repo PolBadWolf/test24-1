@@ -1,8 +1,8 @@
 package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
-import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.loader.MainClass;
 import ru.yandex.fixcolor.tests.spc.loader.archive.ViewArchive;
+import ru.yandex.fixcolor.tests.spc.loader.calibration.Calibration;
 import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.bd.*;
