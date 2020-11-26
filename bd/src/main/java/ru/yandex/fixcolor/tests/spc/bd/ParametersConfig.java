@@ -3,8 +3,8 @@ package ru.yandex.fixcolor.tests.spc.bd;
 import java.io.*;
 import java.util.Properties;
 
-public class ParametersConfig implements BaseData.Config {
-    final private String fileNameConfig = "config.txt";
+class ParametersConfig implements BaseData.Config {
+    private static final String fileNameConfig = "config.txt";
 
     private String portName;
     private TypeBaseDate typeBaseData;
@@ -91,34 +91,42 @@ public class ParametersConfig implements BaseData.Config {
         distance_offset = weight_offset = 0;
     }
 
+    @Override
     public double getDistance_k() {
         return distance_k;
     }
 
+    @Override
     public void setDistance_k(double distance_k) {
         this.distance_k = distance_k;
     }
 
+    @Override
     public double getDistance_offset() {
         return distance_offset;
     }
 
+    @Override
     public void setDistance_offset(double distance_offset) {
         this.distance_offset = distance_offset;
     }
 
+    @Override
     public double getWeight_k() {
         return weight_k;
     }
 
+    @Override
     public void setWeight_k(double weight_k) {
         this.weight_k = weight_k;
     }
 
+    @Override
     public double getWeight_offset() {
         return weight_offset;
     }
 
+    @Override
     public void setWeight_offset(double weight_offset) {
         this.weight_offset = weight_offset;
     }

@@ -38,6 +38,14 @@ public interface BaseData {
         TypeBaseDate getTypeBaseData();
         void setPortName(String portName);
         void setTypeBaseData(TypeBaseDate typeBaseData);
+        double getDistance_k();
+        void setDistance_k(double distance_k);
+        double getDistance_offset();
+        void setDistance_offset(double distance_offset);
+        double getWeight_k();
+        void setWeight_k(double weight_k);
+        double getWeight_offset();
+        void setWeight_offset(double weight_offset);
     }
     // ==================== PASSWORD ====================
     class Password {
