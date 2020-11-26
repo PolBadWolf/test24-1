@@ -13,7 +13,7 @@ public class Point {
         return (adc * pointK.k) + pointK.offset;
     }
 
-    public static int renderAdc(int value, PointK pointK) {
+    public static int renderAdc(double value, PointK pointK) {
         return (int) Math.round((value - pointK.offset) / pointK.k);
     }
 }
