@@ -8,10 +8,16 @@ public class ParametersConfig implements BaseData.Config {
 
     private String portName;
     private TypeBaseDate typeBaseData;
+    private double distance_k;
+    private double distance_offset;
+    private double weight_k;
+    private double weight_offset;
 
     public ParametersConfig() {
         typeBaseData = TypeBaseDate.ERROR;
         portName = "";
+        distance_k = weight_k = 1.0;
+        distance_offset = weight_offset = 0;
     }
 
     @Override
@@ -32,6 +38,14 @@ public class ParametersConfig implements BaseData.Config {
             // set default
             this.typeBaseData = TypeBaseDate.MY_SQL;
         }
+        try { distance_k = Double.parseDouble(properties.getProperty("Distance_K"));
+        } catch (Exception e) { distance_k = 1.0; }
+        try { distance_offset = Double.parseDouble(properties.getProperty("Distance_Offset"));
+        } catch (Exception e) { distance_offset = 0; }
+        try { weight_k = Double.parseDouble(properties.getProperty("Weight_K"));
+        } catch (Exception e) { weight_k = 1.0; }
+        try { weight_offset = Double.parseDouble(properties.getProperty("Weight_Offset"));
+        } catch (Exception e) { weight_offset = 0; }
         return status;
     }
     @Override
@@ -40,6 +54,10 @@ public class ParametersConfig implements BaseData.Config {
         Status result;
         properties.setProperty("CommPort", portName);
         properties.setProperty("DataBase", typeBaseData.codeToString());
+        properties.setProperty("Distance_K", String.valueOf(distance_k));
+        properties.setProperty("Distance_Offset", String.valueOf(distance_offset));
+        properties.setProperty("Weight_K", String.valueOf(weight_k));
+        properties.setProperty("Weight_Offset", String.valueOf(weight_offset));
         try {
             properties.store(new BufferedWriter(new FileWriter(fileNameConfig)), "config");
             result = Status.OK;
