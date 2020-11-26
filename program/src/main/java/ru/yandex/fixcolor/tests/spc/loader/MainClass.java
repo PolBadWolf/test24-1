@@ -176,7 +176,11 @@ public class MainClass {
     class RunnerCallBack implements Runner.CallBack {
         @Override
         public void sendStopAutoMode() {
-            commPort.sendMessageStopAuto();
+            try {
+                commPort.sendMessageStopAuto();
+            } catch (Exception exception) {
+                myLog.log(Level.SEVERE, "команда стоп авто режим", exception);
+            }
         }
     }
     // ===============================================
