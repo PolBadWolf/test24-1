@@ -1,4 +1,4 @@
-package ru.yandex.fixcolor.tests.spc.loader.dialog;
+package ru.yandex.fixcolor.tests.spc.loader.calibration;
 
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
@@ -96,7 +96,4 @@ public class Calibration {
 
     }
     // ===========
-    private class Point {
-        public double z
-    }
 }
