@@ -87,5 +87,39 @@ public class ParametersConfig implements BaseData.Config {
     public void setDefault() {
         portName = "com2";
         typeBaseData = TypeBaseDate.MY_SQL;
+        distance_k = weight_k = 1.0;
+        distance_offset = weight_offset = 0;
+    }
+
+    public double getDistance_k() {
+        return distance_k;
+    }
+
+    public void setDistance_k(double distance_k) {
+        this.distance_k = distance_k;
+    }
+
+    public double getDistance_offset() {
+        return distance_offset;
+    }
+
+    public void setDistance_offset(double distance_offset) {
+        this.distance_offset = distance_offset;
+    }
+
+    public double getWeight_k() {
+        return weight_k;
+    }
+
+    public void setWeight_k(double weight_k) {
+        this.weight_k = weight_k;
+    }
+
+    public double getWeight_offset() {
+        return weight_offset;
+    }
+
+    public void setWeight_offset(double weight_offset) {
+        this.weight_offset = weight_offset;
     }
 }
