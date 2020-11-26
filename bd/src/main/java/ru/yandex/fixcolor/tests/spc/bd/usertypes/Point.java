@@ -8,6 +8,10 @@ public class Point {
         this.value = value;
         this.adc = adc;
     }
+    public Point() {
+        value = 0;
+        adc = 0;
+    }
 
     public static double renderValue(int adc, PointK pointK) {
         return (adc * pointK.k) + pointK.offset;
