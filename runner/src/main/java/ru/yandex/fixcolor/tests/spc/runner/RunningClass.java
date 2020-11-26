@@ -4,7 +4,6 @@ import ru.yandex.fixcolor.tests.spc.allinterface.bd.DistClass;
 import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
-//import ru.yandex.fixcolor.tests.spc.lib.fx.Plot;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 import ru.yandex.fixcolor.tests.spc.screen.*;
 
@@ -114,7 +113,7 @@ class RunningClass implements Runner {
         plotParameters.trend1_AutoZoomY = Plot.ZOOM_Y_FROM_SCALE;
 
         plot = Plot.createFx(plotParameters, mainFrame.getCanvas());
-        plot.clear();
+        plot.clearScreen();
 
         fillFields();
     }
@@ -291,11 +290,10 @@ class RunningClass implements Runner {
         // ****** out screen ******
         mainFrame.setFieldsMeasuredPusher(n_cycle, forceMeasure, moveMeasure, timeUnClenching);
         // ***** send stop *****
-        int b;
+        int b = 0;
         try {
             b = Integer.parseInt(MainFrame.mainFrame.s_nCicle.getText());
         } catch (NumberFormatException e) {
-            b = 5;
             MyLogger.myLog.log(Level.SEVERE, "максимальное число итераций, ( установленно " + b + " )", e);
         }
         if (n_cycle >= b) {

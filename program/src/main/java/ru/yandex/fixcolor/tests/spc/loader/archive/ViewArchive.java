@@ -1,13 +1,10 @@
 package ru.yandex.fixcolor.tests.spc.loader.archive;
 
-import javafx.application.Platform;
 import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.lib.*;
 import ru.yandex.fixcolor.tests.spc.lib.swing.*;
 import ru.yandex.fixcolor.tests.spc.allinterface.bd.*;
-import ru.yandex.fixcolor.tests.spc.screen.MainFrame;
-import ru.yandex.fixcolor.tests.spc.loader.MainClass;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -45,7 +42,9 @@ public class ViewArchive {
     private final String root = "Архив";
     private JFrame frame;
     private MPanelPrintableCap panelMain;
-    private Plot plot;
+    private MPanel panelPlot;
+    private ru.yandex.fixcolor.tests.spc.lib.plot2.Plot plot;
+//    private Plot plot;
     private JTree tree;
     private JScrollPane scrollPane;
     // ======
@@ -73,9 +72,23 @@ public class ViewArchive {
     private void initComponents() {
         frame = CreateComponents.getFrame("View Archive", 1024, 800, false, null, null);
         frame.setBackground(Color.white);
-        panelMain = CreateComponents.getPanelPrintableCap(null, null, null, 0, 0, 700, 760,true, true);
+        panelMain = CreateComponents.getPanelPrintableCap(
+                null,
+                null,
+                null,
+                0, 0, 700, 760,
+                true, true
+        );
         panelMain.setBackground(Color.white);
         frame.add(panelMain);
+        panelPlot = CreateComponents.getMPanel(
+                null,
+                null,
+                null,
+                1, 140, 698, 460,
+                true, true
+        );
+        panelMain.add(panelPlot);
         myTreeModel = new MyTreeModel();
         tree = new JTree(myTreeModel);
         tree.setEditable(false);
@@ -97,7 +110,7 @@ public class ViewArchive {
                 350, 70, false, true, MLabel.POS_CENTER);
         labelPusherSampleTitle = CreateComponents.getLabel(panelMain, "pusher", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 100, false, true, MLabel.POS_CENTER);
-        labelGraphTitle = CreateComponents.getLabel(panelMain, "Динамические характеристики:", new Font("Times New Roman", Font.PLAIN, 16),
+        labelGraphTitle = CreateComponents.getLabel(panelMain, "Динамические  характеристики: ", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 120, false, true, MLabel.POS_CENTER);
         // =============
         int showY_Title    = 620;
@@ -136,19 +149,82 @@ public class ViewArchive {
         frame.setVisible(true);
         frame.pack();
         //
-        plot = new Plot(panelMain, 1, 140, 698, 460, 50, 50);
-        plot.addTrend(Color.WHITE, 2);
-        plot.setNetLineColor(Plot.DARKGREEN);
-        plot.setNetLineWidth(1.0f);
+        ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.Parameters plotParameters = new ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.Parameters();
+        plotParameters.scale_img = Scale.scaleUp;
+        // ************ ПОЛЯ ************
+        // размер полей
+        plotParameters.fieldSizeTop = 10;
+        plotParameters.fieldSizeLeft = 70;
+        plotParameters.fieldSizeRight = 70;
+        plotParameters.fieldSizeBottom = 50;
+        // цвет фона
+        plotParameters.fieldBackColor = new Color(220, 220, 220);
+        // цвет шрифта надписей по полям
+        plotParameters.fieldFontColorTop = new Color(100, 100, 255);
+        plotParameters.fieldFontColorBottom = new Color(80, 80, 80);
+        // размер шрифта надписей по полям
+        plotParameters.fieldFontSizeTop = 16;
+        plotParameters.fieldFontSizeBottom = 16;
+        // цвет рамки
+        plotParameters.fieldFrameColor = new Color(120, 120, 120);
+        // размер рамки
+        plotParameters.fieldFrameWidth = 4;
+        // ************ ОКНО ************
+        // размер окна опреляется входным компонентом
+        // цвет фона окна
+        plotParameters.windowBackColor = new Color(255, 255, 255);
+        // размер окна в мсек
+        plotParameters.scaleZero_maxX = 5_000;
+        // тип зумирования
+        plotParameters.scaleZero_zoomX = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.ZOOM_X_SHIFT;
+        // ************ СЕТКА ************
+        // цвет линии сетки
+        plotParameters.netLineColor = new Color(50, 50, 50);
+        // толщина линии сетки
+        plotParameters.netLineWidth = 1;
+        // ************ ТРЕНД1  ************
+        // позитция подписи тренда относительно окна
+        plotParameters.trend1_positionFromWindow = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.TrendPosition.left;
+        // попись условновной еденицы тренда
+        plotParameters.trend1_text = "мм";
+        // цвет шрифта подписи
+        plotParameters.trend1_textFontColor = new Color(255, 0, 0);
+        // размер шрифта подписи
+        plotParameters.trend1_textFontSize = 16;
+        // цвет линии тренда
+        plotParameters.trend1_lineColor = new Color(255, 0, 0);
+        // размер линии тренда
+        plotParameters.trend1_lineWidth = 2;
+        // начальное значение шкалы тренда
+        plotParameters.trend1_zeroY_min = 0;
+        // конечное значение шкалы тренда
+        plotParameters.trend1_zeroY_max = 50;
+        // режим автомасштабирования шкалы тренда
+        plotParameters.trend1_AutoZoomY = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.ZOOM_Y_FROM_SCALE;
+        // ************ ТРЕНД2  ************
+        // позитция подписи тренда относительно окна
+        plotParameters.trend2_positionFromWindow = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.TrendPosition.right;
+        // попись условновной еденицы тренда
+        plotParameters.trend2_text = "кг";
+        // цвет шрифта подписи
+        plotParameters.trend2_textFontColor = new Color(0, 200, 0);
+        // размер шрифта подписи
+        plotParameters.trend1_textFontSize = 16;
+        // цвет линии тренда
+        plotParameters.trend1_lineColor = new Color(0, 200, 0);
+        // размер линии тренда
+        plotParameters.trend1_lineWidth = 2;
+        // начальное значение шкалы тренда
+        plotParameters.trend1_zeroY_min = 0;
+        // конечное значение шкалы тренда
+        plotParameters.trend1_zeroY_max = 300;
+        // режим автомасштабирования шкалы тренда
+        plotParameters.trend1_AutoZoomY = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.ZOOM_Y_FROM_SCALE;
+
+        plot = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.createSwing(plotParameters, panelPlot);
 
         plot.clearScreen();
-
-        plot.setZoomY(0, 1024);
-        plot.setZoomYauto(false);
-
-        plot.setZoomX(0, 5_000 / 5);
-        plot.setZoomXlenghtAuto(true);
-        plot.setZoomXbeginAuto(false);
+        plot.reFresh();
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -273,7 +349,7 @@ public class ViewArchive {
         // декодер графика
         MeasuredBlobDecoder blobDecoder;
         DistClass distClass;
-        int tik0, x;
+        int tik0;
         try {
             blobDecoder = new MeasuredBlobDecoder(measured.dataMeasured);
             distClass = blobDecoder.get(0);
@@ -282,13 +358,14 @@ public class ViewArchive {
             plot.clearScreen();
             for (int i = 0; i < blobDecoder.lenght(); i++) {
                 distClass = blobDecoder.get(i);
-                x = (short)((distClass.tik - tik0) / 5);
-                plot.newDataX(x);
-                plot.newDataTrend(0, (short) distClass.distance);
-                //plot.newDataTrend(1, ves);
-                plot.newDataPush();
+                plot.newData(distClass.tik - tik0);
+                plot.addTrend(distClass.distance);
+                plot.addTrend(distClass.ves);
+                plot.setData();
             }
-            plot.rePaint();
+            plot.paint();
+            //Thread.sleep(10);
+            plot.reFresh();
         } catch (Exception e) {
             e.printStackTrace();
         }

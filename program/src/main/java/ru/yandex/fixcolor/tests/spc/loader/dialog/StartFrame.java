@@ -1,6 +1,8 @@
 package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
+import ru.yandex.fixcolor.tests.spc.loader.MainClass;
 import ru.yandex.fixcolor.tests.spc.loader.archive.ViewArchive;
+import ru.yandex.fixcolor.tests.spc.loader.calibration.Calibration;
 import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.bd.*;
@@ -16,9 +18,9 @@ import static ru.yandex.fixcolor.tests.spc.lib.MyLogger.myLog;
 public class StartFrame {
     static StartFrame startFrame;
     public interface CallBack {
-        void messageCloseStartFrame(BaseData conn, String commPortName);
-        void messageSetNewData();
+        void messageCloseStartFrame(BaseData conn, String commPortName) throws Exception;
         void stopSystem();
+
     }
     // ----------------------------------
     // title
@@ -44,6 +46,7 @@ public class StartFrame {
     private JPanel jPanel1;
     private JButton buttonEditUsers;
     private JButton buttonEditPushers;
+    private JButton buttonCalibration;
     //
     private JTable tableFindPushers;
     private JTable tableFindUsers;
@@ -90,13 +93,17 @@ public class StartFrame {
     BaseData.Parameters parameters;
     BaseData connBD;
     SaveEnableComponents saveEnableComponentsStartFrame;
+    // ==================================================================
+    //                    comm port
+    private CommPort commPort;
+    // ==================================================================
 
 
-    public static StartFrame main(boolean statMainWork, CallBack callBack) throws Exception {
-        if (startFrame != null) return null;
+    public static StartFrame main(boolean statMainWork, CallBack callBack, CommPort commPort) throws Exception {
+        if (startFrame != null) throw new Exception("Повторное создание Start Frame");
         try {
             SwingUtilities.invokeAndWait(()->{
-                startFrame = new StartFrame(statMainWork, callBack);
+                startFrame = new StartFrame(statMainWork, callBack, commPort);
                 new Thread(()-> startFrame.start(), "StartFrame start").start();
             });
         } catch (InterruptedException e) {
@@ -106,10 +113,12 @@ public class StartFrame {
         return startFrame;
     }
 
-    protected StartFrame(boolean statMainWork, CallBack callBack) {
+    protected StartFrame(boolean statMainWork, CallBack callBack, CommPort commPort) {
         // если основная программа работает, то ком порт нельзя проверять !!!!!!!!!!!!!!!!!!!!!!!
         this.statMainWork = statMainWork;
         this.callBack = callBack;
+        this.commPort = commPort;
+        commPort.ReciveStop();
     }
 
 
@@ -232,6 +241,7 @@ public class StartFrame {
                 buttonEditUsers,
                 buttonEditPushers,
                 buttonShowArchive,
+                buttonCalibration,
                 buttonExit,
                 comboBoxUsers,
                 comboBoxPusher,
@@ -253,7 +263,12 @@ public class StartFrame {
                     super.windowClosing(e);
                     System.exit(2);
                 }
-                callBack.messageSetNewData();
+//                callBack.messageSetNewData();
+                try {
+                    callBack.messageCloseStartFrame(null, MainClass.getPortNameFromConfig());
+                } catch (Exception exception) {
+                    myLog.log(Level.SEVERE, "закрытие окна start frame", exception);
+                }
                 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 frame.removeAll();
                 frame.dispose();
@@ -307,7 +322,7 @@ public class StartFrame {
         initBaseData(typeBaseDate);
         // *************************************************************************************
         // проверка ком порта
-        flagAvailabilityCommPort = isCheckCommPort(config.getPortName());
+        flagAvailabilityCommPort = isCheckCommPort(MainClass.getPortNameFromConfig());
     }
     private void loadAndSetBeginParameters2() {
         // загрузка пользователей в комбо бокс
@@ -385,12 +400,14 @@ public class StartFrame {
         {
             buttonEnter = CreateComponents.getButton("Проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 190, 90, 24, this::callEnter, false, true);
             buttonSetPassword = CreateComponents.getButton("Новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 190, 116, 24, this::callSetNewPassword, false, true);
-            buttonWork = CreateComponents.getButton("Измерения", new Font("Times New Roman", Font.PLAIN, 14), 200, 330, 100, 24, this::callReturnToWork, false, true);
-            buttonTuning = CreateComponents.getButton("настройка", new Font("Times New Roman", Font.PLAIN, 14), 190, 370, 116, 24, this::callTuning, false, true);
+            buttonWork = CreateComponents.getButton("Измерения", new Font("Times New Roman", Font.PLAIN, 14), 195, 330, 110, 24, this::callReturnToWork, false, true);
+            buttonCalibration = CreateComponents.getButton("Калибровка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callCalibration, false, false);
+            buttonTuning = CreateComponents.getButton("настройка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callTuning, false, true);
             buttonShowArchive = CreateComponents.getButton("Архив", new Font("Times New Roman", Font.PLAIN, 14), 80, 370, 90, 24, this::callShowArchive, false, false);
             frame.add(buttonEnter);
             frame.add(buttonWork);
             frame.add(buttonTuning);
+            frame.add(buttonCalibration);
             frame.add(buttonSetPassword);
             frame.add(buttonShowArchive);
             buttonWork.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "WorkButtonEnter");
@@ -499,6 +516,7 @@ public class StartFrame {
         buttonExit.setVisible(true);
         buttonShowArchive.setVisible(true);
         //
+        buttonCalibration.setVisible(true);
         buttonTuning.setEnabled(true);
         buttonSetPassword.setEnabled(false);
         buttonEditUsers.setEnabled(false);
@@ -606,6 +624,7 @@ public class StartFrame {
         buttonEditUsers.setEnabled((selectUser.rang & (1 << User.RANG_USERS)) != 0);
         // разрешение на редактирование толкателей
         buttonEditPushers.setEnabled((selectUser.rang & (1 << User.RANG_PUSHERS)) != 0);
+        buttonCalibration.setEnabled((selectUser.rang & (1 << User.RANG_PUSHERS)) != 0);
         // разрешение кнопки работа
         buttonWork.setEnabled(true);
         // разрешение выбора толкателей
@@ -619,6 +638,7 @@ public class StartFrame {
         buttonWork.setEnabled(false);
         buttonEditPushers.setEnabled(false);
         buttonEditUsers.setEnabled(false);
+        buttonCalibration.setEnabled(false);
         buttonSetPassword.setEnabled(false);
         buttonShowArchive.setEnabled(false);
     }
@@ -715,17 +735,15 @@ public class StartFrame {
         }
         frame.removeAll();
         frame.dispose();
-        // чтение конфигурации
-        BaseData.Config config = BaseData.Config.create();
-        try { config.load();
-        } catch (BaseDataException be) {
-            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
-            config.setDefault();
-        }
-        if (statMainWork) {
-            callBack.messageSetNewData();
-        } else {
-            callBack.messageCloseStartFrame(connBD, config.getPortName());
+        try {
+            if (statMainWork) {
+//            callBack.messageSetNewData();
+                callBack.messageCloseStartFrame(null, MainClass.getPortNameFromConfig());
+            } else {
+                callBack.messageCloseStartFrame(connBD, MainClass.getPortNameFromConfig());
+            }
+        } catch (Exception exception) {
+            myLog.log(Level.SEVERE, "переход в режим работа", exception );
         }
         startFrame = null;
     }
@@ -763,6 +781,28 @@ public class StartFrame {
             userSelectComboBox2Table.setLock(false);
             frame.requestFocus();
         })), "create tuning").start();
+    }
+    // обработка калибровка
+    private void callCalibration(ActionEvent e) {
+        // отключение управления
+        saveEnableComponentsStartFrame.save();
+        saveEnableComponentsStartFrame.offline();
+        userSelectComboBox2Table.setLock(true);
+        new Thread(() -> {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    Calibration.init(new Calibration.CallBack() {
+                        @Override
+                        public void messageClose() {
+                            saveEnableComponentsStartFrame.restore();
+                            frame.requestFocus();
+                        }
+                    }, commPort
+                            );
+                }
+            });
+        }, "create calibration").start();
     }
     // обработка редактирование пользователей
     private void callEditUsers(ActionEvent e) {

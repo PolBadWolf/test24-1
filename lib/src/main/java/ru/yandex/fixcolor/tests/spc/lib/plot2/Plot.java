@@ -200,7 +200,7 @@ public interface Plot {
     CallBack getCallBack();
     void setCallBack(CallBack callBack);
     // -----------------
-    void clear();
+    void clearScreen();
     void newData(double ms);
     void addTrend(double zn);
     void setData();

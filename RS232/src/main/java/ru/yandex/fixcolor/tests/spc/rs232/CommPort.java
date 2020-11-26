@@ -4,7 +4,7 @@ public interface CommPort {
     interface CallBack {
         void reciveRsPush(byte[] bytes, int lenght);
     }
-    static CommPort main() {
+    static CommPort init() {
         return new CommPortClass();
     }
     static String[] getListPortsName() { return CommPortClass.getListPortsName(); }
@@ -50,5 +50,10 @@ public interface CommPort {
     void close();
     boolean ReciveStart();
     void ReciveStop();
-    void sendMessageStopAuto();
+    boolean isRecive();
+    void sendMessageStopAuto() throws Exception;
+    void sendMessageCalibrationMode() throws Exception;
+    CallBack getCallBack();
+    void setCallBack(CallBack callBack);
+    boolean isOpen();
 }

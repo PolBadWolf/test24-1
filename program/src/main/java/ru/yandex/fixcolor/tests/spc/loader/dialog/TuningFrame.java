@@ -554,7 +554,7 @@ class TuningFrame {
         CommPort port;
         CommPort.PortStat stat;
         flagTestCommPort = false;
-        port = CommPort.main();
+        port = CommPort.init();
         String portName = (String) comboBoxCommPort.getSelectedItem();
         if (portName == null) portName = "";
         stat = port.open(null, portName, BAUD.baud9600);

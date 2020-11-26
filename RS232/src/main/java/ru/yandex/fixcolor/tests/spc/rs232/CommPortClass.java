@@ -3,18 +3,12 @@ package ru.yandex.fixcolor.tests.spc.rs232;
 import com.fazecast.jSerialComm.SerialPort;
 import ru.yandex.fixcolor.tests.spc.lib.ControlSumma;
 
-import java.util.function.Consumer;
-
 class CommPortClass implements CommPort {
 
     private SerialPort port = null;
     private Thread threadRS = null;
     private CallBack callBack = null;
-    private Consumer closer;
-
-    /*protected CommPortClass() {
-        this.closer = closer;
-    }*/
+    private int reciveTimeOut = 0;
 
     static String[] getListPortsName() {
         SerialPort[] ports = SerialPort.getCommPorts();
@@ -41,9 +35,7 @@ class CommPortClass implements CommPort {
 
     @Override
     public PortStat open(CallBack callBack, String portName, BAUD baud) {
-        if (port != null) {
-            close();
-        }
+        if (port != null) close();
 
         boolean flagTmp = false;
         String[] portsName = CommPort.getListPortsName();
@@ -60,7 +52,7 @@ class CommPortClass implements CommPort {
         port = SerialPort.getCommPort(portNameCase);
         port.setComPortParameters(baud.getBaud(), 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         port.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 1000, 0);
+        port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 1, 50);
 
         if (port.openPort()) {
             this.callBack = callBack;
@@ -73,28 +65,34 @@ class CommPortClass implements CommPort {
     @Override
     public void close() {
         if (port == null)   return;
-
         ReciveStop();
-
-        port.closePort();
+        if (port.isOpen()) {
+            port.closePort();
+        }
         port = null;
     }
 
-    private int onCycle;
-
+    @Override
+    public boolean isOpen() {
+        if (port == null)   return false;
+        return port.isOpen();
+    }
+    byte[] dump = new byte[1024];
     @Override
     public boolean ReciveStart() {
         if (port == null)   return false;
         if (!port.isOpen()) return false;
 
-        threadRS = new Thread(this::runner);
+        while (port.readBytes(dump, dump.length) > 0) ;
+
+        threadRS = new Thread(this::runnerReciver);
         threadRS.start();
-        return false;
+        return true;
     }
 
     @Override
     public void ReciveStop() {
-        onCycle = -1;
+        onCycle = false;
 
         try {
             if (threadRS != null) {
@@ -108,6 +106,13 @@ class CommPortClass implements CommPort {
         }
     }
 
+    @Override
+    public boolean isRecive() {
+        if (port == null)   return false;
+        if (!port.isOpen()) return false;
+        return onCycle;
+    }
+
     // ---------------------
     final private int headBufferLenght  = 5;
     final private int timeOutLenght     = 5;
@@ -118,133 +123,159 @@ class CommPortClass implements CommPort {
     private int lenghtRecive;
     private int lenghtReciveSumm;
     private byte crc;
+    // ===========================================================
+    //                режим работы
+    private static final int reciveMode_SYNHRO = 0;
+    private static final int reciveMode_LENGHT = 1;
+    private static final int reciveMode_BODY = 2;
+    private static final int reciveMode_OUT = 3;
+    private int reciveMode = reciveMode_SYNHRO;
+    // ---------------------
+    //        SYNHRO
+    private static final int reciveHeader_lenght = 4;
+    private byte[] reciveHeader = new byte[reciveHeader_lenght];
+    private byte[] reciveHeader_in = new byte[1];
+    // ---------------------
+    //        LENGHT
+    private int reciveBody_lenght;
+    // ---------------------
+    private byte[] reciveBody_Buffer = new byte[256];
+    private int reciveBody_Index;
+    // ---------------------
+    private boolean onCycle;
+    int recive_num;
+    // ===========================================================
 
-    private void runner() {
-        // flush
-        int num = 1;
-        byte[] bytes = new byte[1000];
-
-        while (num > 0) {
-            num = port.readBytes(bytes, bytes.length);
-        }
-
-        onCycle = 1;
-        while (onCycle >= 0) {
-            if (onCycle > 0) {
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (timeOutSynhro > 1)    timeOutSynhro--;
-                if (timeOutSynhro == 1) {
-                    timeOutSynhro = 0;
-                    flagHead = true;
-                }
-            }
-
-            if (flagHead) {
-                for (int i = 0; i < headBufferLenght - 1; i++) {
-                    headBuffer[i] = headBuffer[i + 1];
-                }
-
-                try {
-                    num = port.readBytes(headBuffer, 1, headBufferLenght - 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    e = null;
-                }
-
-                if (num < 0) {
-                    onCycle = -1;
-                    continue;
-                }
-
-                if (num == 0) {
-                    if (onCycle < 0) continue;
-                    onCycle = 1;
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    continue;
-                }
-
-                if (onCycle < 0) continue;
-                onCycle = 0;
-
-                if (headBuffer[0] != (byte)0xe6)    continue;
-                if (headBuffer[1] != (byte)0x19)    continue;
-                if (headBuffer[2] != (byte)0x55)    continue;
-                if (headBuffer[3] != (byte)0xaa)    continue;
-
-                flagHead = true;
-                timeOutSynhro = timeOutLenght;
-                lenghtRecive = headBuffer[4] & 0x000000ff;
-                lenghtReciveSumm = 0;
-            }
-            else {
-                continue;
-            }
-
-            while (lenghtReciveSumm < lenghtRecive) {
-                num = port.readBytes(bytes, lenghtRecive - lenghtReciveSumm, lenghtReciveSumm);
-
-                if (num < 0) {
-                    onCycle = -1;
-                    continue;
-                }
-
-                if (num == 0) {
-                    if (onCycle < 0) continue;
-                    onCycle = 1;
-                    continue;
-                }
-
-                if (onCycle < 0) continue;
-                onCycle = 0;
-                lenghtReciveSumm += num;
-            }
-
-            if (lenghtRecive > 1) {
-                crc = ControlSumma.crc8(bytes, lenghtRecive - 1);
-                if (crc == bytes[lenghtRecive - 1]) {
-                    callBack.reciveRsPush(bytes, lenghtRecive - 1);
+    private void runnerReciver() {
+        onCycle = true;
+        reciveMode = reciveMode_SYNHRO;
+        recive_num = 0;
+        try {
+            while (onCycle) {
+                if (recive_num == 0) Thread.sleep(1);
+                if (reciveTimeOut == 1) reciveMode = reciveMode;
+                if (reciveTimeOut > 0) reciveTimeOut--;
+                switch (reciveMode) {
+                    case reciveMode_SYNHRO:
+                        recive_synhro();
+                        break;
+                    case reciveMode_LENGHT:
+                        recive_lenght();
+                        break;
+                    case reciveMode_BODY:
+                        recive_body();
+                        break;
+                    case reciveMode_OUT:
+                        recive_out();
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + reciveMode);
                 }
             }
-
-            flagHead = true;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+    private void recive_synhro() throws Exception {
+        recive_num = port.readBytes(reciveHeader_in, 1);
+        if (recive_num == 0) return;
+        // shift
+        for (int i = 0; i < reciveHeader_lenght - 1; i++) {
+            reciveHeader[i] = reciveHeader[i + 1];
+        }
+        // new byte
+        reciveHeader[reciveHeader_lenght - 1] = reciveHeader_in[0];
+        // check
+        if ((reciveHeader[0] & 0xff) != 0xe6) return;
+        if ((reciveHeader[1] & 0xff) != 0x19) return;
+        if ((reciveHeader[2] & 0xff) != 0x55) return;
+        if ((reciveHeader[3] & 0xff) != 0xaa) return;
+        // ok
+        reciveTimeOut = 10;
+        reciveMode = reciveMode_LENGHT;
+    }
+    private void recive_lenght() throws Exception {
+        recive_num = port.readBytes(reciveHeader_in, 1);
+        if (recive_num == 0) return;
+        reciveBody_lenght = reciveHeader_in[0] & 0xff;
+        reciveBody_Index = 0;
+        reciveMode = reciveMode_BODY;
+    }
+    private void recive_body() throws Exception {
+        int lenght = reciveBody_lenght - reciveBody_Index;
+        recive_num = port.readBytes(reciveBody_Buffer, lenght, reciveBody_Index);
+        if (recive_num == 0) return;
+        reciveBody_Index += recive_num;
+        if (reciveBody_Index > reciveBody_lenght) throw new Exception("переполнение буффера приема");
+        if (reciveBody_Index < reciveBody_lenght) return;
+        reciveMode = reciveMode_OUT;
+    }
+    private void recive_out() throws Exception {
+        if (ControlSumma.crc8(reciveBody_Buffer, reciveBody_lenght - 1) == reciveBody_Buffer[reciveBody_lenght - 1]) {
+            if (callBack != null) {
+                callBack.reciveRsPush(reciveBody_Buffer, reciveBody_lenght - 1);
+            }
+        }
+        reciveTimeOut = 0;
+        reciveMode = reciveMode_SYNHRO;
+    }
+    // ************************************************************************
+    private static final byte[] header = {
+            (byte)0xe6,
+            (byte)0x19,
+            (byte)0x55,
+            (byte)0xaa
+    };
+    private void send_header() throws Exception {
+        int l = port.writeBytes(header, header.length);
+        if (l < 1) throw new Exception("ошибка отправки по comm port");
+    }
+    private byte[] send_lenghtVar = new byte[1];
+    private void send_lenght(byte[] body) throws Exception {
+        send_lenghtVar[0] = (byte) ((body.length + 1) & 0xff);
+        int l = port.writeBytes(send_lenghtVar, 1);
+        if (l < 1) throw new Exception("ошибка отправки по comm port");
+    }
+    // ---------------------
+    private static final byte[] sendMessageStopBody = {
+            // код передачи
+            (byte)0x80
+    };
+    @Override
+    public void sendMessageStopAuto() throws Exception {
+        send_header();
+        send_lenght(sendMessageStopBody);
+        port.writeBytes(sendMessageStopBody, sendMessageStopBody.length);
+        // контрольная сумма
+        byte[] cs = new byte[1];
+        cs[0] = ControlSumma.crc8(sendMessageStopBody, sendMessageStopBody.length);
+        int l = port.writeBytes(cs, cs.length);
+        if (l < cs.length) throw new Exception("ошибка отправки по comm port");
+    }
+    // ========================================================================
+    private static final byte[] sendMessageCalibrationBody = {
+            // код передачи
+            (byte)0x81
+    };
+    @Override
+    public void sendMessageCalibrationMode() throws Exception {
+        send_header();
+        send_lenght(sendMessageCalibrationBody);
+        port.writeBytes(sendMessageCalibrationBody, sendMessageCalibrationBody.length);
+        // контрольная сумма
+        byte[] cs = new byte[1];
+        cs[0] = ControlSumma.crc8(sendMessageCalibrationBody, sendMessageCalibrationBody.length);
+        int l = port.writeBytes(cs, cs.length);
+        if (l < cs.length) throw new Exception("ошибка отправки по comm port");
+    }
+    // ************************************************************************
 
     @Override
-    public void sendMessageStopAuto() {
-        byte[] header = {
-                // заголовок
-                (byte)0xe6
-                ,(byte)0x19
-                ,(byte)0x55
-                ,(byte)0xaa
-        };
-        byte[] body = {
-                // код передачи
-                (byte)0x80
-        };
-        port.writeBytes(headBuffer, header.length);
-        // длина передачи
-        {
-            byte[] dl = new byte[1];
-            dl[0] = (byte) (body.length + (1 & 0x000000ff));
-            port.writeBytes(dl, dl.length);
-        }
-        // тело передачи
-        port.writeBytes(body, body.length);
-        // контрольная сумма
-        {
-            byte[] cs = new byte[1];
-            cs[0] = ControlSumma.crc8(body, body.length);
-            port.writeBytes(cs, cs.length);
-        }
+    public CallBack getCallBack() {
+        return callBack;
+    }
+    @Override
+    public void setCallBack(CallBack callBack) {
+        this.callBack = callBack;
     }
 }

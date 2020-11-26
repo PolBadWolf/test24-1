@@ -3,6 +3,7 @@ package ru.yandex.fixcolor.tests.spc.lib.plot2;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -216,7 +217,7 @@ public class PlotParent implements Plot, LocalInt {
         }
     }
 
-    protected void __clear() { }
+    protected void __clear() throws InvocationTargetException, InterruptedException { }
     protected void __ReFresh(){ }
     protected void __paint(GraphData[] datGraph) { }
     @Override
@@ -225,7 +226,7 @@ public class PlotParent implements Plot, LocalInt {
     public void drawRect(Color color, double lineWidth, double x, double y, double width, double height) { }
 
     @Override
-    public void clear() {
+    public void clearScreen() {
         try {
             paintQueue.add(queueClear);
         } catch (IllegalStateException i) {

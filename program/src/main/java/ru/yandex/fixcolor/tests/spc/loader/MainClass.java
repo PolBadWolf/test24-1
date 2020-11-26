@@ -1,6 +1,8 @@
 package ru.yandex.fixcolor.tests.spc.loader;
 
 import javafx.application.Platform;
+import ru.yandex.fixcolor.tests.spc.bd.BaseDataException;
+import ru.yandex.fixcolor.tests.spc.bd.Status;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.rs232.*;
 import ru.yandex.fixcolor.tests.spc.runner.Runner;
@@ -11,6 +13,8 @@ import ru.yandex.fixcolor.tests.spc.loader.dialog.StartFrame;
 
 import javax.swing.*;
 import java.util.logging.Level;
+
+import static ru.yandex.fixcolor.tests.spc.lib.MyLogger.myLog;
 
 
 public class MainClass {
@@ -30,31 +34,37 @@ public class MainClass {
     protected MainClass() {
     }
     private void start() {
+        // чтение конфигурации
+        BaseData.Config config = BaseData.Config.create();
+        try {
+            config.load();
+        } catch (BaseDataException be) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
+            config.setDefault();
+        }
+        commPort = CommPort.init();
         // стар фрейм
         try {
             StartFrame.main(false, new StartFrame.CallBack() {
-                @Override
-                public void messageCloseStartFrame(BaseData conn, String commPortName) {
-                    connBd = conn;
-                    MainClass.this.commPortName = commPortName;
-                    new Thread(MainClass.this::startFx, "start fx").start();
-                }
+                        @Override
+                        public void messageCloseStartFrame(BaseData conn, String commPortName) {
+                            connBd = conn;
+                            MainClass.this.commPortName = commPortName;
+                            new Thread(MainClass.this::startFx, "start fx").start();
+                        }
 
-                @Override
-                public void messageSetNewData() {
+                        @Override
+                        public void stopSystem() {
+                            if (commPort != null) commPort.close();
+                            if (runner != null) runner.Close();
+                            if (screenFx != null) screenFx.exitApp();
+                            if (commPort != null) commPort = null;
+                            if (runner != null) runner = null;
+                            if (screenFx != null) screenFx = null;
+                        }
 
-                }
-
-                @Override
-                public void stopSystem() {
-                    if (commPort != null) commPort.close();
-                    if (runner != null) runner.Close();
-                    if (screenFx != null) screenFx.exitApp();
-                    if (commPort != null) commPort = null;
-                    if (runner != null) runner = null;
-                    if (screenFx != null) screenFx = null;
-                }
-            });
+                    },
+                    commPort);
         } catch (Exception exception) {
             exception.printStackTrace();
             System.exit(-100);
@@ -64,7 +74,6 @@ public class MainClass {
         // создание основных объектов
         screenFx = ScreenFx.init(this::close);
         runner = Runner.main(new RunnerCallBack());
-        commPort = CommPort.main();
         // вызов основной формы
         screenFx.main();
         while (MainFrame.mainFrame == null) {
@@ -100,36 +109,41 @@ public class MainClass {
         });
         // пуск регистрации
         runner.init(connBd, MainFrame.mainFrame);
-        commPort.open(runner::reciveRsPush, commPortName, BAUD.baud57600);
+        try {
+            commPortOpen(commPort, commPortName, runner::reciveRsPush);
+        } catch (Exception exception) {
+            myLog.log(Level.SEVERE, "открытие comm port при старте fx");
+            System.exit(-1000);
+        }
         commPort.ReciveStart();
     }
-
+    // вызов Start Frame из fx
     private void newTestPuser() {
         new Thread(()->{
             commPort.ReciveStop();
+            commPort.close();
             // стар фрейм
             try {
                 StartFrame.main(true, new StartFrame.CallBack() {
-                    @Override
-                    public void messageCloseStartFrame(BaseData conn, String commPortName) {
-                    }
+                            @Override
+                            public void messageCloseStartFrame(BaseData conn, String commPortName) throws Exception {
+                                runner.fillFields();
+                                commPortOpen(commPort, commPortName, runner::reciveRsPush);
+                                commPort.ReciveStart();
+                            }
 
-                    @Override
-                    public void messageSetNewData() {
-                        runner.fillFields();
-                        commPort.ReciveStart();
-                    }
+                            @Override
+                            public void stopSystem() {
+                                if (commPort != null) commPort.close();
+                                if (runner != null) runner.Close();
+                                if (screenFx != null) screenFx.exitApp();
+                                if (commPort != null) commPort = null;
+                                if (runner != null) runner = null;
+                                if (screenFx != null) screenFx = null;
+                            }
 
-                    @Override
-                    public void stopSystem() {
-                        if (commPort != null) commPort.close();
-                        if (runner != null) runner.Close();
-                        if (screenFx != null) screenFx.exitApp();
-                        if (commPort != null) commPort = null;
-                        if (runner != null) runner = null;
-                        if (screenFx != null) screenFx = null;
-                    }
-                });
+                        },
+                        commPort);
             } catch (Exception exception) {
                 exception.printStackTrace();
                 System.exit(-100);
@@ -162,8 +176,28 @@ public class MainClass {
     class RunnerCallBack implements Runner.CallBack {
         @Override
         public void sendStopAutoMode() {
-            commPort.sendMessageStopAuto();
+            try {
+                commPort.sendMessageStopAuto();
+            } catch (Exception exception) {
+                myLog.log(Level.SEVERE, "команда стоп авто режим", exception);
+            }
         }
     }
     // ===============================================
+    // чтение имени порта
+    public static String getPortNameFromConfig() {
+        // чтение конфигурации
+        BaseData.Config config = BaseData.Config.create();
+        try { config.load();
+        } catch (BaseDataException be) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
+            config.setDefault();
+        }
+        return config.getPortName();
+    }
+    public static CommPort.PortStat commPortOpen(CommPort commPort, String commPortName, CommPort.CallBack callBack) throws Exception {
+        if (commPort == null) throw new Exception("Ошибка открытия comm port (объект не создан)");
+        return commPort.open(callBack, commPortName, BAUD.baud57600);
+    }
+
 }
