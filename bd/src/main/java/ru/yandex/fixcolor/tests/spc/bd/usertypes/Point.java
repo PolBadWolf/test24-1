@@ -1,6 +1,6 @@
-package ru.yandex.fixcolor.tests.spc.loader.calibration;
+package ru.yandex.fixcolor.tests.spc.bd.usertypes;
 
-class Point {
+public class Point {
     public double value;
     public int adc;
 
