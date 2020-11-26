@@ -8,6 +8,7 @@ class CommPortClass implements CommPort {
     private SerialPort port = null;
     private Thread threadRS = null;
     private CallBack callBack = null;
+    private int reciveTimeOut = 0;
 
     static String[] getListPortsName() {
         SerialPort[] ports = SerialPort.getCommPorts();
@@ -51,7 +52,7 @@ class CommPortClass implements CommPort {
         port = SerialPort.getCommPort(portNameCase);
         port.setComPortParameters(baud.getBaud(), 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         port.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 50, 50);
+        port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 1, 50);
 
         if (port.openPort()) {
             this.callBack = callBack;
@@ -76,11 +77,13 @@ class CommPortClass implements CommPort {
         if (port == null)   return false;
         return port.isOpen();
     }
-
+    byte[] dump = new byte[1024];
     @Override
     public boolean ReciveStart() {
         if (port == null)   return false;
         if (!port.isOpen()) return false;
+
+        while (port.readBytes(dump, dump.length) > 0) ;
 
         threadRS = new Thread(this::runnerReciver);
         threadRS.start();
@@ -149,9 +152,9 @@ class CommPortClass implements CommPort {
         recive_num = 0;
         try {
             while (onCycle) {
-                if (recive_num == 0) {
-                    Thread.sleep(1);
-                }
+                if (recive_num == 0) Thread.sleep(1);
+                if (reciveTimeOut == 1) reciveMode = reciveMode;
+                if (reciveTimeOut > 0) reciveTimeOut--;
                 switch (reciveMode) {
                     case reciveMode_SYNHRO:
                         recive_synhro();
@@ -188,6 +191,7 @@ class CommPortClass implements CommPort {
         if ((reciveHeader[2] & 0xff) != 0x55) return;
         if ((reciveHeader[3] & 0xff) != 0xaa) return;
         // ok
+        reciveTimeOut = 10;
         reciveMode = reciveMode_LENGHT;
     }
     private void recive_lenght() throws Exception {
@@ -212,6 +216,7 @@ class CommPortClass implements CommPort {
                 callBack.reciveRsPush(reciveBody_Buffer, reciveBody_lenght - 1);
             }
         }
+        reciveTimeOut = 0;
         reciveMode = reciveMode_SYNHRO;
     }
     // ************************************************************************
