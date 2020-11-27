@@ -301,45 +301,40 @@ class TuningFrame {
                     null, this::callSelectBaseData, true, true);
             panelParamSQL.add(comboBoxListBd);
 
-            buttonOk = CreateComponents.getButton("Ok", new Font("Dialog", Font.BOLD, 12),
+            buttonOk = CreateComponents.getButton(panelParamSQL, "Ok", new Font("Dialog", Font.BOLD, 12),
                     16, 140, 80, 30,
                     null,
                     true,
                     false);
-            panelParamSQL.add(buttonOk);
 
-            buttonSave = CreateComponents.getButton("Сохранить", new Font("Dialog", Font.BOLD, 12),
+            buttonSave = CreateComponents.getButton(panelParamSQL, "Сохранить", new Font("Dialog", Font.BOLD, 12),
                     103, 140, 110, 30,
                     this::callPushButtonSave,
                     true,
                     false);
-            panelParamSQL.add(buttonSave);
 
-            buttonTest = CreateComponents.getButton("Тест", new Font("Dialog", Font.BOLD, 12),
+            buttonTest = CreateComponents.getButton(panelParamSQL, "Тест", new Font("Dialog", Font.BOLD, 12),
                     220, 140, 80, 30,
                     this::callPushButtonTest,
                     true,
                     false);
-            panelParamSQL.add(buttonTest);
         } // Parameters Base
         {
             panelSelectEdit = CreateComponents.getPanel(null, new Font("Times New Roman", Font.BOLD, 14),
                     "редактирование", 10, 340, 360, 80, true, true);
             container.add(panelSelectEdit);
 
-            buttonEditUsers = CreateComponents.getButton("Пользователи", new Font("Dialog", Font.BOLD, 12),
+            buttonEditUsers = CreateComponents.getButton(panelSelectEdit, "Пользователи", new Font("Dialog", Font.BOLD, 12),
                     16, 30, 140, 30,
                     this::callPushButtonEditUsers,
                     true,
                     false);
-            panelSelectEdit.add(buttonEditUsers);
 
-            buttonEditPushers = CreateComponents.getButton("Толкатели", new Font("Dialog", Font.BOLD, 12),
+            buttonEditPushers = CreateComponents.getButton(panelSelectEdit, "Толкатели", new Font("Dialog", Font.BOLD, 12),
                     200, 30, 140, 30,
                     this::callPushButtonEditPushers,
                     true,
                     false);
-            panelSelectEdit.add(buttonEditPushers);
         } // Select Edit
         frameTuning.pack();
         frameTuning.setResizable(false);

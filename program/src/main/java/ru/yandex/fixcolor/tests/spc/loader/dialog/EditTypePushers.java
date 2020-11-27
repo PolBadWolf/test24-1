@@ -101,14 +101,10 @@ public class EditTypePushers {
         textWeightNominal = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 400, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textWeightNominal);
         // ---- кнопки
-        buttonDelete = CreateComponents.getButton("Удалить", new Font("Times New Roman", Font.PLAIN, 14), 470, 270, 120, 25, this::buttonDeleteAction, true, true);
-        frame.add(buttonDelete);
-        buttonClear = CreateComponents.getButton("Очистить", new Font("Times New Roman", Font.PLAIN, 14), 470, 310, 120, 25, this::buttonClearAction, true, true);
-        frame.add(buttonClear);
-        buttonEdit = CreateComponents.getButton("Изменить", new Font("Times New Roman", Font.PLAIN, 14), 470, 350, 120, 25, this::buttonEditAction, true, true);
-        frame.add(buttonEdit);
-        buttonAdd = CreateComponents.getButton("Добавить", new Font("Times New Roman", Font.PLAIN, 14), 470, 385, 120, 25, this::buttonAddAction, true, true);
-        frame.add(buttonAdd);
+        buttonDelete = CreateComponents.getButton(frame, "Удалить", new Font("Times New Roman", Font.PLAIN, 14), 470, 270, 120, 25, this::buttonDeleteAction, true, true);
+        buttonClear = CreateComponents.getButton(frame, "Очистить", new Font("Times New Roman", Font.PLAIN, 14), 470, 310, 120, 25, this::buttonClearAction, true, true);
+        buttonEdit = CreateComponents.getButton(frame, "Изменить", new Font("Times New Roman", Font.PLAIN, 14), 470, 350, 120, 25, this::buttonEditAction, true, true);
+        buttonAdd = CreateComponents.getButton(frame, "Добавить", new Font("Times New Roman", Font.PLAIN, 14), 470, 385, 120, 25, this::buttonAddAction, true, true);
         // ---- таблица
         tableTypePushers = CreateComponents.getTable(
                 640 - 17,

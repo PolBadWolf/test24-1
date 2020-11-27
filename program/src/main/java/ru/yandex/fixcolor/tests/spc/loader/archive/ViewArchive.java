@@ -98,9 +98,8 @@ public class ViewArchive {
         scrollPane.setBounds(700, 50, 300, 710); // max 760 (800 - 40)
         frame.add(scrollPane);
         //
-        buttonPrint = CreateComponents.getButton("Печать", new Font("Dialog", Font.PLAIN,12),
+        buttonPrint = CreateComponents.getButton(frame, "Печать", new Font("Dialog", Font.PLAIN,12),
                 800, 10, 80, 30, this::callButtonPrinterPush, true, false);
-        frame.add(buttonPrint);
         //
         CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок ла-ла-ла", new Font("Times New Roman", Font.PLAIN, 32),
                 350, 10, true, true, MLabel.POS_CENTER);
