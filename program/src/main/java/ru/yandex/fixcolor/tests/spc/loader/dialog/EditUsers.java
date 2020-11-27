@@ -128,9 +128,8 @@ public class EditUsers extends JFrame {
                 null, null, true, true);
         add(fieldSurName);
 
-        buttonDeactive = CreateComponents.getButton("деактивация", new Font("Times New Roman", Font.PLAIN, 14), 440, 298, 160, 30,
+        buttonDeactive = CreateComponents.getButton(this, "деактивация", new Font("Times New Roman", Font.PLAIN, 14), 440, 298, 160, 30,
                 this::pushButtonDeactive, true, true);
-        add(buttonDeactive);
 
         label_password = CreateComponents.getLabel("Пароль", new Font("Times New Roman", Font.PLAIN, 16), 20, 338, 60, 30, true, true);
         add(label_password);
@@ -139,9 +138,8 @@ public class EditUsers extends JFrame {
                 null, null, true, true);
         add(fieldPassword);
 
-        buttonNewUser = CreateComponents.getButton("Новый пользователь", new Font("Times New Roman", Font.PLAIN, 14), 440, 337, 160, 30,
+        buttonNewUser = CreateComponents.getButton(this, "Новый пользователь", new Font("Times New Roman", Font.PLAIN, 14), 440, 337, 160, 30,
                 this::pushButtonNewUser, true, true);
-        add(buttonNewUser);
 
         label_edit = CreateComponents.getLabel("Редактирование", new Font("Times New Roman", Font.PLAIN, 18), 170, 365, 130, 60, true, true);
         add(label_edit);
@@ -154,9 +152,8 @@ public class EditUsers extends JFrame {
                 false, null, true, true);
         add(checkPushers);
 
-        buttonEditUser = CreateComponents.getButton("Ред. пользователя", new Font("Times New Roman", Font.PLAIN, 14), 440, 388, 160, 30,
+        buttonEditUser = CreateComponents.getButton(this, "Ред. пользователя", new Font("Times New Roman", Font.PLAIN, 14), 440, 388, 160, 30,
                 this::pushButtonEditUser, true, true);
-        add(buttonEditUser);
 
         pack();
     }

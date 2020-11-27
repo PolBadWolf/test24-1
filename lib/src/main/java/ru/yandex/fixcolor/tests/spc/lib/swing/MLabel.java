@@ -110,9 +110,9 @@ public class MLabel extends JLabel {
     }
     public int corHor(int x, int strWidth, int pos) {
         switch (pos) {
-            case POS_LEFT:
-                x = x + strWidth;
-                break;
+//            case POS_LEFT:
+//                x = x + strWidth;
+//                break;
             case POS_CENTER:
                 x = x - (strWidth / 2);
                 break;

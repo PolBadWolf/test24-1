@@ -9,6 +9,11 @@ public class PointK {
         this.offset = offset;
     }
 
+    public PointK() {
+        k = 1.0;
+        offset = 0;
+    }
+
     public static PointK render(Point point1, Point point2) {
         double k = (point1.value - point2.value) / (point1.adc - point2.adc);
         double offset = point1.value - (point1.adc * k);

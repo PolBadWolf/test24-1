@@ -128,6 +128,7 @@ public class MainClass {
                             @Override
                             public void messageCloseStartFrame(BaseData conn, String commPortName) throws Exception {
                                 runner.fillFields();
+                                runner.loadConfigK();
                                 commPortOpen(commPort, commPortName, runner::reciveRsPush);
                                 commPort.ReciveStart();
                             }

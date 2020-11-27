@@ -3,6 +3,7 @@ package ru.yandex.fixcolor.tests.spc.runner;
 import ru.yandex.fixcolor.tests.spc.allinterface.bd.DistClass;
 import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.Point;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 import ru.yandex.fixcolor.tests.spc.screen.*;
@@ -11,14 +12,15 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import static ru.yandex.fixcolor.tests.spc.lib.MyLogger.myLog;
+
 class RunningClass implements Runner {
     private MainFrame_interface mainFrame = null;
-//    private Plot plot = null;
     private ru.yandex.fixcolor.tests.spc.lib.plot2.Plot plot = null;
 
     private BaseData bdSql = null;
     private ArrayList<DistClass>  distanceOut = null;
-    private int ves;
+    private int weight;
     private int tik_shelf;
     private int tik_back;
     private int tik_stop;
@@ -30,6 +32,9 @@ class RunningClass implements Runner {
     private int tik, tik0;
     private final CallBack callBack;
 
+    PointK distance_pointK = new PointK();
+    PointK weight_pointK = new PointK();
+
     public RunningClass(CallBack callBack) {
         this.callBack = callBack;
     }
@@ -38,7 +43,7 @@ class RunningClass implements Runner {
     public void init(BaseData bdSql, MainFrame_interface mainFrame) {
         this.mainFrame = mainFrame;
         this.bdSql = bdSql;
-
+        loadConfigK();
         distanceOut = new ArrayList<>();
 
         Plot.Parameters plotParameters = new Plot.Parameters();
@@ -213,38 +218,36 @@ class RunningClass implements Runner {
             case TypePack.CURENT_DATA:
                 if (reciveOn) {
                     {
-                        int dist_in = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+                        int dist_in_adc = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+                        int dist_in = (int) Math.round(Point.renderValue(dist_in_adc, distance_pointK));
                         if (dist0Set) {
                             dist0Set = false;
                             dist0 = dist_in;
                         }
                         int dist = Math.abs(dist_in - dist0);
-                        int ves = (bytes[7 + 0] & 0xff) + ((bytes[7 + 1] & 0xff) << 8);
-                        paintTrends((short) dist, (short) ves);
-                        distanceOut.add(new DistClass(tik, dist, ves));
+                        int weight_adc = (bytes[7 + 0] & 0xff) + ((bytes[7 + 1] & 0xff) << 8);
+                        int weight = (int) Math.round(Point.renderValue(weight_adc, weight_pointK));
+                        paintTrends((short) dist, (short) weight);
+                        distanceOut.add(new DistClass(tik, dist, weight));
                     }
                 }
                 break;
-            case TypePack.VES:
-                showVes(bytes);
+            case TypePack.WEIGHT:
+                showWeight(bytes);
                 break;
             default:
         }
     }
 
-    private void showVes(byte[] bytes) {
-        ves  = (short) ((bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8));
-        mainFrame.label2_txt(ves + "кг");
+    private void showWeight(byte[] bytes) {
+        int weight_adc = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+        weight = (short) Math.round(Point.renderValue(weight_adc, weight_pointK));
+        mainFrame.label2_txt(weight + "кг");
     }
 
     private void paintTrends(short dist, short ves) {
         int x;
         x = (short)((tik - tik0) / 5);
-//        plot.newDataX(x);
-//        plot.newDataTrend(0, dist);
-//        plot.newDataTrend(1, ves);
-//        plot.newDataPush();
-//        plot.rePaint();
         plot.newData(tik - tik0);
         plot.addTrend(dist);
         plot.addTrend(ves);
@@ -275,7 +278,7 @@ class RunningClass implements Runner {
     void sendOutData () {
         // force
         int idxMid = distanceOut.size() / 2;
-        int forceMeasure = distanceOut.get(idxMid).ves - ves;
+        int forceMeasure = distanceOut.get(idxMid).ves - weight;
         // move
         int moveMeasureBegin = distanceOut.get(0).distance;
         int moveMeasureEnd = 0;
@@ -303,11 +306,22 @@ class RunningClass implements Runner {
         try {
             tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
 //            System.out.println("count = " + distanceOut.size());
-            bdSql.writeDataDist(n_cycle, ves, tik_shelf, tik_back, tik_stop,
+            bdSql.writeDataDist(n_cycle, weight, tik_shelf, tik_back, tik_stop,
                     forceMeasure, moveMeasure, timeUnClenching, new MyBlob(distanceOut));
         } catch (BaseDataException e) {
             MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
         }
 
+    }
+    @Override
+    public void loadConfigK() {
+        BaseData.Config config = BaseData.Config.create();
+        try { config.load();
+        } catch (BaseDataException be) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
+            config.setDefault();
+        }
+        distance_pointK = new PointK(config.getDistance_k(), config.getDistance_offset());
+        weight_pointK = new PointK(config.getWeight_k(), config.getWeight_offset());
     }
 }

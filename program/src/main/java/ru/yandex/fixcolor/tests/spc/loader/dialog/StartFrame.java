@@ -398,18 +398,12 @@ public class StartFrame {
             tableFindPushers.updateUI();
         } // селекторы
         {
-            buttonEnter = CreateComponents.getButton("Проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 190, 90, 24, this::callEnter, false, true);
-            buttonSetPassword = CreateComponents.getButton("Новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 190, 116, 24, this::callSetNewPassword, false, true);
-            buttonWork = CreateComponents.getButton("Измерения", new Font("Times New Roman", Font.PLAIN, 14), 195, 330, 110, 24, this::callReturnToWork, false, true);
-            buttonCalibration = CreateComponents.getButton("Калибровка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callCalibration, false, false);
-            buttonTuning = CreateComponents.getButton("настройка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callTuning, false, true);
-            buttonShowArchive = CreateComponents.getButton("Архив", new Font("Times New Roman", Font.PLAIN, 14), 80, 370, 90, 24, this::callShowArchive, false, false);
-            frame.add(buttonEnter);
-            frame.add(buttonWork);
-            frame.add(buttonTuning);
-            frame.add(buttonCalibration);
-            frame.add(buttonSetPassword);
-            frame.add(buttonShowArchive);
+            buttonEnter = CreateComponents.getButton(frame, "Проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 190, 90, 24, this::callEnter, false, true);
+            buttonSetPassword = CreateComponents.getButton(frame, "Новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 190, 116, 24, this::callSetNewPassword, false, true);
+            buttonWork = CreateComponents.getButton(frame, "Измерения", new Font("Times New Roman", Font.PLAIN, 14), 195, 330, 110, 24, this::callReturnToWork, false, true);
+            buttonCalibration = CreateComponents.getButton(frame, "Калибровка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callCalibration, false, false);
+            buttonTuning = CreateComponents.getButton(frame, "настройка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callTuning, false, true);
+            buttonShowArchive = CreateComponents.getButton(frame, "Архив", new Font("Times New Roman", Font.PLAIN, 14), 80, 370, 90, 24, this::callShowArchive, false, false);
             buttonWork.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "WorkButtonEnter");
             buttonWork.getActionMap().put("WorkButtonEnter", new AbstractAction() {
                 @Override
@@ -427,10 +421,8 @@ public class StartFrame {
             jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 380, 320, 160, 90,true, true );
             // кнопка редактирования пользователей
             // кнопка редактирования толкателей
-            buttonEditUsers = CreateComponents.getButton("Пользователей", new Font("Times New Roman", Font.PLAIN, 14), 20, 20, 120, 24, this::callEditUsers, true, true);
-            buttonEditPushers = CreateComponents.getButton("Толкателей", new Font("Times New Roman", Font.PLAIN, 14), 20, 55, 120, 24, this::callEditPushers, true, true);
-            jPanel1.add(buttonEditUsers);
-            jPanel1.add(buttonEditPushers);
+            buttonEditUsers = CreateComponents.getButton(jPanel1, "Пользователей", new Font("Times New Roman", Font.PLAIN, 14), 20, 20, 120, 24, this::callEditUsers, true, true);
+            buttonEditPushers = CreateComponents.getButton(jPanel1, "Толкателей", new Font("Times New Roman", Font.PLAIN, 14), 20, 55, 120, 24, this::callEditPushers, true, true);
 
             frame.add(jPanel1);
             jPanel1.setVisible(false);
@@ -472,9 +464,8 @@ public class StartFrame {
         fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 190,120, 24, null, this::callEnter, false, true);
         frame.add(fieldPassword);
 
-        buttonExit = CreateComponents.getButton("Выход", new Font("Times New Roman", Font.PLAIN, 14),
+        buttonExit = CreateComponents.getButton(frame, "Выход", new Font("Times New Roman", Font.PLAIN, 14),
                 80, 330, 90, 24, this::callExit, false, true);
-        frame.add(buttonExit);
 
         frame.pack();
     }

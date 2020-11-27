@@ -13,6 +13,7 @@ public interface Runner {
 
     void init(BaseData bdSql, MainFrame_interface mainFrame);
     void fillFields();
+    void loadConfigK();
     void reciveRsPush(byte[] bytes, int lenght);
 
     void Suspended();
@@ -30,7 +31,7 @@ public interface Runner {
         final static int CYCLE_FORWARD      = 8;
         final static int CYCLE_SHELF        = 9;
         final static int CURENT_DATA        = 11;
-        final static int VES                = 12;
+        final static int WEIGHT = 12;
     }
 
 }
