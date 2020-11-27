@@ -41,6 +41,7 @@ public class Calibration {
     private int distance_adc;
     private double distance_k;
     private double distance_offset;
+    private int weight_adc;
     private double weight_k;
     private double weight_offset;
     private Point distance_point1;
@@ -49,6 +50,7 @@ public class Calibration {
     private Point weight_point2;
     // ---------------
     private JFrame frame;
+    // ---------------
     private MLabel distanceLabelCurrent;
     private MLabel distanceLabelPoint1;
     private JTextField distanceTextPoint1;
@@ -56,6 +58,16 @@ public class Calibration {
     private MLabel distanceLabelPoint2;
     private JTextField distanceTextPoint2;
     private JButton distanceButtonPoint2;
+    // ---------------
+    private MLabel weightLabelCurrent;
+    private MLabel weightLabelPoint1;
+    private JTextField weightTextPoint1;
+    private JButton weightButtonPoint1;
+    private MLabel weightLabelPoint2;
+    private JTextField weightTextPoint2;
+    private JButton weightButtonPoint2;
+    // ---------------
+    private JButton configButtonSave;
     // ---------------
     protected Calibration(CallBack callBack, CommPort commPort) {
         Locale.setDefault(Locale.US);
@@ -75,6 +87,9 @@ public class Calibration {
                 null, new FrameClose());
         //
         initComponentsDistance(frame);
+        initComponentsWeight(frame);
+        configButtonSave = CreateComponents.getButton(frame, "Сохранить", new Font("Times New Roman", Font.PLAIN, 16),
+                320, 370, 120, 30, this::configSave, true, true);
         frame.pack();
         frame.setVisible(true);
         // ---------------
@@ -93,45 +108,126 @@ public class Calibration {
         timerSend_Thread.start();
         // ---------------
     }
+
     private void initComponentsDistance(Container parent) {
         CreateComponents.getLabel(parent, "Дистанция : ", new Font("Times New Roman", Font.PLAIN, 36),
-                270, 5, true, true, MLabel.POS_RIGHT);
-        distanceLabelCurrent = CreateComponents.getLabel(parent, "", new Font("Times New Roman", Font.PLAIN, 36),
-                270, 5, true, true, MLabel.POS_LEFT);
+                320, 5, true, true, MLabel.POS_CENTER);
+        CreateComponents.getLabel(parent, "Текущие данные : ", new Font("Times New Roman", Font.PLAIN, 24),
+                270, 55, true, true, MLabel.POS_RIGHT);
+        distanceLabelCurrent = CreateComponents.getLabel(parent, "", new Font("Times New Roman", Font.PLAIN, 24),
+                270, 55, true, true, MLabel.POS_LEFT);
         //
         CreateComponents.getLabel(parent, "точка 1 : АЦП ", new Font("Times New Roman", Font.PLAIN, 24),
-                240, 60, true, true, MLabel.POS_RIGHT);
+                240, 90, true, true, MLabel.POS_RIGHT);
         distanceLabelPoint1 = CreateComponents.getLabel(parent, String.valueOf(distance_point1.adc), new Font("Times New Roman", Font.PLAIN, 24),
-                250, 60, true, true, MLabel.POS_LEFT);
+                250, 90, true, true, MLabel.POS_LEFT);
         distanceTextPoint1 = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
                 new Font("Times New Roman", Font.PLAIN, 24),
-                320, 60, 120, 30,
+                320, 90, 120, 30,
                 null, null,
                 true, true);
         distanceTextPoint1.setText(String.format("%.3f", distance_point1.value));
-        distanceButtonPoint1 = CreateComponents.getButton("Set", new Font("Times New Roman", Font.PLAIN, 16),
-                500, 60, 80, 30,
+        distanceButtonPoint1 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+                500, 90, 80, 30,
                 this::distanceSetPoint1, true, true);
         //
         parent.add(distanceTextPoint1);
-        parent.add(distanceButtonPoint1);
+//        parent.add(distanceButtonPoint1);
         // ------------------
         CreateComponents.getLabel(parent, "точка 2 : АЦП ", new Font("Times New Roman", Font.PLAIN, 24),
-                240, 100, true, true, MLabel.POS_RIGHT);
+                240, 130, true, true, MLabel.POS_RIGHT);
         distanceLabelPoint2 = CreateComponents.getLabel(parent, String.valueOf(distance_point2.adc), new Font("Times New Roman", Font.PLAIN, 24),
-                250, 100, true, true, MLabel.POS_LEFT);
+                250, 130, true, true, MLabel.POS_LEFT);
         distanceTextPoint2 = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
                 new Font("Times New Roman", Font.PLAIN, 24),
-                320, 100, 120, 30,
+                320, 130, 120, 30,
                 null, null,
                 true, true);
         distanceTextPoint2.setText(String.format("%.3f", distance_point2.value));
-        distanceButtonPoint2 = CreateComponents.getButton("Set", new Font("Times New Roman", Font.PLAIN, 16),
-                500, 100, 80, 30,
+        distanceButtonPoint2 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+                500, 130, 80, 30,
                 this::distanceSetPoint2, true, true);
         //
         parent.add(distanceTextPoint2);
-        parent.add(distanceButtonPoint2);
+//        parent.add(distanceButtonPoint2);
+    }
+    private void initComponentsWeight(Container parent) {
+        CreateComponents.getLabel(parent, "Вес : ", new Font("Times New Roman", Font.PLAIN, 36),
+                320, 190, true, true, MLabel.POS_CENTER);
+        CreateComponents.getLabel(parent, "Текущие данные : ", new Font("Times New Roman", Font.PLAIN, 24),
+                270, 240, true, true, MLabel.POS_RIGHT);
+        weightLabelCurrent = CreateComponents.getLabel(parent, "", new Font("Times New Roman", Font.PLAIN, 24),
+                270, 240, true, true, MLabel.POS_LEFT);
+        //
+        CreateComponents.getLabel(parent, "точка 1 : АЦП ", new Font("Times New Roman", Font.PLAIN, 24),
+                240, 275, true, true, MLabel.POS_RIGHT);
+        weightLabelPoint1 = CreateComponents.getLabel(parent, String.valueOf(weight_point1.adc), new Font("Times New Roman", Font.PLAIN, 24),
+                250, 275, true, true, MLabel.POS_LEFT);
+        weightTextPoint1 = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
+                new Font("Times New Roman", Font.PLAIN, 24),
+                320, 275, 120, 30,
+                null, null,
+                true, true);
+        weightTextPoint1.setText(String.format("%.3f", weight_point1.value));
+        weightButtonPoint1 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+                500, 275, 80, 30,
+                this::weightSetPoint1, true, true);
+        //
+        parent.add(weightTextPoint1);
+//        parent.add(weightButtonPoint1);
+        // ------------------
+        CreateComponents.getLabel(parent, "точка 2 : АЦП ", new Font("Times New Roman", Font.PLAIN, 24),
+                240, 315, true, true, MLabel.POS_RIGHT);
+        weightLabelPoint2 = CreateComponents.getLabel(parent, String.valueOf(weight_point2.adc), new Font("Times New Roman", Font.PLAIN, 24),
+                250, 315, true, true, MLabel.POS_LEFT);
+        weightTextPoint2 = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
+                new Font("Times New Roman", Font.PLAIN, 24),
+                320, 315, 120, 30,
+                null, null,
+                true, true);
+        weightTextPoint2.setText(String.format("%.3f", weight_point2.value));
+        weightButtonPoint2 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+                500, 315, 80, 30,
+                this::weightSetPoint2, true, true);
+        //
+        parent.add(weightTextPoint2);
+//        parent.add(weightButtonPoint2);
+    }
+
+    private void weightSetPoint1(ActionEvent actionEvent) {
+        Point point = new Point();
+        PointK pointK;
+        try {
+            point.value = Double.parseDouble(weightTextPoint1.getText());
+            point.adc = weight_adc;
+            pointK = PointK.render(point, weight_point2);
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "ошибка расчета калибровки", e);
+            return;
+        }
+        weight_point1 = point;
+        weight_k = pointK.k;
+        weight_offset = pointK.offset;
+        weightLabelPoint1.setText(String.valueOf(weight_point1.adc));
+        distanceCurrentShow();
+    }
+
+    private void weightSetPoint2(ActionEvent actionEvent) {
+        Point point = new Point();
+        PointK pointK;
+        try {
+            point.value = Double.parseDouble(weightTextPoint2.getText());
+            point.adc = weight_adc;
+            pointK = PointK.render(point, weight_point1);
+        } catch (Exception e) {
+            myLog.log(Level.SEVERE, "ошибка расчета калибровки", e);
+            return;
+        }
+        weight_point2 = point;
+        weight_k = pointK.k;
+        weight_offset = pointK.offset;
+        weightLabelPoint2.setText(String.valueOf(weight_point2.adc));
+        distanceCurrentShow();
     }
 
     private void distanceSetPoint1(ActionEvent actionEvent) {
@@ -206,6 +302,24 @@ public class Calibration {
         }
     }
     //
+    private void configSave(ActionEvent actionEvent) {
+        BaseData.Config config = BaseData.Config.create();
+        try { config.load();
+        } catch (BaseDataException be) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
+            config.setDefault();
+        }
+        config.setDistance_k(distance_k);
+        config.setDistance_offset(distance_offset);
+        config.setWeight_k(weight_k);
+        config.setWeight_offset(weight_offset);
+        try {
+            config.save();
+        } catch (BaseDataException e) {
+            myLog.log(Level.WARNING, "ошибка записи файла конфигурации", e);
+        }
+    }
+    //
     private void readK_FromConfig() {
         BaseData.Config config = BaseData.Config.create();
         try { config.load();
@@ -224,13 +338,20 @@ public class Calibration {
     //
     private void reciveRs(byte[] bytes, int lenght) {
         distance_adc = (int) ConvertDigit.bytes2int(bytes, 5, 2);
-        int weight_adc = (int) ConvertDigit.bytes2int(bytes, 7, 2);
+        // ------------------------
+        weight_adc = (int) ConvertDigit.bytes2int(bytes, 7, 2);
         distanceCurrentShow();
+        weightCurrentShow();
     }
     private void distanceCurrentShow() {
         double distance = Point.renderValue(distance_adc, distance_k, distance_offset);
         String str_distanceCur = String.valueOf(distance_adc) + " ==>  " + String.format("%.3f", distance);
         distanceLabelCurrent.setText(str_distanceCur);
+    }
+    private void weightCurrentShow() {
+        double weight = Point.renderValue(weight_adc, weight_k, weight_offset);
+        String str_weightCur = String.valueOf(weight_adc) + " ==>  " + String.format("%.3f", weight);
+        weightLabelCurrent.setText(str_weightCur);
     }
     // ===========
 }
