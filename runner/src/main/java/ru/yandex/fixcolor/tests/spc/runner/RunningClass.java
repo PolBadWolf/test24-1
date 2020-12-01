@@ -70,9 +70,9 @@ class RunningClass implements Runner {
         // цвет фона окна
         plotParameters.windowBackColor = new Color(255, 255, 255);
         // размер окна в мсек
-        plotParameters.scaleZero_maxX = 5_000;
+        plotParameters.scaleZero_maxX = 2_500;
         // тип зумирования
-        plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHIFT;
+        plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHRINK;
         // ************ СЕТКА ************
         // цвет линии сетки
         plotParameters.netLineColor = new Color(50, 50, 50);
@@ -94,7 +94,7 @@ class RunningClass implements Runner {
         // начальное значение шкалы тренда
         plotParameters.trend1_zeroY_min = 0;
         // конечное значение шкалы тренда
-        plotParameters.trend1_zeroY_max = 50;
+        plotParameters.trend1_zeroY_max = 100;
         // режим автомасштабирования шкалы тренда
         plotParameters.trend1_AutoZoomY = Plot.ZOOM_Y_FROM_SCALE;
         // ************ ТРЕНД2  ************
@@ -105,17 +105,17 @@ class RunningClass implements Runner {
         // цвет шрифта подписи
         plotParameters.trend2_textFontColor = new Color(0, 200, 0);
         // размер шрифта подписи
-        plotParameters.trend1_textFontSize = 16;
+        plotParameters.trend2_textFontSize = 16;
         // цвет линии тренда
-        plotParameters.trend1_lineColor = new Color(0, 200, 0);
+        plotParameters.trend2_lineColor = new Color(0, 200, 0);
         // размер линии тренда
-        plotParameters.trend1_lineWidth = 2;
+        plotParameters.trend2_lineWidth = 2;
         // начальное значение шкалы тренда
-        plotParameters.trend1_zeroY_min = 0;
+        plotParameters.trend2_zeroY_min = 0;
         // конечное значение шкалы тренда
-        plotParameters.trend1_zeroY_max = 300;
+        plotParameters.trend2_zeroY_max = 30;
         // режим автомасштабирования шкалы тренда
-        plotParameters.trend1_AutoZoomY = Plot.ZOOM_Y_FROM_SCALE;
+        plotParameters.trend2_AutoZoomY = Plot.ZOOM_Y_FROM_SCALE;
 
         plot = Plot.createFx(plotParameters, mainFrame.getCanvas());
         plot.clearScreen();
@@ -172,6 +172,7 @@ class RunningClass implements Runner {
             case TypePack.MANUAL_FORWARD:
                 mainFrame.outStatusWork("MANUAL_FORWARD");
 //                System.out.println("MANUAL_FORWARD");
+                plot.setZommXzero();
                 distanceOut.clear();
                 dist0Set = true;
 
@@ -202,7 +203,7 @@ class RunningClass implements Runner {
                 break;
             case TypePack.CYCLE_FORWARD:
                 mainFrame.outStatusWork("CYCLE_FORWARD");
-//                System.out.println("CYCLE_FORWARD");
+                if (n_cycle == 0) plot.setZommXzero();
                 dist0Set = true;
                 distanceOut.clear();
 
@@ -235,7 +236,11 @@ class RunningClass implements Runner {
             case TypePack.WEIGHT:
                 showWeight(bytes);
                 break;
+            case TypePack.CALIBR_DATA:
+                //showWeight(bytes);
+                break;
             default:
+                throw new IllegalStateException("Unexpected value: " + b);
         }
     }
 
@@ -276,6 +281,7 @@ class RunningClass implements Runner {
     }
 
     void sendOutData () {
+        if (distanceOut.isEmpty()) return;
         // force
         int idxMid = distanceOut.size() / 2;
         int forceMeasure = distanceOut.get(idxMid).ves - weight;
