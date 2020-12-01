@@ -493,4 +493,9 @@ public class PlotParent implements Plot, LocalInt {
         // *
         return sub * kY;
     }
+
+    @Override
+    public void setZommXzero() {
+        memX_end = scaleZero_maxX;
+    }
 }
