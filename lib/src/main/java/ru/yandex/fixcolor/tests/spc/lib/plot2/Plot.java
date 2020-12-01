@@ -207,5 +207,6 @@ public interface Plot {
     void paint();
     void reFresh();
     void allDataClear();
+    void setZommXzero();
     void closeApp();
 }
