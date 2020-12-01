@@ -1,5 +1,6 @@
 package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
+import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.loader.MainClass;
 import ru.yandex.fixcolor.tests.spc.loader.archive.ViewArchive;
 import ru.yandex.fixcolor.tests.spc.loader.calibration.Calibration;
@@ -100,7 +101,10 @@ public class StartFrame {
 
 
     public static StartFrame main(boolean statMainWork, CallBack callBack, CommPort commPort) throws Exception {
-        if (startFrame != null) throw new Exception("Повторное создание Start Frame");
+        if (startFrame != null) {
+            myLog.log(Level.WARNING, "попытка повторного создание Start Frame");
+            return startFrame;
+        }
         try {
             SwingUtilities.invokeAndWait(()->{
                 startFrame = new StartFrame(statMainWork, callBack, commPort);
