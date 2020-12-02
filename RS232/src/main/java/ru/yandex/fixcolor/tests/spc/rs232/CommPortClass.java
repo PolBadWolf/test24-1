@@ -228,13 +228,13 @@ class CommPortClass implements CommPort {
     };
     private void send_header() throws Exception {
         int l = port.writeBytes(header, header.length);
-        if (l < 1) throw new Exception("ошибка отправки по comm port");
+//        if (l < 1) throw new Exception("ошибка отправки по comm port");
     }
     private byte[] send_lenghtVar = new byte[1];
     private void send_lenght(byte[] body) throws Exception {
         send_lenghtVar[0] = (byte) ((body.length + 1) & 0xff);
         int l = port.writeBytes(send_lenghtVar, 1);
-        if (l < 1) throw new Exception("ошибка отправки по comm port");
+//        if (l < 1) throw new Exception("ошибка отправки по comm port");
     }
     // ---------------------
     private static final byte[] sendMessageStopBody = {
@@ -250,7 +250,7 @@ class CommPortClass implements CommPort {
         byte[] cs = new byte[1];
         cs[0] = ControlSumma.crc8(sendMessageStopBody, sendMessageStopBody.length);
         int l = port.writeBytes(cs, cs.length);
-        if (l < cs.length) throw new Exception("ошибка отправки по comm port");
+//        if (l < cs.length) throw new Exception("ошибка отправки по comm port");
     }
     // ========================================================================
     private static final byte[] sendMessageCalibrationBody = {
@@ -266,7 +266,7 @@ class CommPortClass implements CommPort {
         byte[] cs = new byte[1];
         cs[0] = ControlSumma.crc8(sendMessageCalibrationBody, sendMessageCalibrationBody.length);
         int l = port.writeBytes(cs, cs.length);
-        if (l < cs.length) throw new Exception("ошибка отправки по comm port");
+//        if (l < cs.length) throw new Exception("ошибка отправки по comm port");
     }
     // ************************************************************************
 
