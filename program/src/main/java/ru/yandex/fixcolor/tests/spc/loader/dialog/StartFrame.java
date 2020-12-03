@@ -405,8 +405,8 @@ public class StartFrame {
             buttonEnter = CreateComponents.getButton(frame, "Проверка", new Font("Times New Roman", Font.PLAIN, 14), 320, 190, 90, 24, this::callEnter, false, true);
             buttonSetPassword = CreateComponents.getButton(frame, "Новый пароль", new Font("Times New Roman", Font.PLAIN, 14), 420, 190, 116, 24, this::callSetNewPassword, false, true);
             buttonWork = CreateComponents.getButton(frame, "Измерения", new Font("Times New Roman", Font.PLAIN, 14), 195, 330, 110, 24, this::callReturnToWork, false, true);
-            buttonCalibration = CreateComponents.getButton(frame, "Калибровка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callCalibration, false, false);
             buttonTuning = CreateComponents.getButton(frame, "настройка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callTuning, false, true);
+            buttonCalibration = CreateComponents.getButton(frame, "Калибровка", new Font("Times New Roman", Font.PLAIN, 14), 195, 370, 110, 24, this::callCalibration, false, false);
             buttonShowArchive = CreateComponents.getButton(frame, "Архив", new Font("Times New Roman", Font.PLAIN, 14), 80, 370, 90, 24, this::callShowArchive, false, false);
             buttonWork.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "WorkButtonEnter");
             buttonWork.getActionMap().put("WorkButtonEnter", new AbstractAction() {

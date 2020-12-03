@@ -1,10 +1,10 @@
 package ru.yandex.fixcolor.tests.spc.loader.calibration;
 
-import ru.yandex.fixcolor.library.converterdigit.ConvertDigit;
 import ru.yandex.fixcolor.tests.spc.bd.BaseData;
 import ru.yandex.fixcolor.tests.spc.bd.BaseDataException;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.Point;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.PointK;
+import ru.yandex.fixcolor.tests.spc.lib.Converts;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MLabel;
@@ -337,9 +337,9 @@ public class Calibration {
     }
     //
     private void reciveRs(byte[] bytes, int lenght) {
-        distance_adc = (int) ConvertDigit.bytes2int(bytes, 5, 2);
+        distance_adc = (int) Converts.bytesToInt(bytes, 5, 2);
         // ------------------------
-        weight_adc = (int) ConvertDigit.bytes2int(bytes, 7, 2);
+        weight_adc = (int) Converts.bytesToInt(bytes, 7, 2);
         distanceCurrentShow();
         weightCurrentShow();
     }
