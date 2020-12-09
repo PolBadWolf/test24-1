@@ -337,9 +337,9 @@ public class Calibration {
     }
     //
     private void reciveRs(byte[] bytes, int lenght) {
-        distance_adc = (int) Converts.bytesToInt(bytes, 5, 2);
+        distance_adc = (int) Converts.bytesToInt(bytes, 2, 5);
         // ------------------------
-        weight_adc = (int) Converts.bytesToInt(bytes, 7, 2);
+        weight_adc = (int) Converts.bytesToInt(bytes, 2, 7);
         distanceCurrentShow();
         weightCurrentShow();
     }

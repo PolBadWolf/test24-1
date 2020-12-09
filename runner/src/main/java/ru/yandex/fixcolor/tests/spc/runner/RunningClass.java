@@ -134,20 +134,20 @@ class RunningClass implements Runner {
         }
     }
 
+    int oldTypePack = 0;
     @Override
     public void reciveRsPush(byte[] bytes, int lenght) {
-        int b = bytes[0];
+        int typePack = bytes[0];
         tik = ((bytes[1] & 0x000000ff))
                 + ((bytes[2] & 0x000000ff) <<  8 )
                 + ((bytes[3] & 0x000000ff) << 16 )
                 + ((bytes[4] & 0x000000ff) << 24 );
-        int moveBegin, moveEnd, move, timeUnClenching;
-        DistClass distClass;
 
-        switch (b) {
+        switch (typePack) {
             case TypePack.MANUAL_ALARM:
                 mainFrame.outStatusWork("MANUAL_ALARM");
                 reciveOn = false;
+                oldTypePack = typePack;
                 break;
             case TypePack.MANUAL_BACK:
                 mainFrame.outStatusWork("MANUAL_BACK");
@@ -159,6 +159,7 @@ class RunningClass implements Runner {
                     if (distanceOut.size() < 2) {
                         mainFrame.outStatusWork("AUTO_STOP");
                         n_cycle = 0;
+                        oldTypePack = typePack;
                         break;
                     }
                     n_cycle++;
@@ -166,8 +167,11 @@ class RunningClass implements Runner {
                 mainFrame.outStatusWork("MANUAL_STOP");
 //                System.out.println("count = " + distanceOut.size());
                 //
-                sendOutData();
+                if (oldTypePack == TypePack.MANUAL_BACK || oldTypePack == TypePack.CYCLE_BACK) {
+                    sendOutData();
+                }
                 n_cycle = 0;
+                oldTypePack = typePack;
                 break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.outStatusWork("MANUAL_FORWARD");
@@ -180,26 +184,31 @@ class RunningClass implements Runner {
                 tik0 = tik;
                 reciveOn = true;
                 mainFrame.setFieldCurrentCycle(n_cycle + 1);
+                oldTypePack = typePack;
                 break;
             case TypePack.MANUAL_SHELF:
                 mainFrame.outStatusWork("MANUAL_SHELF");
                 tik_shelf = tik;
+                oldTypePack = typePack;
                 break;
             case TypePack.CYCLE_ALARM:
                 mainFrame.outStatusWork("CYCLE_ALARM");
+                oldTypePack = typePack;
                 break;
             case TypePack.CYCLE_BACK:
                 mainFrame.outStatusWork("CYCLE_BACK");
                 tik_back = tik;
+                oldTypePack = typePack;
                 break;
             case TypePack.CYCLE_DELAY:
                 mainFrame.outStatusWork("CYCLE_DELAY");
                 reciveOn = false;
                 n_cycle++;
-//                System.out.println("count = " + distanceOut.size());
-
-                sendOutData();
+                if (oldTypePack == TypePack.CYCLE_BACK) {
+                    sendOutData();
+                }
                 distanceOut.clear();
+                oldTypePack = typePack;
                 break;
             case TypePack.CYCLE_FORWARD:
                 mainFrame.outStatusWork("CYCLE_FORWARD");
@@ -211,10 +220,12 @@ class RunningClass implements Runner {
                 tik0 = tik;
                 mainFrame.setFieldCurrentCycle(n_cycle + 1);
                 reciveOn = true;
+                oldTypePack = typePack;
                 break;
             case TypePack.CYCLE_SHELF:
                 mainFrame.outStatusWork("CYCLE_SHELF");
                 tik_shelf = tik;
+                oldTypePack = typePack;
                 break;
             case TypePack.CURENT_DATA:
                 if (reciveOn) {
@@ -240,7 +251,7 @@ class RunningClass implements Runner {
                 //showWeight(bytes);
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + b);
+                throw new IllegalStateException("Unexpected value: " + typePack);
         }
     }
 
