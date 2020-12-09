@@ -185,16 +185,12 @@ class PlotFx extends PlotParent {
         LineParameters[] lines = new LineParameters[xN];
         double offsetS2 = (xStep - (memX_begin % xStep)) % xStep;
         int offsetCel = ((int) Math.ceil(memX_begin / xStep))* xStep;
-        for (int i = 0; i < xN; i++) {
+        for (int i = 0; i < xN && i < lines.length; i++) {
             x = (i * xStep + offsetS2) * kX + fieldSizeLeft;
             text = String.valueOf((double) ((i * xStep) + offsetCel) / 1_000);
-//            textRec = getRecWidthHeight(text, netTextSize);
             textRec = getRecWidthHeight(text, fieldFontSizeBottom);
-//            arrayTitleText.add(drawStringAlignment2(text, netTextColor, netTextSize, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
             arrayTitleText.add(drawStringAlignment2(text, fieldFontColorBottom, fieldFontSizeBottom, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
             lines[i] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
-//            arrayTitleText.add(drawStringAlignment2(text, netTextColor, netTextSize, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
-//            arrayTitleText.add(drawStringAlignment2(text, fieldFontColorBottom, fieldFontSizeBottom, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
         }
         arrayLines.add(new LinesParameters(lines, colorAwtToFx(netLineColor), netLineWidth));
     }
