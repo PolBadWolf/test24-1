@@ -152,6 +152,7 @@ class RunningClass implements Runner {
             case TypePack.MANUAL_BACK:
                 mainFrame.outStatusWork("MANUAL_BACK");
                 tik_back = tik;
+                oldTypePack = typePack;
                 break;
             case TypePack.MANUAL_STOP:
                 reciveOn = false;

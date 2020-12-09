@@ -32,13 +32,9 @@ public class PlotParent implements Plot, LocalInt {
     protected double fieldSizeBottom;
     // цвет шрифта на полях
     protected Color fieldFontColorTop;
-//    protected Color fieldFontColorLeft;
-//    protected Color fieldFontColorRight;
     protected Color fieldFontColorBottom;
     // рамер шрифта на полях
     protected double fieldFontSizeTop;
-//    protected double fieldFontSizeLeft;
-//    protected double fieldFontSizeRight;
     protected double fieldFontSizeBottom;
     // цвет фона полей
     protected Color fieldBackColor;
@@ -52,8 +48,10 @@ public class PlotParent implements Plot, LocalInt {
     protected Color windowBackColor;
     // цвет линий сетки
     protected Color netLineColor;
-//    protected Color netTextColor;
-    //protected double netTextSize;
+    // линия обратного хода
+    protected Color netLineBack;
+    protected double netLineBackWidth;
+    protected double netLineBackTime;
     // ширина линий сетки
     protected double netLineWidth;
     protected int scaleZero_zoomX; // 0 - off, 1 - shrink, 2 - shift
@@ -105,13 +103,9 @@ public class PlotParent implements Plot, LocalInt {
         positionBottom = height - fieldSizeBottom;
         // цвет шрифта на полях
         fieldFontColorTop = parameters.fieldFontColorTop;
-//        fieldFontColorLeft = parameters.fieldFontColorLeft;
-//        fieldFontColorRight = parameters.fieldFontColorRight;
         fieldFontColorBottom = parameters.fieldFontColorBottom;
         // рамер шрифта на полях
         fieldFontSizeTop = parameters.fieldFontSizeTop * scale_img;
-//        fieldFontSizeLeft = parameters.fieldFontSizeLeft;
-//        fieldFontSizeRight = parameters.fieldFontSizeRight;
         fieldFontSizeBottom = parameters.fieldFontSizeBottom * scale_img;
         // цвет фона полей
         fieldBackColor = parameters.fieldBackColor;
@@ -217,7 +211,9 @@ public class PlotParent implements Plot, LocalInt {
         }
     }
 
-    protected void __clear() throws InvocationTargetException, InterruptedException { }
+    protected void __clear() throws InvocationTargetException, InterruptedException {
+
+    }
     protected void __ReFresh(){ }
     protected void __paint(GraphData[] datGraph) { }
     @Override

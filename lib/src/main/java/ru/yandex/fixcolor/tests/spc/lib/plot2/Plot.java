@@ -50,13 +50,9 @@ public interface Plot {
         public double fieldSizeBottom;
         // цвет шрифта на полях
         public Color fieldFontColorTop;
-//        public Color fieldFontColorLeft;
-//        public Color fieldFontColorRight;
         public Color fieldFontColorBottom;
         // рамер шрифта на полях
         public double fieldFontSizeTop;
-//        public double fieldFontSizeLeft;
-//        public double fieldFontSizeRight;
         public double fieldFontSizeBottom;
         // цвет фона полей
         public Color fieldBackColor;
@@ -69,8 +65,7 @@ public interface Plot {
         public Color windowBackColor;
         // цвет линий сетки
         public Color netLineColor;
-//        public Color netTextColor;
-//        public double netTextSize;
+
         // ширина линий сетки
         public double netLineWidth;
         public double scaleZero_maxX;
