@@ -183,7 +183,7 @@ public class PlotParent implements Plot, LocalInt {
     // ==========================
     protected boolean flOnWork;
     protected Thread threadCycle;
-    protected final BlockingQueue<DataQueue> paintQueue = new ArrayBlockingQueue<>(100);
+    protected final BlockingQueue<DataQueue> paintQueue = new ArrayBlockingQueue<>(10);
     protected static final int command_Clear = 1;
     protected static final int command_Paint = 2;
     protected static final int command_ReFresh = 3;
@@ -274,6 +274,10 @@ public class PlotParent implements Plot, LocalInt {
     // предварительный рачет и передача в очередь для отрисовки
     @Override
     public void paint() {
+        if (!paintQueue.isEmpty()) {
+            System.out.println("beep");
+            return;
+        }
         if (timeUnits.isEmpty()) return;
         if (trends == null) return;
         // текущее крайнее положение memX_end
