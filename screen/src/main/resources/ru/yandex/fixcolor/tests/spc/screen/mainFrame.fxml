@@ -44,7 +44,7 @@
       <Label alignment="CENTER_RIGHT" layoutX="811.0" layoutY="717.0" text="текущ."><Font name="Times New Roman" size="18.0" /></Label>
 
       <Label alignment="CENTER" layoutX="859.0" layoutY="657.0" text="Кол-во циклов"><Font name="Times New Roman" size="18.0" /></Label>
-      <TextField alignment="CENTER" layoutX="850.0" layoutY="684.0" prefHeight="25.0" prefWidth="110.0" text="1" fx:id="s_nCicle" />
+      <TextField alignment="CENTER" layoutX="850.0" layoutY="684.0" prefHeight="25.0" prefWidth="110.0" text="15" fx:id="s_nCicle" />
       <Label alignment="CENTER" layoutX="850.0" layoutY="717.0" prefHeight="25.0" prefWidth="110.0" fx:id="l_nCicle" />
     </children>
 

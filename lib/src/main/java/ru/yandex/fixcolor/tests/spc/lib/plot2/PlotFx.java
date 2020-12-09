@@ -7,10 +7,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 class PlotFx extends PlotParent {
     private final GraphicsContext gc;
@@ -246,24 +248,32 @@ class PlotFx extends PlotParent {
         }
     }
     private void __drawlines(ArrayList<LinesParameters> arrayLines) {
-        for (LinesParameters linesUnit : arrayLines) {
-            gc.beginPath();
-            gc.setStroke(linesUnit.lineColor);
-            gc.setLineWidth(linesUnit.lineWidth);
-            for (LineParameters line : linesUnit.lines) {
-                gc.strokeLine(line.x1, line.y1, line.x2, line.y2);
+        try {
+            for (LinesParameters linesUnit : arrayLines) {
+                gc.beginPath();
+                gc.setStroke(linesUnit.lineColor);
+                gc.setLineWidth(linesUnit.lineWidth);
+                for (LineParameters line : linesUnit.lines) {
+                    gc.strokeLine(line.x1, line.y1, line.x2, line.y2);
+                }
+                gc.closePath();
             }
-            gc.closePath();
+        } catch (Exception e) {
+            MyLogger.myLog.log(Level.SEVERE, "ошибка отрисовки линий", e);
         }
     }
     private void __drawTitles(ArrayList<TitleText> arrayTitleText) {
-        for (TitleText titleText : arrayTitleText) {
-            gc.beginPath();
-            gc.setFont(new Font(gc.getFont().getName(), titleText.textFontSize));
-            gc.setFill(titleText.color);
-            gc.setTextAlign(titleText.alignment);
-            gc.fillText(titleText.text, titleText.x, titleText.y);
-            gc.closePath();
+        try {
+            for (TitleText titleText : arrayTitleText) {
+                gc.beginPath();
+                gc.setFont(new Font(gc.getFont().getName(), titleText.textFontSize));
+                gc.setFill(titleText.color);
+                gc.setTextAlign(titleText.alignment);
+                gc.fillText(titleText.text, titleText.x, titleText.y);
+                gc.closePath();
+            }
+        } catch (Exception e) {
+            MyLogger.myLog.log(Level.SEVERE, "ошибка отрисовки текста", e);
         }
     }
     private TrendPaintUnit __createPaintTrend(ArrayList<GraphDataUnit> graphData, Trend trend, double kY) {
