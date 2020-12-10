@@ -45,13 +45,11 @@ class PlotSwing extends PlotParent {
             flOnWork = true;
             try {
                 while (flOnWork) {
-                    try {
-                        if ((dataQueue = paintQueue.poll(10, TimeUnit.MILLISECONDS)) != null) {
-                            doCicle(dataQueue);
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        flOnWork = false;
+                    if ((dataQueue = paintQueue.poll(1, TimeUnit.MILLISECONDS)) == null) {
+                        deferredWork();
+                        Thread.sleep(1);
+                    } else  {
+                        doCicle(dataQueue);
                     }
                 }
             } catch (Exception exception) {
