@@ -204,4 +204,6 @@ public interface Plot {
     void allDataClear();
     void setZommXzero();
     void closeApp();
+    boolean isAutoPaint();
+    void setAutoPaint(boolean autoPaint);
 }

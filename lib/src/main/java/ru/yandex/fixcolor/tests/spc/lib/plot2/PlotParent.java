@@ -11,6 +11,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 
 public class PlotParent implements Plot, LocalInt {
+    // ----
+    protected boolean autoPaint;
+    // ----
     protected CallBack callBack;
     protected double scale_img;
     // размер холста
@@ -94,6 +97,7 @@ public class PlotParent implements Plot, LocalInt {
         deferredClearScreen = false;
         deferredPaint = false;
         deferredRefresh = false;
+        autoPaint = false;
         // ======
         scale_img = parameters.scale_img;
         // размер холста ( задается в основном конструкторе )
@@ -534,7 +538,16 @@ public class PlotParent implements Plot, LocalInt {
     }
     protected void deferredWork() {
         if (deferredClearScreen) { deferredClearScreen = false; deferred_ClearScreen(); return; }
-        if (deferredPaint) { deferredPaint = false; deferred_Paint(); return; }
+        if (deferredPaint || autoPaint) { deferredPaint = false; deferred_Paint(); return; }
         if (deferredRefresh) { deferredRefresh = false; deferredRefresh(); return; }
+    }
+
+    @Override
+    public boolean isAutoPaint() {
+        return autoPaint;
+    }
+    @Override
+    public void setAutoPaint(boolean autoPaint) {
+        this.autoPaint = autoPaint;
     }
 }
