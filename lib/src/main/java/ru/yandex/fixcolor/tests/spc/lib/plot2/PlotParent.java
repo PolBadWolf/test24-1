@@ -206,20 +206,18 @@ public class PlotParent implements Plot, LocalInt {
     // ==========================
     protected void doCicle(DataQueue dataQueue) {
         try {
-            synchronized (deferredLock) {
-                switch (dataQueue.command) {
-                    case command_Clear:
-                        __clear();
-                        break;
-                    case command_Paint:
-                        __paint(dataQueue.datGraph);
-                        break;
-                    case command_ReFresh:
-                        __ReFresh();
-                        break;
-                    default:
-                        throw new Exception("Неизвестная команда");
-                }
+            switch (dataQueue.command) {
+                case command_Clear:
+                    __clear();
+                    break;
+                case command_Paint:
+                    __paint(dataQueue.datGraph);
+                    break;
+                case command_ReFresh:
+                    __ReFresh();
+                    break;
+                default:
+                    throw new Exception("Неизвестная команда");
             }
         } catch (Exception exception) {
             MyLogger.myLog.log(Level.SEVERE, "Ошибка цикла", exception);
@@ -292,65 +290,69 @@ public class PlotParent implements Plot, LocalInt {
 
     protected void __zoomRender() {
         double t1_min, t1_max, t2_min, t2_max;
-        switch (trends[0].autoZoomY) {
-            case Plot.ZOOM_Y_FROM_SCALE:
-                t1_min = Math.min(trends[0].curnY_min, trends[0].zeroY_min);
-                t1_max = Math.max(trends[0].curnY_max, trends[0].zeroY_max);
-                break;
-            case Plot.ZOOM_Y_FROM_VISUAL_DATA:
-                t1_min = trends[0].curnY_min;
-                t1_max = trends[0].curnY_max;
-                break;
-            default:
-                t1_min = trends[0].zeroY_min;
-                t1_max = trends[0].zeroY_max;
+        synchronized (deferredLock) {
+            switch (trends[0].autoZoomY) {
+                case Plot.ZOOM_Y_FROM_SCALE:
+                    t1_min = Math.min(trends[0].curnY_min, trends[0].zeroY_min);
+                    t1_max = Math.max(trends[0].curnY_max, trends[0].zeroY_max);
+                    break;
+                case Plot.ZOOM_Y_FROM_VISUAL_DATA:
+                    t1_min = trends[0].curnY_min;
+                    t1_max = trends[0].curnY_max;
+                    break;
+                default:
+                    t1_min = trends[0].zeroY_min;
+                    t1_max = trends[0].zeroY_max;
+            }
+            switch (trends[1].autoZoomY) {
+                case Plot.ZOOM_Y_FROM_SCALE:
+                    t2_min = Math.min(trends[1].curnY_min, trends[1].zeroY_min);
+                    t2_max = Math.max(trends[1].curnY_max, trends[1].zeroY_max);
+                    break;
+                case Plot.ZOOM_Y_FROM_VISUAL_DATA:
+                    t2_min = trends[1].curnY_min;
+                    t2_max = trends[1].curnY_max;
+                    break;
+                default:
+                    t2_min = trends[1].zeroY_min;
+                    t2_max = trends[1].zeroY_max;
+            }
+            // расчет минимум и максимум
+            MultiplicityRender.Section sectionTr1 = MultiplicityRender.render.multiplicity(
+                    t1_min, t1_max
+            );
+            MultiplicityRender.Section sectionTr2 = MultiplicityRender.render.multiplicityT2(
+                    sectionTr1, t2_min, t2_max
+            );
+            trends[0].netY_min = sectionTr1.min;
+            trends[0].netY_max = sectionTr1.max;
+            trends[0].netY_step = sectionTr1.step;
+            trends[0].kY = windowHeight / (trends[0].netY_max - trends[0].netY_min);
+            //
+            trends[1].netY_min = sectionTr2.min;
+            trends[1].netY_max = sectionTr2.max;
+            trends[1].netY_step = sectionTr2.step;
+            trends[1].kY = windowHeight / (trends[1].netY_max - trends[1].netY_min);
+            //
+            y_netN = sectionTr1.n;
+            double xLenght = memX_end - memX_begin;
+            xStep = (MultiplicityRender.render.multiplicity(xLenght));
+            xN = ((int) Math.ceil(xLenght / xStep));
+            xCena = (double) xStep / 1_000;
+            kX = windowWidth / (xN * xStep);
+            //
         }
-        switch (trends[1].autoZoomY) {
-            case Plot.ZOOM_Y_FROM_SCALE:
-                t2_min = Math.min(trends[1].curnY_min, trends[1].zeroY_min);
-                t2_max = Math.max(trends[1].curnY_max, trends[1].zeroY_max);
-                break;
-            case Plot.ZOOM_Y_FROM_VISUAL_DATA:
-                t2_min = trends[1].curnY_min;
-                t2_max = trends[1].curnY_max;
-                break;
-            default:
-                t2_min = trends[1].zeroY_min;
-                t2_max = trends[1].zeroY_max;
-        }
-        // расчет минимум и максимум
-        MultiplicityRender.Section sectionTr1 = MultiplicityRender.render.multiplicity(
-                t1_min, t1_max
-        );
-        MultiplicityRender.Section sectionTr2 = MultiplicityRender.render.multiplicityT2(
-                sectionTr1, t2_min, t2_max
-        );
-        trends[0].netY_min = sectionTr1.min;
-        trends[0].netY_max = sectionTr1.max;
-        trends[0].netY_step = sectionTr1.step;
-        trends[0].kY = windowHeight / (trends[0].netY_max - trends[0].netY_min);
-        //
-        trends[1].netY_min = sectionTr2.min;
-        trends[1].netY_max = sectionTr2.max;
-        trends[1].netY_step = sectionTr2.step;
-        trends[1].kY = windowHeight / (trends[1].netY_max - trends[1].netY_min);
-        //
-        y_netN = sectionTr1.n;
-        double xLenght = memX_end - memX_begin;
-        xStep = (MultiplicityRender.render.multiplicity(xLenght));
-        xN = ((int) Math.ceil(xLenght / xStep));
-        xCena = (double) xStep / 1_000;
-        kX = windowWidth / (xN * xStep);
-        //
     }
     protected void fistZoomRender() {
-        for (Trend trend : trends) {
-            trend.curnY_min = trend.zeroY_min;
-            trend.curnY_max = trend.zeroY_max;
+        synchronized (deferredLock) {
+            for (Trend trend : trends) {
+                trend.curnY_min = trend.zeroY_min;
+                trend.curnY_max = trend.zeroY_max;
+            }
+            memX_begin = 0;
+            memX_beginIndx = 0;
+            memX_end = scaleZero_maxX;
         }
-        memX_begin = 0;
-        memX_beginIndx = 0;
-        memX_end = scaleZero_maxX;
         __zoomRender();
     }
 
