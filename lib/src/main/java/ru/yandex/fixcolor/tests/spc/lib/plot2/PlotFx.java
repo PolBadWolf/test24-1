@@ -90,12 +90,9 @@ class PlotFx extends PlotParent {
     // оптимизированная отрисовка трендов с очисткой экрана
     protected void __paint(GraphData[] datGraph) {
         try {
-            TrendPaintUnit[] trendPaint;
-            synchronized (deferredLock) {
-                trendPaint = new TrendPaintUnit[datGraph.length];
-                for (int t = 0; t < datGraph.length; t++) {
-                    trendPaint[t] = __createPaintTrend(datGraph[t].zn, trends[t], datGraph[t].kY);
-                }
+            TrendPaintUnit[] trendPaint = new TrendPaintUnit[datGraph.length];
+            for (int t = 0; t < datGraph.length; t++) {
+                trendPaint[t] = __createPaintTrend(datGraph[t].zn, trends[t], datGraph[t].kY);
             }
             ArrayList<TitleText> arrayTitleText = new ArrayList<>();
             ArrayList<LinesParameters> arrayLines = new ArrayList<>();
@@ -205,52 +202,48 @@ class PlotFx extends PlotParent {
     }
     private void __createlinesY(ArrayList<LinesParameters> arrayLines) {
         if (trends[0] == null) return;
-        synchronized (deferredLock) {
-            if ((trends[0].netY_min % trends[0].netY_step) == 0) y_FistN = 1;
-            else y_FistN = 0;
-            //
-            int step = trends[0].netY_step;
-            double offset = trends[0].kY * (trends[0].netY_min % step);
-            LineParameters[] lines = new LineParameters[y_netN - y_FistN];
-            double x1 = fieldSizeLeft + netLineWidth / 2;
-            double x2 = fieldSizeLeft + windowWidth - netLineWidth / 2;
-            double y, yInv;
-            for (int i = y_FistN, indx = 0; i < (y_netN); i++, indx++) {
-                y = (i * step * trends[0].kY) - offset;
-                yInv = (windowHeight + fieldSizeTop) - y;
-                lines[indx] = new LineParameters(x1, yInv, x2, yInv);
-            }
-            arrayLines.add(new LinesParameters(lines, colorAwtToFx(netLineColor), netLineWidth));
+        if ((trends[0].netY_min % trends[0].netY_step) == 0) y_FistN = 1;
+        else y_FistN = 0;
+        //
+        int step = trends[0].netY_step;
+        double offset = trends[0].kY * (trends[0].netY_min % step);
+        LineParameters[] lines = new LineParameters[y_netN - y_FistN];
+        double x1 = fieldSizeLeft + netLineWidth / 2;
+        double x2 = fieldSizeLeft + windowWidth - netLineWidth / 2;
+        double y, yInv;
+        for (int i = y_FistN, indx = 0; i < (y_netN); i++, indx++) {
+            y = (i * step * trends[0].kY) - offset;
+            yInv = (windowHeight + fieldSizeTop) - y;
+            lines[indx] = new LineParameters(x1, yInv, x2, yInv);
         }
+        arrayLines.add(new LinesParameters(lines, colorAwtToFx(netLineColor), netLineWidth));
     }
     private void __createTitlesY(ArrayList<TitleText> arrayTitleText) {
         double y, yZ;
         double x1;
         MyRecWidthHeight textRec;
-        synchronized (deferredLock) {
-            for (int i = 0; i < 2; i++) {
-                Trend trend = trends[i];
-                if (trend == null) break;
-                int baseN = y_netN;
-                int step = trend.netY_step;
-                double offset = trend.kY * (trend.netY_min % step);
-                int offsetC = trend.netY_min / step;
-                //
-                if (trend.positionFromWindow == TrendPosition.left) {
-                    x1 = positionLeft - 5;
-                } else {
-                    x1 = positionRight + 5;
-                }
-                String text;
-                double textFontSize = trend.textFontSize;
-                for (int j = 0; j < (baseN); j++) {
-                    yZ = (j + offsetC) * trend.netY_step;
-                    if (yZ > trend.netY_max) break;
-                    y = (j * step * trend.kY) - offset;
-                    text = (int) yZ + "" + trend.text;
-                    textRec = getRecWidthHeight(text, textFontSize);
-                    arrayTitleText.add(drawStringAlignment2(text, trend.textFontColor, textFontSize, x1, positionBottom - y, textRec, trend.positionFromWindow));
-                }
+        for (int i = 0; i < 2; i++) {
+            Trend trend = trends[i];
+            if (trend == null) break;
+            int baseN = y_netN;
+            int step = trend.netY_step;
+            double offset = trend.kY * (trend.netY_min % step);
+            int offsetC = trend.netY_min / step;
+            //
+            if (trend.positionFromWindow == TrendPosition.left) {
+                x1 = positionLeft - 5;
+            } else {
+                x1 = positionRight + 5;
+            }
+            String text;
+            double textFontSize = trend.textFontSize;
+            for (int j = 0; j < (baseN); j++) {
+                yZ = (j + offsetC) * trend.netY_step;
+                if (yZ > trend.netY_max) break;
+                y = (j * step * trend.kY) - offset;
+                text = (int) yZ + "" + trend.text;
+                textRec = getRecWidthHeight(text, textFontSize);
+                arrayTitleText.add(drawStringAlignment2(text, trend.textFontColor, textFontSize, x1, positionBottom - y, textRec, trend.positionFromWindow));
             }
         }
     }
