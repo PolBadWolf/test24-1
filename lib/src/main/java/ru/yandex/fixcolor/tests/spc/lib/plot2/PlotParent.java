@@ -84,6 +84,7 @@ public class PlotParent implements Plot, LocalInt {
     protected boolean deferredPaint;
     protected boolean deferredRefresh;
     protected Object deferredLock = new Object();
+    protected Object dataPaintLock = new Object();
     // ===============================================
     public CallBack getCallBack() {
         return callBack;
@@ -206,20 +207,19 @@ public class PlotParent implements Plot, LocalInt {
     // ==========================
     protected void doCicle(DataQueue dataQueue) {
         try {
-            synchronized (deferredLock) {
-                switch (dataQueue.command) {
-                    case command_Clear:
-                        __clear();
-                        break;
-                    case command_Paint:
-                        __paint(dataQueue.datGraph);
-                        break;
-                    case command_ReFresh:
-                        __ReFresh();
-                        break;
-                    default:
-                        throw new Exception("Неизвестная команда");
-                }
+            //synchronized (deferredLock)
+            switch (dataQueue.command) {
+                case command_Clear:
+                    __clear();
+                    break;
+                case command_Paint:
+                    __paint(dataQueue.datGraph);
+                    break;
+                case command_ReFresh:
+                    __ReFresh();
+                    break;
+                default:
+                    throw new Exception("Неизвестная команда");
             }
         } catch (Exception exception) {
             MyLogger.myLog.log(Level.SEVERE, "Ошибка цикла", exception);
@@ -264,17 +264,17 @@ public class PlotParent implements Plot, LocalInt {
     }
     @Override
     public void setData() {
-        synchronized (deferredLock) {
-            if (!flData) return;
-            flData = false;
-            try {
+        if (!flData) return;
+        flData = false;
+        try {
+            synchronized (deferredLock) {
                 timeUnits.add(new TimeUnit(newDataX));
                 for (int t = 0; t < trends.length; t++) {
                     trends[t].trendAddPoint(new TrendUnit(newDataTrends[t]));
                 }
-            } catch (Exception exception) {
-                //exception.printStackTrace();
             }
+        } catch (Exception exception) {
+            //exception.printStackTrace();
         }
     }
     private static class MY_Double {
