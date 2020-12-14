@@ -84,7 +84,10 @@ public class PlotParent implements Plot, LocalInt {
     protected boolean deferredPaint;
     protected boolean deferredRefresh;
     protected Object deferredLock = new Object();
-    protected Object dataPaintLock = new Object();
+    // ===============================================
+    protected double pointBackMove_time;
+    protected Color pointBackMove_color;
+    protected double pointBackMove_lineWidth;
     // ===============================================
     public CallBack getCallBack() {
         return callBack;
@@ -142,6 +145,10 @@ public class PlotParent implements Plot, LocalInt {
         //
         scaleZero_zoomX = parameters.scaleZero_zoomX;
         scaleZero_maxX = parameters.scaleZero_maxX;
+        // линия указания обратного хода
+        pointBackMove_time = parameters.pointBackMove_time;
+        pointBackMove_color = parameters.pointBackMove_color;
+        pointBackMove_lineWidth = parameters.pointBackMove_lineWidth;
         // значения минимума из прошлого цикла
         memX_begin = 0;
         memX_beginIndx = 0;
@@ -375,6 +382,7 @@ public class PlotParent implements Plot, LocalInt {
     @Override
     public void allDataClear() {
         synchronized (deferredLock) {
+            pointBackMove_time = -1_000_000;
             timeUnits.clear();
             for (Trend trend : trends) {
                 trend.trendClear();
@@ -549,5 +557,13 @@ public class PlotParent implements Plot, LocalInt {
     @Override
     public void setAutoPaint(boolean autoPaint) {
         this.autoPaint = autoPaint;
+    }
+
+    public double getPointBackMove_time() {
+        return pointBackMove_time;
+    }
+
+    public void setPointBackMove_time(double pointBackMove_time) {
+        this.pointBackMove_time = pointBackMove_time;
     }
 }

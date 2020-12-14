@@ -70,6 +70,11 @@ public interface Plot {
         public double netLineWidth;
         public double scaleZero_maxX;
         public int scaleZero_zoomX;
+
+        // линия указания обратного хода
+        public double pointBackMove_time;
+        public Color pointBackMove_color;
+        public double pointBackMove_lineWidth;
         //
         //      тренд1
         // начальные значения минимума и максимума
@@ -146,8 +151,12 @@ public interface Plot {
 //            netTextSize = 16;
             // ширина линий сетки
             netLineWidth = 2.0;
+            // линия указания обратного хода
+            pointBackMove_time = -1_000_000;
+            pointBackMove_color = Color.GREEN;
+            pointBackMove_lineWidth = 3;
             // 5 секунд
-            scaleZero_maxX = 5_400;
+            scaleZero_maxX = 1_400;
             scaleZero_zoomX = Plot.ZOOM_X_OFF;
             //
             //      тренд1
@@ -206,4 +215,5 @@ public interface Plot {
     void closeApp();
     boolean isAutoPaint();
     void setAutoPaint(boolean autoPaint);
+    void setPointBackMove_time(double time);
 }
