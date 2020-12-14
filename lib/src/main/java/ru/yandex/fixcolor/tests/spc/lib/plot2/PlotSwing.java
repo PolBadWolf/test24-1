@@ -45,13 +45,11 @@ class PlotSwing extends PlotParent {
             flOnWork = true;
             try {
                 while (flOnWork) {
-                    try {
-                        if ((dataQueue = paintQueue.poll(10, TimeUnit.MILLISECONDS)) != null) {
-                            doCicle(dataQueue);
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        flOnWork = false;
+                    if ((dataQueue = paintQueue.poll(1, TimeUnit.MILLISECONDS)) == null) {
+                        deferredWork();
+                        Thread.sleep(1);
+                    } else  {
+                        doCicle(dataQueue);
                     }
                 }
             } catch (Exception exception) {
@@ -170,12 +168,13 @@ class PlotSwing extends PlotParent {
     }
     private void __createlinesY(ArrayList<LinesParameters> arrayLines) {
         if (trends[0] == null) return;
+        LineParameters[] lines;
         if ((trends[0].netY_min % trends[0].netY_step) == 0) y_FistN = 1;
         else y_FistN = 0;
         //
         int step = trends[0].netY_step;
         double offset = trends[0].kY * (trends[0].netY_min % step);
-        LineParameters[] lines = new LineParameters[y_netN - y_FistN];
+        lines = new LineParameters[y_netN - y_FistN];
         double x1 = fieldSizeLeft + netLineWidth / 2;
         double x2 = fieldSizeLeft + windowWidth - netLineWidth / 2;
         double y, yInv;

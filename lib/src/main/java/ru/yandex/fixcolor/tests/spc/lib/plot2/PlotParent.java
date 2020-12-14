@@ -11,6 +11,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 
 public class PlotParent implements Plot, LocalInt {
+    // ----
+    protected boolean autoPaint;
+    // ----
     protected CallBack callBack;
     protected double scale_img;
     // размер холста
@@ -77,6 +80,12 @@ public class PlotParent implements Plot, LocalInt {
     protected int xN;
     protected double xCena;
     // ===============================================
+    protected boolean deferredClearScreen;
+    protected boolean deferredPaint;
+    protected boolean deferredRefresh;
+    protected Object deferredLock = new Object();
+    protected Object dataPaintLock = new Object();
+    // ===============================================
     public CallBack getCallBack() {
         return callBack;
     }
@@ -86,6 +95,11 @@ public class PlotParent implements Plot, LocalInt {
     // ===============================================
     // конструктор
     protected PlotParent(Parameters parameters, double paneWidth, double paneHeight) {
+        deferredClearScreen = false;
+        deferredPaint = false;
+        deferredRefresh = false;
+        autoPaint = false;
+        // ======
         scale_img = parameters.scale_img;
         // размер холста ( задается в основном конструкторе )
         width = paneWidth * scale_img;
@@ -193,6 +207,7 @@ public class PlotParent implements Plot, LocalInt {
     // ==========================
     protected void doCicle(DataQueue dataQueue) {
         try {
+            //synchronized (deferredLock)
             switch (dataQueue.command) {
                 case command_Clear:
                     __clear();
@@ -223,11 +238,7 @@ public class PlotParent implements Plot, LocalInt {
 
     @Override
     public void clearScreen() {
-        try {
-            paintQueue.add(queueClear);
-        } catch (IllegalStateException i) {
-            //System.out.println("переполнение буфера команд: " + i.getMessage());
-        }
+        deferredClearScreen = true;
     }
 
     // ====================
@@ -256,9 +267,11 @@ public class PlotParent implements Plot, LocalInt {
         if (!flData) return;
         flData = false;
         try {
-            timeUnits.add(new TimeUnit(newDataX));
-            for (int t = 0; t < trends.length; t++) {
-                trends[t].trendAddPoint(new TrendUnit(newDataTrends[t]));
+            synchronized (deferredLock) {
+                timeUnits.add(new TimeUnit(newDataX));
+                for (int t = 0; t < trends.length; t++) {
+                    trends[t].trendAddPoint(new TrendUnit(newDataTrends[t]));
+                }
             }
         } catch (Exception exception) {
             //exception.printStackTrace();
@@ -274,116 +287,7 @@ public class PlotParent implements Plot, LocalInt {
     // предварительный рачет и передача в очередь для отрисовки
     @Override
     public void paint() {
-        if (!paintQueue.isEmpty()) {
-            System.out.println("beep");
-            return;
-        }
-        if (timeUnits.isEmpty()) return;
-        if (trends == null) return;
-        // текущее крайнее положение memX_end
-        if (scaleZero_zoomX == Plot.ZOOM_X_SHIFT) {
-            // shift
-            // длина окна zeroX_max
-            memX_begin = timeUnits.get(memX_beginIndx).ms;
-            double lenghtSample = memX_end - scaleZero_maxX;
-            if (memX_begin < lenghtSample) {
-                // поск позитции начала
-                double tmp;
-                int timeUnits_size = timeUnits.size();
-                for (int i = memX_beginIndx; i < timeUnits_size; i++) {
-                    tmp = timeUnits.get(i).ms;
-                    if (tmp < lenghtSample) continue;
-                    memX_begin = tmp;
-                    memX_beginIndx = i;
-                    break;
-                }
-            }
-        } else {
-            memX_begin = 0;
-            memX_beginIndx = 0;
-        }
-        // === дроп и поиск минимума и максимума Y для каждого тренда
-        ArrayList<Double> mX = new ArrayList<>();
-        MY_Double[] mY = new MY_Double[trends.length];
-        for (int t = 0; t < trends.length; t++) {
-            mY[t] = new MY_Double();
-        }
-        double curMs;
-        int pixOld = -1_000;
-        int pixCur;
-        double[] _netY_min = new double[trends.length];
-        double[] _netY_max = new double[trends.length];
-        double[] localY_zn = new double[trends.length];
-        int[] localYrend = new int[trends.length];
-        double _curY;
-        // начальные значения
-        for (int t = 0; t < trends.length; t++) {
-            double zn = trends[t].getValueFromMass(memX_beginIndx);
-            if (trends[t].autoZoomY == Plot.ZOOM_Y_FROM_VISUAL_DATA) {
-                _netY_min[t] = zn;
-                _netY_max[t] = zn;
-            } else {
-                _netY_min[t] = trends[t].zeroY_min;
-                _netY_max[t] = trends[t].zeroY_max;
-            }
-            localY_zn[t] = zn;
-            localYrend[t] = 0;
-        }
-        for (int i_ms = memX_beginIndx; i_ms < timeUnits.size(); i_ms++) {
-            curMs = timeUnits.get(i_ms).ms;
-            pixCur = (int) (curMs * kX);
-            //
-            for (int t = 0; t < trends.length; t++) {
-                _curY = trends[t].getValueFromMass(i_ms);
-                if (localYrend[t] == 0) {
-                    if (_curY > localY_zn[t]) {
-                        localYrend[t] = 1;
-                    } else {
-                        localYrend[t] = 2;
-                    }
-                    localY_zn[t] = _curY;
-                }
-                if (localYrend[t] == 1) {
-                    if (localY_zn[t] < _curY) localY_zn[t] = _curY;
-                } else {
-                    if (localY_zn[t] > _curY) localY_zn[t] = _curY;
-                }
-            }
-            //
-            if (pixOld >= pixCur) {
-                continue;
-            }
-            //
-            pixOld = pixCur;
-            mX.add(curMs);
-            for (int t = 0; t < trends.length; t++) {
-                if (_netY_min[t] > localY_zn[t]) _netY_min[t] = localY_zn[t];
-                if (_netY_max[t] < localY_zn[t]) _netY_max[t] = localY_zn[t];
-                mY[t].array.add(localY_zn[t]);
-                localYrend[t] = 0;
-            }
-        }
-        DataQueue dataQueue = new DataQueue(command_Paint, new GraphData[trends.length]);
-        for (int t = 0; t < trends.length; t++) {
-            trends[t].curnY_min = _netY_min[t];
-            trends[t].curnY_max = _netY_max[t];
-            dataQueue.datGraph[t] = new GraphData();
-        }
-        __zoomRender();
-        //
-        int mX_size = mX.size();
-        for (int t = 0; t < trends.length; t++) {
-            dataQueue.datGraph[t].kY = trends[t].kY;
-            for (int i = 0; i < mX_size; i++) {
-                dataQueue.datGraph[t].zn.add(new GraphDataUnit(mX.get(i), mY[t].array.get(i)));
-            }
-        }
-        try {
-            paintQueue.add(dataQueue);
-            paintQueue.add(queueReFresh);
-        } catch (IllegalStateException i) {
-            //System.out.println("переполнение буфера команд: " + i.getMessage());
-        }
+        deferredPaint = true;
     }
 
     protected void __zoomRender() {
@@ -465,18 +369,16 @@ public class PlotParent implements Plot, LocalInt {
     }
     @Override
     public void reFresh() {
-        try {
-            paintQueue.add(queueReFresh);
-        } catch (IllegalStateException i) {
-            //System.out.println("переполнение буфера команд: " + i.getMessage());
-        }
+        deferredRefresh = true;
     }
 
     @Override
     public void allDataClear() {
-        timeUnits.clear();
-        for (Trend trend : trends) {
-            trend.trendClear();
+        synchronized (deferredLock) {
+            timeUnits.clear();
+            for (Trend trend : trends) {
+                trend.trendClear();
+            }
         }
     }
 
@@ -497,5 +399,155 @@ public class PlotParent implements Plot, LocalInt {
     @Override
     public void setZommXzero() {
         memX_end = scaleZero_maxX;
+    }
+    // =========================
+    // запуск обновления экрана
+    private void deferred_ClearScreen() {
+        try {
+            paintQueue.add(queueClear);
+        } catch (IllegalStateException i) {
+            //System.out.println("переполнение буфера команд: " + i.getMessage());
+        }
+    }
+    private void deferred_Paint() {
+        if (!paintQueue.isEmpty()) {
+            System.out.println("beep");
+            return;
+        }
+        if (timeUnits.isEmpty()) return;
+        if (trends == null) return;
+        DataQueue dataQueue = null;
+        synchronized (deferredLock) {
+            // текущее крайнее положение memX_end
+            if (scaleZero_zoomX == Plot.ZOOM_X_SHIFT) {
+                // shift
+                // длина окна zeroX_max
+                memX_begin = timeUnits.get(memX_beginIndx).ms;
+                double lenghtSample = memX_end - scaleZero_maxX;
+                if (memX_begin < lenghtSample) {
+                    // поск позитции начала
+                    double tmp;
+                    int timeUnits_size = timeUnits.size();
+                    for (int i = memX_beginIndx; i < timeUnits_size; i++) {
+                        tmp = timeUnits.get(i).ms;
+                        if (tmp < lenghtSample) continue;
+                        memX_begin = tmp;
+                        memX_beginIndx = i;
+                        break;
+                    }
+                }
+            } else {
+                memX_begin = 0;
+                memX_beginIndx = 0;
+            }
+            // === дроп и поиск минимума и максимума Y для каждого тренда
+            ArrayList<Double> mX = new ArrayList<>();
+            MY_Double[] mY = new MY_Double[trends.length];
+            for (int t = 0; t < trends.length; t++) {
+                mY[t] = new MY_Double();
+            }
+            double curMs;
+            int pixOld = -1_000;
+            int pixCur;
+            double[] _netY_min = new double[trends.length];
+            double[] _netY_max = new double[trends.length];
+            double[] localY_zn = new double[trends.length];
+            int[] localYrend = new int[trends.length];
+            double _curY;
+            // начальные значения
+            for (int t = 0; t < trends.length; t++) {
+                double zn = trends[t].getValueFromMass(memX_beginIndx);
+                if (trends[t].autoZoomY == Plot.ZOOM_Y_FROM_VISUAL_DATA) {
+                    _netY_min[t] = zn;
+                    _netY_max[t] = zn;
+                } else {
+                    _netY_min[t] = trends[t].zeroY_min;
+                    _netY_max[t] = trends[t].zeroY_max;
+                }
+                localY_zn[t] = zn;
+                localYrend[t] = 0;
+            }
+            for (int i_ms = memX_beginIndx; i_ms < timeUnits.size(); i_ms++) {
+                curMs = timeUnits.get(i_ms).ms;
+                pixCur = (int) (curMs * kX);
+                //
+                for (int t = 0; t < trends.length; t++) {
+                    try {
+                        _curY = trends[t].getValueFromMass(i_ms);
+                        if (localYrend[t] == 0) {
+                            if (_curY > localY_zn[t]) {
+                                localYrend[t] = 1;
+                            } else {
+                                localYrend[t] = 2;
+                            }
+                            localY_zn[t] = _curY;
+                        }
+                        if (localYrend[t] == 1) {
+                            if (localY_zn[t] < _curY) localY_zn[t] = _curY;
+                        } else {
+                            if (localY_zn[t] > _curY) localY_zn[t] = _curY;
+                        }
+                    } catch (Exception e) {
+                        System.out.println("ups");
+                        e.printStackTrace();
+                    }
+                }
+                //
+                if (pixOld >= pixCur) {
+                    continue;
+                }
+                //
+                pixOld = pixCur;
+                mX.add(curMs);
+                for (int t = 0; t < trends.length; t++) {
+                    if (_netY_min[t] > localY_zn[t]) _netY_min[t] = localY_zn[t];
+                    if (_netY_max[t] < localY_zn[t]) _netY_max[t] = localY_zn[t];
+                    mY[t].array.add(localY_zn[t]);
+                    localYrend[t] = 0;
+                }
+            }
+            dataQueue = new DataQueue(command_Paint, new GraphData[trends.length]);
+            for (int t = 0; t < trends.length; t++) {
+                trends[t].curnY_min = _netY_min[t];
+                trends[t].curnY_max = _netY_max[t];
+                dataQueue.datGraph[t] = new GraphData();
+            }
+            __zoomRender();
+            //
+            int mX_size = mX.size();
+            for (int t = 0; t < trends.length; t++) {
+                dataQueue.datGraph[t].kY = trends[t].kY;
+                for (int i = 0; i < mX_size; i++) {
+                    dataQueue.datGraph[t].zn.add(new GraphDataUnit(mX.get(i), mY[t].array.get(i)));
+                }
+            }
+        }
+        try {
+            paintQueue.add(dataQueue);
+            paintQueue.add(queueReFresh);
+        } catch (IllegalStateException i) {
+            //System.out.println("переполнение буфера команд: " + i.getMessage());
+        }
+    }
+    private void deferredRefresh() {
+        try {
+            paintQueue.add(queueReFresh);
+        } catch (IllegalStateException i) {
+            //System.out.println("переполнение буфера команд: " + i.getMessage());
+        }
+    }
+    protected void deferredWork() {
+        if (deferredClearScreen) { deferredClearScreen = false; deferred_ClearScreen(); return; }
+        if (deferredPaint || autoPaint) { deferredPaint = false; deferred_Paint(); return; }
+        if (deferredRefresh) { deferredRefresh = false; deferredRefresh(); return; }
+    }
+
+    @Override
+    public boolean isAutoPaint() {
+        return autoPaint;
+    }
+    @Override
+    public void setAutoPaint(boolean autoPaint) {
+        this.autoPaint = autoPaint;
     }
 }

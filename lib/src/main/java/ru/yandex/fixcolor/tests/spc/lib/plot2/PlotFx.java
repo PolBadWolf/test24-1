@@ -41,11 +41,11 @@ class PlotFx extends PlotParent {
             flOnWork = true;
             try {
                 while (flOnWork) {
-                    if ((dataQueue = paintQueue.poll(5, TimeUnit.MILLISECONDS)) != null) {
+                    if ((dataQueue = paintQueue.poll(1, TimeUnit.MILLISECONDS)) == null) {
+                        deferredWork();
+                        Thread.sleep(1);
+                    } else {
                         doCicle(dataQueue);
-                        if (dataQueue.command == command_Paint) {
-                            Thread.sleep(1);
-                        }
                     }
                 }
             } catch (InterruptedException e) {
