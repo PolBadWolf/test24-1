@@ -152,6 +152,7 @@ class RunningClass implements Runner {
             case TypePack.MANUAL_BACK:
                 mainFrame.outStatusWork("MANUAL_BACK");
                 tik_back = tik;
+                plot.setPointBackMove_time(tik_back);
                 oldTypePack = typePack;
                 break;
             case TypePack.MANUAL_STOP:
@@ -199,6 +200,7 @@ class RunningClass implements Runner {
             case TypePack.CYCLE_BACK:
                 mainFrame.outStatusWork("CYCLE_BACK");
                 tik_back = tik;
+                plot.setPointBackMove_time(tik_back);
                 oldTypePack = typePack;
                 break;
             case TypePack.CYCLE_DELAY:

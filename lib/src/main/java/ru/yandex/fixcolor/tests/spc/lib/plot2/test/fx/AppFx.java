@@ -40,6 +40,7 @@ public class AppFx extends Application {
         plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHIFT;
         Plot plot = Plot.createFx(plotParameters, canvas);
         plot.clearScreen();
+        plot.setPointBackMove_time(1_105);
         cycleTest = new CycleTest(plot);
         threadCycle = new Thread(cycleTest);
         threadCycle.start();
