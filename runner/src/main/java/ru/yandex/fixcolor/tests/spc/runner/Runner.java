@@ -31,7 +31,8 @@ public interface Runner {
         final static int CYCLE_FORWARD      = 8;
         final static int CYCLE_SHELF        = 9;
         final static int CURENT_DATA        = 11;
-        final static int WEIGHT             = 12;
+        final static int FORCE              = 12;
+        final static int RESET              = 13;
         final static int CALIBR_DATA        = 17;
     }
 

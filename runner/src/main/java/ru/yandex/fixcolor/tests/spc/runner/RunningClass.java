@@ -20,6 +20,7 @@ class RunningClass implements Runner {
 
     private BaseData bdSql = null;
     private ArrayList<DistClass>  distanceOut = null;
+    private boolean distanceOutEnable = false;
     private int weight;
     private int tik_shelf;
     private int tik_back;
@@ -45,6 +46,7 @@ class RunningClass implements Runner {
         this.bdSql = bdSql;
         loadConfigK();
         distanceOut = new ArrayList<>();
+        distanceOutEnable = false;
 
         Plot.Parameters plotParameters = new Plot.Parameters();
         // ************ ПОЛЯ ************
@@ -143,6 +145,7 @@ class RunningClass implements Runner {
                 + ((bytes[3] & 0x000000ff) << 16 )
                 + ((bytes[4] & 0x000000ff) << 24 );
 
+        if (typePack != TypePack.CURENT_DATA) System.out.println(typePack);
         switch (typePack) {
             case TypePack.MANUAL_ALARM:
                 mainFrame.outStatusWork("MANUAL_ALARM");
@@ -157,6 +160,7 @@ class RunningClass implements Runner {
                 break;
             case TypePack.MANUAL_STOP:
                 reciveOn = false;
+                distanceOutEnable = false;
                 if (n_cycle > 0) {
                     if (distanceOut.size() < 2) {
                         mainFrame.outStatusWork("AUTO_STOP");
@@ -196,6 +200,7 @@ class RunningClass implements Runner {
             case TypePack.CYCLE_ALARM:
                 mainFrame.outStatusWork("CYCLE_ALARM");
                 oldTypePack = typePack;
+                distanceOutEnable = false;
                 break;
             case TypePack.CYCLE_BACK:
                 mainFrame.outStatusWork("CYCLE_BACK");
@@ -206,6 +211,7 @@ class RunningClass implements Runner {
             case TypePack.CYCLE_DELAY:
                 mainFrame.outStatusWork("CYCLE_DELAY");
                 reciveOn = false;
+                distanceOutEnable = false;
                 n_cycle++;
                 if (oldTypePack == TypePack.CYCLE_BACK) {
                     sendOutData();
@@ -218,6 +224,7 @@ class RunningClass implements Runner {
                 if (n_cycle == 0) plot.setZommXzero();
                 dist0Set = true;
                 distanceOut.clear();
+                distanceOutEnable = true;
 
                 plot.allDataClear();
                 tik0 = tik;
@@ -243,18 +250,24 @@ class RunningClass implements Runner {
                         int weight_adc = (bytes[7 + 0] & 0xff) + ((bytes[7 + 1] & 0xff) << 8);
                         int weight = (int) Math.round(Point.renderValue(weight_adc, weight_pointK));
                         paintTrends((short) dist, (short) weight);
-                        distanceOut.add(new DistClass(tik, dist, weight));
+                        if (distanceOutEnable) {
+                            distanceOut.add(new DistClass(tik, dist, weight));
+                        }
                     }
                 }
                 break;
-            case TypePack.WEIGHT:
+            case TypePack.FORCE:
                 showWeight(bytes);
                 break;
             case TypePack.CALIBR_DATA:
                 //showWeight(bytes);
                 break;
+            case TypePack.RESET:
+
+                break;
             default:
-                throw new IllegalStateException("Unexpected value: " + typePack);
+                //throw new IllegalStateException("Unexpected value: " + typePack);
+                myLog.log(Level.WARNING, "Неизвестная команда:" + typePack);
         }
     }
 
@@ -265,18 +278,17 @@ class RunningClass implements Runner {
     }
 
     private void paintTrends(short dist, short ves) {
-        int x;
-        x = (short)((tik - tik0) / 5);
-        plot.newData(tik - tik0);
+        int subTik;
+        subTik = tik - tik0;
+        plot.newData(subTik);
         plot.addTrend(dist);
         plot.addTrend(ves);
         plot.setData();
         plot.paint();
         plot.reFresh();
-//        System.out.println("dist = " + dist);
 
-        if (x >= (3_600_000) / 5 ) {
-//            plot.allDataClear();
+        if (subTik >= 20_000) {
+            plot.allDataClear();
             tik0 = tik;
         }
     }
