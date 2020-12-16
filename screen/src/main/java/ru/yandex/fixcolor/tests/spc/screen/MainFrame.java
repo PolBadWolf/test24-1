@@ -16,6 +16,7 @@ import java.util.ResourceBundle;
 
 public class MainFrame implements Initializable, MainFrame_interface {
     public static MainFrame mainFrame = null;
+    public Label alarmMessage;
     private GraphicsContext gc = null;
     private CallBack callBack;
 
