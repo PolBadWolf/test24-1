@@ -88,6 +88,15 @@ public class PlotParent implements Plot, LocalInt {
     protected double pointBackMove_time;
     protected Color pointBackMove_color;
     protected double pointBackMove_lineWidth;
+    // линия указания начало полки
+    protected double pointBeginShelf_time;
+    protected Color pointBeginShelf_color;
+    protected double pointBeginShelf_lineWidth;
+    // ===============================================
+    // вывод ошибки
+    protected boolean alarmMessage_enable;
+    protected String alarmMessage_text;
+    //protected
     // ===============================================
     public CallBack getCallBack() {
         return callBack;
@@ -149,6 +158,10 @@ public class PlotParent implements Plot, LocalInt {
         pointBackMove_time = parameters.pointBackMove_time;
         pointBackMove_color = parameters.pointBackMove_color;
         pointBackMove_lineWidth = parameters.pointBackMove_lineWidth;
+        // линия указания начало полки
+        pointBeginShelf_time = parameters.pointBeginShelf_time;
+        pointBeginShelf_color = parameters.pointBeginShelf_color;
+        pointBeginShelf_lineWidth = parameters.pointBeginShelf_lineWidth;
         // значения минимума из прошлого цикла
         memX_begin = 0;
         memX_beginIndx = 0;
@@ -383,6 +396,7 @@ public class PlotParent implements Plot, LocalInt {
     public void allDataClear() {
         synchronized (deferredLock) {
             pointBackMove_time = -1_000_000;
+            pointBeginShelf_time = -1_000_000;
             timeUnits.clear();
             for (Trend trend : trends) {
                 trend.trendClear();
@@ -563,7 +577,17 @@ public class PlotParent implements Plot, LocalInt {
         return pointBackMove_time;
     }
 
+    @Override
     public void setPointBackMove_time(double pointBackMove_time) {
         this.pointBackMove_time = pointBackMove_time;
+    }
+
+    public double getPointBeginShelf_time() {
+        return pointBeginShelf_time;
+    }
+
+    @Override
+    public void setPointBeginShelf_time(double pointBeginShelf_time) {
+        this.pointBeginShelf_time = pointBeginShelf_time;
     }
 }

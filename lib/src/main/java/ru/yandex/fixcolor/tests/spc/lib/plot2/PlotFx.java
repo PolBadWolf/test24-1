@@ -195,12 +195,21 @@ class PlotFx extends PlotParent {
             lines[i] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
         }
         arrayLines.add(new LinesParameters(lines, colorAwtToFx(netLineColor), netLineWidth));
+        // линия указания обратного хода
         if (pointBackMove_time > memX_begin && pointBackMove_time < memX_end) {
             lines = new LineParameters[1];
             double x_zero = memX_begin - (memX_begin % xStep);
             x = (pointBackMove_time - x_zero) * kX + fieldSizeLeft;
             lines[0] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
             arrayLines.add(new LinesParameters(lines, colorAwtToFx(pointBackMove_color), pointBackMove_lineWidth));
+        }
+        // линия указания начало полки
+        if (pointBeginShelf_time > memX_begin && pointBeginShelf_time < memX_end) {
+            lines = new LineParameters[1];
+            double x_zero = memX_begin - (memX_begin % xStep);
+            x = (pointBeginShelf_time - x_zero) * kX + fieldSizeLeft;
+            lines[0] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
+            arrayLines.add(new LinesParameters(lines, colorAwtToFx(pointBeginShelf_color), pointBeginShelf_lineWidth));
         }
     }
     private void __createLinesAndTitleY(ArrayList<TitleText> arrayTitleText, ArrayList<LinesParameters> arrayLines) {

@@ -75,6 +75,10 @@ public interface Plot {
         public double pointBackMove_time;
         public Color pointBackMove_color;
         public double pointBackMove_lineWidth;
+        // линия указания начало полки
+        public double pointBeginShelf_time;
+        public Color pointBeginShelf_color;
+        public double pointBeginShelf_lineWidth;
         //
         //      тренд1
         // начальные значения минимума и максимума
@@ -153,8 +157,12 @@ public interface Plot {
             netLineWidth = 2.0;
             // линия указания обратного хода
             pointBackMove_time = -1_000_000;
-            pointBackMove_color = Color.GREEN;
+            pointBackMove_color = Color.blue;
             pointBackMove_lineWidth = 3;
+            // линия указания начало полки
+            pointBeginShelf_time = -1_000_000;
+            pointBeginShelf_color = Color.blue;
+            pointBeginShelf_lineWidth = 3;
             // 5 секунд
             scaleZero_maxX = 1_400;
             scaleZero_zoomX = Plot.ZOOM_X_OFF;
@@ -216,4 +224,5 @@ public interface Plot {
     boolean isAutoPaint();
     void setAutoPaint(boolean autoPaint);
     void setPointBackMove_time(double time);
+    void setPointBeginShelf_time(double time);
 }
