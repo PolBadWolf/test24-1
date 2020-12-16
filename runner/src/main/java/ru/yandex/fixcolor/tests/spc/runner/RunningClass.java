@@ -161,6 +161,7 @@ class RunningClass implements Runner {
             case TypePack.MANUAL_STOP:
                 reciveOn = false;
                 distanceOutEnable = false;
+                //mainFrame.
                 if (n_cycle > 0) {
                     if (distanceOut.size() < 2) {
                         mainFrame.outStatusWork("AUTO_STOP");
@@ -195,6 +196,7 @@ class RunningClass implements Runner {
             case TypePack.MANUAL_SHELF:
                 mainFrame.outStatusWork("MANUAL_SHELF");
                 tik_shelf = tik;
+                plot.setPointBeginShelf_time(tik_shelf);
                 oldTypePack = typePack;
                 break;
             case TypePack.CYCLE_ALARM:
@@ -235,6 +237,7 @@ class RunningClass implements Runner {
             case TypePack.CYCLE_SHELF:
                 mainFrame.outStatusWork("CYCLE_SHELF");
                 tik_shelf = tik;
+                plot.setPointBeginShelf_time(tik_shelf);
                 oldTypePack = typePack;
                 break;
             case TypePack.CURENT_DATA:
