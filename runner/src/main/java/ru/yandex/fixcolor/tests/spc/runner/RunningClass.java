@@ -6,6 +6,7 @@ import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.Point;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
+import ru.yandex.fixcolor.tests.spc.runner.alarmmessage.AlarmMessage;
 import ru.yandex.fixcolor.tests.spc.screen.*;
 
 import java.awt.*;
@@ -123,6 +124,7 @@ class RunningClass implements Runner {
         plot.clearScreen();
 
         fillFields();
+        mainFrame.getLabelAlarm().setText("Нет связи с контроллером !");
     }
 
     @Override
@@ -139,18 +141,21 @@ class RunningClass implements Runner {
     int oldTypePack = 0;
     @Override
     public void reciveRsPush(byte[] bytes, int lenght) {
-        int typePack = bytes[0];
+        int typePack = bytes[0] & 0x000000ff;
         tik = ((bytes[1] & 0x000000ff))
                 + ((bytes[2] & 0x000000ff) <<  8 )
                 + ((bytes[3] & 0x000000ff) << 16 )
                 + ((bytes[4] & 0x000000ff) << 24 );
 
-        if (typePack != TypePack.CURENT_DATA) System.out.println(typePack);
+        //if (typePack != TypePack.CURENT_DATA) System.out.println(typePack);
         switch (typePack) {
             case TypePack.MANUAL_ALARM:
                 mainFrame.outStatusWork("MANUAL_ALARM");
                 reciveOn = false;
                 oldTypePack = typePack;
+                AlarmMessage alarmMessage = AlarmMessage.ALARM_CODE_NONE;
+                alarmMessage.setAlarmCode(bytes[5] & 0x000000ff);
+                mainFrame.getLabelAlarm().setText(alarmMessage.toString());
                 break;
             case TypePack.MANUAL_BACK:
                 mainFrame.outStatusWork("MANUAL_BACK");
@@ -161,7 +166,7 @@ class RunningClass implements Runner {
             case TypePack.MANUAL_STOP:
                 reciveOn = false;
                 distanceOutEnable = false;
-                //mainFrame.
+                mainFrame.getLabelAlarm().setVisible(false);
                 if (n_cycle > 0) {
                     if (distanceOut.size() < 2) {
                         mainFrame.outStatusWork("AUTO_STOP");
@@ -182,7 +187,6 @@ class RunningClass implements Runner {
                 break;
             case TypePack.MANUAL_FORWARD:
                 mainFrame.outStatusWork("MANUAL_FORWARD");
-//                System.out.println("MANUAL_FORWARD");
                 plot.setZommXzero();
                 distanceOut.clear();
                 dist0Set = true;
@@ -263,13 +267,11 @@ class RunningClass implements Runner {
                 showWeight(bytes);
                 break;
             case TypePack.CALIBR_DATA:
-                //showWeight(bytes);
                 break;
             case TypePack.RESET:
-
+                oldTypePack = typePack;
                 break;
             default:
-                //throw new IllegalStateException("Unexpected value: " + typePack);
                 myLog.log(Level.WARNING, "Неизвестная команда:" + typePack);
         }
     }

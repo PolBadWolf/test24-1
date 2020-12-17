@@ -10,6 +10,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.Pusher;
+import ru.yandex.fixcolor.tests.spc.lib.fx.LabelTextFlash;
+import ru.yandex.fixcolor.tests.spc.lib.fx.TextControl;
+import ru.yandex.fixcolor.tests.spc.lib.fx.TextUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,6 +20,7 @@ import java.util.ResourceBundle;
 public class MainFrame implements Initializable, MainFrame_interface {
     public static MainFrame mainFrame = null;
     public Label alarmMessage;
+    public TextControl alarmMessageFlashText;
     private GraphicsContext gc = null;
     private CallBack callBack;
 
@@ -124,4 +128,13 @@ public class MainFrame implements Initializable, MainFrame_interface {
     public void archiveOnAction(ActionEvent actionEvent) {
         callBack.startViewArchive();
     }
+
+    @Override
+    public TextControl getLabelAlarm() {
+        if (alarmMessageFlashText == null) {
+            alarmMessageFlashText = new LabelTextFlash(alarmMessage);
+        }
+        return alarmMessageFlashText;
+    }
+
 }
