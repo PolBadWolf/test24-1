@@ -153,7 +153,7 @@ class CommPortClass implements CommPort {
         try {
             while (onCycle) {
                 if (recive_num == 0) Thread.sleep(1);
-                if (reciveTimeOut == 1) reciveMode = reciveMode;
+                if (reciveTimeOut == 1) reciveMode = reciveMode_SYNHRO;
                 if (reciveTimeOut > 0) reciveTimeOut--;
                 switch (reciveMode) {
                     case reciveMode_SYNHRO:
@@ -186,10 +186,10 @@ class CommPortClass implements CommPort {
         // new byte
         reciveHeader[reciveHeader_lenght - 1] = reciveHeader_in[0];
         // check
-        if ((reciveHeader[0] & 0xff) != 0xe6) return;
-        if ((reciveHeader[1] & 0xff) != 0x19) return;
-        if ((reciveHeader[2] & 0xff) != 0x55) return;
-        if ((reciveHeader[3] & 0xff) != 0xaa) return;
+        if ((reciveHeader[reciveHeader.length - 4] & 0xff) != 0xe6) return;
+        if ((reciveHeader[reciveHeader.length - 3] & 0xff) != 0x19) return;
+        if ((reciveHeader[reciveHeader.length - 2] & 0xff) != 0x55) return;
+        if ((reciveHeader[reciveHeader.length - 1] & 0xff) != 0xaa) return;
         // ok
         reciveTimeOut = 10;
         reciveMode = reciveMode_LENGHT;
