@@ -10,6 +10,7 @@ import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MLabel;
 import ru.yandex.fixcolor.tests.spc.loader.MainClass;
 import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
+import ru.yandex.fixcolor.tests.spc.runner.Runner;
 
 import javax.swing.*;
 import java.awt.*;
@@ -337,6 +338,11 @@ public class Calibration {
     }
     //
     private void reciveRs(byte[] bytes, int lenght) {
+        int codeSend = bytes[0] & 0x000000ff;
+        if (codeSend != 17) {
+            System.out.println("calibr ups");
+            return;
+        }
         distance_adc = (int) Converts.bytesToInt(bytes, 2, 5);
         // ------------------------
         weight_adc = (int) Converts.bytesToInt(bytes, 2, 7);
