@@ -46,12 +46,18 @@ public interface CommPort {
             return stat;
         }
     }
+    class CommandForCntr {
+        final static int STOP               = 0x80;
+        final static int CYCLE_MAX          = 0x81;
+        final static int CALIBRATION        = 0x82;
+    }
 
     void close();
     boolean ReciveStart();
     void ReciveStop();
     boolean isRecive();
-    void sendMessageStopAuto() throws Exception;
+    void sendMessageStopNcycleMax(int nCycleMax) throws Exception;
+    void sendMessageStop() throws Exception;
     void sendMessageCalibrationMode() throws Exception;
     CallBack getCallBack();
     void setCallBack(CallBack callBack);

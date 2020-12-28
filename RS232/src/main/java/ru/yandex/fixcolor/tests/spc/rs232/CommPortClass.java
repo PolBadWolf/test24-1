@@ -236,37 +236,46 @@ class CommPortClass implements CommPort {
         int l = port.writeBytes(send_lenghtVar, 1);
 //        if (l < 1) throw new Exception("ошибка отправки по comm port");
     }
-    // ---------------------
-    private static final byte[] sendMessageStopBody = {
-            // код передачи
-            (byte)0x80
-    };
-    @Override
-    public void sendMessageStopAuto() throws Exception {
+    // ====
+    private boolean sendPack(byte[] body) throws Exception {
         send_header();
-        send_lenght(sendMessageStopBody);
-        port.writeBytes(sendMessageStopBody, sendMessageStopBody.length);
+        send_lenght(body);
+        port.writeBytes(body, body.length);
         // контрольная сумма
         byte[] cs = new byte[1];
-        cs[0] = ControlSumma.crc8(sendMessageStopBody, sendMessageStopBody.length);
+        cs[0] = ControlSumma.crc8(body, body.length);
         int l = port.writeBytes(cs, cs.length);
-//        if (l < cs.length) throw new Exception("ошибка отправки по comm port");
+        return l != body.length;
+    }
+    // =======================================================================
+    private static final byte[] sendMessageStopBody = {
+            // код передачи
+            (byte) CommandForCntr.STOP
+    };
+    @Override
+    public void sendMessageStop() throws Exception {
+        sendPack(sendMessageStopBody);
+    }
+    // ---------------------
+    private static final byte[] sendMessageStopNcycleMaxBody = {
+            // код передачи
+            (byte) CommandForCntr.CYCLE_MAX,
+            // максимальное кол-во циклов
+            (byte) 1
+    };
+    @Override
+    public void sendMessageStopNcycleMax(int nCycleMax) throws Exception {
+        sendMessageStopNcycleMaxBody[1] = (byte) nCycleMax;
+        sendPack(sendMessageStopNcycleMaxBody);
     }
     // ========================================================================
     private static final byte[] sendMessageCalibrationBody = {
             // код передачи
-            (byte)0x81
+            (byte) CommandForCntr.CALIBRATION
     };
     @Override
     public void sendMessageCalibrationMode() throws Exception {
-        send_header();
-        send_lenght(sendMessageCalibrationBody);
-        port.writeBytes(sendMessageCalibrationBody, sendMessageCalibrationBody.length);
-        // контрольная сумма
-        byte[] cs = new byte[1];
-        cs[0] = ControlSumma.crc8(sendMessageCalibrationBody, sendMessageCalibrationBody.length);
-        int l = port.writeBytes(cs, cs.length);
-//        if (l < cs.length) throw new Exception("ошибка отправки по comm port");
+        sendPack(sendMessageCalibrationBody);
     }
     // ************************************************************************
 

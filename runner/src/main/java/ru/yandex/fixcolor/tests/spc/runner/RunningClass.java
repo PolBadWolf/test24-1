@@ -21,12 +21,14 @@ class RunningClass implements Runner {
 
     private BaseData bdSql = null;
     private ArrayList<DistClass>  distanceOut = null;
-    private boolean distanceOutEnable = false;
+    private boolean distanceRecordEnable = false;
     private int weight;
     private int tik_shelf;
     private int tik_back;
     private int tik_stop;
     private boolean reciveOn = false;
+    private boolean workManualOn = false;
+    private boolean workCycleOn = false;
     private int n_cycle = 0;
     private boolean dist0Set = true;
     private int dist0 = 0;
@@ -47,7 +49,7 @@ class RunningClass implements Runner {
         this.bdSql = bdSql;
         loadConfigK();
         distanceOut = new ArrayList<>();
-        distanceOutEnable = false;
+        distanceRecordEnable = false;
 
         Plot.Parameters plotParameters = new Plot.Parameters();
         // ************ ПОЛЯ ************
@@ -147,117 +149,170 @@ class RunningClass implements Runner {
                 + ((bytes[3] & 0x000000ff) << 16 )
                 + ((bytes[4] & 0x000000ff) << 24 );
 
-        //if (typePack != TypePack.CURENT_DATA) System.out.println(typePack);
+        int nCycleMax = getN_CycleMax();
+
         switch (typePack) {
             case TypePack.MANUAL_ALARM:
-                mainFrame.outStatusWork("MANUAL_ALARM");
+                // вывод статуса программы
+                outFrameStatus(TypePack.toString(typePack));
+                // запрет приема измеренных данных
                 reciveOn = false;
+                // вывод сообщения кода ошибки
+                outFrameError(bytes[5] & 0x000000ff);
+                //
                 oldTypePack = typePack;
-                AlarmMessage alarmMessage = AlarmMessage.ALARM_CODE_NONE;
-                alarmMessage.setAlarmCode(bytes[5] & 0x000000ff);
-                mainFrame.getLabelAlarm().setText(alarmMessage.toString());
                 break;
             case TypePack.MANUAL_BACK:
-                mainFrame.outStatusWork("MANUAL_BACK");
+                if (!workManualOn) return;
+                if (oldTypePack != TypePack.MANUAL_FORWARD) { sequenceError(typePack); return; }
+                // вывод статуса программы
+                outFrameStatus(TypePack.toString(typePack));
+                // время штока назад
                 tik_back = tik;
-                plot.setPointBackMove_time(tik_back);
+//                // вывод времени штока назад
+//                plot.setPointBackMove_time(tik_back);
+                //
                 oldTypePack = typePack;
                 break;
             case TypePack.MANUAL_STOP:
+                // запрет приема измеренных данных
                 reciveOn = false;
-                distanceOutEnable = false;
-                mainFrame.getLabelAlarm().setVisible(false);
-                if (n_cycle > 0) {
-                    if (distanceOut.size() < 2) {
-                        mainFrame.outStatusWork("AUTO_STOP");
-                        n_cycle = 0;
-                        oldTypePack = typePack;
-                        break;
-                    }
-                    n_cycle++;
+                // запрет записи измеренных данных
+                distanceRecordEnable = false;
+                // отключить сообщение об ошибке
+                outFrameErrorOff();
+                // вывод статуса программы
+                outFrameStatus(TypePack.toString(typePack));
+                // сохранение записей в БД
+                if (oldTypePack == TypePack.CYCLE_BACK) {
+                    if (n_cycle > 0) { n_cycle++; }
+                    if (distanceOut.size() > 2) { sendOutData(); }
                 }
-                mainFrame.outStatusWork("MANUAL_STOP");
-//                System.out.println("count = " + distanceOut.size());
-                //
-                if (oldTypePack == TypePack.MANUAL_BACK || oldTypePack == TypePack.CYCLE_BACK) {
-                    sendOutData();
-                }
+                // сброс счетчика циклов
                 n_cycle = 0;
                 oldTypePack = typePack;
                 break;
             case TypePack.MANUAL_FORWARD:
-                mainFrame.outStatusWork("MANUAL_FORWARD");
+                if (oldTypePack != TypePack.MANUAL_STOP) { sequenceError(typePack); return; }
+                // режим ручной включен
+                workManualOn = true;
+                // вывод статуса программы
+                outFrameStatus(TypePack.toString(typePack));
+                //mainFrame.outStatusWork("MANUAL_FORWARD");
+                // сбросить зум по времени на начальное значение
                 plot.setZommXzero();
-                distanceOut.clear();
+                // установить нулевое положение штока
                 dist0Set = true;
-
+                // выключить запись данных измерений
+                distanceRecordEnable = false;
+                // очистить записи данных измерений
+                distanceOut.clear();
+                // очистка данных из графика
                 plot.allDataClear();
+                // нулевое значение временного штампа
                 tik0 = tik;
+                // включить данных замеров
                 reciveOn = true;
-                mainFrame.setFieldCurrentCycle(n_cycle + 1);
+                // номер цикла
+                mainFrame.setFieldCurrentCycle(1);
                 oldTypePack = typePack;
                 break;
             case TypePack.MANUAL_SHELF:
-                mainFrame.outStatusWork("MANUAL_SHELF");
+                if (!workManualOn) return;
+                if (oldTypePack != TypePack.MANUAL_FORWARD) { sequenceError(typePack); return; }
+                // вывод статуса программы
+                outFrameStatus(TypePack.toString(typePack));
+                // время начало полки
                 tik_shelf = tik;
-                plot.setPointBeginShelf_time(tik_shelf);
+//                // вывод времени начало полки
+//                plot.setPointBeginShelf_time(tik_shelf);
                 oldTypePack = typePack;
                 break;
-            case TypePack.CYCLE_ALARM:
-                mainFrame.outStatusWork("CYCLE_ALARM");
-                oldTypePack = typePack;
-                distanceOutEnable = false;
-                break;
+//            case TypePack.CYCLE_ALARM:
+//                //mainFrame.outStatusWork("CYCLE_ALARM");
+//                oldTypePack = typePack;
+//                distanceRecordEnable = false;
+//                break;
             case TypePack.CYCLE_BACK:
-                mainFrame.outStatusWork("CYCLE_BACK");
+                if (!workCycleOn) return;
+                if (oldTypePack != TypePack.CYCLE_SHELF) { sequenceError(typePack); return; }
+                // вывод статуса программы
+                outFrameStatus(TypePack.toString(typePack));
+                // время штока назад
                 tik_back = tik;
+                // вывод времени штока назад
                 plot.setPointBackMove_time(tik_back);
                 oldTypePack = typePack;
                 break;
             case TypePack.CYCLE_DELAY:
-                mainFrame.outStatusWork("CYCLE_DELAY");
+                if (!workCycleOn) return;
+                if (oldTypePack != TypePack.CYCLE_BACK) { sequenceError(typePack); return; }
+                // вывод статуса программы
+                outFrameStatus(TypePack.toString(typePack));
+                // блокировка приема/отрисовки замеров
                 reciveOn = false;
-                distanceOutEnable = false;
+                // запрет накопления записей по замерам
+                distanceRecordEnable = false;
+                // номер цикла (начинается с нуля)
                 n_cycle++;
-                if (oldTypePack == TypePack.CYCLE_BACK) {
-                    sendOutData();
-                }
+                // отправка записей в БД
+                if (oldTypePack == TypePack.CYCLE_BACK) { sendOutData(); }
+                // очистка записей замеров
                 distanceOut.clear();
+                // проверка окончания цикла
+                checkEndCycle(n_cycle, nCycleMax);
                 oldTypePack = typePack;
                 break;
             case TypePack.CYCLE_FORWARD:
-                mainFrame.outStatusWork("CYCLE_FORWARD");
+                if (    oldTypePack != TypePack.MANUAL_STOP &&
+                        oldTypePack != TypePack.CYCLE_DELAY ) { sequenceError(typePack); return; }
+                // режим автоматического цикла
+                workCycleOn =true;
+                // вывод статуса программы
+                outFrameStatus(TypePack.toString(typePack));
+                // при запуске цикла сбросить зум Х на дефолт
                 if (n_cycle == 0) plot.setZommXzero();
+                // установить нулевое положение штока
                 dist0Set = true;
+                // очистка массива для записи данных измерений
                 distanceOut.clear();
-                distanceOutEnable = true;
-
+                // включить запись данных измерений
+                distanceRecordEnable = true;
+                // очистка данных из графика
                 plot.allDataClear();
+                // нулевое значение временного штампа
                 tik0 = tik;
-                mainFrame.setFieldCurrentCycle(n_cycle + 1);
+                // включить данных замеров
                 reciveOn = true;
+                // вывод номера цикла
+                mainFrame.setFieldCurrentCycle(n_cycle + 1);
                 oldTypePack = typePack;
                 break;
             case TypePack.CYCLE_SHELF:
-                mainFrame.outStatusWork("CYCLE_SHELF");
+                if (!workCycleOn) return;
+                if (oldTypePack != TypePack.CYCLE_FORWARD) { sequenceError(typePack); return; }
+                // вывод статуса программы
+                outFrameStatus(TypePack.toString(typePack));
+                // время начало полки
                 tik_shelf = tik;
+                // вывод времени начало полки
                 plot.setPointBeginShelf_time(tik_shelf);
                 oldTypePack = typePack;
                 break;
             case TypePack.CURENT_DATA:
                 if (reciveOn) {
                     {
-                        int dist_in_adc = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+                        int dist_in_adc = getDistanceFromPack(bytes);
                         int dist_in = (int) Math.round(Point.renderValue(dist_in_adc, distance_pointK));
                         if (dist0Set) {
                             dist0Set = false;
                             dist0 = dist_in;
                         }
                         int dist = Math.abs(dist_in - dist0);
-                        int weight_adc = (bytes[7 + 0] & 0xff) + ((bytes[7 + 1] & 0xff) << 8);
+                        int weight_adc = getForceFromPack(bytes);
                         int weight = (int) Math.round(Point.renderValue(weight_adc, weight_pointK));
                         paintTrends((short) dist, (short) weight);
-                        if (distanceOutEnable) {
+                        if (distanceRecordEnable) {
                             distanceOut.add(new DistClass(tik, dist, weight));
                         }
                     }
@@ -275,6 +330,25 @@ class RunningClass implements Runner {
                 myLog.log(Level.WARNING, "Неизвестная команда:" + typePack);
         }
     }
+
+    private int getDistanceFromPack(byte[] bytes) {
+        return (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
+    }
+
+    private int getForceFromPack(byte[] bytes) {
+        return (bytes[7 + 0] & 0xff) + ((bytes[7 + 1] & 0xff) << 8);
+    }
+
+    private void sequenceError(int typePack) {
+        // вывод статуса программы
+        outFrameStatus(TypePack.toString(typePack) + " - error");
+        // сброс режимов работы
+        workManualOn = false;
+        workCycleOn = false;
+        myLog.log(Level.WARNING, "ошибка последовательности режима: " + TypePack.toString(oldTypePack) + " -> " + TypePack.toString(typePack) );
+        oldTypePack = TypePack.ERROR;
+    }
+
 
     private void showWeight(byte[] bytes) {
         int weight_adc = (bytes[5 + 0] & 0xff) + ((bytes[5 + 1] & 0xff) << 8);
@@ -311,6 +385,39 @@ class RunningClass implements Runner {
         plot = null;
     }
 
+    // ==========================================
+    private void outFrameError(int code) {
+        AlarmMessage alarmMessage = AlarmMessage.ALARM_CODE_NONE;
+        alarmMessage.setAlarmCode(code);
+        mainFrame.getLabelAlarm().setText(alarmMessage.toString());
+    }
+    private void outFrameErrorOff() {
+        mainFrame.getLabelAlarm().setVisible(false);
+    }
+    private void outFrameStatus(String text) {
+        mainFrame.outStatusWork(text);
+    }
+    // ==========================================
+
+    private int getN_CycleMax() {
+        int cycle = 1;
+        try {
+            cycle = Integer.parseInt(MainFrame.mainFrame.s_nCicle.getText());
+        } catch (NumberFormatException e) {
+            MyLogger.myLog.log(Level.SEVERE, "максимальное число итераций, ( установленно " + cycle + " )", e);
+        }
+        return cycle;
+    }
+    // ----------------------------
+    private void checkEndCycle(int nCycle, int nCycleMax) {
+        // ***** send stop *****
+        if (nCycle >= nCycleMax) {
+            //callBack.sendStopNcycleMax(nCycleMax);
+            callBack.sendMessageStop();
+            reciveOn = false;
+        }
+    }
+
     void sendOutData () {
         if (distanceOut.isEmpty()) return;
         // force
@@ -329,16 +436,6 @@ class RunningClass implements Runner {
         int timeUnClenching = Math.abs(distanceOut.get(0).tik - tik_shelf);
         // ****** out screen ******
         mainFrame.setFieldsMeasuredPusher(n_cycle, forceMeasure, moveMeasure, timeUnClenching);
-        // ***** send stop *****
-        int b = 0;
-        try {
-            b = Integer.parseInt(MainFrame.mainFrame.s_nCicle.getText());
-        } catch (NumberFormatException e) {
-            MyLogger.myLog.log(Level.SEVERE, "максимальное число итераций, ( установленно " + b + " )", e);
-        }
-        if (n_cycle >= b) {
-            callBack.sendStopAutoMode();
-        }
         // ***** out to bd *****
         try {
             tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
