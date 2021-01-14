@@ -10,6 +10,7 @@ import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MLabel;
 import ru.yandex.fixcolor.tests.spc.loader.MainClass;
 import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
+import ru.yandex.fixcolor.tests.spc.runner.Runner;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,6 +69,7 @@ public class Calibration {
     private JButton weightButtonPoint2;
     // ---------------
     private JButton configButtonSave;
+    private MLabel  labelFlashSave;
     // ---------------
     protected Calibration(CallBack callBack, CommPort commPort) {
         Locale.setDefault(Locale.US);
@@ -80,7 +82,7 @@ public class Calibration {
         weight_point1 = renderPoint(20.0, weight_k, weight_offset);
         weight_point2 = renderPoint(160.0, weight_k, weight_offset);
         // ---------------
-        System.out.println("create calib");
+        //System.out.println("create calib");
         timerSend_On = false;
         // ---------------
         frame = CreateComponents.getFrame("Калибровка датчиков", 640, 480, false,
@@ -100,11 +102,11 @@ public class Calibration {
             exception.printStackTrace();
         }
         // ---------------
-        System.out.println("start com port");
+        //System.out.println("start com port");
         commPort.ReciveStart();
         // ---------------
         timerSend_Thread = new Thread(this::timerSend_run, "timer active calibration");
-        System.out.println("start timer");
+        //System.out.println("start timer");
         timerSend_Thread.start();
         // ---------------
     }
@@ -127,7 +129,7 @@ public class Calibration {
                 null, null,
                 true, true);
         distanceTextPoint1.setText(String.format("%.3f", distance_point1.value));
-        distanceButtonPoint1 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+        distanceButtonPoint1 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 90, 80, 30,
                 this::distanceSetPoint1, true, true);
         //
@@ -144,7 +146,7 @@ public class Calibration {
                 null, null,
                 true, true);
         distanceTextPoint2.setText(String.format("%.3f", distance_point2.value));
-        distanceButtonPoint2 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+        distanceButtonPoint2 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 130, 80, 30,
                 this::distanceSetPoint2, true, true);
         //
@@ -169,7 +171,7 @@ public class Calibration {
                 null, null,
                 true, true);
         weightTextPoint1.setText(String.format("%.3f", weight_point1.value));
-        weightButtonPoint1 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+        weightButtonPoint1 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 275, 80, 30,
                 this::weightSetPoint1, true, true);
         //
@@ -186,12 +188,15 @@ public class Calibration {
                 null, null,
                 true, true);
         weightTextPoint2.setText(String.format("%.3f", weight_point2.value));
-        weightButtonPoint2 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+        weightButtonPoint2 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 315, 80, 30,
                 this::weightSetPoint2, true, true);
         //
         parent.add(weightTextPoint2);
 //        parent.add(weightButtonPoint2);
+        // ------------------
+        labelFlashSave = CreateComponents.getLabel(parent, "Параметры сохранены", new Font("Times New Roman", Font.PLAIN, 24),
+                370, 370, false, true, MLabel.POS_CENTER);
     }
 
     private void weightSetPoint1(ActionEvent actionEvent) {
@@ -318,6 +323,19 @@ public class Calibration {
         } catch (BaseDataException e) {
             myLog.log(Level.WARNING, "ошибка записи файла конфигурации", e);
         }
+        // здесь выдать "сохранено
+        new Thread(()->{
+            try {
+                configButtonSave.setVisible(false);
+                labelFlashSave.setVisible(true);
+                Thread.sleep(3_000);
+            } catch (InterruptedException e) {
+                //e.printStackTrace();
+            } finally {
+                labelFlashSave.setVisible(false);
+                configButtonSave.setVisible(true);
+            }
+        }).start();
     }
     //
     private void readK_FromConfig() {
@@ -337,6 +355,11 @@ public class Calibration {
     }
     //
     private void reciveRs(byte[] bytes, int lenght) {
+        int codeSend = bytes[0] & 0x000000ff;
+        if (codeSend != 17) {
+            System.out.println("calibr ups");
+            return;
+        }
         distance_adc = (int) Converts.bytesToInt(bytes, 2, 5);
         // ------------------------
         weight_adc = (int) Converts.bytesToInt(bytes, 2, 7);

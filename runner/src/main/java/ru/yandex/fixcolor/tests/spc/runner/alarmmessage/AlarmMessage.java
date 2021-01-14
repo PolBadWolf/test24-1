@@ -1,16 +1,8 @@
-package ru.yandex.fixcolor.tests.spc.runner;
+package ru.yandex.fixcolor.tests.spc.runner.alarmmessage;
 
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 
 import java.util.logging.Level;
-
-class AlarmMessageCode {
-    final static int NONE = 0;
-    final static int ABORT = 1;
-    final static int SWITCH = 2;
-    final static int SAFE_ENGINE_ON = 3;
-    final static int SAFE_ENGINE_OFF = 4;
-}
 
 public enum AlarmMessage {
     ALARM_CODE_NONE             (AlarmMessageCode.NONE),
@@ -27,6 +19,14 @@ public enum AlarmMessage {
 
     public int getAlarmCode() {
         return alarmCode;
+    }
+
+    public void setAlarmMessage(AlarmMessage alarmMessage) {
+        alarmCode = alarmMessage.getAlarmCode();
+    }
+
+    public void setAlarmCode(int alarmCode) {
+        this.alarmCode = alarmCode;
     }
 
     @Override

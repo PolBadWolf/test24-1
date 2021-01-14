@@ -3,6 +3,7 @@ package ru.yandex.fixcolor.tests.spc.screen;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.Pusher;
+import ru.yandex.fixcolor.tests.spc.lib.fx.TextControl;
 
 public interface MainFrame_interface {
     interface CallBack {
@@ -19,4 +20,5 @@ public interface MainFrame_interface {
     void setFieldsSamplePusher(Pusher pusher);
     void setFieldsMeasuredPusher(int n_cycle, int forceMeasure, int moveMeasure, int timeUnClenching);
     void setFieldCurrentCycle(int n_cycle);
+    TextControl getLabelAlarm();
 }

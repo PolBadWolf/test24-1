@@ -2,7 +2,6 @@ package ru.yandex.fixcolor.tests.spc.loader;
 
 import javafx.application.Platform;
 import ru.yandex.fixcolor.tests.spc.bd.BaseDataException;
-import ru.yandex.fixcolor.tests.spc.bd.Status;
 import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.rs232.*;
 import ru.yandex.fixcolor.tests.spc.runner.Runner;
@@ -176,9 +175,18 @@ public class MainClass {
     // ===============================================
     class RunnerCallBack implements Runner.CallBack {
         @Override
-        public void sendStopAutoMode() {
+        public void sendStopNcycleMax(int nCycleMax) {
             try {
-                commPort.sendMessageStopAuto();
+                commPort.sendMessageStopNcycleMax(nCycleMax);
+            } catch (Exception exception) {
+                myLog.log(Level.SEVERE, "команда стоп авто режим", exception);
+            }
+        }
+
+        @Override
+        public void sendMessageStop() {
+            try {
+                commPort.sendMessageStop();
             } catch (Exception exception) {
                 myLog.log(Level.SEVERE, "команда стоп авто режим", exception);
             }
