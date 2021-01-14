@@ -69,6 +69,7 @@ public class Calibration {
     private JButton weightButtonPoint2;
     // ---------------
     private JButton configButtonSave;
+    private MLabel  labelFlashSave;
     // ---------------
     protected Calibration(CallBack callBack, CommPort commPort) {
         Locale.setDefault(Locale.US);
@@ -193,6 +194,9 @@ public class Calibration {
         //
         parent.add(weightTextPoint2);
 //        parent.add(weightButtonPoint2);
+        // ------------------
+        labelFlashSave = CreateComponents.getLabel(parent, "Параметры сохранены", new Font("Times New Roman", Font.PLAIN, 24),
+                370, 370, false, true, MLabel.POS_CENTER);
     }
 
     private void weightSetPoint1(ActionEvent actionEvent) {
@@ -319,6 +323,19 @@ public class Calibration {
         } catch (BaseDataException e) {
             myLog.log(Level.WARNING, "ошибка записи файла конфигурации", e);
         }
+        // здесь выдать "сохранено
+        new Thread(()->{
+            try {
+                configButtonSave.setVisible(false);
+                labelFlashSave.setVisible(true);
+                Thread.sleep(3_000);
+            } catch (InterruptedException e) {
+                //e.printStackTrace();
+            } finally {
+                labelFlashSave.setVisible(false);
+                configButtonSave.setVisible(true);
+            }
+        }).start();
     }
     //
     private void readK_FromConfig() {
