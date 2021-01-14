@@ -128,7 +128,7 @@ public class Calibration {
                 null, null,
                 true, true);
         distanceTextPoint1.setText(String.format("%.3f", distance_point1.value));
-        distanceButtonPoint1 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+        distanceButtonPoint1 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 90, 80, 30,
                 this::distanceSetPoint1, true, true);
         //
@@ -145,7 +145,7 @@ public class Calibration {
                 null, null,
                 true, true);
         distanceTextPoint2.setText(String.format("%.3f", distance_point2.value));
-        distanceButtonPoint2 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+        distanceButtonPoint2 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 130, 80, 30,
                 this::distanceSetPoint2, true, true);
         //
@@ -170,7 +170,7 @@ public class Calibration {
                 null, null,
                 true, true);
         weightTextPoint1.setText(String.format("%.3f", weight_point1.value));
-        weightButtonPoint1 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+        weightButtonPoint1 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 275, 80, 30,
                 this::weightSetPoint1, true, true);
         //
@@ -187,7 +187,7 @@ public class Calibration {
                 null, null,
                 true, true);
         weightTextPoint2.setText(String.format("%.3f", weight_point2.value));
-        weightButtonPoint2 = CreateComponents.getButton(parent, "Set", new Font("Times New Roman", Font.PLAIN, 16),
+        weightButtonPoint2 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 315, 80, 30,
                 this::weightSetPoint2, true, true);
         //
