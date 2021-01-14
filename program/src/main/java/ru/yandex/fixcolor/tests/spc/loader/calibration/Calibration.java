@@ -81,7 +81,7 @@ public class Calibration {
         weight_point1 = renderPoint(20.0, weight_k, weight_offset);
         weight_point2 = renderPoint(160.0, weight_k, weight_offset);
         // ---------------
-        System.out.println("create calib");
+        //System.out.println("create calib");
         timerSend_On = false;
         // ---------------
         frame = CreateComponents.getFrame("Калибровка датчиков", 640, 480, false,
@@ -101,11 +101,11 @@ public class Calibration {
             exception.printStackTrace();
         }
         // ---------------
-        System.out.println("start com port");
+        //System.out.println("start com port");
         commPort.ReciveStart();
         // ---------------
         timerSend_Thread = new Thread(this::timerSend_run, "timer active calibration");
-        System.out.println("start timer");
+        //System.out.println("start timer");
         timerSend_Thread.start();
         // ---------------
     }
