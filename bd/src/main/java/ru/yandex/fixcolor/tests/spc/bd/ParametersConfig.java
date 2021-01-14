@@ -1,5 +1,8 @@
 package ru.yandex.fixcolor.tests.spc.bd;
 
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.Point;
+import ru.yandex.fixcolor.tests.spc.bd.usertypes.PointK;
+
 import java.io.*;
 import java.util.Properties;
 
@@ -8,6 +11,10 @@ class ParametersConfig implements BaseData.Config {
 
     private String portName;
     private TypeBaseDate typeBaseData;
+    private int distance_adc1;
+    private int distance_adc2;
+    private double distance_zn1;
+    private double distance_zn2;
     private double distance_k;
     private double distance_offset;
     private double weight_k;
@@ -94,6 +101,22 @@ class ParametersConfig implements BaseData.Config {
     @Override
     public double getDistance_k() {
         return distance_k;
+    }
+
+    // set calib distance
+    @Override
+    public void setDistanceCalib(int adc1, int adc2, double zn1, double zn2) {
+        // save
+        distance_adc1 = adc1;
+        distance_adc2 = adc2;
+        distance_zn1 = zn1;
+        distance_zn2 = zn2;
+        // render
+        Point point1 = new Point(zn1, adc1);
+        Point point2 = new Point(zn2, adc2);
+        PointK pointK = PointK.render(point1, point2);
+        distance_k = pointK.k;
+        distance_offset = pointK.offset;
     }
 
     @Override

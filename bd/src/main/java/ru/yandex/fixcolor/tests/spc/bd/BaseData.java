@@ -39,6 +39,8 @@ public interface BaseData {
         void setPortName(String portName);
         void setTypeBaseData(TypeBaseDate typeBaseData);
         double getDistance_k();
+        // set calib distance
+        void setDistanceCalib(int adc1, int adc2, double zn1, double zn2);
         void setDistance_k(double distance_k);
         double getDistance_offset();
         void setDistance_offset(double distance_offset);
