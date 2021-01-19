@@ -198,7 +198,6 @@ class RunningClass implements Runner {
                 workManualOn = true;
                 // вывод статуса программы
                 outFrameStatus(TypePack.toString(typePack));
-                //mainFrame.outStatusWork("MANUAL_FORWARD");
                 // сбросить зум по времени на начальное значение
                 plot.setZommXzero();
                 // установить нулевое положение штока
@@ -456,6 +455,6 @@ class RunningClass implements Runner {
             config.setDefault();
         }
         distance_pointK = new PointK(config.getDistance_k(), config.getDistance_offset());
-        weight_pointK = new PointK(config.getWeight_k(), config.getWeight_offset());
+        weight_pointK = new PointK(config.getForce_k(), config.getForce_offset());
     }
 }
