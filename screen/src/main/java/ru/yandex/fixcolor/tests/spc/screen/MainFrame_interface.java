@@ -9,6 +9,7 @@ public interface MainFrame_interface {
     interface CallBack {
         void buttonExit_onAction();
         void startViewArchive();
+        void send_nMax(String textNmax);
     }
     void canvas_Clear(Color backColor);
     void canvas_Line(Color lineColor, double lineWidth, double x0, double y0, double x, double y);

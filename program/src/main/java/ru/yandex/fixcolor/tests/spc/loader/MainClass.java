@@ -105,6 +105,24 @@ public class MainClass {
                     }
                 }), "start arhive").start();
             }
+            // установлено новое значение nMax
+            @Override
+            public void send_nMax(String textNmax) {
+                int nMax = 1;
+                try {
+                    nMax = Integer.parseInt(textNmax);
+                } catch (Exception e) {
+                    myLog.log(Level.WARNING, "ошибка чтения максимального числа итераций");
+                    nMax = 1;
+                } finally {
+                    if (nMax < 1 || nMax > 32) nMax = 1;
+                }
+                try {
+                    commPort.sendMessageStopNcycleMax(nMax);
+                } catch (Exception exception) {
+                    myLog.log(Level.SEVERE, "ошибка передачи максимального количества циклов");
+                }
+            }
         });
         // пуск регистрации
         runner.init(connBd, MainFrame.mainFrame);

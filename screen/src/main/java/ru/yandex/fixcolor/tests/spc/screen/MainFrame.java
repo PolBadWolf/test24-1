@@ -137,4 +137,7 @@ public class MainFrame implements Initializable, MainFrame_interface {
         return alarmMessageFlashText;
     }
 
+    public void on_cycleMax(ActionEvent actionEvent) {
+        callBack.send_nMax(s_nCicle.getText());
+    }
 }
