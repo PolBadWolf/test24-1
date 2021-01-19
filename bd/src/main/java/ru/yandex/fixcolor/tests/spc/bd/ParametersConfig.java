@@ -2,29 +2,47 @@ package ru.yandex.fixcolor.tests.spc.bd;
 
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.Point;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.PointK;
+import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.logging.Level;
 
 class ParametersConfig implements BaseData.Config {
     private static final String fileNameConfig = "config.txt";
-
+    // ==================================================================
+    // distance point 1
+    private static final String nameDistancePoint1_val = "Distance_vol1";
+    private static final String nameDistancePoint1_adc = "Distance_adc1";
+    // distance point 2
+    private static final String nameDistancePoint2_val = "Distance_vol2";
+    private static final String nameDistancePoint2_adc = "Distance_adc2";
+    // force point 1
+    private static final String nameForcePoint1_vol = "Force_vol1";
+    private static final String nameForcePoint1_adc = "Force_adc1";
+    // force point 2
+    private static final String nameForcePoint2_vol = "Force_vol2";
+    private static final String nameForcePoint2_adc = "Force_adc2";
+    // ==================================================================
     private String portName;
     private TypeBaseDate typeBaseData;
-    private int distance_adc1;
-    private int distance_adc2;
-    private double distance_zn1;
-    private double distance_zn2;
-    private double distance_k;
-    private double distance_offset;
-    private double weight_k;
-    private double weight_offset;
+    // *** distance ***
+    // distance point 1
+    private Point distance_point1;
+    // distance point 2
+    private Point distance_point2;
+    //
+    private PointK distancePointK;
+    // *** force ***
+    private Point force_point1;
+    private Point force_point2;
+    private PointK force_pointK;
 
     public ParametersConfig() {
         typeBaseData = TypeBaseDate.ERROR;
         portName = "";
-        distance_k = weight_k = 1.0;
-        distance_offset = weight_offset = 0;
+        distancePointK = new PointK(1.0, 0);
+        force_pointK = new PointK(1.0, 0);
     }
 
     @Override
@@ -45,14 +63,50 @@ class ParametersConfig implements BaseData.Config {
             // set default
             this.typeBaseData = TypeBaseDate.MY_SQL;
         }
-        try { distance_k = Double.parseDouble(properties.getProperty("Distance_K"));
-        } catch (Exception e) { distance_k = 1.0; }
-        try { distance_offset = Double.parseDouble(properties.getProperty("Distance_Offset"));
-        } catch (Exception e) { distance_offset = 0; }
-        try { weight_k = Double.parseDouble(properties.getProperty("Weight_K"));
-        } catch (Exception e) { weight_k = 1.0; }
-        try { weight_offset = Double.parseDouble(properties.getProperty("Weight_Offset"));
-        } catch (Exception e) { weight_offset = 0; }
+        // чтение точки 1
+        try {
+            distance_point1 = new Point(
+                    Double.parseDouble(properties.getProperty(nameDistancePoint1_val)),
+                    Integer.parseInt(properties.getProperty(nameDistancePoint1_adc))
+            );
+        } catch (Exception e) {
+            MyLogger.myLog.log(Level.WARNING, "ошибка чтения калибровочной точки 1 дистанции", e);
+            distance_point1 = new Point(0.0, 0);
+        }
+        // чтение точки 2
+        try {
+            distance_point2 = new Point(
+                    Double.parseDouble(properties.getProperty(nameDistancePoint2_val)),
+                    Integer.parseInt(properties.getProperty(nameDistancePoint2_adc))
+            );
+        } catch (Exception e) {
+            MyLogger.myLog.log(Level.WARNING, "ошибка чтения калибровочной точки 2 дистанции", e);
+            distance_point2 = new Point(1000.0, 1000);
+        }
+        // рендер
+        distancePointK = PointK.render(distance_point1, distance_point2);
+        // force point 1
+        try {
+            force_point1 = new Point(
+                    Double.parseDouble(properties.getProperty(nameForcePoint1_vol)),
+                    Integer.parseInt(properties.getProperty(nameForcePoint1_adc))
+            );
+        } catch (Exception e) {
+            MyLogger.myLog.log(Level.WARNING, "ошибка чтения калибровочной точки 1 усилия", e);
+            force_point1 = new Point(0.0, 0);
+        }
+        // force point 2
+        try {
+            force_point2 = new Point(
+                    Double.parseDouble(properties.getProperty(nameForcePoint2_vol)),
+                    Integer.parseInt(properties.getProperty(nameForcePoint2_adc))
+            );
+        } catch (Exception e) {
+            MyLogger.myLog.log(Level.WARNING, "ошибка чтения калибровочной точки 2 усилия", e);
+            force_point2 = new Point(1000.0, 1000);
+        }
+        // рендер
+        force_pointK = PointK.render(force_point1, force_point2);
         return status;
     }
     @Override
@@ -61,10 +115,20 @@ class ParametersConfig implements BaseData.Config {
         Status result;
         properties.setProperty("CommPort", portName);
         properties.setProperty("DataBase", typeBaseData.codeToString());
-        properties.setProperty("Distance_K", String.valueOf(distance_k));
-        properties.setProperty("Distance_Offset", String.valueOf(distance_offset));
-        properties.setProperty("Weight_K", String.valueOf(weight_k));
-        properties.setProperty("Weight_Offset", String.valueOf(weight_offset));
+        // distance point 1
+        properties.setProperty(nameDistancePoint1_val, String.valueOf(distance_point1.value));
+        properties.setProperty(nameDistancePoint1_adc, String.valueOf(distance_point1.adc));
+        // distance point 2
+        properties.setProperty(nameDistancePoint2_val, String.valueOf(distance_point2.value));
+        properties.setProperty(nameDistancePoint2_adc, String.valueOf(distance_point2.adc));
+
+        // force point 1
+        properties.setProperty(nameForcePoint1_vol, String.valueOf(force_point1.value));
+        properties.setProperty(nameForcePoint1_adc, String.valueOf(force_point1.adc));
+        // force point 2
+        properties.setProperty(nameForcePoint2_vol, String.valueOf(force_point2.value));
+        properties.setProperty(nameForcePoint2_adc, String.valueOf(force_point2.adc));
+
         try {
             properties.store(new BufferedWriter(new FileWriter(fileNameConfig)), "config");
             result = Status.OK;
@@ -94,63 +158,81 @@ class ParametersConfig implements BaseData.Config {
     public void setDefault() {
         portName = "com2";
         typeBaseData = TypeBaseDate.MY_SQL;
-        distance_k = weight_k = 1.0;
-        distance_offset = weight_offset = 0;
-    }
-
-    @Override
-    public double getDistance_k() {
-        return distance_k;
+        // дистанция точка 1
+        distance_point1 = new Point(0.0, 0);
+        // дистанция точка 2
+        distance_point2 = new Point(1000.0, 1000);
+        // distance point k
+        distancePointK = PointK.render(distance_point1, distance_point2);
+        // force point 1
+        force_point1 = new Point(0.0, 0);
+        // force point 2
+        force_point2 = new Point(1000.0, 1000);
+        // force point k
+        force_pointK = PointK.render(force_point1, force_point2);
     }
 
     // set calib distance
     @Override
-    public void setDistanceCalib(int adc1, int adc2, double zn1, double zn2) {
-        // save
-        distance_adc1 = adc1;
-        distance_adc2 = adc2;
-        distance_zn1 = zn1;
-        distance_zn2 = zn2;
-        // render
-        Point point1 = new Point(zn1, adc1);
-        Point point2 = new Point(zn2, adc2);
-        PointK pointK = PointK.render(point1, point2);
-        distance_k = pointK.k;
-        distance_offset = pointK.offset;
+    public void setDistanceCalib(Point point1, Point point2) {
+        distance_point1 = point1;
+        distance_point2 = point2;
+        distancePointK = PointK.render(distance_point1, distance_point2);
     }
 
     @Override
-    public void setDistance_k(double distance_k) {
-        this.distance_k = distance_k;
+    public double getDistance_k() {
+        return distancePointK.k;
     }
 
     @Override
     public double getDistance_offset() {
-        return distance_offset;
+        return distancePointK.offset;
     }
 
+    // distance point 1
     @Override
-    public void setDistance_offset(double distance_offset) {
-        this.distance_offset = distance_offset;
+    public double getDistancePoint1_vol() {
+        return distance_point1.value;
+    }
+    @Override
+    public int getDistancePoint1_adc() {
+        return distance_point1.adc;
     }
 
+    // distance point 2
     @Override
-    public double getWeight_k() {
-        return weight_k;
+    public double getDistancePoint2_vol() {
+        return distance_point2.value;
     }
-
     @Override
-    public void setWeight_k(double weight_k) {
-        this.weight_k = weight_k;
+    public int getDistancePoint2_adc() {
+        return distance_point2.adc;
     }
-
+    // Set force calib
     @Override
-    public double getWeight_offset() {
-        return weight_offset;
+    public void setForceCalib(Point point1, Point point2) {
+        force_point1 = point1;
+        force_point2 = point2;
+        force_pointK = PointK.render(force_point1, force_point2);
     }
-
+    // gets
     @Override
-    public void setWeight_offset(double weight_offset) {
-        this.weight_offset = weight_offset;
+    public double getForce_k() {
+        return force_pointK.k;
+    }
+    @Override
+    public double getForce_offset() {
+        return force_pointK.offset;
+    }
+    // get force point 1
+    @Override
+    public Point getForcePoint1() {
+        return force_point1;
+    }
+    // get force point 2
+    @Override
+    public Point getForcePoint2() {
+        return force_point2;
     }
 }

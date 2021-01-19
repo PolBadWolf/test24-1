@@ -38,16 +38,29 @@ public interface BaseData {
         TypeBaseDate getTypeBaseData();
         void setPortName(String portName);
         void setTypeBaseData(TypeBaseDate typeBaseData);
-        double getDistance_k();
+        // **** distance ****
         // set calib distance
-        void setDistanceCalib(int adc1, int adc2, double zn1, double zn2);
-        void setDistance_k(double distance_k);
+//        void setDistanceCalib(double vol1, int adc1, double vol2, int adc2);
+        void setDistanceCalib(Point point1, Point point2);
+        // gets
+        double getDistance_k();
         double getDistance_offset();
-        void setDistance_offset(double distance_offset);
-        double getWeight_k();
-        void setWeight_k(double weight_k);
-        double getWeight_offset();
-        void setWeight_offset(double weight_offset);
+        // distance point 1
+        double getDistancePoint1_vol();
+        int getDistancePoint1_adc();
+        // distance point 2
+        double getDistancePoint2_vol();
+        int getDistancePoint2_adc();
+        // **** force ****
+        // set calib force
+        void setForceCalib(Point point1, Point point2);
+        // gets
+        double getForce_k();
+        double getForce_offset();
+        // force point 1
+        Point getForcePoint1();
+        // force point 2
+        Point getForcePoint2();
     }
     // ==================== PASSWORD ====================
     class Password {
