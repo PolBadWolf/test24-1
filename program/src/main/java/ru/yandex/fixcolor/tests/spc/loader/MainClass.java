@@ -71,7 +71,19 @@ public class MainClass {
     }
     private void startFx() {
         // создание основных объектов
-        screenFx = ScreenFx.init(this::close);
+        screenFx = ScreenFx.init(
+                new ScreenFx.Closer() {
+                    @Override
+                    public void close() {
+                        MainClass.this.close();
+                    }
+
+                    @Override
+                    public int loadMaxNcycle() {
+                        return loadParameterMaxNcycle();
+                    }
+                }
+        );
         runner = Runner.main(new RunnerCallBack());
         // вызов основной формы
         screenFx.main();
@@ -119,6 +131,7 @@ public class MainClass {
                 }
                 try {
                     commPort.sendMessageStopNcycleMax(nMax);
+                    saveParameterMaxNcycle(nMax);
                 } catch (Exception exception) {
                     myLog.log(Level.SEVERE, "ошибка передачи максимального количества циклов");
                 }
@@ -227,4 +240,30 @@ public class MainClass {
         return commPort.open(callBack, commPortName, BAUD.baud57600);
     }
 
+    // ============
+    private void saveParameterMaxNcycle(int maxNcycle) {
+        BaseData.Config config = BaseData.Config.create();
+        try { config.load();
+        } catch (BaseDataException be) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
+            config.setDefault();
+        }
+        if (config.getMaxNcycle() != maxNcycle) {
+            config.setMaxNcycle(maxNcycle);
+            try {
+                config.save();
+            } catch (BaseDataException e) {
+                myLog.log(Level.WARNING, "ошибка записи файла конфигурации", e);
+            }
+        }
+    }
+    public int loadParameterMaxNcycle() {
+        BaseData.Config config = BaseData.Config.create();
+        try { config.load();
+        } catch (BaseDataException be) {
+            myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
+            config.setDefault();
+        }
+        return config.getMaxNcycle();
+    }
 }

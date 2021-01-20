@@ -40,7 +40,6 @@ public interface BaseData {
         void setTypeBaseData(TypeBaseDate typeBaseData);
         // **** distance ****
         // set calib distance
-//        void setDistanceCalib(double vol1, int adc1, double vol2, int adc2);
         void setDistanceCalib(Point point1, Point point2);
         // gets
         double getDistance_k();
@@ -61,6 +60,10 @@ public interface BaseData {
         Point getForcePoint1();
         // force point 2
         Point getForcePoint2();
+        // ******************************
+        // *** n cycle max ***
+        void setMaxNcycle(int maxNcycle);
+        int getMaxNcycle();
     }
     // ==================== PASSWORD ====================
     class Password {

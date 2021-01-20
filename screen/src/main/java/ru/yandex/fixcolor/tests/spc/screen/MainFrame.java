@@ -10,12 +10,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.Pusher;
+import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.lib.fx.LabelTextFlash;
 import ru.yandex.fixcolor.tests.spc.lib.fx.TextControl;
 import ru.yandex.fixcolor.tests.spc.lib.fx.TextUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 public class MainFrame implements Initializable, MainFrame_interface {
     public static MainFrame mainFrame = null;
@@ -139,5 +141,26 @@ public class MainFrame implements Initializable, MainFrame_interface {
 
     public void on_cycleMax(ActionEvent actionEvent) {
         callBack.send_nMax(s_nCicle.getText());
+    }
+
+    @Override
+    public void setFieldMaxNcycle(int maxNcycle) {
+        s_nCicle.setText(String.valueOf(maxNcycle));
+    }
+
+    @Override
+    public int getFieldMaxNcycle() {
+        int nMax = 1;
+        try {
+            nMax = Integer.parseInt(s_nCicle.getText());
+        } catch (Exception e) {
+            MyLogger.myLog.log(Level.WARNING, "ошибка чтения параметра", e);
+            nMax = 1;
+        } finally {
+            if (nMax < 1 || nMax > 32) {
+                nMax = 1;
+            }
+        }
+        return nMax;
     }
 }

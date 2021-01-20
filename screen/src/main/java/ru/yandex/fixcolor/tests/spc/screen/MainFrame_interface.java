@@ -22,4 +22,7 @@ public interface MainFrame_interface {
     void setFieldsMeasuredPusher(int n_cycle, int forceMeasure, int moveMeasure, int timeUnClenching);
     void setFieldCurrentCycle(int n_cycle);
     TextControl getLabelAlarm();
+    //
+    void setFieldMaxNcycle(int maxNcycle);
+    int getFieldMaxNcycle();
 }

@@ -43,6 +43,8 @@ public class ScreenClass extends Application implements ScreenFx {
             event.consume();
             primaryStage.show();
         });
+        MainFrame.mainFrame.setFieldMaxNcycle(closer.loadMaxNcycle());
+        MainFrame.mainFrame.on_cycleMax(null);
     }
 
     @Override

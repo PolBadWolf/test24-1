@@ -23,6 +23,8 @@ class ParametersConfig implements BaseData.Config {
     // force point 2
     private static final String nameForcePoint2_vol = "Force_vol2";
     private static final String nameForcePoint2_adc = "Force_adc2";
+    // n cycle max
+    private static final String nameMaxNcycle = "Max_n_cycle";
     // ==================================================================
     private String portName;
     private TypeBaseDate typeBaseData;
@@ -31,12 +33,13 @@ class ParametersConfig implements BaseData.Config {
     private Point distance_point1;
     // distance point 2
     private Point distance_point2;
-    //
     private PointK distancePointK;
     // *** force ***
     private Point force_point1;
     private Point force_point2;
     private PointK force_pointK;
+    // *** n cycle max
+    private int maxNcycle;
 
     public ParametersConfig() {
         typeBaseData = TypeBaseDate.ERROR;
@@ -107,6 +110,14 @@ class ParametersConfig implements BaseData.Config {
         }
         // рендер
         force_pointK = PointK.render(force_point1, force_point2);
+        // **************************************
+        // n cycle max
+        try {
+            maxNcycle = Integer.parseInt(properties.getProperty(nameMaxNcycle));
+        } catch (Exception e) {
+            MyLogger.myLog.log(Level.WARNING, "ошибка чтения количества циклов", e);
+            maxNcycle = 1;
+        }
         return status;
     }
     @Override
@@ -128,6 +139,9 @@ class ParametersConfig implements BaseData.Config {
         // force point 2
         properties.setProperty(nameForcePoint2_vol, String.valueOf(force_point2.value));
         properties.setProperty(nameForcePoint2_adc, String.valueOf(force_point2.adc));
+
+        // n cycle max
+        properties.setProperty(nameMaxNcycle, String.valueOf(maxNcycle));
 
         try {
             properties.store(new BufferedWriter(new FileWriter(fileNameConfig)), "config");
@@ -170,6 +184,8 @@ class ParametersConfig implements BaseData.Config {
         force_point2 = new Point(1000.0, 1000);
         // force point k
         force_pointK = PointK.render(force_point1, force_point2);
+        // n cycle max
+        maxNcycle = 1;
     }
 
     // set calib distance
@@ -234,5 +250,17 @@ class ParametersConfig implements BaseData.Config {
     @Override
     public Point getForcePoint2() {
         return force_point2;
+    }
+
+    // ******************************
+    // *** n cycle max ***
+    @Override
+    public void setMaxNcycle(int maxNcycle) {
+        this.maxNcycle = maxNcycle;
+    }
+    @Override
+    public int getMaxNcycle() {
+        if (maxNcycle < 1 || maxNcycle > 32) maxNcycle = 1;
+        return maxNcycle;
     }
 }
