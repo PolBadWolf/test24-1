@@ -27,30 +27,34 @@
       </Pane>
 
       <Label alignment="CENTER" layoutX="34.0" layoutY="657.0" text="Толкатель"><Font name="Times New Roman" size="18.0" /></Label>
-      <Label fx:id="set_Pusher" alignment="CENTER" layoutX="22.0" layoutY="684.0" prefHeight="25.0" prefWidth="118.0" />
+      <Label fx:id="set_Pusher" alignment="CENTER" layoutX="2.0" layoutY="684.0" prefHeight="17.0" prefWidth="118.0" />
       <Label alignment="CENTER" layoutX="34.0" layoutY="717.0" text="Измеренние"><Font name="Times New Roman" size="18.0" /></Label>
 
-      <Label alignment="CENTER" layoutX="163.0" layoutY="657.0" text="Тип толкателя"><Font name="Times New Roman" size="18.0" /></Label>
-      <Label fx:id="set_TypePusher" alignment="CENTER" layoutX="128.0" layoutY="684.0" prefHeight="17.0" prefWidth="149.0" />
-      <Label fx:id="label2" layoutX="128.0" layoutY="717.0" prefHeight="17.0" prefWidth="149.0" />
+      <Label alignment="CENTER" layoutX="141.0" layoutY="657.0" text="Тип толкателя"><Font name="Times New Roman" size="18.0" /></Label>
+      <Label fx:id="set_TypePusher" alignment="CENTER" layoutX="106.0" layoutY="684.0" prefHeight="17.0" prefWidth="149.0" />
+      <Label fx:id="label2" layoutX="106.0" layoutY="717.0" prefHeight="17.0" prefWidth="149.0" />
 
-      <Label alignment="CENTER" layoutX="323.0" layoutY="657.0" text="Ном. усилие (кг)"><Font name="Times New Roman" size="18.0" /></Label>
-      <Label fx:id="set_Force" alignment="CENTER" layoutX="295.0" layoutY="684.0" prefHeight="17.0" prefWidth="149.0" />
-      <Label fx:id="get_Force" alignment="CENTER" layoutX="295.0" layoutY="717.0" prefHeight="17.0" prefWidth="149.0" />
+      <Label alignment="CENTER" layoutX="284.0" layoutY="657.0" text="Ном. усилие (кг)"><Font name="Times New Roman" size="18.0" /></Label>
+      <Label fx:id="set_Force" alignment="CENTER" layoutX="255.0" layoutY="684.0" prefHeight="17.0" prefWidth="149.0" />
+      <Label fx:id="get_Force" alignment="CENTER" layoutX="255.0" layoutY="717.0" prefHeight="17.0" prefWidth="149.0" />
 
-      <Label alignment="CENTER" layoutX="520.0" layoutY="657.0" text="Ном. ход (мм)"><Font name="Times New Roman" size="18.0" /></Label>
-      <Label fx:id="set_Move" alignment="CENTER" layoutX="480.0" layoutY="684.0" prefHeight="17.0" prefWidth="149.0" />
-      <Label fx:id="get_Move" alignment="CENTER" layoutX="480.0" layoutY="717.0" prefHeight="17.0" prefWidth="149.0" />
+      <Label alignment="CENTER" layoutX="440.0" layoutY="657.0" text="Ном. ход (мм)"><Font name="Times New Roman" size="18.0" /></Label>
+      <Label fx:id="set_Move" alignment="CENTER" layoutX="400.0" layoutY="684.0" prefHeight="17.0" prefWidth="149.0" />
+      <Label fx:id="get_Move" alignment="CENTER" layoutX="400.0" layoutY="717.0" prefHeight="17.0" prefWidth="149.0" />
 
-      <Label alignment="CENTER" layoutX="684.0" layoutY="657.0" text="Время разжатия"><Font name="Times New Roman" size="18.0" /></Label>
-      <Label fx:id="set_Unclenching" alignment="CENTER" layoutX="665.0" layoutY="684.0" prefHeight="17.0" prefWidth="149.0" />
-      <Label fx:id="get_Unclenching" alignment="CENTER" layoutX="665.0" layoutY="717.0" prefHeight="17.0" prefWidth="149.0" />
+      <Label alignment="CENTER" layoutX="560.0" layoutY="657.0" text="Время разжатия(сек.)"><Font name="Times New Roman" size="18.0" /></Label>
+      <Label fx:id="set_Unclenching" alignment="CENTER" layoutX="560.0" layoutY="684.0" prefHeight="17.0" prefWidth="118.0" />
+      <Label fx:id="get_Unclenching" alignment="CENTER" layoutX="560.0" layoutY="717.0" prefHeight="17.0" prefWidth="118.0" />
 
-      <Label alignment="CENTER_RIGHT" layoutX="811.0" layoutY="684.0" text="всего"><Font name="Times New Roman" size="18.0" /></Label>
-      <Label alignment="CENTER_RIGHT" layoutX="811.0" layoutY="717.0" text="текущ."><Font name="Times New Roman" size="18.0" /></Label>
+      <Label alignment="CENTER" layoutX="726.0" layoutY="657.0" text="Время сжатия(сек.)"><Font name="Times New Roman" size="18.0" /></Label>
+      <Label fx:id="set_Clenching" alignment="CENTER" layoutX="715.0" layoutY="688.0" prefHeight="17.0" prefWidth="118.0" text="123" />
+      <Label fx:id="get_Clenching" alignment="CENTER" layoutX="715.0" layoutY="717.0" prefHeight="17.0" prefWidth="118.0" text="123" />
 
-      <Label alignment="CENTER" layoutX="859.0" layoutY="657.0" text="Кол-во циклов"><Font name="Times New Roman" size="18.0" /></Label>
-      <TextField fx:id="s_nCicle" alignment="CENTER" layoutX="850.0" layoutY="684.0" onAction="#on_cycleMax" prefHeight="25.0" prefWidth="110.0" text="15" />
+      <Label alignment="CENTER_RIGHT" layoutX="837.0" layoutY="684.0" text="всего"><Font name="Times New Roman" size="18.0" /></Label>
+      <Label alignment="CENTER_RIGHT" layoutX="837.0" layoutY="717.0" text="текущ."><Font name="Times New Roman" size="18.0" /></Label>
+
+      <Label alignment="CENTER" layoutX="885.0" layoutY="657.0" text="Кол-во циклов"><Font name="Times New Roman" size="18.0" /></Label>
+      <TextField fx:id="s_nCicle" alignment="CENTER" layoutX="876.0" layoutY="684.0" onAction="#on_cycleMax" prefHeight="25.0" prefWidth="110.0" text="15" />
       <Label fx:id="l_nCicle" alignment="CENTER" layoutX="850.0" layoutY="717.0" prefHeight="25.0" prefWidth="110.0" />
     </children>
 
