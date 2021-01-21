@@ -38,6 +38,8 @@ public class MainFrame implements Initializable, MainFrame_interface {
     public Label set_Move;
     public Label get_Unclenching;
     public Label set_Unclenching;
+    public Label set_Clenching;
+    public Label get_Clenching;
     public TextField s_nCicle;
     public Label l_nCicle;
     public Label label2;
@@ -111,12 +113,13 @@ public class MainFrame implements Initializable, MainFrame_interface {
     }
 
     @Override
-    public void setFieldsMeasuredPusher(int n_cycle, int forceMeasure, int moveMeasure, int timeUnClenching) {
+    public void setFieldsMeasuredPusher(int n_cycle, int forceMeasure, int moveMeasure, float timeUnClenching, float timeClenching) {
         Platform.runLater(()->{
             l_nCicle.setText(String.valueOf(n_cycle));
             get_Force.setText(String.valueOf(forceMeasure));
             get_Move.setText(String.valueOf(moveMeasure));
-            get_Unclenching.setText(String.valueOf(((float) timeUnClenching) / 1_000));
+            get_Unclenching.setText(String.valueOf(timeUnClenching));
+            get_Clenching.setText(String.valueOf(timeClenching));
         });
     }
 

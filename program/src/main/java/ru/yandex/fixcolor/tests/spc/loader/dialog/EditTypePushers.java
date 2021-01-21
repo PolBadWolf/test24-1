@@ -25,6 +25,7 @@ public class EditTypePushers {
     private JTextField textForce;
     private JTextField textMove;
     private JTextField textUnclenching;
+    private JTextField textClenching;
     private JTextField textWeightNominal;
     private JButton buttonDelete;
     private JButton buttonClear;

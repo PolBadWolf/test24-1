@@ -19,7 +19,7 @@ public interface MainFrame_interface {
     void label2_txt(String text);
     void setCallBack(CallBack callBack);
     void setFieldsSamplePusher(Pusher pusher);
-    void setFieldsMeasuredPusher(int n_cycle, int forceMeasure, int moveMeasure, int timeUnClenching);
+    void setFieldsMeasuredPusher(int n_cycle, int forceMeasure, int moveMeasure, float timeUnClenching, float timeClenching);
     void setFieldCurrentCycle(int n_cycle);
     TextControl getLabelAlarm();
     //
