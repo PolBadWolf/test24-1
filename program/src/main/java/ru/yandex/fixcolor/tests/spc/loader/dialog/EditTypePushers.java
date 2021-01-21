@@ -268,7 +268,8 @@ public class EditTypePushers {
         String v_typeName = textName.getText();
         int v_force = Integer.parseInt(textForce.getText());
         int v_move = Integer.parseInt(textMove.getText());
-        int v_unclenching = Integer.parseInt(textUnclenching.getText());
+        float v_unclenching = Float.parseFloat(textUnclenching.getText());
+        float v_clenching = Float.parseFloat(textClenching.getText());
         int v_weightNominal = Integer.parseInt(textWeightNominal.getText());
         // проверка на повтор
         if (!v_typeName.equals(editTypePusher.loggerTypePusher.nameType)) {
@@ -281,6 +282,7 @@ public class EditTypePushers {
                     v_force,
                     v_move,
                     v_unclenching,
+                    v_clenching,
                     v_weightNominal
             );
             newData = true;
@@ -299,7 +301,8 @@ public class EditTypePushers {
         String v_typeName = textName.getText();
         int v_force = Integer.parseInt(textForce.getText());
         int v_move = Integer.parseInt(textMove.getText());
-        int v_unclenching = Integer.parseInt(textUnclenching.getText());
+        float v_unclenching = Float.parseFloat(textUnclenching.getText());
+        float v_clenching = Float.parseFloat(textClenching.getText());
         int v_weightNominal = Integer.parseInt(textWeightNominal.getText());
         // проверка на повтор
         if (checkRepeatTypePusher(v_typeName, listTypePushers)) return;
@@ -310,6 +313,7 @@ public class EditTypePushers {
                     v_force,
                     v_move,
                     v_unclenching,
+                    v_clenching,
                     v_weightNominal
             );
             newData = true;
