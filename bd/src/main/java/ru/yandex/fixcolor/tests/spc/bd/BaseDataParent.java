@@ -410,6 +410,7 @@ class BaseDataParent implements BaseData {
                                             result.getInt("forceNominal"),
                                             result.getInt("moveNominal"),
                                             result.getInt("unclenchingTime"),
+                                            0,
                                             result.getInt("weightNominal")
                                     ),
                                     result.getTimestamp("date_unreg_typepushers")
@@ -897,6 +898,7 @@ class BaseDataParent implements BaseData {
                                         result.getInt("forceNominal"),
                                         result.getInt("moveNominal"),
                                         result.getInt("unclenchingTime"),
+                                        0,
                                         result.getInt("weightNominal")
                                 ),
                                 result.getTimestamp("date_unreg")
@@ -1124,6 +1126,7 @@ class BaseDataParent implements BaseData {
                             result.getInt("forceNominal"),
                             result.getInt("moveNominal"),
                             result.getInt("unclenchingTime"),
+                            0,
                             result.getInt("weightNominal")
                     ),
                     result.getTimestamp("date_unreg")
@@ -1204,6 +1207,7 @@ class BaseDataParent implements BaseData {
                                             result.getInt("forceNominal"),
                                             result.getInt("moveNominal"),
                                             result.getInt("unclenchingTime"),
+                                            0,
                                             result.getInt("weightNominal")
                                     ),
                                     result.getTimestamp("typePusher_dateUnreg")
@@ -1325,6 +1329,7 @@ class BaseDataParent implements BaseData {
                             result.getInt("forceNominal"),
                             result.getInt("moveNominal"),
                             result.getInt("unclenchingTime"),
+                            0,
                             result.getInt("weightNominal")
                     ),
                     result.getTimestamp("date_unreg")
