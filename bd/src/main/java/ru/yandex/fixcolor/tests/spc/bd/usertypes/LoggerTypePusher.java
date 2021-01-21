@@ -10,12 +10,12 @@ public class LoggerTypePusher {
     public String nameType;
     public int forceNominal;
     public int moveNominal;
-    public int unclenchingTime;
-    public int clenchingTime;
+    public float unclenchingTime;
+    public float clenchingTime;
     public int weightNominal;
 
     public LoggerTypePusher(long id_loggerTypePusher, Date data_upd, long id_loggerUserEdit, long id_typePusher,
-                            String nameType, int forceNominal, int moveNominal, int unclenchingTime, int clenchingTime, int weightNominal) {
+                            String nameType, int forceNominal, int moveNominal, float unclenchingTime, float clenchingTime, int weightNominal) {
         this.id_loggerTypePusher = id_loggerTypePusher;
         this.data_upd = data_upd;
         this.id_loggerUserEdit = id_loggerUserEdit;
