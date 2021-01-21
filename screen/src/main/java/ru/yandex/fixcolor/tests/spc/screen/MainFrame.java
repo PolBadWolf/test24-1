@@ -58,7 +58,7 @@ public class MainFrame implements Initializable, MainFrame_interface {
             gc.stroke();
         });
     }
-
+    // рисование линии
     @Override
     public void canvas_Line(Color lineColor, double lineWidth, double x0, double y0, double x, double y) {
         Platform.runLater( ()->{
@@ -71,17 +71,17 @@ public class MainFrame implements Initializable, MainFrame_interface {
             gc.closePath();
         });
     }
-
+    // выдача статуса программы
     @Override
     public void outStatusWork(String text) {
         Platform.runLater( ()->state.setText(text) );
     }
-
+    // высота холста
     @Override
     public double getHeightCanvas() {
         return canvas.getHeight();
     }
-
+    // возвращает холст (зачем ?)
     @Override
     public Canvas getCanvas() {
         return canvas;
@@ -91,16 +91,16 @@ public class MainFrame implements Initializable, MainFrame_interface {
     public void label2_txt(String text) {
         Platform.runLater( ()->label2.setText(text) );
     }
-
+    // выход
     public void exitOnAction(ActionEvent actionEvent) {
         callBack.buttonExit_onAction();
     }
-
+    // установить call back
     @Override
     public void setCallBack(CallBack callBack) {
         this.callBack = callBack;
     }
-
+    // вывод параметров образца
     @Override
     public void setFieldsSamplePusher(Pusher pusher) {
         Platform.runLater(()->{
@@ -109,9 +109,10 @@ public class MainFrame implements Initializable, MainFrame_interface {
             set_Force.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.forceNominal));
             set_Move.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.moveNominal));
             set_Unclenching.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.unclenchingTime));
+            set_Clenching.setText(String.valueOf(pusher.loggerPusher.typePusher.loggerTypePusher.clenchingTime));
         });
     }
-
+    // вывод измерянных параметров
     @Override
     public void setFieldsMeasuredPusher(int n_cycle, int forceMeasure, int moveMeasure, float timeUnClenching, float timeClenching) {
         Platform.runLater(()->{
@@ -122,7 +123,7 @@ public class MainFrame implements Initializable, MainFrame_interface {
             get_Clenching.setText(String.valueOf(timeClenching));
         });
     }
-
+    // вывод текущий цикл
     @Override
     public void setFieldCurrentCycle(int n_cycle) {
         Platform.runLater(()->{
@@ -133,7 +134,7 @@ public class MainFrame implements Initializable, MainFrame_interface {
     public void archiveOnAction(ActionEvent actionEvent) {
         callBack.startViewArchive();
     }
-
+    // вывод надписи alarm
     @Override
     public TextControl getLabelAlarm() {
         if (alarmMessageFlashText == null) {
@@ -141,16 +142,16 @@ public class MainFrame implements Initializable, MainFrame_interface {
         }
         return alarmMessageFlashText;
     }
-
+    // on action максимальное количество циклов
     public void on_cycleMax(ActionEvent actionEvent) {
         callBack.send_nMax(s_nCicle.getText());
     }
-
+    // установить максимальное количество циклов
     @Override
     public void setFieldMaxNcycle(int maxNcycle) {
         s_nCicle.setText(String.valueOf(maxNcycle));
     }
-
+    // прочитать максимальное количество циклов
     @Override
     public int getFieldMaxNcycle() {
         int nMax = 1;
