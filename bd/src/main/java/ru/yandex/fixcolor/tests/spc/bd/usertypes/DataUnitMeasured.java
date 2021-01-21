@@ -14,13 +14,14 @@ public class DataUnitMeasured {
     public int tik_stop;
     public int forceNominal;
     public int moveNominal;
-    public int unclenchingTime;
+    public float unclenchingTime;
+    public float clenchingTime;
     public Blob dataMeasured;
     public long id_user;
     public long id_pusher;
 
     public DataUnitMeasured(long id_data, Date dateTime, long id_spec, int n_cicle, int ves, int tik_shelf,
-                            int tik_back, int tik_stop, int forceNominal, int moveNominal, int unclenchingTime,
+                            int tik_back, int tik_stop, int forceNominal, int moveNominal, float unclenchingTime, float clenchingTime,
                             Blob dataMeasured, long id_user, long id_pusher) {
         this.id_data = id_data;
         this.dateTime = dateTime;
@@ -33,6 +34,7 @@ public class DataUnitMeasured {
         this.forceNominal = forceNominal;
         this.moveNominal = moveNominal;
         this.unclenchingTime = unclenchingTime;
+        this.clenchingTime = clenchingTime;
         this.dataMeasured = dataMeasured;
         this.id_user = id_user;
         this.id_pusher = id_pusher;
