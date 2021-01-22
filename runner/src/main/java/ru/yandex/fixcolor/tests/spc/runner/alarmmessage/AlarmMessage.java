@@ -37,20 +37,20 @@ public enum AlarmMessage {
                 message = "переключатель не в положении стоп";
                 break;
             case AlarmMessageCode.ABORT:
-                message = "отмена замера";
+                message = "прервано оператором";
                 break;
             case AlarmMessageCode.SWITCH:
-                message = "переключатель неисправен";
+                message = "пропуск положения \"стоп\"";
                 break;
             case AlarmMessageCode.SAFE_ENGINE_ON:
-                message = "заклинивание при включенном двигателе";
+                message = "шток не выдвенулся";
                 break;
             case AlarmMessageCode.SAFE_ENGINE_OFF:
-                message = "заклинивание при отключенном двигателе";
+                message = "шток не задвинулся";
                 break;
             default:
-                MyLogger.myLog.log(Level.SEVERE, "ошибка кода ALARM", new IllegalStateException("Unexpected value: " + alarmCode));
-                message = "ошибка кода ALARM: " + alarmCode;
+                MyLogger.myLog.log(Level.SEVERE, "неизвестный код ошибки", new IllegalStateException("Unexpected value: " + alarmCode));
+                message = "неизвестный код ошибки: " + alarmCode;
         }
         return message;
     }

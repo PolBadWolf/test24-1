@@ -39,7 +39,7 @@ class BaseDataParent implements BaseData {
     // ===================================================================================================
     // чтение списка БД
     @Override
-    public String[] getListBase() throws BaseDataException { return new String[0]; }
+    public String[] getListBase() throws BaseDataException { return new String[0]; } // заглушка
     // ===================================================================================================
     // чтение списка пользователей
     @Override
@@ -170,6 +170,7 @@ class BaseDataParent implements BaseData {
                         "forceNominal",
                         "moveNominal",
                         "unclenchingTime",
+                        "clenchingTime",
                         "dataMeasured"
                 ))
         );
@@ -250,6 +251,7 @@ class BaseDataParent implements BaseData {
                         "forceNominal",
                         "moveNominal",
                         "unclenchingTime",
+                        "clenchingTime",
                         "weightNominal"
                 ))
         );
@@ -260,7 +262,7 @@ class BaseDataParent implements BaseData {
         myLog.log(Level.SEVERE, "ошибка проверки таблицы");
         System.exit(-2);
         return false;
-    }
+    } // заглушка
     // ===================================================================================================
     // установка нового пароля пользователю
     @Override
@@ -347,6 +349,7 @@ class BaseDataParent implements BaseData {
                             " pusherstype_logger.forceNominal, " +
                             " pusherstype_logger.moveNominal, " +
                             " pusherstype_logger.unclenchingTime, " +
+                            " pusherstype_logger.clenchingTime, " +
                             " pusherstype_logger.weightNominal, " +
                             " pusherstype.date_unreg AS date_unreg_typepushers, " +
                             " pushers.date_unreg AS date_unreg_pushers " +
@@ -375,6 +378,7 @@ class BaseDataParent implements BaseData {
                             " pusherstype_logger.forceNominal, " +
                             " pusherstype_logger.moveNominal, " +
                             " pusherstype_logger.unclenchingTime, " +
+                            " pusherstype_logger.clenchingTime, " +
                             " pusherstype_logger.weightNominal, " +
                             " pusherstype.date_unreg AS date_unreg_typepushers, " +
                             " pushers.date_unreg AS date_unreg_pushers " +
@@ -409,7 +413,8 @@ class BaseDataParent implements BaseData {
                                             result.getString("nameType"),
                                             result.getInt("forceNominal"),
                                             result.getInt("moveNominal"),
-                                            result.getInt("unclenchingTime"),
+                                            result.getFloat("unclenchingTime"),
+                                            result.getFloat("clenchingTime"),
                                             result.getInt("weightNominal")
                                     ),
                                     result.getTimestamp("date_unreg_typepushers")
@@ -594,7 +599,7 @@ class BaseDataParent implements BaseData {
     // запись измерений
     @Override
     public void writeDataDist(int n_cicle, int ves, int tik_shelf, int tik_back, int tik_stop,
-                              int forceNominal, int moveNominal, int unclenchingTime, Blob dataMeasured) throws BaseDataException {
+                              int forceNominal, int moveNominal, float unclenchingTime, float clenchingTime, Blob dataMeasured) throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(false);
         //
@@ -616,8 +621,8 @@ class BaseDataParent implements BaseData {
             // запись
             statement = connection.prepareStatement(
                     "INSERT INTO " + baseDat + ".datas " +
-                            " (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, forceNominal, moveNominal, unclenchingTime, dataMeasured) " +
-                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                            " (dateTime, id_spec, n_cicle, ves, tik_shelf, tik_back, tik_stop, forceNominal, moveNominal, unclenchingTime, clenchingTime, dataMeasured) " +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             );
             statement.setTimestamp(1, timestamp);
             statement.setLong(2, id_spec);
@@ -628,8 +633,9 @@ class BaseDataParent implements BaseData {
             statement.setInt(7, tik_stop);
             statement.setInt(8, forceNominal);
             statement.setInt(9, moveNominal);
-            statement.setInt(10, unclenchingTime);
-            statement.setBlob(11, dataMeasured);
+            statement.setFloat(10, unclenchingTime);
+            statement.setFloat(11, clenchingTime);
+            statement.setBlob(12, dataMeasured);
             statement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
@@ -647,7 +653,7 @@ class BaseDataParent implements BaseData {
     }
     // запись нового типа толкателя
     @Override
-    public long writeNewTypePusher(long id_loggerUser, String nameType, int forceNominal, int moveNominal, int unclenchingTime, int weightNominal) throws BaseDataException {
+    public long writeNewTypePusher(long id_loggerUser, String nameType, int forceNominal, int moveNominal, float unclenchingTime, float clenchingTime, int weightNominal) throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(false);
         String query;
@@ -673,8 +679,8 @@ class BaseDataParent implements BaseData {
             id_typePusher = ((ClientPreparedStatement) preStatementPusherType).getLastInsertID();
             // создание записи в журнале типа толкателя
             query = "INSERT INTO " + baseDat + ".pusherstype_logger " +
-                    " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime, weightNominal) " +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+                    " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime, clenchingTime, weightNominal) " +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
             ;
             preStatementLogger = connection.prepareStatement(query);
             preStatementLogger.setTimestamp(1, timestamp);
@@ -683,8 +689,9 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setString(4, nameType);
             preStatementLogger.setInt(5, forceNominal);
             preStatementLogger.setInt(6, moveNominal);
-            preStatementLogger.setInt(7, unclenchingTime);
-            preStatementLogger.setInt(8, weightNominal);
+            preStatementLogger.setFloat(7, unclenchingTime);
+            preStatementLogger.setFloat(8, clenchingTime);
+            preStatementLogger.setInt(9, weightNominal);
             preStatementLogger.executeUpdate();
             id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
             //
@@ -715,7 +722,7 @@ class BaseDataParent implements BaseData {
     }
     // обновление типа толкателя
     @Override
-    public void updateTypePusher(TypePusher typePusher, long id_loggerUserEdit, String nameType, int forceNominal, int moveNominal, int unclenchingTime, int weightNominal) throws BaseDataException {
+    public void updateTypePusher(TypePusher typePusher, long id_loggerUserEdit, String nameType, int forceNominal, int moveNominal, float unclenchingTime, float clenchingTime, int weightNominal) throws BaseDataException {
         internalCheckConnect();
         internalAutoCommit(false);
 
@@ -727,8 +734,8 @@ class BaseDataParent implements BaseData {
         try {
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " + baseDat + ".pusherstype_logger " +
-                            " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime, weightNominal) " +
-                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+                            " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime, clenchingTime, weightNominal) " +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);
             preStatementLogger.setLong(2, id_loggerUserEdit);
@@ -736,8 +743,9 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setString(4, nameType);
             preStatementLogger.setInt(5, forceNominal);
             preStatementLogger.setInt(6, moveNominal);
-            preStatementLogger.setInt(7, unclenchingTime);
-            preStatementLogger.setInt(8, weightNominal);
+            preStatementLogger.setFloat(7, unclenchingTime);
+            preStatementLogger.setFloat(8, clenchingTime);
+            preStatementLogger.setInt(9, weightNominal);
             preStatementLogger.executeUpdate();
             id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
             //
@@ -767,6 +775,7 @@ class BaseDataParent implements BaseData {
         typePusher.loggerTypePusher.forceNominal = forceNominal;
         typePusher.loggerTypePusher.moveNominal = moveNominal;
         typePusher.loggerTypePusher.unclenchingTime = unclenchingTime;
+        typePusher.loggerTypePusher.clenchingTime = clenchingTime;
 
         //
         try {
@@ -787,8 +796,8 @@ class BaseDataParent implements BaseData {
         try {
             preStatementLogger = connection.prepareStatement(
                     "INSERT INTO " + baseDat + ".pusherstype_logger " +
-                            " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime) " +
-                            " VALUES (?, ?, ?, ?, ?, ?, ?) "
+                            " (date_upd, id_loggerUserEdit, id_typePusher, nameType, forceNominal, moveNominal, unclenchingTime, clenchingTime) " +
+                            " VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
             );
             preStatementLogger.setTimestamp(1, timestamp);
             preStatementLogger.setLong(2, id_loggerUser);
@@ -796,7 +805,8 @@ class BaseDataParent implements BaseData {
             preStatementLogger.setString(4, typePusher.loggerTypePusher.nameType);
             preStatementLogger.setInt(5, typePusher.loggerTypePusher.forceNominal);
             preStatementLogger.setInt(6, typePusher.loggerTypePusher.moveNominal);
-            preStatementLogger.setInt(7, typePusher.loggerTypePusher.unclenchingTime);
+            preStatementLogger.setFloat(7, typePusher.loggerTypePusher.unclenchingTime);
+            preStatementLogger.setFloat(8, typePusher.loggerTypePusher.clenchingTime);
             preStatementLogger.executeUpdate();
             long id_loggerTypePusher = ((ClientPreparedStatement) preStatementLogger).getLastInsertID();
             //
@@ -813,8 +823,6 @@ class BaseDataParent implements BaseData {
             preStatementUpdate.executeUpdate();
             //
             connection.commit();
-            /*typePusher.date_upd = timestamp;
-            typePusher.date_unreg = timestamp;*/
         } catch (SQLException e) {
             try { connection.rollback();
             } catch (SQLException se) {
@@ -852,6 +860,7 @@ class BaseDataParent implements BaseData {
                                 " pusherstype_logger.forceNominal, " +
                                 " pusherstype_logger.moveNominal, " +
                                 " pusherstype_logger.unclenchingTime, " +
+                                " pusherstype_logger.clenchingTime, " +
                                 " pusherstype_logger.weightNominal, " +
                                 " pusherstype.date_unreg " +
                                 " FROM " + baseDat + ".pusherstype " +
@@ -871,6 +880,7 @@ class BaseDataParent implements BaseData {
                                 " pusherstype_logger.forceNominal, " +
                                 " pusherstype_logger.moveNominal, " +
                                 " pusherstype_logger.unclenchingTime, " +
+                                " pusherstype_logger.clenchingTime, " +
                                 " pusherstype_logger.weightNominal, " +
                                 " pusherstype.date_unreg " +
                                 " FROM " + baseDat + ".pusherstype " +
@@ -896,7 +906,8 @@ class BaseDataParent implements BaseData {
                                         result.getString("nameType"),
                                         result.getInt("forceNominal"),
                                         result.getInt("moveNominal"),
-                                        result.getInt("unclenchingTime"),
+                                        result.getFloat("unclenchingTime"),
+                                        result.getFloat("clenchingTime"),
                                         result.getInt("weightNominal")
                                 ),
                                 result.getTimestamp("date_unreg")
@@ -906,7 +917,6 @@ class BaseDataParent implements BaseData {
                     }
                 }
             } catch (Exception e) { }
-            //if (list.size() == 0) { throw new SQLException("ошибка получения списка типов толкателей"); }
             connection.commit();
         } catch (SQLException e) {
             throw new BaseDataException("ошибка транзакции", e, Status.SQL_TRANSACTION_ERROR);
@@ -1097,6 +1107,7 @@ class BaseDataParent implements BaseData {
                             " pusherstype_logger.forceNominal, " +
                             " pusherstype_logger.moveNominal, " +
                             " pusherstype_logger.unclenchingTime, " +
+                            " pusherstype_logger.clenchingTime, " +
                             " pusherstype_logger.weightNominal, " +
                             " pusherstype.date_unreg " +
                             " FROM " + baseDat + ".pusherstype " +
@@ -1123,7 +1134,8 @@ class BaseDataParent implements BaseData {
                             result.getString("nameType"),
                             result.getInt("forceNominal"),
                             result.getInt("moveNominal"),
-                            result.getInt("unclenchingTime"),
+                            result.getFloat("unclenchingTime"),
+                            result.getFloat("clenchingTime"),
                             result.getInt("weightNominal")
                     ),
                     result.getTimestamp("date_unreg")
@@ -1171,6 +1183,7 @@ class BaseDataParent implements BaseData {
                     " pusherstype_logger.forceNominal, " +
                     " pusherstype_logger.moveNominal, " +
                     " pusherstype_logger.unclenchingTime, " +
+                    " pusherstype_logger.clenchingTime, " +
                     " pusherstype_logger.weightNominal, " +
                     " pusherstype.date_unreg AS typePusher_dateUnreg, " +
                     " pushers.date_unreg AS pusher_dateUnreg " +
@@ -1203,7 +1216,8 @@ class BaseDataParent implements BaseData {
                                             result.getString("nameType"),
                                             result.getInt("forceNominal"),
                                             result.getInt("moveNominal"),
-                                            result.getInt("unclenchingTime"),
+                                            result.getFloat("unclenchingTime"),
+                                            result.getFloat("clenchingTime"),
                                             result.getInt("weightNominal")
                                     ),
                                     result.getTimestamp("typePusher_dateUnreg")
@@ -1301,6 +1315,7 @@ class BaseDataParent implements BaseData {
                 " pusherstype_logger.forceNominal, " +
                 " pusherstype_logger.moveNominal, " +
                 " pusherstype_logger.unclenchingTime, " +
+                " pusherstype_logger.clenchingTime, " +
                 " pusherstype.date_unreg " +
                 " FROM " + baseDat + ".pusherstype " +
                 " INNER JOIN " + baseDat + ".pusherstype_logger ON pusherstype.id_loggerTypePusher = pusherstype_logger.id_loggerTypePusher " +
@@ -1324,7 +1339,8 @@ class BaseDataParent implements BaseData {
                             result.getString("nameType"),
                             result.getInt("forceNominal"),
                             result.getInt("moveNominal"),
-                            result.getInt("unclenchingTime"),
+                            result.getFloat("unclenchingTime"),
+                            result.getFloat("clenchingTime"),
                             result.getInt("weightNominal")
                     ),
                     result.getTimestamp("date_unreg")
@@ -1591,6 +1607,7 @@ class BaseDataParent implements BaseData {
                 " datas.forceNominal, " +
                 " datas.moveNominal, " +
                 " datas.unclenchingTime, " +
+                " datas.clenchingTime, " +
                 " datas.dataMeasured, " +
                 " data_spec.id_user, " +
                 " data_spec.id_pusher " +
@@ -1612,7 +1629,8 @@ class BaseDataParent implements BaseData {
                     result.getInt("tik_stop"),
                     result.getInt("forceNominal"),
                     result.getInt("moveNominal"),
-                    result.getInt("unclenchingTime"),
+                    result.getFloat("unclenchingTime"),
+                    result.getFloat("clenchingTime"),
                     result.getBlob("dataMeasured"),
                     result.getLong("id_user"),
                     result.getLong("id_pusher")

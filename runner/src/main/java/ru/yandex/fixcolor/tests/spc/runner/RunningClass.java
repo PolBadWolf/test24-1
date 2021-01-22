@@ -198,7 +198,6 @@ class RunningClass implements Runner {
                 workManualOn = true;
                 // вывод статуса программы
                 outFrameStatus(TypePack.toString(typePack));
-                //mainFrame.outStatusWork("MANUAL_FORWARD");
                 // сбросить зум по времени на начальное значение
                 plot.setZommXzero();
                 // установить нулевое положение штока
@@ -433,15 +432,16 @@ class RunningClass implements Runner {
         }
         int moveMeasure = Math.abs(moveMeasureBegin - moveMeasureEnd);
         //
-        int timeUnClenching = Math.abs(distanceOut.get(0).tik - tik_shelf);
+        float timeUnClenching = Math.abs(distanceOut.get(0).tik - tik_shelf);
+        float timeClenching = Math.abs(distanceOut.get(0).tik - tik_shelf);
         // ****** out screen ******
-        mainFrame.setFieldsMeasuredPusher(n_cycle, forceMeasure, moveMeasure, timeUnClenching);
+        mainFrame.setFieldsMeasuredPusher(n_cycle, forceMeasure, moveMeasure, timeUnClenching, timeClenching);
         // ***** out to bd *****
         try {
             tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
 //            System.out.println("count = " + distanceOut.size());
             bdSql.writeDataDist(n_cycle, weight, tik_shelf, tik_back, tik_stop,
-                    forceMeasure, moveMeasure, timeUnClenching, new MyBlob(distanceOut));
+                    forceMeasure, moveMeasure, timeUnClenching, timeClenching, new MyBlob(distanceOut));
         } catch (BaseDataException e) {
             MyLogger.myLog.log(Level.SEVERE, "ошибка сохранения данных", e);
         }
@@ -456,6 +456,6 @@ class RunningClass implements Runner {
             config.setDefault();
         }
         distance_pointK = new PointK(config.getDistance_k(), config.getDistance_offset());
-        weight_pointK = new PointK(config.getWeight_k(), config.getWeight_offset());
+        weight_pointK = new PointK(config.getForce_k(), config.getForce_offset());
     }
 }

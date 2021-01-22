@@ -172,7 +172,7 @@ public class BD {
     public void _09_writeNewTypePusher() throws Exception {
         System.out.println("writeNewTypePusher: ");
         BaseData conn = getConn();
-        conn.writeNewTypePusher(0, testRecord1, 100, 90, 9, 30);
+        conn.writeNewTypePusher(0, testRecord1, 100, 90, 0.26f, 0.26f, 30);
         System.out.println("ok");
         System.out.println();
     }
@@ -199,7 +199,7 @@ public class BD {
         TypePusher[] target = new TypePusher[1];
         if (searchTypePusher(testRecord1, listTypePushers, target)) throw new Exception("ошибка поиска типа пользователя");
         TypePusher typePusher = target[0];
-        conn.updateTypePusher(typePusher, 0, testRecord2, 101, 88, 7, 200);
+        conn.updateTypePusher(typePusher, 0, testRecord2, 101, 88, 0.47f, 0.77f, 200);
         System.out.println("ok");
         System.out.println();
     }
@@ -259,7 +259,7 @@ public class BD {
     public void _15_writeNewPusher() throws Exception {
         System.out.println("writeNewPusher");
         BaseData conn = getConn();
-        long id_typePusher = conn.writeNewTypePusher(0, testRecord1, 222, 22, 2, 200);
+        long id_typePusher = conn.writeNewTypePusher(0, testRecord1, 222, 22, 0.2f, 0.3f, 200);
         long id_pusher = conn.writeNewPusher(0, testRecord1, id_typePusher);
         Assert.assertTrue(id_pusher > 0);
         System.out.println("ok");
@@ -342,7 +342,7 @@ public class BD {
         String[] targetNamePusher = new String[1];
         Pusher[] targetPusher = new Pusher[1];
         // создать тип толкателя
-        id_typePusher = conn.writeNewTypePusher(0, "c_pu", 222, 22, 2, 200);
+        id_typePusher = conn.writeNewTypePusher(0, "c_pu", 222, 22, 0.2f, 0.22f, 200);
         // подсчитать
         count = conn.getCountPushersFromType(id_typePusher, targetNamePusher);
         Assert.assertNotEquals(0, count);
@@ -358,7 +358,7 @@ public class BD {
             conn.deletePusher(0, targetPusher[0]);
         }
         // создать тип толкателя
-        id_typePusher = conn.writeNewTypePusher(0, "c_pu", 222, 22, 2, 200);
+        id_typePusher = conn.writeNewTypePusher(0, "c_pu", 222, 22, 0.24f, 0.13f, 200);
         // подсчитать
         count = conn.getCountPushersFromType(id_typePusher, targetNamePusher);
         Assert.assertEquals(0, count);

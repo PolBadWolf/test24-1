@@ -10,7 +10,6 @@ import ru.yandex.fixcolor.tests.spc.lib.swing.CreateComponents;
 import ru.yandex.fixcolor.tests.spc.lib.swing.MLabel;
 import ru.yandex.fixcolor.tests.spc.loader.MainClass;
 import ru.yandex.fixcolor.tests.spc.rs232.CommPort;
-import ru.yandex.fixcolor.tests.spc.runner.Runner;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,15 +39,13 @@ public class Calibration {
     private Thread timerSend_Thread;
     // =========================================
     private int distance_adc;
-    private double distance_k;
-    private double distance_offset;
     private int weight_adc;
-    private double weight_k;
-    private double weight_offset;
     private Point distance_point1;
     private Point distance_point2;
-    private Point weight_point1;
-    private Point weight_point2;
+    private PointK distance_pointK;
+    private Point force_point1;
+    private Point force_point2;
+    private PointK force_pointK;
     // ---------------
     private JFrame frame;
     // ---------------
@@ -77,10 +74,8 @@ public class Calibration {
         this.commPort = commPort;
         // ---------------
         readK_FromConfig();
-        distance_point1 = renderPoint(100.0, distance_k, distance_offset);
-        distance_point2 = renderPoint(1000.0, distance_k, distance_offset);
-        weight_point1 = renderPoint(20.0, weight_k, weight_offset);
-        weight_point2 = renderPoint(160.0, weight_k, weight_offset);
+        distance_pointK = PointK.render(distance_point1, distance_point2);
+        force_pointK = PointK.render(force_point1, force_point2);
         // ---------------
         //System.out.println("create calib");
         timerSend_On = false;
@@ -163,14 +158,14 @@ public class Calibration {
         //
         CreateComponents.getLabel(parent, "точка 1 : АЦП ", new Font("Times New Roman", Font.PLAIN, 24),
                 240, 275, true, true, MLabel.POS_RIGHT);
-        weightLabelPoint1 = CreateComponents.getLabel(parent, String.valueOf(weight_point1.adc), new Font("Times New Roman", Font.PLAIN, 24),
+        weightLabelPoint1 = CreateComponents.getLabel(parent, String.valueOf(force_point1.adc), new Font("Times New Roman", Font.PLAIN, 24),
                 250, 275, true, true, MLabel.POS_LEFT);
         weightTextPoint1 = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
                 new Font("Times New Roman", Font.PLAIN, 24),
                 320, 275, 120, 30,
                 null, null,
                 true, true);
-        weightTextPoint1.setText(String.format("%.3f", weight_point1.value));
+        weightTextPoint1.setText(String.format("%.3f", force_point1.value));
         weightButtonPoint1 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 275, 80, 30,
                 this::weightSetPoint1, true, true);
@@ -180,14 +175,14 @@ public class Calibration {
         // ------------------
         CreateComponents.getLabel(parent, "точка 2 : АЦП ", new Font("Times New Roman", Font.PLAIN, 24),
                 240, 315, true, true, MLabel.POS_RIGHT);
-        weightLabelPoint2 = CreateComponents.getLabel(parent, String.valueOf(weight_point2.adc), new Font("Times New Roman", Font.PLAIN, 24),
+        weightLabelPoint2 = CreateComponents.getLabel(parent, String.valueOf(force_point2.adc), new Font("Times New Roman", Font.PLAIN, 24),
                 250, 315, true, true, MLabel.POS_LEFT);
         weightTextPoint2 = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
                 new Font("Times New Roman", Font.PLAIN, 24),
                 320, 315, 120, 30,
                 null, null,
                 true, true);
-        weightTextPoint2.setText(String.format("%.3f", weight_point2.value));
+        weightTextPoint2.setText(String.format("%.3f", force_point2.value));
         weightButtonPoint2 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 315, 80, 30,
                 this::weightSetPoint2, true, true);
@@ -205,15 +200,13 @@ public class Calibration {
         try {
             point.value = Double.parseDouble(weightTextPoint1.getText());
             point.adc = weight_adc;
-            pointK = PointK.render(point, weight_point2);
+            pointK = PointK.render(point, force_point2);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "ошибка расчета калибровки", e);
             return;
         }
-        weight_point1 = point;
-        weight_k = pointK.k;
-        weight_offset = pointK.offset;
-        weightLabelPoint1.setText(String.valueOf(weight_point1.adc));
+        force_point1 = point;
+        weightLabelPoint1.setText(String.valueOf(force_point1.adc));
         distanceCurrentShow();
     }
 
@@ -223,15 +216,15 @@ public class Calibration {
         try {
             point.value = Double.parseDouble(weightTextPoint2.getText());
             point.adc = weight_adc;
-            pointK = PointK.render(point, weight_point1);
+            pointK = PointK.render(point, force_point1);
         } catch (Exception e) {
             myLog.log(Level.SEVERE, "ошибка расчета калибровки", e);
             return;
         }
-        weight_point2 = point;
-        weight_k = pointK.k;
-        weight_offset = pointK.offset;
-        weightLabelPoint2.setText(String.valueOf(weight_point2.adc));
+        force_point2 = point;
+//        weight_k = pointK.k;
+//        weight_offset = pointK.offset;
+        weightLabelPoint2.setText(String.valueOf(force_point2.adc));
         distanceCurrentShow();
     }
 
@@ -247,8 +240,7 @@ public class Calibration {
             return;
         }
         distance_point1 = point;
-        distance_k = pointK.k;
-        distance_offset = pointK.offset;
+        distance_pointK = pointK;
         distanceLabelPoint1.setText(String.valueOf(distance_point1.adc));
         distanceCurrentShow();
     }
@@ -265,8 +257,7 @@ public class Calibration {
             return;
         }
         distance_point2 = point;
-        distance_k = pointK.k;
-        distance_offset = pointK.offset;
+        distance_pointK = pointK;
         distanceLabelPoint2.setText(String.valueOf(distance_point2.adc));
         distanceCurrentShow();
     }
@@ -314,10 +305,8 @@ public class Calibration {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
             config.setDefault();
         }
-        config.setDistance_k(distance_k);
-        config.setDistance_offset(distance_offset);
-        config.setWeight_k(weight_k);
-        config.setWeight_offset(weight_offset);
+        config.setDistanceCalib(distance_point1, distance_point2);
+        config.setForceCalib(force_point1, force_point2);
         try {
             config.save();
         } catch (BaseDataException e) {
@@ -345,19 +334,23 @@ public class Calibration {
             myLog.log(Level.WARNING, "ошибка чтения файла конфигурации", be);
             config.setDefault();
         }
-        distance_k = config.getDistance_k();
-        distance_offset = config.getDistance_offset();
-        weight_k = config.getWeight_k();
-        weight_offset = config.getWeight_offset();
-    }
-    private Point renderPoint(double value, double k, double offset) {
-        return new Point(value, Point.renderAdc(value, k, offset));
+        distance_point1 = new Point(
+                config.getDistancePoint1_vol(),
+                config.getDistancePoint1_adc()
+        );
+        distance_point2 = new Point(
+                config.getDistancePoint2_vol(),
+                config.getDistancePoint2_adc()
+        );
+        force_point1 = config.getForcePoint1();
+        force_point2 = config.getForcePoint2();
     }
     //
     private void reciveRs(byte[] bytes, int lenght) {
         int codeSend = bytes[0] & 0x000000ff;
         if (codeSend != 17) {
-            System.out.println("calibr ups");
+            myLog.log(Level.WARNING, "Калибровка. прием ошибочного кода: " + codeSend);
+//            System.out.println("calibr ups");
             return;
         }
         distance_adc = (int) Converts.bytesToInt(bytes, 2, 5);
@@ -367,12 +360,12 @@ public class Calibration {
         weightCurrentShow();
     }
     private void distanceCurrentShow() {
-        double distance = Point.renderValue(distance_adc, distance_k, distance_offset);
+        double distance = Point.renderValue(distance_adc, distance_pointK);
         String str_distanceCur = String.valueOf(distance_adc) + " ==>  " + String.format("%.3f", distance);
         distanceLabelCurrent.setText(str_distanceCur);
     }
     private void weightCurrentShow() {
-        double weight = Point.renderValue(weight_adc, weight_k, weight_offset);
+        double weight = Point.renderValue(weight_adc, force_pointK);
         String str_weightCur = String.valueOf(weight_adc) + " ==>  " + String.format("%.3f", weight);
         weightLabelCurrent.setText(str_weightCur);
     }
