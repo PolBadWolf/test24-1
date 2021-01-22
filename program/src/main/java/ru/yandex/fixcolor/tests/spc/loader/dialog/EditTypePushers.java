@@ -65,6 +65,7 @@ public class EditTypePushers {
                 textForce,
                 textMove,
                 textUnclenching,
+                textClenching,
                 textWeightNominal,
                 buttonDelete,
                 buttonClear,
@@ -86,19 +87,24 @@ public class EditTypePushers {
         frame.setLayout(null);
         // ---- надписи
         CreateComponents.getLabel(frame, "Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 280, 220, true, true, MLabel.POS_CENTER);
-        CreateComponents.getLabel(frame, "Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 16), 275, 290, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(frame, "Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 16), 275, 330, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(frame, "Время разжатия (мc)", new Font("Times New Roman", Font.PLAIN, 16), 275, 365, true, true, MLabel.POS_RIGHT);
+        // ----
+        CreateComponents.getLabel(frame, "Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 16), 275, 285, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(frame, "Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 16), 275, 313, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(frame, "Время разжатия (cек)", new Font("Times New Roman", Font.PLAIN, 16), 275, 343, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(frame, "Время зжатия (cек0)", new Font("Times New Roman", Font.PLAIN, 16), 275, 371, true, true, MLabel.POS_RIGHT);
         CreateComponents.getLabel(frame, "Вес гидротолкателя (кг)", new Font("Times New Roman", Font.PLAIN, 16), 275, 400, true, true, MLabel.POS_RIGHT);
         // ---- поля ввода данных
         textName = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 30, 250,400, 24, null, null, true, true);
         frame.add(textName);
-        textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 290, 140, 24, new FilterTextDigit(), null, true, true);
+        // ----
+        textForce = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 285, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textForce);
-        textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 330, 140, 24, new FilterTextDigit(), null, true, true);
+        textMove = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 313, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textMove);
-        textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 365, 140, 24, new FilterTextDigit(), null, true, true);
+        textUnclenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 343, 140, 24, new FilterTextDigitTchk(), null, true, true);
         frame.add(textUnclenching);
+        textClenching = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 371, 140, 24, new FilterTextDigitTchk(), null, true, true);
+        frame.add(textClenching);
         textWeightNominal = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 18), 290, 400, 140, 24, new FilterTextDigit(), null, true, true);
         frame.add(textWeightNominal);
         // ---- кнопки
@@ -118,7 +124,7 @@ public class EditTypePushers {
 
                     @Override
                     public int getColumnCount() {
-                        return 5;
+                        return 6;
                     }
 
                     @Override
@@ -140,6 +146,9 @@ public class EditTypePushers {
                                 text = String.valueOf(typePusher.loggerTypePusher.unclenchingTime);
                                 break;
                             case 4:
+                                text = String.valueOf(typePusher.loggerTypePusher.clenchingTime);
+                                break;
+                            case 5:
                                 text = String.valueOf(typePusher.loggerTypePusher.weightNominal);
                                 break;
                             default:
@@ -150,9 +159,10 @@ public class EditTypePushers {
                 },
                 new CreateComponents.ModelTableNameWidth[]{
                         new CreateComponents.ModelTableNameWidth("Тип толкателя", -1),
-                        new CreateComponents.ModelTableNameWidth("Усилие на штоке (кг)", 100), //130
-                        new CreateComponents.ModelTableNameWidth("Ход штока (мм)", 70),       //100
-                        new CreateComponents.ModelTableNameWidth("Время разжатия (сек)", 100), //130
+                        new CreateComponents.ModelTableNameWidth("Усилие(кг)", 80), //130
+                        new CreateComponents.ModelTableNameWidth("Ход (мм)", 70),       //100
+                        new CreateComponents.ModelTableNameWidth("Разжатие (сек)", 100), //130
+                        new CreateComponents.ModelTableNameWidth("Зжатие (сек)", 80), //130
                         new CreateComponents.ModelTableNameWidth("Вес (кг)", 60)
                 },
                 null,
@@ -181,6 +191,24 @@ public class EditTypePushers {
                 int x = text.codePointAt(0);
                 if (x < '0') return;
                 if (x > '9') return;
+            }
+            super.replace(fb, offset, length, text, attrs);
+        }
+    }
+    static class FilterTextDigitTchk extends DocumentFilter {
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+            if (text.length() == 1) {
+                boolean flExit = false;
+                int x = text.codePointAt(0);
+                if (x < '0') flExit = true;
+                if (x > '9') flExit = true;
+                if (x == '.') flExit = false;
+                if (x == ',') {
+                    text = ".";
+                    flExit = false;
+                }
+                if (flExit) return;
             }
             super.replace(fb, offset, length, text, attrs);
         }
@@ -249,6 +277,7 @@ public class EditTypePushers {
                         || textForce.getText().length() == 0
                         || textMove.getText().length() == 0
                         || textUnclenching.getText().length() == 0
+                        || textClenching.getText().length() == 0
                         || textWeightNominal.getText().length() == 0
         ) {
             saveEnableComponents.save();
@@ -338,6 +367,7 @@ public class EditTypePushers {
         textForce.setText("");
         textMove.setText("");
         textUnclenching.setText("");
+        textClenching.setText("");
         textWeightNominal.setText("");
     }
     // ----------- таблицы
@@ -348,6 +378,7 @@ public class EditTypePushers {
         textForce.setText(String.valueOf(editTypePusher.loggerTypePusher.forceNominal));
         textMove.setText(String.valueOf(editTypePusher.loggerTypePusher.moveNominal));
         textUnclenching.setText(String.valueOf(editTypePusher.loggerTypePusher.unclenchingTime));
+        textClenching.setText(String.valueOf(editTypePusher.loggerTypePusher.clenchingTime));
         textWeightNominal.setText(String.valueOf(editTypePusher.loggerTypePusher.weightNominal));
     }
     // -----------
