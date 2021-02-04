@@ -420,20 +420,24 @@ class RunningClass implements Runner {
 
     void sendOutData () {
         if (distanceOut.isEmpty()) return;
+        //
+        tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
         // force
         int idxMid = distanceOut.size() / 2;
-        int forceMeasure = distanceOut.get(idxMid).ves - weight;
+        int forceMeasure = -1;
         // move
         int moveMeasureBegin = distanceOut.get(0).distance;
-        int moveMeasureEnd = 0;
+        int moveMeasure = -1;
         DistClass distClass;
         for (int i = 0; i < distanceOut.size(); i++) {
             distClass = distanceOut.get(i);
-            if (distClass.tik == tik_shelf) moveMeasureEnd = distClass.distance;
+            if (distClass.tik >= tik_back) {
+                moveMeasure = distClass.distance - moveMeasureBegin;
+                forceMeasure = distClass.ves - weight;
+                break;
+            }
         }
-        int moveMeasure = Math.abs(moveMeasureBegin - moveMeasureEnd);
         //
-        tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
         float timeUnClenching = (float) (tik_shelf - distanceOut.get(0).tik) / 1_000;
         float timeClenching = (float) (tik_stop - tik_back) / 1_000;
         // ****** out screen ******
