@@ -447,7 +447,7 @@ public class PlotParent implements Plot, LocalInt {
                 memX_begin = timeUnits.get(memX_beginIndx).ms;
                 double lenghtSample = memX_end - scaleZero_maxX;
                 if (memX_begin < lenghtSample) {
-                    // поск позитции начала
+                    // поиск позитции начала
                     double tmp;
                     int timeUnits_size = timeUnits.size();
                     for (int i = memX_beginIndx; i < timeUnits_size; i++) {
