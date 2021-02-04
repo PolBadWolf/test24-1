@@ -58,13 +58,16 @@ public class ViewArchive {
     private MLabel labelPusherSampleForce;
     private MLabel labelPusherSampleMove;
     private MLabel labelPusherSampleUnClenchingTime;
+    private MLabel labelPusherSampleClenchingTime;
     private MLabel labelPusherMeasuredForce;
     private MLabel labelPusherMeasuredMove;
     private MLabel labelPusherMeasuredUnClenchingTime;
+    private MLabel labelPusherMeasuredClenchingTime;
     private MLabel labelGraphTitle;
     private MLabel labelPusherForceTitle;
     private MLabel labelPusherMoveTitle;
     private MLabel labelPusherUnClenchingTimeTitle;
+    private MLabel labelPusherClenchingTimeTitle;
     private MLabel labelTitleSample;
     private MLabel labelTitleMeasured;
     // ======
@@ -104,10 +107,10 @@ public class ViewArchive {
         buttonPrint = CreateComponents.getButton(frame, "Печать", new Font("Dialog", Font.PLAIN,12),
                 800, 10, 80, 30, this::callButtonPrinterPush, true, false);
         //
-        CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок ла-ла-ла", new Font("Times New Roman", Font.PLAIN, 32),
+        CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок гидротолкателей", new Font("Times New Roman", Font.PLAIN, 32),
                 350, 10, true, true, MLabel.POS_CENTER);
         labelDate = CreateComponents.getLabel(panelMain, "Время измерения", new Font("Times New Roman", Font.PLAIN, 16),
-                350, 40, false, true, MLabel.POS_CENTER);
+                350, 48, false, true, MLabel.POS_CENTER);
         labelUser = CreateComponents.getLabel(panelMain, "user", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 70, false, true, MLabel.POS_CENTER);
         labelPusherSampleTitle = CreateComponents.getLabel(panelMain, "pusher", new Font("Times New Roman", Font.PLAIN, 16),
@@ -115,38 +118,47 @@ public class ViewArchive {
         labelGraphTitle = CreateComponents.getLabel(panelMain, "Динамические  характеристики: ", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 120, false, true, MLabel.POS_CENTER);
         // =============
-        int showY_Title    = 620;
-        int showY_Sample   = 650;
-        int showY_Measured = 680;
-        int showX_Title    = 150;
-        int showX_Force    = 200;
-        int showX_Move     = 350;
-        int showX_Time     = 500;
+        int showX_Title         = 100;
+        int showX_Force         = 150;
+        int showX_Move          = 300;
+        int showX_UnClenching   = 450;
+        int showX_Clenching     = 600;
         //
-        labelTitleSample = CreateComponents.getLabel(panelMain, "Образец?", new Font("Times New Roman", Font.PLAIN, 16),
+        int showY_Title         = 620;
+        int showY_Sample        = 650;
+        int showY_Measured      = 680;
+        //
+        labelTitleSample = CreateComponents.getLabel(panelMain, "Эталон :", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Title, showY_Sample, false, true, MLabel.POS_RIGHT);
-        labelTitleMeasured = CreateComponents.getLabel(panelMain, "Измерение?", new Font("Times New Roman", Font.PLAIN, 16),
+        labelTitleMeasured = CreateComponents.getLabel(panelMain, "Измерение :", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Title, showY_Measured, false, true, MLabel.POS_RIGHT);
-        //
+        // ----
         labelPusherForceTitle = CreateComponents.getLabel(panelMain, "Номинальное усилие", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Force, showY_Title, false, true, MLabel.POS_CENTER);
         labelPusherMoveTitle = CreateComponents.getLabel(panelMain, "Номинальный ход", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Move, showY_Title, false, true, MLabel.POS_CENTER);
         labelPusherUnClenchingTimeTitle = CreateComponents.getLabel(panelMain, "Время разжатия", new Font("Times New Roman", Font.PLAIN, 16),
-                showX_Time, showY_Title, false, true, MLabel.POS_CENTER);
+                showX_UnClenching, showY_Title, false, true, MLabel.POS_CENTER);
+        labelPusherClenchingTimeTitle = CreateComponents.getLabel(panelMain, "Время зжатия", new Font("Times New Roman", Font.PLAIN, 16),
+                showX_Clenching, showY_Title, false, true, MLabel.POS_CENTER);
+        // ----
         labelPusherSampleForce = CreateComponents.getLabel(panelMain, "Force", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Force, showY_Sample, false, true, MLabel.POS_CENTER);
         labelPusherSampleMove = CreateComponents.getLabel(panelMain, "Move", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Move, showY_Sample, false, true, MLabel.POS_CENTER);
         labelPusherSampleUnClenchingTime = CreateComponents.getLabel(panelMain, "Time", new Font("Times New Roman", Font.PLAIN, 16),
-                showX_Time, showY_Sample, false, true, MLabel.POS_CENTER);
+                showX_UnClenching, showY_Sample, false, true, MLabel.POS_CENTER);
+        labelPusherSampleClenchingTime = CreateComponents.getLabel(panelMain, "Time", new Font("Times New Roman", Font.PLAIN, 16),
+                showX_Clenching, showY_Sample, false, true, MLabel.POS_CENTER);
         //
         labelPusherMeasuredForce = CreateComponents.getLabel(panelMain, "Force-M", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Force, showY_Measured, false, true, MLabel.POS_CENTER);
         labelPusherMeasuredMove = CreateComponents.getLabel(panelMain, "Move-M", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Move, showY_Measured, false, true, MLabel.POS_CENTER);
         labelPusherMeasuredUnClenchingTime = CreateComponents.getLabel(panelMain, "Time-M", new Font("Times New Roman", Font.PLAIN, 16),
-                showX_Time, showY_Measured, false, true, MLabel.POS_CENTER);
+                showX_UnClenching, showY_Measured, false, true, MLabel.POS_CENTER);
+        labelPusherMeasuredClenchingTime = CreateComponents.getLabel(panelMain, "Time-M", new Font("Times New Roman", Font.PLAIN, 16),
+                showX_Clenching, showY_Measured, false, true, MLabel.POS_CENTER);
         //
         frame.setVisible(true);
         frame.pack();
@@ -225,10 +237,10 @@ public class ViewArchive {
 
         // линия указания обратного хода
         plotParameters.pointBackMove_color = new Color(0,0,255);
-        plotParameters.pointBackMove_lineWidth = 10;
+        plotParameters.pointBackMove_lineWidth = 2;
         // линия указания начало полки
         plotParameters.pointBeginShelf_color = new Color(0,0,255);;
-        plotParameters.pointBeginShelf_lineWidth = 10;
+        plotParameters.pointBeginShelf_lineWidth = 2;
         // значения минимума из прошлого цикла
 
         plot = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.createSwing(plotParameters, panelPlot);
@@ -425,10 +437,12 @@ public class ViewArchive {
             labelPusherSampleForce.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.forceNominal));
             labelPusherSampleMove.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.moveNominal));
             labelPusherSampleUnClenchingTime.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.unclenchingTime));
+            labelPusherSampleClenchingTime.setText(String.valueOf(pusherSample.loggerPusher.typePusher.loggerTypePusher.clenchingTime));
             // здесь вывод данных замера
             labelPusherMeasuredForce.setText(String.valueOf(measured.forceNominal));
             labelPusherMeasuredMove.setText(String.valueOf(measured.moveNominal));
-            labelPusherMeasuredUnClenchingTime.setText(String.valueOf(measured.unclenchingTime));
+            labelPusherMeasuredUnClenchingTime.setText(String.format("%6.3f", (double)(measured.tik_shelf) / 1_000));
+            labelPusherMeasuredClenchingTime.setText(String.format("%6.3f", (double)(measured.tik_stop - measured.tik_back) / 1_000));
         });
     }
     private void showComponentsForVisual() {
@@ -443,12 +457,15 @@ public class ViewArchive {
             labelPusherSampleForce.setVisible(true);
             labelPusherSampleMove.setVisible(true);
             labelPusherSampleUnClenchingTime.setVisible(true);
+            labelPusherSampleClenchingTime.setVisible(true);
             labelPusherMeasuredForce.setVisible(true);
             labelPusherMeasuredMove.setVisible(true);
             labelPusherMeasuredUnClenchingTime.setVisible(true);
+            labelPusherMeasuredClenchingTime.setVisible(true);
             labelPusherForceTitle.setVisible(true);
             labelPusherMoveTitle.setVisible(true);
             labelPusherUnClenchingTimeTitle.setVisible(true);
+            labelPusherClenchingTimeTitle.setVisible(true);
             labelTitleSample.setVisible(true);
             labelTitleMeasured.setVisible(true);
         });
