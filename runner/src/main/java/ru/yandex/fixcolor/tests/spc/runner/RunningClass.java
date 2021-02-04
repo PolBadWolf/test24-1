@@ -170,7 +170,7 @@ class RunningClass implements Runner {
                 // время штока назад
                 tik_back = tik;
 //                // вывод времени штока назад
-//                plot.setPointBackMove_time(tik_back);
+                plot.setPointBackMove_time(tik_back);
                 //
                 oldTypePack = typePack;
                 break;
@@ -433,14 +433,13 @@ class RunningClass implements Runner {
         }
         int moveMeasure = Math.abs(moveMeasureBegin - moveMeasureEnd);
         //
-        float timeUnClenching = Math.abs(distanceOut.get(0).tik - tik_shelf);
-        float timeClenching = Math.abs(distanceOut.get(0).tik - tik_shelf);
+        tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
+        float timeUnClenching = (float) (tik_shelf - distanceOut.get(0).tik) / 1_000;
+        float timeClenching = (float) (tik_stop - tik_back) / 1_000;
         // ****** out screen ******
         mainFrame.setFieldsMeasuredPusher(n_cycle, forceMeasure, moveMeasure, timeUnClenching, timeClenching);
         // ***** out to bd *****
         try {
-            tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
-//            System.out.println("count = " + distanceOut.size());
             bdSql.writeDataDist(n_cycle, weight, tik_shelf, tik_back, tik_stop,
                     forceMeasure, moveMeasure, timeUnClenching, timeClenching, new MyBlob(distanceOut));
         } catch (BaseDataException e) {
