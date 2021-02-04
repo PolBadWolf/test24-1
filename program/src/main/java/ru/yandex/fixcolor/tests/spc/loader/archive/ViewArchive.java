@@ -107,10 +107,10 @@ public class ViewArchive {
         buttonPrint = CreateComponents.getButton(frame, "Печать", new Font("Dialog", Font.PLAIN,12),
                 800, 10, 80, 30, this::callButtonPrinterPush, true, false);
         //
-        CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок ла-ла-ла", new Font("Times New Roman", Font.PLAIN, 32),
+        CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок гидротолкателей", new Font("Times New Roman", Font.PLAIN, 32),
                 350, 10, true, true, MLabel.POS_CENTER);
         labelDate = CreateComponents.getLabel(panelMain, "Время измерения", new Font("Times New Roman", Font.PLAIN, 16),
-                350, 40, false, true, MLabel.POS_CENTER);
+                350, 48, false, true, MLabel.POS_CENTER);
         labelUser = CreateComponents.getLabel(panelMain, "user", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 70, false, true, MLabel.POS_CENTER);
         labelPusherSampleTitle = CreateComponents.getLabel(panelMain, "pusher", new Font("Times New Roman", Font.PLAIN, 16),
@@ -128,9 +128,9 @@ public class ViewArchive {
         int showY_Sample        = 650;
         int showY_Measured      = 680;
         //
-        labelTitleSample = CreateComponents.getLabel(panelMain, "Образец?", new Font("Times New Roman", Font.PLAIN, 16),
+        labelTitleSample = CreateComponents.getLabel(panelMain, "Эталон :", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Title, showY_Sample, false, true, MLabel.POS_RIGHT);
-        labelTitleMeasured = CreateComponents.getLabel(panelMain, "Измерение?", new Font("Times New Roman", Font.PLAIN, 16),
+        labelTitleMeasured = CreateComponents.getLabel(panelMain, "Измерение :", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Title, showY_Measured, false, true, MLabel.POS_RIGHT);
         // ----
         labelPusherForceTitle = CreateComponents.getLabel(panelMain, "Номинальное усилие", new Font("Times New Roman", Font.PLAIN, 16),
