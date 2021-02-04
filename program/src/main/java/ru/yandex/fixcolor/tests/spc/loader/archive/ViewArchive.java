@@ -3,6 +3,7 @@ package ru.yandex.fixcolor.tests.spc.loader.archive;
 import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.lib.*;
+import ru.yandex.fixcolor.tests.spc.lib.plot2.Plot;
 import ru.yandex.fixcolor.tests.spc.lib.swing.*;
 import ru.yandex.fixcolor.tests.spc.allinterface.bd.*;
 
@@ -15,6 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.*;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -175,7 +178,7 @@ public class ViewArchive {
         // размер окна в мсек
         plotParameters.scaleZero_maxX = 5_000;
         // тип зумирования
-        plotParameters.scaleZero_zoomX = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.ZOOM_X_SHIFT;
+        plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHRINK;
         // ************ СЕТКА ************
         // цвет линии сетки
         plotParameters.netLineColor = new Color(50, 50, 50);
@@ -208,17 +211,25 @@ public class ViewArchive {
         // цвет шрифта подписи
         plotParameters.trend2_textFontColor = new Color(0, 200, 0);
         // размер шрифта подписи
-        plotParameters.trend1_textFontSize = 16;
+        plotParameters.trend2_textFontSize = 16;
         // цвет линии тренда
-        plotParameters.trend1_lineColor = new Color(0, 200, 0);
+        plotParameters.trend2_lineColor = new Color(0, 200, 0);
         // размер линии тренда
-        plotParameters.trend1_lineWidth = 2;
+        plotParameters.trend2_lineWidth = 2;
         // начальное значение шкалы тренда
-        plotParameters.trend1_zeroY_min = 0;
+        plotParameters.trend2_zeroY_min = 0;
         // конечное значение шкалы тренда
-        plotParameters.trend1_zeroY_max = 300;
+        plotParameters.trend2_zeroY_max = 45;
         // режим автомасштабирования шкалы тренда
-        plotParameters.trend1_AutoZoomY = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.ZOOM_Y_FROM_SCALE;
+        plotParameters.trend2_AutoZoomY = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.ZOOM_Y_FROM_SCALE;
+
+        // линия указания обратного хода
+        plotParameters.pointBackMove_color = new Color(0,0,255);
+        plotParameters.pointBackMove_lineWidth = 10;
+        // линия указания начало полки
+        plotParameters.pointBeginShelf_color = new Color(0,0,255);;
+        plotParameters.pointBeginShelf_lineWidth = 10;
+        // значения минимума из прошлого цикла
 
         plot = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.createSwing(plotParameters, panelPlot);
 
@@ -345,6 +356,35 @@ public class ViewArchive {
             return;
         }
         showComponentsForVisual();
+        /*
+        // распечатать
+        {
+            Blob blob = measured.dataMeasured;
+            long l = 0;
+            try {
+                l = blob.length();
+                for (int i = 0; i < l; i++) {
+                    if (i % 8 == 0) {
+                        System.out.println();
+                        System.out.printf(" %04X", i);
+                        int loc_tik = 0, loc_dist = 0, loc_ves = 0;
+                        byte[] bytes1 = measured.dataMeasured.getBytes(i + 1 + 0, 4);
+                        byte[] bytes2 = measured.dataMeasured.getBytes(i + 1 + 4, 2);
+                        byte[] bytes3 = measured.dataMeasured.getBytes(i + 1 + 6, 2);
+                        loc_tik  = (int) (Math.pow(256, 0) * (bytes1[0] & 0xff) + Math.pow(256, 1) * (bytes1[1] & 0xff) + Math.pow(256, 2) * (bytes1[2] & 0xff) + Math.pow(256, 3) * (bytes1[3] & 0xff));
+                        loc_dist = (int) (Math.pow(256, 0) * (bytes2[0] & 0xff) + Math.pow(256, 1) * (bytes2[1] & 0xff));
+                        loc_ves  = (int) (Math.pow(256, 0) * (bytes3[0] & 0xff) + Math.pow(256, 1) * (bytes3[1] & 0xff));
+                        System.out.printf(" tik = % 5.3f", ((float)loc_tik / 1000));
+                        System.out.printf(" dis = % 4d", loc_dist);
+                        System.out.printf(" ves = % 4d", loc_ves);
+                    }
+                }
+                System.out.println();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+        */
         // декодер графика
         MeasuredBlobDecoder blobDecoder;
         DistClass distClass;
@@ -362,6 +402,10 @@ public class ViewArchive {
                 plot.addTrend(distClass.ves);
                 plot.setData();
             }
+            // вывод времени начало полки
+            plot.setPointBeginShelf_time(measured.tik_shelf);
+            // вывод времени возврата
+            plot.setPointBackMove_time(measured.tik_back);
             plot.paint();
             //Thread.sleep(10);
             plot.reFresh();
