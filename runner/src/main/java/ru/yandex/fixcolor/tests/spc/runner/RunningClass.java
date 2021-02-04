@@ -308,6 +308,7 @@ class RunningClass implements Runner {
                             dist0 = dist_in;
                         }
                         int dist = Math.abs(dist_in - dist0);
+                        if (dist < 0) dist = 0;
                         int weight_adc = getForceFromPack(bytes);
                         int weight = (int) Math.round(Point.renderValue(weight_adc, weight_pointK));
                         paintTrends((short) dist, (short) weight);
