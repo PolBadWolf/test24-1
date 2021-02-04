@@ -237,10 +237,10 @@ public class ViewArchive {
 
         // линия указания обратного хода
         plotParameters.pointBackMove_color = new Color(0,0,255);
-        plotParameters.pointBackMove_lineWidth = 10;
+        plotParameters.pointBackMove_lineWidth = 2;
         // линия указания начало полки
         plotParameters.pointBeginShelf_color = new Color(0,0,255);;
-        plotParameters.pointBeginShelf_lineWidth = 10;
+        plotParameters.pointBeginShelf_lineWidth = 2;
         // значения минимума из прошлого цикла
 
         plot = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.createSwing(plotParameters, panelPlot);

@@ -157,11 +157,11 @@ public class PlotParent implements Plot, LocalInt {
         // линия указания обратного хода
         pointBackMove_time = parameters.pointBackMove_time;
         pointBackMove_color = parameters.pointBackMove_color;
-        pointBackMove_lineWidth = parameters.pointBackMove_lineWidth;
+        pointBackMove_lineWidth = parameters.pointBackMove_lineWidth * scale_img;
         // линия указания начало полки
         pointBeginShelf_time = parameters.pointBeginShelf_time;
         pointBeginShelf_color = parameters.pointBeginShelf_color;
-        pointBeginShelf_lineWidth = parameters.pointBeginShelf_lineWidth;
+        pointBeginShelf_lineWidth = parameters.pointBeginShelf_lineWidth * scale_img;
         // значения минимума из прошлого цикла
         memX_begin = 0;
         memX_beginIndx = 0;
