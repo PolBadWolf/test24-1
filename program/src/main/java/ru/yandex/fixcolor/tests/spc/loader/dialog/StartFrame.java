@@ -349,9 +349,9 @@ public class StartFrame {
         frame = new JFrame();
         frame.setPreferredSize(new Dimension(740, 480));
         {
-            label1 = CreateComponents.getLabel("Стенд", new Font("Times New Roman", Font.PLAIN, 57), 220, 130, 148, 66, false, true);
-            label2 = CreateComponents.getLabel("испытания", new Font("Times New Roman", Font.PLAIN, 36), 210, 180, 227, 42, false, true);
-            label3 = CreateComponents.getLabel("гидротолкателей", new Font("Times New Roman", Font.PLAIN, 36), 170, 210, 258, 42, false, true);
+            label1 = CreateComponents.getLabel("Стенд", new Font("Times New Roman", Font.PLAIN, 57), 270, 130, 148, 66, false, true);
+            label2 = CreateComponents.getLabel("испытания", new Font("Times New Roman", Font.PLAIN, 36), 260, 180, 227, 42, false, true);
+            label3 = CreateComponents.getLabel("гидротолкателей", new Font("Times New Roman", Font.PLAIN, 36), 220, 210, 258, 42, false, true);
             label4 = CreateComponents.getLabel("Гумеров М.Н.", new Font("Times New Roman", Font.PLAIN, 11), 380, 400, 68, 20, false, true);
             label5 = CreateComponents.getLabel("ЦЗЛАМ ЛА", new Font("Times New Roman", Font.PLAIN, 16), 460, 400, 90, 19, false, true);
             frame.add(label1);
@@ -360,13 +360,13 @@ public class StartFrame {
             frame.add(label4);
             frame.add(label5);
             //
-            jLabel1 = CreateComponents.getLabel(frame, "Пользователь :", new Font("Times New Roman", Font.PLAIN, 14), 185, 154, false, true, MLabel.POS_RIGHT);
-            jLabel2 = CreateComponents.getLabel(frame, "Пароль :", new Font("Times New Roman", Font.PLAIN, 14), 185, 194, false, true, MLabel.POS_RIGHT);
-            jLabel3 = CreateComponents.getLabel(frame,"Толкатель :", new Font("Times New Roman", Font.PLAIN, 14), 185, 233,  false, true, MLabel.POS_RIGHT);
+            jLabel1 = CreateComponents.getLabel(frame, "Пользователь :", new Font("Times New Roman", Font.PLAIN, 14), 235, 154, false, true, MLabel.POS_RIGHT);
+            jLabel2 = CreateComponents.getLabel(frame, "Пароль :", new Font("Times New Roman", Font.PLAIN, 14), 235, 194, false, true, MLabel.POS_RIGHT);
+            jLabel3 = CreateComponents.getLabel(frame,"Толкатель :", new Font("Times New Roman", Font.PLAIN, 14), 235, 233,  false, true, MLabel.POS_RIGHT);
         } // подписи, надписи
         {
             comboBoxUsers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
-                    190, 150, 350, 24, true,
+                    240, 150, 350, 24, true,
                     null,
                     this::callSelectUser,
                     false, true);
@@ -380,7 +380,7 @@ public class StartFrame {
             tableFindUsers.setBounds(190, comboBoxUsers.getY() + comboBoxUsers.getHeight() + 2, 350, 30);
             //
             comboBoxPusher = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14),
-                    190, 230, 350, 24, true,
+                    240, 230, 350, 24, true,
                     null,
                     this::callSelectPusher,
                     false, true);
@@ -406,10 +406,10 @@ public class StartFrame {
         {
             buttonEnter = CreateComponents.getButton(frame, "Проверка", new Font("Times New Roman", Font.PLAIN, 13), 320, 190, 90, 24, this::callEnter, false, true);
             buttonSetPassword = CreateComponents.getButton(frame, "Новый пароль", new Font("Times New Roman", Font.PLAIN, 13), 420, 190, 116, 24, this::callSetNewPassword, false, true);
-            buttonWork = CreateComponents.getButton(frame, "Измерения", new Font("Times New Roman", Font.PLAIN, 13), 195, 330, 110, 24, this::callReturnToWork, false, true);
+            buttonWork = CreateComponents.getButton(frame, "Измерения", new Font("Times New Roman", Font.PLAIN, 13), 245, 330, 110, 24, this::callReturnToWork, false, true);
             buttonTuning = CreateComponents.getButton(frame, "настройка", new Font("Times New Roman", Font.PLAIN, 13), 195, 370, 110, 24, this::callTuning, false, true);
-            buttonCalibration = CreateComponents.getButton(frame, "Калибровка", new Font("Times New Roman", Font.PLAIN, 13), 195, 370, 110, 24, this::callCalibration, false, false);
-            buttonShowArchive = CreateComponents.getButton(frame, "Архив", new Font("Times New Roman", Font.PLAIN, 13), 80, 370, 90, 24, this::callShowArchive, false, false);
+            buttonCalibration = CreateComponents.getButton(frame, "Калибровка", new Font("Times New Roman", Font.PLAIN, 13), 245, 370, 110, 24, this::callCalibration, false, false);
+            buttonShowArchive = CreateComponents.getButton(frame, "Архив", new Font("Times New Roman", Font.PLAIN, 13), 130, 370, 90, 24, this::callShowArchive, false, false);
             buttonWork.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "WorkButtonEnter");
             buttonWork.getActionMap().put("WorkButtonEnter", new AbstractAction() {
                 @Override
@@ -473,11 +473,11 @@ public class StartFrame {
                     680, 286, false, true, MLabel.POS_CENTER);
             //
         }
-        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 190, 190,120, 24, null, this::callEnter, false, true);
+        fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 240, 190,120, 24, null, this::callEnter, false, true);
         frame.add(fieldPassword);
 
         buttonExit = CreateComponents.getButton(frame, "Выход", new Font("Times New Roman", Font.PLAIN, 14),
-                80, 330, 90, 24, this::callExit, false, true);
+                130, 330, 90, 24, this::callExit, false, true);
 
         frame.pack();
     }
@@ -498,9 +498,9 @@ public class StartFrame {
         label5.setVisible(true);
     }
     private void offTitleComponents() {
-        label1.setBounds(250, 20, 150, 66);
-        label2.setBounds(240, 70, 180, 42);
-        label3.setBounds(200, 100, 260, 42);
+        label1.setBounds(300, 20, 150, 66);
+        label2.setBounds(290, 70, 180, 42);
+        label3.setBounds(250, 100, 260, 42);
         label4.setVisible(false);
         label5.setVisible(false);
     }

@@ -119,12 +119,12 @@ public class EditPushers {
         frame.setPreferredSize(new Dimension(740, 480));
         frame.setLayout(null);
         //
-        CreateComponents.getLabel(frame, "Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 200, 205, true, true, MLabel.POS_LEADS);
-        textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 410, 210,200, 25, null, null, true, true);
-        buttonDelete = CreateComponents.getButton(frame, "Удалить", new Font("Times New Roman", Font.PLAIN, 14), 30, 275, 120, 25, this::callButtonDelete, true, true);
-        buttonEdit = CreateComponents.getButton(frame, "Изменить", new Font("Times New Roman", Font.PLAIN, 14), 30, 315, 120, 25, this::callButtonEditPusher, true, true);
-        buttonAdd = CreateComponents.getButton(frame, "Добавить", new Font("Times New Roman", Font.PLAIN, 14), 30, 355, 120, 25, this::callButtonAdd, true, true);
-        buttonEditTypePushers = CreateComponents.getButton(frame, "Типы Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 30, 395, 120, 25, this::callButtonEditTypePushers, true, true);
+        CreateComponents.getLabel(frame, "Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 250, 205, true, true, MLabel.POS_LEADS);
+        textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 460, 210,200, 25, null, null, true, true);
+        buttonDelete = CreateComponents.getButton(frame, "Удалить", new Font("Times New Roman", Font.PLAIN, 14), 60, 275, 120, 25, this::callButtonDelete, true, true);
+        buttonEdit = CreateComponents.getButton(frame, "Изменить", new Font("Times New Roman", Font.PLAIN, 14), 60, 315, 120, 25, this::callButtonEditPusher, true, true);
+        buttonAdd = CreateComponents.getButton(frame, "Добавить", new Font("Times New Roman", Font.PLAIN, 14), 60, 355, 120, 25, this::callButtonAdd, true, true);
+        buttonEditTypePushers = CreateComponents.getButton(frame, "Типы Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 60, 395, 120, 25, this::callButtonEditTypePushers, true, true);
         // ---- таблица
         tablePushers = CreateComponents.getTable(
                 740 - 17,
@@ -188,7 +188,7 @@ public class EditPushers {
         frame.add(textRegNumber);
         frame.add(scrollPushers);
         //
-        panelTypePushers = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "Параметры типа толкателя", 190, 230, 420, 200, true, true);
+        panelTypePushers = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "Параметры типа толкателя", 240, 230, 420, 200, true, true);
         CreateComponents.getLabel(panelTypePushers, "Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 200, 20, true, true, MLabel.POS_RIGHT);
         CreateComponents.getLabel(panelTypePushers, "Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 18), 200, 50, true, true, MLabel.POS_RIGHT);
         CreateComponents.getLabel(panelTypePushers, "Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 18), 200, 80, true, true, MLabel.POS_RIGHT);
