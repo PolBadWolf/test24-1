@@ -164,7 +164,10 @@ class RunningClass implements Runner {
                 break;
             case TypePack.MANUAL_BACK:
                 if (!workManualOn) return;
-                if (oldTypePack != TypePack.MANUAL_FORWARD) { sequenceError(typePack); return; }
+                if (oldTypePack != TypePack.MANUAL_SHELF) {
+                    sequenceError(typePack);
+                    return;
+                }
                 // вывод статуса программы
                 outFrameStatus(TypePack.toString(typePack));
                 // время штока назад
@@ -193,7 +196,10 @@ class RunningClass implements Runner {
                 oldTypePack = typePack;
                 break;
             case TypePack.MANUAL_FORWARD:
-                if (oldTypePack != TypePack.MANUAL_STOP) { sequenceError(typePack); return; }
+                if (oldTypePack != TypePack.MANUAL_STOP) {
+                    sequenceError(typePack);
+                    return;
+                }
                 // режим ручной включен
                 workManualOn = true;
                 // вывод статуса программы
@@ -218,20 +224,18 @@ class RunningClass implements Runner {
                 break;
             case TypePack.MANUAL_SHELF:
                 if (!workManualOn) return;
-                if (oldTypePack != TypePack.MANUAL_FORWARD) { sequenceError(typePack); return; }
+                if (oldTypePack != TypePack.MANUAL_FORWARD) {
+                    sequenceError(typePack);
+                    return;
+                }
                 // вывод статуса программы
                 outFrameStatus(TypePack.toString(typePack));
                 // время начало полки
                 tik_shelf = tik;
 //                // вывод времени начало полки
-//                plot.setPointBeginShelf_time(tik_shelf);
+                plot.setPointBeginShelf_time(tik_shelf);
                 oldTypePack = typePack;
                 break;
-//            case TypePack.CYCLE_ALARM:
-//                //mainFrame.outStatusWork("CYCLE_ALARM");
-//                oldTypePack = typePack;
-//                distanceRecordEnable = false;
-//                break;
             case TypePack.CYCLE_BACK:
                 if (!workCycleOn) return;
                 if (oldTypePack != TypePack.CYCLE_SHELF) { sequenceError(typePack); return; }
@@ -307,7 +311,7 @@ class RunningClass implements Runner {
                             dist0Set = false;
                             dist0 = dist_in;
                         }
-                        int dist = Math.abs(dist_in - dist0);
+                        int dist = dist_in - dist0;
                         if (dist < 0) dist = 0;
                         int weight_adc = getForceFromPack(bytes);
                         int weight = (int) Math.round(Point.renderValue(weight_adc, weight_pointK));
@@ -345,7 +349,7 @@ class RunningClass implements Runner {
         // сброс режимов работы
         workManualOn = false;
         workCycleOn = false;
-        myLog.log(Level.WARNING, "ошибка последовательности режима: " + TypePack.toString(oldTypePack) + " -> " + TypePack.toString(typePack) );
+        myLog.log(Level.WARNING, "ошибка последовательности режима: " + TypePack.toString(oldTypePack) + " -> " + TypePack.toString(typePack), new Exception("ошибка последовательности режима") );
         oldTypePack = TypePack.ERROR;
     }
 

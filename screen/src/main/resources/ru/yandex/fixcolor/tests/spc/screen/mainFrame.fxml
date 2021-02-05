@@ -47,8 +47,8 @@
       <Label fx:id="get_Unclenching" alignment="CENTER" layoutX="560.0" layoutY="717.0" prefHeight="17.0" prefWidth="118.0" />
 
       <Label alignment="CENTER" layoutX="726.0" layoutY="657.0" text="Время сжатия(сек.)"><Font name="Times New Roman" size="18.0" /></Label>
-      <Label fx:id="set_Clenching" alignment="CENTER" layoutX="715.0" layoutY="688.0" prefHeight="17.0" prefWidth="118.0" text="123" />
-      <Label fx:id="get_Clenching" alignment="CENTER" layoutX="715.0" layoutY="717.0" prefHeight="17.0" prefWidth="118.0" text="123" />
+      <Label fx:id="set_Clenching" alignment="CENTER" layoutX="715.0" layoutY="688.0" prefHeight="17.0" prefWidth="118.0" />
+      <Label fx:id="get_Clenching" alignment="CENTER" layoutX="715.0" layoutY="717.0" prefHeight="17.0" prefWidth="118.0" />
 
       <Label alignment="CENTER_RIGHT" layoutX="837.0" layoutY="684.0" text="всего"><Font name="Times New Roman" size="18.0" /></Label>
       <Label alignment="CENTER_RIGHT" layoutX="837.0" layoutY="717.0" text="текущ."><Font name="Times New Roman" size="18.0" /></Label>
