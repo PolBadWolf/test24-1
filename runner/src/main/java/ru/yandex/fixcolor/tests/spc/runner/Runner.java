@@ -67,6 +67,15 @@ public interface Runner {
                 case CYCLE_SHELF:
                     stroka = "гидротолкатели под нагрузкой";
                     break;
+                case RESET:
+                    stroka = "команда сброса";
+                    break;
+                case FORCE:
+                    stroka = "текущее усилие";
+                    break;
+                case CURENT_DATA:
+                    stroka = "текущее данные";
+                    break;
                 default:
                     stroka = "что это было ? " +typePack;
                     MyLogger.myLog.log(Level.SEVERE,"TypePack toString", new IllegalStateException(stroka));
