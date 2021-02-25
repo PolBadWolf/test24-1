@@ -284,7 +284,7 @@ public class StartFrame {
         // =================== загрузка начальных параметров ===================
         loadAndSetBeginParameters();
         pusherSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxPusher, tableFindPushers, listPushers, 7, null);
-        userSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxUsers, tableFindUsers, listUsers, 7, "a");
+        userSelectComboBox2Table = new SelectComboBox2Table_Top<>(comboBoxUsers, tableFindUsers, listUsers, 7, "Doc");
         // ===================================================================================================
         // задержка для title
         if (!statMainWork) {
@@ -404,12 +404,12 @@ public class StartFrame {
             tableFindPushers.updateUI();
         } // селекторы
         {
-            buttonEnter = CreateComponents.getButton(frame, "Проверка", new Font("Times New Roman", Font.PLAIN, 13), 320, 190, 90, 24, this::callEnter, false, true);
-            buttonSetPassword = CreateComponents.getButton(frame, "Новый пароль", new Font("Times New Roman", Font.PLAIN, 13), 420, 190, 116, 24, this::callSetNewPassword, false, true);
-            buttonWork = CreateComponents.getButton(frame, "Измерения", new Font("Times New Roman", Font.PLAIN, 13), 245, 330, 110, 24, this::callReturnToWork, false, true);
+            buttonEnter = CreateComponents.getButton(frame, "Проверка", new Font("Times New Roman", Font.PLAIN, 13), 370, 190, 90, 24, this::callEnter, false, true);
+            buttonSetPassword = CreateComponents.getButton(frame, "Новый пароль", new Font("Times New Roman", Font.PLAIN, 13), 470, 190, 116, 24, this::callSetNewPassword, false, true);
+            buttonWork = CreateComponents.getButton(frame, "Измерения", new Font("Times New Roman", Font.PLAIN, 13), 275, 330, 110, 24, this::callReturnToWork, false, true);
             buttonTuning = CreateComponents.getButton(frame, "настройка", new Font("Times New Roman", Font.PLAIN, 13), 195, 370, 110, 24, this::callTuning, false, true);
-            buttonCalibration = CreateComponents.getButton(frame, "Калибровка", new Font("Times New Roman", Font.PLAIN, 13), 245, 370, 110, 24, this::callCalibration, false, false);
-            buttonShowArchive = CreateComponents.getButton(frame, "Архив", new Font("Times New Roman", Font.PLAIN, 13), 130, 370, 90, 24, this::callShowArchive, false, false);
+            buttonCalibration = CreateComponents.getButton(frame, "Калибровка", new Font("Times New Roman", Font.PLAIN, 13), 275, 370, 110, 24, this::callCalibration, false, false);
+            buttonShowArchive = CreateComponents.getButton(frame, "Архив", new Font("Times New Roman", Font.PLAIN, 13), 160, 370, 90, 24, this::callShowArchive, false, false);
             buttonWork.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "WorkButtonEnter");
             buttonWork.getActionMap().put("WorkButtonEnter", new AbstractAction() {
                 @Override
@@ -417,6 +417,8 @@ public class StartFrame {
                     callReturnToWork(e);
                 }
             });
+            buttonExit = CreateComponents.getButton(frame, "Выход", new Font("Times New Roman", Font.PLAIN, 14),
+                    160, 330, 90, 24, this::callExit, false, true);
 
             JPanel panel = new JPanel();
             panel.setBounds(50, 50, 300, 300);
@@ -424,7 +426,7 @@ public class StartFrame {
             //canvas = new Canvas();
         } // кнопки
         {
-            jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 380, 320, 160, 90,true, true );
+            jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 410, 320, 160, 90,true, true );
             // кнопка редактирования пользователей
             // кнопка редактирования толкателей
             buttonEditUsers = CreateComponents.getButton(jPanel1, "Пользователей", new Font("Times New Roman", Font.PLAIN, 14), 20, 20, 120, 24, this::callEditUsers, true, true);
@@ -475,9 +477,6 @@ public class StartFrame {
         }
         fieldPassword = CreateComponents.getTextField(CreateComponents.PASSWORDFIELD, new Font("Times New Roman", Font.PLAIN, 14), 240, 190,120, 24, null, this::callEnter, false, true);
         frame.add(fieldPassword);
-
-        buttonExit = CreateComponents.getButton(frame, "Выход", new Font("Times New Roman", Font.PLAIN, 14),
-                130, 330, 90, 24, this::callExit, false, true);
 
         frame.pack();
     }
@@ -548,8 +547,8 @@ public class StartFrame {
     }
     // проверка встроенного администратор
     private boolean checkIntegratedAdministrator(String surName, String password) {
-//        return  surName.equals("Doc") && password.equals("aUxPMjIzNjA=");
-        return  surName.equals("a") && password.equals("");
+        return  surName.equals("Doc") && password.equals("MTI0NTA5NzY="); //(12450976)
+//        return  surName.equals("a") && password.equals("");
     }
     // разрешение кнопки работа
     private boolean permissionWork() {
