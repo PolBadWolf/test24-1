@@ -181,9 +181,9 @@ class PlotFx extends PlotParent {
     }
     private void __createLinesAndTitleX(ArrayList<TitleText> arrayTitleText, ArrayList<LinesParameters> arrayLines) {
         String text;
-        MyRecWidthHeight textRec;
+        MyRecWidthHeight textRec = new MyRecWidthHeight(0,0);
         double polNetLineWidth = netLineWidth / 2;
-        double x, y1 = polNetLineWidth, y2 = windowHeight - polNetLineWidth;
+        double x = 0, y1 = polNetLineWidth, y2 = windowHeight - polNetLineWidth;
         LineParameters[] lines = new LineParameters[xN];
         double offsetS2 = (xStep - (memX_begin % xStep)) % xStep;
         int offsetCel = ((int) Math.ceil(memX_begin / xStep))* xStep;
@@ -194,6 +194,12 @@ class PlotFx extends PlotParent {
             arrayTitleText.add(drawStringAlignment2(text, fieldFontColorBottom, fieldFontSizeBottom, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
             lines[i] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
         }
+        // подпись сек.
+        x = positionRight; //x + textRec.width;
+        text = " сек.";
+        textRec = getRecWidthHeight(text, fieldFontSizeBottom);
+        arrayTitleText.add(drawStringAlignment2(text, fieldFontColorBottom, fieldFontSizeBottom, x, positionBottom + textRec.height * 0.7, textRec, TrendPosition.center));
+        //
         arrayLines.add(new LinesParameters(lines, colorAwtToFx(netLineColor), netLineWidth));
         // линия указания обратного хода
         if (pointBackMove_time > memX_begin && pointBackMove_time < memX_end) {

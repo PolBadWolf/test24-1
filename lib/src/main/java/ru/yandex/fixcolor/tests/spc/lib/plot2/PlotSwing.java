@@ -144,6 +144,12 @@ class PlotSwing extends PlotParent {
             arrayTitleText.add(drawStringAlignment2(text, fieldFontColorBottom, fieldFontSizeBottom, x - textRec.width / 2, positionBottom + textRec.height / 3, textRec, TrendPosition.center));
             lines[i] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
         }
+        // подпись сек.
+        x = positionRight; //x + textRec.width;
+        text = " сек.";
+        textRec = getRecWidthHeight(text, fieldFontSizeBottom);
+        arrayTitleText.add(drawStringAlignment2(text, fieldFontColorBottom, fieldFontSizeBottom, x - textRec.width / 2, positionBottom + textRec.height / 3, textRec, TrendPosition.center));
+        //
         arrayLines.add(new LinesParameters(lines, netLineColor, netLineWidth));
         // линия указания обратного хода
         if (pointBackMove_time > memX_begin && pointBackMove_time < memX_end) {
