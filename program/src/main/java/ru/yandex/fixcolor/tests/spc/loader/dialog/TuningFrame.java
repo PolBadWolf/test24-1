@@ -586,6 +586,7 @@ class TuningFrame {
         BaseData.Config config;
         try {
             config = BaseData.Config.create();
+            config.load();
             String portName = (String) comboBoxCommPort.getSelectedItem();
             if (portName == null) portName = "";
             config.setPortName(portName);
