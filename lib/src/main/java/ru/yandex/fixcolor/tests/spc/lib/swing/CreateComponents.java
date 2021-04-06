@@ -24,7 +24,8 @@ public class CreateComponents {
     public static MLabel getLabel(Container parent, String text, Font font, int x, int y, boolean visible, boolean enable, int horizontalAlignment) {
         int strWidth = parent.getFontMetrics(font).stringWidth(text);
         Rectangle2D r = parent.getFontMetrics(font).getStringBounds(text, parent.getGraphics());
-        int rw = (int) r.getWidth() + 1;
+//        int rw = (int) r.getWidth() + 1;
+        int rw = strWidth;
         int rh = (int) r.getHeight() + 1;
         MLabel label = new MLabel(horizontalAlignment);
         label.setFont(font);

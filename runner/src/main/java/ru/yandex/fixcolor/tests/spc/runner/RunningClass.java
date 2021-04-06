@@ -32,6 +32,7 @@ class RunningClass implements Runner {
     private int n_cycle = 0;
     private boolean dist0Set = true;
     private int dist0 = 0;
+    private int force0 = 0;
 
     private int tik, tik0;
     private final CallBack callBack;
@@ -186,11 +187,67 @@ class RunningClass implements Runner {
                 outFrameErrorOff();
                 // вывод статуса программы
                 outFrameStatus(TypePack.toString(typePack));
+                //
+                if (oldTypePack == TypePack.CYCLE_BACK
+                ||  oldTypePack == TypePack.MANUAL_BACK) {
+                    tik_stop = tik;
+                    // вывод времени
+                    plot.setPointStopBack_time(tik_stop);
+                }
                 // сохранение записей в БД
                 if (oldTypePack == TypePack.CYCLE_BACK) {
                     if (n_cycle > 0) { n_cycle++; }
                     if (distanceOut.size() > 2) { sendOutData(); }
                 }
+                 // расчет времени подъема
+                if (oldTypePack == TypePack.MANUAL_BACK) {
+                    int c_cur_i =1;
+                    int c_cur_dist = distanceOut.get(c_cur_i).distance;
+                    int c_cur_begin =0, c_cur_end = 0;
+                    int c_cur_dalay = 0;
+                    boolean c_cur_find = false;
+                    // поиск начала
+                    c_cur_dalay = 0;
+                    for (;c_cur_i < distanceOut.size();c_cur_i++) {
+                        if (distanceOut.get(c_cur_i).distance - c_cur_dist > 2) {
+                            c_cur_dalay++;
+                            if (c_cur_dalay > 10) {
+                                c_cur_begin = c_cur_i - 10;
+                                c_cur_find = true;
+                                break;
+                            }
+                        } else {
+                            c_cur_dalay = 0;
+                        }
+                    }
+                    // поиск конца
+                    if (c_cur_find) {
+                        c_cur_find = false;
+                        c_cur_dalay = 0;
+                        for (;c_cur_i < distanceOut.size();c_cur_i++) {
+                            int cur_d = distanceOut.get(c_cur_i).distance;
+                            if (cur_d - c_cur_dist > 1) {
+                                c_cur_dist = cur_d;
+                                c_cur_dalay = 0;
+                            } else {
+                                c_cur_dalay++;
+                                if (c_cur_dalay > 10) {
+                                    c_cur_end = c_cur_i - 10;
+                                    c_cur_find = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // индикация
+                    String c_cur_string;
+                    if (c_cur_find) {
+                        int sub = distanceOut.get(c_cur_end).tik - distanceOut.get(c_cur_begin).tik;
+                        c_cur_string = String.valueOf(sub);
+                    } else c_cur_string = "==error==";
+                    MainFrame.mainFrame.setT_imp_up(c_cur_string);
+                }
+
                 // сброс счетчика циклов
                 n_cycle = 0;
                 oldTypePack = typePack;
@@ -200,6 +257,10 @@ class RunningClass implements Runner {
                     sequenceError(typePack);
                     return;
                 }
+                // очистка таймингов
+                tik_shelf = -999;
+                tik_back = -999;
+                tik_stop = -999;
                 // режим ручной включен
                 workManualOn = true;
                 // вывод статуса программы
@@ -209,7 +270,7 @@ class RunningClass implements Runner {
                 // установить нулевое положение штока
                 dist0Set = true;
                 // выключить запись данных измерений
-                distanceRecordEnable = false;
+                distanceRecordEnable = true; //false;
                 // очистить записи данных измерений
                 distanceOut.clear();
                 // очистка данных из графика
@@ -232,7 +293,7 @@ class RunningClass implements Runner {
                 outFrameStatus(TypePack.toString(typePack));
                 // время начало полки
                 tik_shelf = tik;
-//                // вывод времени начало полки
+                // вывод времени начало полки
                 plot.setPointBeginShelf_time(tik_shelf);
                 oldTypePack = typePack;
                 break;
@@ -305,17 +366,26 @@ class RunningClass implements Runner {
             case TypePack.CURENT_DATA:
                 if (reciveOn) {
                     {
+                        // дистанция
                         int dist_in_adc = getDistanceFromPack(bytes);
                         int dist_in = (int) Math.round(Point.renderValue(dist_in_adc, distance_pointK));
+                        // усилие
+                        int weight_adc = getForceFromPack(bytes);
+                        int weight_in = (int) Math.round(Point.renderValue(weight_adc, weight_pointK));
+                        // нулевое положение
                         if (dist0Set) {
                             dist0Set = false;
                             dist0 = dist_in;
+                            force0 = 0;//weight_in;
                         }
+                        // нормирование
                         int dist = dist_in - dist0;
+                        int weight = weight_in - force0;
                         if (dist < 0) dist = 0;
-                        int weight_adc = getForceFromPack(bytes);
-                        int weight = (int) Math.round(Point.renderValue(weight_adc, weight_pointK));
+                        if (weight < 0) weight = 0;
+                        // отрисовка
                         paintTrends((short) dist, (short) weight);
+                        // сохранение
                         if (distanceRecordEnable) {
                             distanceOut.add(new DistClass(tik, dist, weight));
                         }
@@ -424,10 +494,11 @@ class RunningClass implements Runner {
 
     void sendOutData () {
         if (distanceOut.isEmpty()) return;
-        //
-        tik_stop = distanceOut.get(distanceOut.size() - 1).tik;
+        // нормирование
+        int tik_max = distanceOut.get(distanceOut.size() - 1).tik;
+        if (tik_stop > tik_max) tik_stop = tik_max;
+        if (tik_stop < tik_shelf) tik_stop = tik_max;
         // force
-        int idxMid = distanceOut.size() / 2;
         int forceMeasure = -1;
         // move
         int moveMeasureBegin = distanceOut.get(0).distance;
@@ -441,6 +512,7 @@ class RunningClass implements Runner {
                 break;
             }
         }
+        // ===========================
         //
         float timeUnClenching = (float) (tik_shelf - distanceOut.get(0).tik) / 1_000;
         float timeClenching = (float) (tik_stop - tik_back) / 1_000;

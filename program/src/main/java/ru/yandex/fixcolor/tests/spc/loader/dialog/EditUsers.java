@@ -138,7 +138,7 @@ public class EditUsers extends JFrame {
                 null, null, true, true);
         add(fieldPassword);
 
-        buttonNewUser = CreateComponents.getButton(this, "Новый пользователь", new Font("Times New Roman", Font.PLAIN, 14), 440, 337, 160, 30,
+        buttonNewUser = CreateComponents.getButton(this, "Новый пользователь", new Font("Times New Roman", Font.PLAIN, 13), 440, 337, 160, 30,
                 this::pushButtonNewUser, true, true);
 
         label_edit = CreateComponents.getLabel("Редактирование", new Font("Times New Roman", Font.PLAIN, 18), 170, 365, 130, 60, true, true);

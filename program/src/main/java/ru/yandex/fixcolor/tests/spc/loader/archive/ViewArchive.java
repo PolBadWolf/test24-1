@@ -188,7 +188,7 @@ public class ViewArchive {
         // цвет фона окна
         plotParameters.windowBackColor = new Color(255, 255, 255);
         // размер окна в мсек
-        plotParameters.scaleZero_maxX = 5_000;
+        plotParameters.scaleZero_maxX = 1_000;
         // тип зумирования
         plotParameters.scaleZero_zoomX = Plot.ZOOM_X_SHRINK;
         // ************ СЕТКА ************
@@ -212,7 +212,7 @@ public class ViewArchive {
         // начальное значение шкалы тренда
         plotParameters.trend1_zeroY_min = 0;
         // конечное значение шкалы тренда
-        plotParameters.trend1_zeroY_max = 50;
+        plotParameters.trend1_zeroY_max = 10;
         // режим автомасштабирования шкалы тренда
         plotParameters.trend1_AutoZoomY = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.ZOOM_Y_FROM_SCALE;
         // ************ ТРЕНД2  ************
@@ -231,7 +231,7 @@ public class ViewArchive {
         // начальное значение шкалы тренда
         plotParameters.trend2_zeroY_min = 0;
         // конечное значение шкалы тренда
-        plotParameters.trend2_zeroY_max = 45;
+        plotParameters.trend2_zeroY_max = 10;
         // режим автомасштабирования шкалы тренда
         plotParameters.trend2_AutoZoomY = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.ZOOM_Y_FROM_SCALE;
 
@@ -241,6 +241,9 @@ public class ViewArchive {
         // линия указания начало полки
         plotParameters.pointBeginShelf_color = new Color(0,0,255);;
         plotParameters.pointBeginShelf_lineWidth = 2;
+        // линия указания окончания возврата (стоп)
+        plotParameters.pointStopBack_color = new Color(0,0,255);;
+        plotParameters.pointStopBack_lineWidth = 2;
         // значения минимума из прошлого цикла
 
         plot = ru.yandex.fixcolor.tests.spc.lib.plot2.Plot.createSwing(plotParameters, panelPlot);
@@ -405,6 +408,8 @@ public class ViewArchive {
             blobDecoder = new MeasuredBlobDecoder(measured.dataMeasured);
             distClass = blobDecoder.get(0);
             tik0 = distClass.tik;
+            // сбросить зум по времени на начальное значение
+            plot.setZommXzero();
             plot.allDataClear();
             plot.clearScreen();
             for (int i = 0; i < blobDecoder.lenght(); i++) {
@@ -418,6 +423,8 @@ public class ViewArchive {
             plot.setPointBeginShelf_time(measured.tik_shelf);
             // вывод времени возврата
             plot.setPointBackMove_time(measured.tik_back);
+            // вывод времени останова
+            plot.setPointStopBack_time(measured.tik_stop);
             plot.paint();
             //Thread.sleep(10);
             plot.reFresh();

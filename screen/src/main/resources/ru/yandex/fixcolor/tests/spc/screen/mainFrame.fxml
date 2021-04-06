@@ -56,6 +56,8 @@
       <Label alignment="CENTER" layoutX="885.0" layoutY="657.0" text="Кол-во циклов"><Font name="Times New Roman" size="18.0" /></Label>
       <TextField fx:id="s_nCicle" alignment="CENTER" layoutX="876.0" layoutY="684.0" onAction="#on_cycleMax" prefHeight="25.0" prefWidth="110.0" text="15" />
       <Label fx:id="l_nCicle" alignment="CENTER" layoutX="850.0" layoutY="717.0" prefHeight="25.0" prefWidth="110.0" />
+
+      <Label fx:id="t_imp_up" alignment="CENTER" layoutX="141.0" layoutY="733.0" prefHeight="25.0" prefWidth="110.0" />
     </children>
 
 </AnchorPane>

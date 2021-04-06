@@ -121,10 +121,10 @@ public class EditPushers {
         //
         CreateComponents.getLabel(frame, "Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 250, 205, true, true, MLabel.POS_LEADS);
         textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 460, 210,200, 25, null, null, true, true);
-        buttonDelete = CreateComponents.getButton(frame, "Удалить", new Font("Times New Roman", Font.PLAIN, 14), 60, 275, 120, 25, this::callButtonDelete, true, true);
-        buttonEdit = CreateComponents.getButton(frame, "Изменить", new Font("Times New Roman", Font.PLAIN, 14), 60, 315, 120, 25, this::callButtonEditPusher, true, true);
-        buttonAdd = CreateComponents.getButton(frame, "Добавить", new Font("Times New Roman", Font.PLAIN, 14), 60, 355, 120, 25, this::callButtonAdd, true, true);
-        buttonEditTypePushers = CreateComponents.getButton(frame, "Типы Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 60, 395, 120, 25, this::callButtonEditTypePushers, true, true);
+        buttonDelete = CreateComponents.getButton(frame, "Удалить", new Font("Times New Roman", Font.PLAIN, 14), 60, 275, 125, 25, this::callButtonDelete, true, true);
+        buttonEdit = CreateComponents.getButton(frame, "Изменить", new Font("Times New Roman", Font.PLAIN, 14), 60, 315, 125, 25, this::callButtonEditPusher, true, true);
+        buttonAdd = CreateComponents.getButton(frame, "Добавить", new Font("Times New Roman", Font.PLAIN, 14), 60, 355, 125, 25, this::callButtonAdd, true, true);
+        buttonEditTypePushers = CreateComponents.getButton(frame, "Типы Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 60, 395, 125, 25, this::callButtonEditTypePushers, true, true);
         // ---- таблица
         tablePushers = CreateComponents.getTable(
                 740 - 17,
@@ -189,12 +189,12 @@ public class EditPushers {
         frame.add(scrollPushers);
         //
         panelTypePushers = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "Параметры типа толкателя", 240, 230, 420, 200, true, true);
-        CreateComponents.getLabel(panelTypePushers, "Тип толкателя", new Font("Times New Roman", Font.PLAIN, 18), 200, 20, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(panelTypePushers, "Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 18), 200, 50, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(panelTypePushers, "Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 18), 200, 80, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(panelTypePushers, "Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 18), 200, 110, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(panelTypePushers, "Время зжатия (сек)", new Font("Times New Roman", Font.PLAIN, 18), 200, 140, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(panelTypePushers, "Вес гидротолкателя (кг)", new Font("Times New Roman", Font.PLAIN, 18), 200, 170, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Тип толкателя", new Font("Times New Roman", Font.PLAIN, 17), 200, 20, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 17), 200, 50, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 17), 200, 80, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 17), 200, 110, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Время зжатия (сек)", new Font("Times New Roman", Font.PLAIN, 17), 200, 140, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Вес гидротолкателя (кг)", new Font("Times New Roman", Font.PLAIN, 17), 200, 170, true, true, MLabel.POS_RIGHT);
         comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 220, 20, 190, 25,
               true,
                 null,

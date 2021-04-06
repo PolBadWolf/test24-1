@@ -79,6 +79,10 @@ public interface Plot {
         public double pointBeginShelf_time;
         public Color pointBeginShelf_color;
         public double pointBeginShelf_lineWidth;
+        // линия указания окончания возврата (стоп)
+        public double pointStopBack_time;
+        public Color  pointStopBack_color;
+        public double pointStopBack_lineWidth;
         //
         //      тренд1
         // начальные значения минимума и максимума
@@ -163,6 +167,10 @@ public interface Plot {
             pointBeginShelf_time = -1_000_000;
             pointBeginShelf_color = Color.blue;
             pointBeginShelf_lineWidth = 3;
+            // линия указания окончания возврата (стоп)
+            pointStopBack_time = -1_000_000;
+            pointStopBack_color = Color.blue;
+            pointStopBack_lineWidth = 3;
             // 5 секунд
             scaleZero_maxX = 1_400;
             scaleZero_zoomX = Plot.ZOOM_X_OFF;
@@ -225,4 +233,5 @@ public interface Plot {
     void setAutoPaint(boolean autoPaint);
     void setPointBackMove_time(double time);
     void setPointBeginShelf_time(double time);
+    void setPointStopBack_time(double time);
 }

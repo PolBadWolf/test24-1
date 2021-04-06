@@ -1,6 +1,5 @@
 package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
-import ru.yandex.fixcolor.tests.spc.lib.MyLogger;
 import ru.yandex.fixcolor.tests.spc.loader.MainClass;
 import ru.yandex.fixcolor.tests.spc.loader.archive.ViewArchive;
 import ru.yandex.fixcolor.tests.spc.loader.calibration.Calibration;
@@ -62,8 +61,8 @@ public class StartFrame {
     private JLabel viewLabelNameTypePusher;
     private JLabel viewLabelForce;
     private JLabel viewLabelMove;
-    private JLabel viewLabelUnclenching;
-    private JLabel viewLabelСlenching;
+    private JLabel viewLabelUnClenching;
+    private JLabel viewLabelClenching;
     private JLabel viewLabelWeightNominal;
 
     private JButton buttonExit;
@@ -429,7 +428,7 @@ public class StartFrame {
             jPanel1 = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "редактирование", 410, 320, 160, 90,true, true );
             // кнопка редактирования пользователей
             // кнопка редактирования толкателей
-            buttonEditUsers = CreateComponents.getButton(jPanel1, "Пользователей", new Font("Times New Roman", Font.PLAIN, 14), 20, 20, 120, 24, this::callEditUsers, true, true);
+            buttonEditUsers = CreateComponents.getButton(jPanel1, "Пользователей", new Font("Times New Roman", Font.PLAIN, 13), 20, 20, 120, 24, this::callEditUsers, true, true);
             buttonEditPushers = CreateComponents.getButton(jPanel1, "Толкателей", new Font("Times New Roman", Font.PLAIN, 14), 20, 55, 120, 24, this::callEditPushers, true, true);
 
             frame.add(jPanel1);
@@ -445,10 +444,10 @@ public class StartFrame {
             viewLabelMove = CreateComponents.getLabel(frame, "Ном.ход (мм)",
                     new Font("Time New Roman", Font.PLAIN, 14),
                     320, 260, false, true, MLabel.POS_CENTER);
-            viewLabelUnclenching = CreateComponents.getLabel(frame, "Время разж.(сек.)",
+            viewLabelUnClenching = CreateComponents.getLabel(frame, "Время разж.(сек.)",
                     new Font("Time New Roman", Font.PLAIN, 14),
                     440, 260, false, true, MLabel.POS_CENTER);
-            viewLabelСlenching = CreateComponents.getLabel(frame, "Время разж.(сек.)",
+            viewLabelClenching = CreateComponents.getLabel(frame, "Время разж.(сек.)",
                     new Font("Time New Roman", Font.PLAIN, 14),
                     560, 260, false, true, MLabel.POS_CENTER);
             viewLabelWeightNominal = CreateComponents.getLabel(frame, "Вес (кг)",
@@ -533,8 +532,8 @@ public class StartFrame {
         viewUnclenching.setVisible(true);
         viewClenching.setVisible(true);
         viewWeightNominal.setVisible(true);
-        viewLabelUnclenching.setVisible(true);
-        viewLabelСlenching.setVisible(true);
+        viewLabelUnClenching.setVisible(true);
+        viewLabelClenching.setVisible(true);
         viewLabelWeightNominal.setVisible(true);
         //
         if (statMainWork) {

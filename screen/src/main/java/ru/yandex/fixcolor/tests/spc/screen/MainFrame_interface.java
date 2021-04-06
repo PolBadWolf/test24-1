@@ -25,4 +25,6 @@ public interface MainFrame_interface {
     //
     void setFieldMaxNcycle(int maxNcycle);
     int getFieldMaxNcycle();
+    //
+    void setT_imp_up(String string);
 }

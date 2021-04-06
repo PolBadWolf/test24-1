@@ -206,6 +206,7 @@ public class Calibration {
             return;
         }
         force_point1 = point;
+        force_pointK = pointK;
         weightLabelPoint1.setText(String.valueOf(force_point1.adc));
         distanceCurrentShow();
     }
@@ -222,6 +223,7 @@ public class Calibration {
             return;
         }
         force_point2 = point;
+        force_pointK = pointK;
 //        weight_k = pointK.k;
 //        weight_offset = pointK.offset;
         weightLabelPoint2.setText(String.valueOf(force_point2.adc));

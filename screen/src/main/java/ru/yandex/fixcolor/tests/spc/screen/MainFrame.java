@@ -23,6 +23,7 @@ public class MainFrame implements Initializable, MainFrame_interface {
     public static MainFrame mainFrame = null;
     public Label alarmMessage;
     public TextControl alarmMessageFlashText;
+    public Label t_imp_up;
     private GraphicsContext gc = null;
     private CallBack callBack;
 
@@ -166,5 +167,12 @@ public class MainFrame implements Initializable, MainFrame_interface {
             }
         }
         return nMax;
+    }
+
+    @Override
+    public void setT_imp_up(String string) {
+        Platform.runLater(()->{
+            t_imp_up.setText(string);
+        });
     }
 }

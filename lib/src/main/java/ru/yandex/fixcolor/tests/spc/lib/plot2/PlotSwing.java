@@ -167,6 +167,15 @@ class PlotSwing extends PlotParent {
             lines[0] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
             arrayLines.add(new LinesParameters(lines, pointBeginShelf_color, pointBeginShelf_lineWidth));
         }
+        // линия указания останов при возврате
+        if (pointStopBack_time > memX_begin && pointStopBack_time < memX_end) {
+            //System.out.println("stop = " + pointStopBack_time);
+            lines = new LineParameters[1];
+            double x_zero = memX_begin - (memX_begin % xStep);
+            x = (pointStopBack_time - x_zero) * kX + fieldSizeLeft;
+            lines[0] = new LineParameters(x, positionBottom - y1, x, positionBottom - y2);
+            arrayLines.add(new LinesParameters(lines, pointStopBack_color, pointStopBack_lineWidth));
+        }
     }
     private void __createLinesAndTitleY(ArrayList<TitleText> arrayTitleText, ArrayList<LinesParameters> arrayLines) {
         __createlinesY(arrayLines);
