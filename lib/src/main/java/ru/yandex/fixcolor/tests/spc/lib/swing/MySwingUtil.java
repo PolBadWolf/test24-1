@@ -73,5 +73,71 @@ public class MySwingUtil {
         }, "popup").start();
     }
 
+    public static void showMessageYesNo(Component parent, String title, String text, int timeout, CallBack callYes, CallBack callNo) {
+        JDialog dialog;
+        Window window = (Window) parent;
+        JOptionPane pane = new JOptionPane(
+                text,
+                JOptionPane.ERROR_MESSAGE,
+                JOptionPane.YES_NO_OPTION,
+                null, null, null
+        );
+        pane.setInitialValue(null);
+        dialog = new JDialog( (Frame) window,
+                title,
+                false);
+        dialog.setComponentOrientation(pane.getComponentOrientation());
 
+        final PropertyChangeListener listener = event -> {
+            if (dialog.isVisible() && event.getSource() == pane &&
+                    (event.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) &&
+                    event.getNewValue() != null) {
+                dialog.setVisible(false);
+                int op = (int)event.getNewValue();
+                if (op == JOptionPane.YES_OPTION) {
+                    if (callYes != null) callYes.back();
+                } else {
+                    if (callNo != null) callNo.back();
+                }
+                dialog.dispose();
+            }
+        };
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                pane.removePropertyChangeListener(listener);
+                dialog.getContentPane().removeAll();
+            }
+        });
+        pane.addPropertyChangeListener(listener);
+
+        Container contentPane = dialog.getContentPane();
+        contentPane.setLayout(new BorderLayout());
+        contentPane.add(pane, BorderLayout.CENTER);
+        dialog.pack();
+        dialog.setLocationRelativeTo(pane);
+        pane.selectInitialValue();
+        dialog.setVisible(true);
+        dialog.requestFocus();
+
+        new Thread(()->{
+            final int kvant = 50;
+            final int fistDelay = 500;
+            int n = 1 + (timeout - fistDelay) / kvant;
+            try {
+                Thread.sleep(fistDelay);
+                do {
+                    Thread.sleep(kvant);
+                    n--;
+                } while (dialog.isVisible() && n > 0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                if (callNo != null) {
+                    callNo.back();
+                }
+                dialog.dispose();
+            }
+        }, "popup").start();
+    }
 }

@@ -28,7 +28,7 @@ class BaseDataMySql extends BaseDataParent {
         String connString = String.format(connectionUrl
                 , parameters.getIpServer()
                 , parameters.getPortServer()
-        ) + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
+        ) + "?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=" + TimeZone.getDefault().getID();
         // соединение
         try {
             connection = DriverManager.getConnection(

@@ -5,6 +5,8 @@ import ru.yandex.fixcolor.tests.spc.bd.usertypes.User;
 import ru.yandex.fixcolor.tests.spc.lib.swing.*;
 
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.*;
@@ -66,11 +68,13 @@ public class EditUsers extends JFrame {
         label_title = CreateComponents.getLabel("Редактор пользователей", new Font("Times New Roman", Font.BOLD, 28), 160, 10, 310, 33, true, true);
         add(label_title);
 
-        table = CreateComponents.getTable(562, null, new CreateComponents.ModelTableNameWidth[]{
-                new CreateComponents.ModelTableNameWidth("ФИО", -1),
-                new CreateComponents.ModelTableNameWidth("ранг", 32),
-                new CreateComponents.ModelTableNameWidth("регистрация", 122)
-        },
+        table = CreateComponents.getTable(562
+                , null
+                , new CreateComponents.ModelTableNameWidth[]{
+                        new CreateComponents.ModelTableNameWidth("ФИО", -1),
+                        new CreateComponents.ModelTableNameWidth("ранг", 32),
+                        new CreateComponents.ModelTableNameWidth("регистрация", 122)
+                },
                 null, null, true, true);
         scroll_table = CreateComponents.getScrollPane(20, 50, 580, 190, table, true, true);
         add(scroll_table);
@@ -81,6 +85,7 @@ public class EditUsers extends JFrame {
         fieldSearch = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 80, 259, 340, 25,
                 null, null, true, true);
         add(fieldSearch);
+//        fieldSearch = new JTextField("1");
 
         userFilterSortField2Table = new FilterSortField2Table<>(
                 fieldSearch,
@@ -128,7 +133,7 @@ public class EditUsers extends JFrame {
                 null, null, true, true);
         add(fieldSurName);
 
-        buttonDeactive = CreateComponents.getButton(this, "деактивация", new Font("Times New Roman", Font.PLAIN, 14), 440, 298, 160, 30,
+        buttonDeactive = CreateComponents.getButton(this, "Удал. пользователя", new Font("Times New Roman", Font.PLAIN, 14), 440, 298, 160, 30,
                 this::pushButtonDeactive, true, true);
 
         label_password = CreateComponents.getLabel("Пароль", new Font("Times New Roman", Font.PLAIN, 16), 20, 338, 60, 30, true, true);
@@ -160,9 +165,33 @@ public class EditUsers extends JFrame {
 
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     //      воздействие из органов управления
+    ru.yandex.fixcolor.tests.spc.lib.swing.SaveEnableComponents saveEnableComponentsDelete = null;
     private void pushButtonDeactive(ActionEvent actionEvent) {
         // деактивация выбранного пользователя
+        saveEnableComponentsDelete = new SaveEnableComponents(new Component[]{
+                table,
+                buttonDeactive,
+                buttonNewUser,
+                buttonEditUser,
+                fieldSearch,
+                fieldSurName,
+                fieldPassword,
+                checkUsers,
+                checkPushers
+        });
+        saveEnableComponentsDelete.save();
+        saveEnableComponentsDelete.offline();
+        ru.yandex.fixcolor.tests.spc.lib.swing.MySwingUtil.showMessageYesNo(this, "удаление пользователя", "удалить ?",
+                5_000, this::pushButtonDeactiveYes, this::pushButtonDeactiveNo);
+    }
+    private void pushButtonDeactiveYes() {
+        saveEnableComponentsDelete.restore();
+        requestFocus();
         deactiveSelectUser();
+    }
+    private void pushButtonDeactiveNo() {
+        saveEnableComponentsDelete.restore();
+        requestFocus();
     }
     private void pushButtonNewUser(ActionEvent actionEvent) {
         String surName = fieldSurName.getText();

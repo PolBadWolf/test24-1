@@ -137,9 +137,9 @@ public class ViewArchive {
                 showX_Force, showY_Title, false, true, MLabel.POS_CENTER);
         labelPusherMoveTitle = CreateComponents.getLabel(panelMain, "Номинальный ход", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Move, showY_Title, false, true, MLabel.POS_CENTER);
-        labelPusherUnClenchingTimeTitle = CreateComponents.getLabel(panelMain, "Время разжатия", new Font("Times New Roman", Font.PLAIN, 16),
+        labelPusherUnClenchingTimeTitle = CreateComponents.getLabel(panelMain, "Время подъема", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_UnClenching, showY_Title, false, true, MLabel.POS_CENTER);
-        labelPusherClenchingTimeTitle = CreateComponents.getLabel(panelMain, "Время зжатия", new Font("Times New Roman", Font.PLAIN, 16),
+        labelPusherClenchingTimeTitle = CreateComponents.getLabel(panelMain, "Время опускания", new Font("Times New Roman", Font.PLAIN, 16),
                 showX_Clenching, showY_Title, false, true, MLabel.POS_CENTER);
         // ----
         labelPusherSampleForce = CreateComponents.getLabel(panelMain, "Force", new Font("Times New Roman", Font.PLAIN, 16),

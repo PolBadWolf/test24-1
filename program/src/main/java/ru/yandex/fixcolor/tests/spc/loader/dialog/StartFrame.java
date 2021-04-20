@@ -444,10 +444,10 @@ public class StartFrame {
             viewLabelMove = CreateComponents.getLabel(frame, "Ном.ход (мм)",
                     new Font("Time New Roman", Font.PLAIN, 14),
                     320, 260, false, true, MLabel.POS_CENTER);
-            viewLabelUnClenching = CreateComponents.getLabel(frame, "Время разж.(сек.)",
+            viewLabelUnClenching = CreateComponents.getLabel(frame, "Врм.подъема(сек.)",
                     new Font("Time New Roman", Font.PLAIN, 14),
                     440, 260, false, true, MLabel.POS_CENTER);
-            viewLabelClenching = CreateComponents.getLabel(frame, "Время разж.(сек.)",
+            viewLabelClenching = CreateComponents.getLabel(frame, "Врм.опуск(сек.)",
                     new Font("Time New Roman", Font.PLAIN, 14),
                     560, 260, false, true, MLabel.POS_CENTER);
             viewLabelWeightNominal = CreateComponents.getLabel(frame, "Вес (кг)",

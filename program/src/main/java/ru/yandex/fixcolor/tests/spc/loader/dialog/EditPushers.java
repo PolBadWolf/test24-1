@@ -19,6 +19,7 @@ public class EditPushers {
 
     // ***************************
     private JFrame frame;
+    private JLabel label_title;
     private JButton buttonEditTypePushers;
     private JButton buttonDelete;
     private JButton buttonEdit;
@@ -34,6 +35,9 @@ public class EditPushers {
     private JTextField textClenching;
     private JTextField textWeightNominal;
     private JTable tableFindTypePushers;
+    //
+    private JTextField fieldSearch;
+    private FilterSortField2Table<Pusher> userFilterSortField2Table;
     // ***************************
     private final EditPushers.CallBack callBack;
     private final BaseData connBD;
@@ -114,20 +118,28 @@ public class EditPushers {
     }
     // инициация компонентов
     private void initComponents() {
+        int shiftY = 50;
         frame = new JFrame("Список толкателей");
         frame.setResizable(false);
-        frame.setPreferredSize(new Dimension(740, 480));
+        frame.setPreferredSize(new Dimension(740, 530));
         frame.setLayout(null);
         //
-        CreateComponents.getLabel(frame, "Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 250, 205, true, true, MLabel.POS_LEADS);
-        textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 460, 210,200, 25, null, null, true, true);
-        buttonDelete = CreateComponents.getButton(frame, "Удалить", new Font("Times New Roman", Font.PLAIN, 14), 60, 275, 125, 25, this::callButtonDelete, true, true);
-        buttonEdit = CreateComponents.getButton(frame, "Изменить", new Font("Times New Roman", Font.PLAIN, 14), 60, 315, 125, 25, this::callButtonEditPusher, true, true);
-        buttonAdd = CreateComponents.getButton(frame, "Добавить", new Font("Times New Roman", Font.PLAIN, 14), 60, 355, 125, 25, this::callButtonAdd, true, true);
-        buttonEditTypePushers = CreateComponents.getButton(frame, "Типы Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 60, 395, 125, 25, this::callButtonEditTypePushers, true, true);
+        label_title = CreateComponents.getLabel("Редактор толкателей", new Font("Times New Roman", Font.BOLD, 28), 200, 10, 310, 33, true, true);
+        frame.add(label_title);
+        //
+        CreateComponents.getLabel(frame, "Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 250, 205 + shiftY, true, true, MLabel.POS_LEADS);
+        textRegNumber = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 460, 210 + shiftY,200, 25, null, null, true, true);
+        buttonDelete = CreateComponents.getButton(frame, "Удалить", new Font("Times New Roman", Font.PLAIN, 14), 60, 275 + shiftY, 125, 25, this::pushButtonDelete, true, true);
+        buttonEdit = CreateComponents.getButton(frame, "Изменить", new Font("Times New Roman", Font.PLAIN, 14), 60, 315 + shiftY, 125, 25, this::callButtonEditPusher, true, true);
+        buttonAdd = CreateComponents.getButton(frame, "Добавить", new Font("Times New Roman", Font.PLAIN, 14), 60, 355 + shiftY, 125, 25, this::callButtonAdd, true, true);
+        buttonEditTypePushers = CreateComponents.getButton(frame, "Типы Толкат.", new Font("Times New Roman", Font.PLAIN, 14), 60, 395 + shiftY, 125, 25, this::callButtonEditTypePushers, true, true);
+        //
+/*        fieldSearch = CreateComponents.getTextField(CreateComponents.TEXTFIELD, new Font("Times New Roman", Font.PLAIN, 14), 30, 239, 200, 25,
+                null, null, true, true);
+        frame.add(fieldSearch);*/
         // ---- таблица
         tablePushers = CreateComponents.getTable(
-                740 - 17,
+                frame.getPreferredSize().width - 50,
                 new MyTableModel() {
                     @Override
                     public int getRowCount() {
@@ -176,24 +188,27 @@ public class EditPushers {
                         new CreateComponents.ModelTableNameWidth("Тип толкателя", -1),
                         new CreateComponents.ModelTableNameWidth("Усилие (кг)", 100),
                         new CreateComponents.ModelTableNameWidth("Ход (мм)", 95),
-                        new CreateComponents.ModelTableNameWidth("Разжатие(сек.)", 110),
-                        new CreateComponents.ModelTableNameWidth("Зжатие(сек.)", 100)
+                        new CreateComponents.ModelTableNameWidth("Подъем (сек.)", 110),
+                        new CreateComponents.ModelTableNameWidth("Опускание(сек.)", 100)
                 },
                 null,
                 this::tablePushersChanged,
                 true,
                 true
         );
-        scrollPushers = CreateComponents.getScrollPane(5, 0, 730, 200, tablePushers, true, true);
+        //
+
+        //
+        scrollPushers = CreateComponents.getScrollPane(5, shiftY, frame.getPreferredSize().width - 30, 200, tablePushers, true, true);
         frame.add(textRegNumber);
         frame.add(scrollPushers);
         //
-        panelTypePushers = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "Параметры типа толкателя", 240, 230, 420, 200, true, true);
+        panelTypePushers = CreateComponents.getPanel(null, new Font("Times New Roman", Font.PLAIN, 12), "Параметры типа толкателя", 240, 230 + shiftY, 420, 200, true, true);
         CreateComponents.getLabel(panelTypePushers, "Тип толкателя", new Font("Times New Roman", Font.PLAIN, 17), 200, 20, true, true, MLabel.POS_RIGHT);
         CreateComponents.getLabel(panelTypePushers, "Усилие на штоке (кг)", new Font("Times New Roman", Font.PLAIN, 17), 200, 50, true, true, MLabel.POS_RIGHT);
         CreateComponents.getLabel(panelTypePushers, "Ход штока (мм)", new Font("Times New Roman", Font.PLAIN, 17), 200, 80, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(panelTypePushers, "Время разжатия (сек)", new Font("Times New Roman", Font.PLAIN, 17), 200, 110, true, true, MLabel.POS_RIGHT);
-        CreateComponents.getLabel(panelTypePushers, "Время зжатия (сек)", new Font("Times New Roman", Font.PLAIN, 17), 200, 140, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Время подъема (сек)", new Font("Times New Roman", Font.PLAIN, 17), 200, 110, true, true, MLabel.POS_RIGHT);
+        CreateComponents.getLabel(panelTypePushers, "Время опускания (сек)", new Font("Times New Roman", Font.PLAIN, 17), 200, 140, true, true, MLabel.POS_RIGHT);
         CreateComponents.getLabel(panelTypePushers, "Вес гидротолкателя (кг)", new Font("Times New Roman", Font.PLAIN, 17), 200, 170, true, true, MLabel.POS_RIGHT);
         comboBoxTypePushers = CreateComponents.getComboBox(new Font("Times New Roman", Font.PLAIN, 14), 220, 20, 190, 25,
               true,
@@ -304,7 +319,42 @@ public class EditPushers {
         }
         return false;
     }
-    private void callButtonDelete(ActionEvent actionEvent) {
+    ru.yandex.fixcolor.tests.spc.lib.swing.SaveEnableComponents saveEnableComponentsDelete = null;
+    private void pushButtonDelete(ActionEvent actionEvent) {
+        saveEnableComponentsDelete = new SaveEnableComponents(new Component[]{
+                frame,
+                tablePushers,
+                buttonEditTypePushers,
+                buttonDelete,
+                buttonEdit,
+                buttonAdd,
+                textRegNumber,
+                scrollPushers,
+                tablePushers,
+                comboBoxTypePushers,
+                panelTypePushers,
+                textMove,
+                textForce,
+                textUnclenching,
+                textClenching,
+                textWeightNominal,
+                tableFindTypePushers
+        });
+        saveEnableComponentsDelete.save();
+        saveEnableComponentsDelete.offline();
+        ru.yandex.fixcolor.tests.spc.lib.swing.MySwingUtil.showMessageYesNo(frame, "удаление толкателя", "удалить ?",
+                5_000, this::pushButtonDeleteYes, this::pushButtonDeleteNo);
+    }
+    private void pushButtonDeleteYes() {
+        saveEnableComponentsDelete.restore();
+        frame.requestFocus();
+        callButtonDelete();
+    }
+    private void pushButtonDeleteNo() {
+        saveEnableComponentsDelete.restore();
+        frame.requestFocus();
+    }
+    private void callButtonDelete() {
         if (checkComponentsEdit()) return;
         try {
             connBD.deletePusher(0, editPusher);

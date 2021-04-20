@@ -313,12 +313,18 @@ class RunningClass implements Runner {
                 if (oldTypePack != TypePack.CYCLE_BACK) { sequenceError(typePack); return; }
                 // вывод статуса программы
                 outFrameStatus(TypePack.toString(typePack));
+                //
+                //System.out.println("stop tik " + tik);
+                //
                 // блокировка приема/отрисовки замеров
                 reciveOn = false;
                 // запрет накопления записей по замерам
                 distanceRecordEnable = false;
                 // номер цикла (начинается с нуля)
                 n_cycle++;
+                // вывод времени
+                tik_stop = tik;
+                plot.setPointStopBack_time(tik_stop);
                 // отправка записей в БД
                 if (oldTypePack == TypePack.CYCLE_BACK) { sendOutData(); }
                 // очистка записей замеров
@@ -376,7 +382,7 @@ class RunningClass implements Runner {
                         if (dist0Set) {
                             dist0Set = false;
                             dist0 = dist_in;
-                            force0 = 0;//weight_in;
+                            force0 = weight_in;
                         }
                         // нормирование
                         int dist = dist_in - dist0;
@@ -388,6 +394,7 @@ class RunningClass implements Runner {
                         // сохранение
                         if (distanceRecordEnable) {
                             distanceOut.add(new DistClass(tik, dist, weight));
+                            //System.out.println("sav tik " + tik);
                         }
                     }
                 }
