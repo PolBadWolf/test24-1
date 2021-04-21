@@ -83,6 +83,8 @@ public class Calibration {
         frame = CreateComponents.getFrame("Калибровка датчиков", 640, 480, false,
                 null, new FrameClose());
         //
+        CreateComponents.getLabel(frame, "Калибровка датчиков", new Font("Times New Roman", Font.PLAIN, 36),
+                320, 5, true, true, MLabel.POS_CENTER);
         initComponentsDistance(frame);
         initComponentsWeight(frame);
         configButtonSave = CreateComponents.getButton(frame, "Сохранить", new Font("Times New Roman", Font.PLAIN, 16),
@@ -107,9 +109,9 @@ public class Calibration {
     }
 
     private void initComponentsDistance(Container parent) {
-        CreateComponents.getLabel(parent, "Дистанция : ", new Font("Times New Roman", Font.PLAIN, 36),
-                320, 5, true, true, MLabel.POS_CENTER);
-        CreateComponents.getLabel(parent, "Текущие данные : ", new Font("Times New Roman", Font.PLAIN, 24),
+//        CreateComponents.getLabel(parent, "Title", new Font("Times New Roman", Font.PLAIN, 36),
+//                320, 5, true, true, MLabel.POS_CENTER);
+        CreateComponents.getLabel(parent, "Дистанция : ", new Font("Times New Roman", Font.PLAIN, 24),
                 270, 55, true, true, MLabel.POS_RIGHT);
         distanceLabelCurrent = CreateComponents.getLabel(parent, "", new Font("Times New Roman", Font.PLAIN, 24),
                 270, 55, true, true, MLabel.POS_LEFT);
@@ -120,10 +122,13 @@ public class Calibration {
                 250, 90, true, true, MLabel.POS_LEFT);
         distanceTextPoint1 = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
                 new Font("Times New Roman", Font.PLAIN, 24),
-                320, 90, 120, 30,
+                320, 90, 90, 30,
                 null, null,
                 true, true);
-        distanceTextPoint1.setText(String.format("%.3f", distance_point1.value));
+        distanceTextPoint1.setText(String.format("%.1f", distance_point1.value));
+        distanceTextPoint1.setHorizontalAlignment(JTextField.RIGHT);
+        CreateComponents.getLabel(parent, "мм", new Font("Times New Roman", Font.PLAIN, 24),
+                420, 90, true, true, MLabel.POS_LEFT);
         distanceButtonPoint1 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 90, 80, 30,
                 this::distanceSetPoint1, true, true);
@@ -137,10 +142,13 @@ public class Calibration {
                 250, 130, true, true, MLabel.POS_LEFT);
         distanceTextPoint2 = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
                 new Font("Times New Roman", Font.PLAIN, 24),
-                320, 130, 120, 30,
+                320, 130, 90, 30,
                 null, null,
                 true, true);
-        distanceTextPoint2.setText(String.format("%.3f", distance_point2.value));
+        distanceTextPoint2.setText(String.format("%.1f", distance_point2.value));
+        distanceTextPoint2.setHorizontalAlignment(JTextField.RIGHT);
+        CreateComponents.getLabel(parent, "мм", new Font("Times New Roman", Font.PLAIN, 24),
+                420, 130, true, true, MLabel.POS_LEFT);
         distanceButtonPoint2 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 130, 80, 30,
                 this::distanceSetPoint2, true, true);
@@ -149,9 +157,9 @@ public class Calibration {
 //        parent.add(distanceButtonPoint2);
     }
     private void initComponentsWeight(Container parent) {
-        CreateComponents.getLabel(parent, "Вес : ", new Font("Times New Roman", Font.PLAIN, 36),
-                320, 190, true, true, MLabel.POS_CENTER);
-        CreateComponents.getLabel(parent, "Текущие данные : ", new Font("Times New Roman", Font.PLAIN, 24),
+//        CreateComponents.getLabel(parent, "Вес : ", new Font("Times New Roman", Font.PLAIN, 24),
+//                320, 190, true, true, MLabel.POS_CENTER);
+        CreateComponents.getLabel(parent, "Вес : ", new Font("Times New Roman", Font.PLAIN, 24),
                 270, 240, true, true, MLabel.POS_RIGHT);
         weightLabelCurrent = CreateComponents.getLabel(parent, "", new Font("Times New Roman", Font.PLAIN, 24),
                 270, 240, true, true, MLabel.POS_LEFT);
@@ -162,10 +170,13 @@ public class Calibration {
                 250, 275, true, true, MLabel.POS_LEFT);
         weightTextPoint1 = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
                 new Font("Times New Roman", Font.PLAIN, 24),
-                320, 275, 120, 30,
+                320, 275, 90, 30,
                 null, null,
                 true, true);
-        weightTextPoint1.setText(String.format("%.3f", force_point1.value));
+        weightTextPoint1.setHorizontalAlignment(JTextField.RIGHT);
+        CreateComponents.getLabel(parent, "кг", new Font("Times New Roman", Font.PLAIN, 24),
+                420, 275, true, true, MLabel.POS_LEFT);
+        weightTextPoint1.setText(String.format("%.1f", force_point1.value));
         weightButtonPoint1 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 275, 80, 30,
                 this::weightSetPoint1, true, true);
@@ -179,10 +190,13 @@ public class Calibration {
                 250, 315, true, true, MLabel.POS_LEFT);
         weightTextPoint2 = CreateComponents.getTextField(CreateComponents.TEXTFIELD,
                 new Font("Times New Roman", Font.PLAIN, 24),
-                320, 315, 120, 30,
+                320, 315, 90, 30,
                 null, null,
                 true, true);
-        weightTextPoint2.setText(String.format("%.3f", force_point2.value));
+        weightTextPoint2.setHorizontalAlignment(JTextField.RIGHT);
+        CreateComponents.getLabel(parent, "кг", new Font("Times New Roman", Font.PLAIN, 24),
+                420, 315, true, true, MLabel.POS_LEFT);
+        weightTextPoint2.setText(String.format("%.1f", force_point2.value));
         weightButtonPoint2 = CreateComponents.getButton(parent, "Задать", new Font("Times New Roman", Font.PLAIN, 16),
                 500, 315, 80, 30,
                 this::weightSetPoint2, true, true);

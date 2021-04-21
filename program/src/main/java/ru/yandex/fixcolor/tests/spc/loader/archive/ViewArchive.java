@@ -1,4 +1,6 @@
 package ru.yandex.fixcolor.tests.spc.loader.archive;
+// титла - "Архив испытаний" ?
+// результаты испытаний гидротолкателей
 
 import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
@@ -76,7 +78,7 @@ public class ViewArchive {
         initComponents();
     }
     private void initComponents() {
-        frame = CreateComponents.getFrame("View Archive", 1024, 800, false, null, null);
+        frame = CreateComponents.getFrame("Архив испытаний", 1024, 800, false, null, null);
         frame.setBackground(Color.white);
         panelMain = CreateComponents.getPanelPrintableCap(
                 null,
@@ -107,7 +109,7 @@ public class ViewArchive {
         buttonPrint = CreateComponents.getButton(frame, "Печать", new Font("Dialog", Font.PLAIN,12),
                 800, 10, 80, 30, this::callButtonPrinterPush, true, false);
         //
-        CreateComponents.getLabel(panelMain, "Измеритель СПЦ участок гидротолкателей", new Font("Times New Roman", Font.PLAIN, 32),
+        CreateComponents.getLabel(panelMain, "Результаты испытаний гидротолкателя", new Font("Times New Roman", Font.PLAIN, 32),
                 350, 10, true, true, MLabel.POS_CENTER);
         labelDate = CreateComponents.getLabel(panelMain, "Время измерения", new Font("Times New Roman", Font.PLAIN, 16),
                 350, 48, false, true, MLabel.POS_CENTER);

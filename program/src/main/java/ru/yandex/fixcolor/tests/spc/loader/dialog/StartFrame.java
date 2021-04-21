@@ -345,7 +345,7 @@ public class StartFrame {
     }
 
     private void initComponents() {
-        frame = new JFrame();
+        frame = new JFrame("Стенд испытаний гидротолкателей");
         frame.setPreferredSize(new Dimension(740, 480));
         {
             label1 = CreateComponents.getLabel("Стенд", new Font("Times New Roman", Font.PLAIN, 57), 270, 130, 148, 66, false, true);
@@ -405,7 +405,7 @@ public class StartFrame {
         {
             buttonEnter = CreateComponents.getButton(frame, "Проверка", new Font("Times New Roman", Font.PLAIN, 13), 370, 190, 90, 24, this::callEnter, false, true);
             buttonSetPassword = CreateComponents.getButton(frame, "Новый пароль", new Font("Times New Roman", Font.PLAIN, 13), 470, 190, 116, 24, this::callSetNewPassword, false, true);
-            buttonWork = CreateComponents.getButton(frame, "Измерения", new Font("Times New Roman", Font.PLAIN, 13), 275, 330, 110, 24, this::callReturnToWork, false, true);
+            buttonWork = CreateComponents.getButton(frame, "Испытания", new Font("Times New Roman", Font.PLAIN, 13), 275, 330, 110, 24, this::callReturnToWork, false, true);
             buttonTuning = CreateComponents.getButton(frame, "настройка", new Font("Times New Roman", Font.PLAIN, 13), 195, 370, 110, 24, this::callTuning, false, true);
             buttonCalibration = CreateComponents.getButton(frame, "Калибровка", new Font("Times New Roman", Font.PLAIN, 13), 275, 370, 110, 24, this::callCalibration, false, false);
             buttonShowArchive = CreateComponents.getButton(frame, "Архив", new Font("Times New Roman", Font.PLAIN, 13), 160, 370, 90, 24, this::callShowArchive, false, false);

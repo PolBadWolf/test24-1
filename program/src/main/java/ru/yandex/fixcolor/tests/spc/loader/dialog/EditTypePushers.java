@@ -82,7 +82,7 @@ public class EditTypePushers {
     }
     // инициация компонентов
     private void initComponents() {
-        frame = new JFrame("Перечень типов толкателей");
+        frame = new JFrame("Редактор типов толкателей");
         frame.setResizable(false);
         frame.setPreferredSize(new Dimension(640, 530));
         frame.setLayout(null);

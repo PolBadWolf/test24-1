@@ -35,7 +35,7 @@ public class ScreenClass extends Application implements ScreenFx {
         Parent root = loader.load();
 
         primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("График испытания гидротолкателей");
+        primaryStage.setTitle("Испытания гидротолкателей");
         primaryStage.show();
         stage = primaryStage;
         //stage.setResizable(false);

@@ -1,5 +1,7 @@
 package ru.yandex.fixcolor.tests.spc.loader.dialog;
 
+// титла - "Регистратор толкателей"
+
 import ru.yandex.fixcolor.tests.spc.bd.*;
 import ru.yandex.fixcolor.tests.spc.bd.usertypes.*;
 import ru.yandex.fixcolor.tests.spc.lib.swing.*;
@@ -119,12 +121,12 @@ public class EditPushers {
     // инициация компонентов
     private void initComponents() {
         int shiftY = 50;
-        frame = new JFrame("Список толкателей");
+        frame = new JFrame("Регистратор толкателей");
         frame.setResizable(false);
         frame.setPreferredSize(new Dimension(740, 530));
         frame.setLayout(null);
         //
-        label_title = CreateComponents.getLabel("Редактор толкателей", new Font("Times New Roman", Font.BOLD, 28), 200, 10, 310, 33, true, true);
+        label_title = CreateComponents.getLabel("Регистратор толкателей", new Font("Times New Roman", Font.BOLD, 28), 200, 10, 310, 33, true, true);
         frame.add(label_title);
         //
         CreateComponents.getLabel(frame, "Регистрационный номер", new Font("Times New Roman", Font.PLAIN, 18), 250, 205 + shiftY, true, true, MLabel.POS_LEADS);

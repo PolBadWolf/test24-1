@@ -51,6 +51,7 @@ public class EditUsers extends JFrame {
         offButtonEdit();
         setVisible(true);
         setResizable(false);
+        setTitle("Редактор пользователей");
         // ловушка закрытия окна
         addWindowListener(new WindowAdapter() {
             @Override
